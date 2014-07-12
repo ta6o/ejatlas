@@ -6,5 +6,5 @@
 
 require File.expand_path("../config/boot.rb", __FILE__)
 use Rack::Deflater
-use Rack::HideHeroku
+#use Rack::HideHeroku
 run Padrino.application

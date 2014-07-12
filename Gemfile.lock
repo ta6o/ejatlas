@@ -23,7 +23,6 @@ GEM
     activesupport (3.2.17)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
-    addressable (2.3.6)
     arel (3.0.3)
     bcrypt (3.1.7)
     bcrypt-ruby (3.1.5)
@@ -34,9 +33,6 @@ GEM
       activesupport (>= 3.2.0)
       json (>= 1.7)
       mime-types (>= 1.16)
-    clockwork (0.7.5)
-      activesupport
-      tzinfo
     daemons (1.1.9)
     delayed_job (3.0.5)
       activesupport (~> 3.0)
@@ -61,24 +57,12 @@ GEM
     gdal (0.0.5)
     haml (4.0.5)
       tilt
-    heroku (3.6.0)
-      heroku-api (~> 0.3.17)
-      launchy (>= 0.3.2)
-      netrc (~> 0.7.7)
-      rest-client (~> 1.6.1)
-      rubyzip
-    heroku-api (0.3.18)
-      excon (~> 0.27)
-      multi_json (~> 1.8)
-    hide_heroku (0.0.1)
     http_router (0.11.1)
       rack (>= 1.0.0)
       url_mount (~> 0.2.1)
     i18n (0.6.9)
     ipaddress (0.8.0)
     json (1.8.1)
-    launchy (2.4.2)
-      addressable (~> 2.3)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -89,7 +73,6 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.0)
-    netrc (0.7.7)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
     padrino (0.12.1)
@@ -133,8 +116,6 @@ GEM
       rack
     rainbow (2.0.0)
     rake (10.3.1)
-    rest-client (1.6.7)
-      mime-types (>= 1.16)
     rmagick (2.13.2)
     rubyzip (1.1.3)
     sinatra (1.4.5)
@@ -170,14 +151,11 @@ DEPENDENCIES
   activerecord
   bcrypt-ruby
   carrierwave
-  clockwork
   delayed_job
   delayed_job_active_record
   fog!
   gdal
   haml
-  heroku
-  hide_heroku
   padrino (= 0.12.1)
   pg
   rainbow
