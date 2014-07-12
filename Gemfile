@@ -22,12 +22,9 @@ gem 'unf'
 gem 'fog', :git => 'https://github.com/fog/fog.git'
 gem 'pg'
 gem 'zip-zip'
-gem 'heroku'
-gem 'hide_heroku'
 gem 'delayed_job'
 gem 'delayed_job_active_record'
 gem 'gdal'
-gem 'clockwork'
 gem 'unidecoder'
 
 # Padrino Stable Gem

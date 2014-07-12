@@ -9,15 +9,6 @@ Bundler.require(:default, RACK_ENV)
 
 Padrino::Logger::Config[:development] = { :log_level => :warn, :stream => :stdout }
 
-#Mongoid.load!("config/mongoid.yml")
-
-module Rails
-  def self.root
-    PADRINO_ROOT
-  end
-end
-Delayed::Worker.destroy_failed_jobs = false
-
 Padrino.before_load do
 end
 
