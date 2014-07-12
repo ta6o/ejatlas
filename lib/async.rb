@@ -540,6 +540,7 @@ class AsyncTask
     return res
   end
 
+=begin
   def vectorupload params, vd
     FileUtils.rmtree "#{PADRINO_ROOT}/tmp/vectorupload" if File.directory? "#{PADRINO_ROOT}/tmp/vectorupload"
     Dir.mkdir "#{PADRINO_ROOT}/tmp/vectorupload" 
@@ -750,6 +751,7 @@ class AsyncTask
     FileUtils.rmtree "#{PADRINO_ROOT}/tmp/choropleth" if File.directory? "#{PADRINO_ROOT}/tmp/choropleth"
   end
   handle_asynchronously :choropleth
+=end
 end
 
 
