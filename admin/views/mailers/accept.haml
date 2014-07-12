@@ -1,0 +1,28 @@
+-# coding: utf-8
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        Sayın #{@req.requester.name},
+        %br/
+        %br/
+        #{@req.created_at.strftime('%d/%m/%Y')} tarihinde 
+        %a{:href=>$siteurl+'/conflicts/view/'+@req.version.conflict.id.to_s,:target=>'_blank'}= @req.version.conflict.name 
+        başlıklı çevre ihtilafı için yaptığınız detay görüntüleme talebiniz, talepte bulunduğunuz kullanıcı tarafından #{DateTime.now.strftime('%d/%m/%Y')} tarihinde onaylanmıştır. İlgili bilgiyi aşağıda bulabilirsiniz.
+        %br/
+        %br/
+        Teşekkür ederiz.
+        %br/
+        %br/
+        %hr/
+      %p{:style => "font-size: 10px; padding-top: 20px; text-align: left;"}
+        %strong 
+          Bilgi ve sorularınız için: 
+          %a{:href=>'mailto:direncevre@gmail.com'} direncevre@gmail.com
+        %br/
+      .table=@table

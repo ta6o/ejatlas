@@ -1,0 +1,10 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Editing: 
+        = @conflict.name
+    .inner
+      =form_for :conflict, url(:conflicts, :update, :id => @conflict.id), :method => :put, :class => :form, :style => "margin:0 -15px" do |f|
+        =partial "conflicts/form", :locals => { :f => f }

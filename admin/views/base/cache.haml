@@ -1,0 +1,24 @@
+-#coding:utf-8
+.content
+  %form{:method=>'POST',:action=>'/cache'}
+    .row
+      .col-md-6.col-md-offset-3.clearfix
+        %h2 Cache update
+        %p Check the models you wish to update.
+        %p= "Last updated at #{Cached.first.updated_at.strftime("%d/%m/%Y %H:%M")} (GMT+0)"
+        %input{:type=>'checkbox',:name=>'filter',:checked=>true} &nbsp;  Filter
+        %br/
+        %input{:type=>'checkbox',:name=>'conflicts',:checked=>true} &nbsp;  Conflicts
+        %br/
+        %input{:type=>'checkbox',:name=>'countries',:checked=>true} &nbsp;  Countries
+        %br/
+        %input{:type=>'checkbox',:name=>'companies',:checked=>true} &nbsp;  Companies
+        %br/
+        %input{:type=>'checkbox',:name=>'ifis',:checked=>true} &nbsp; IFI's
+        %br/
+        %input{:type=>'checkbox',:name=>'commodities',:checked=>true} &nbsp;  Commodities
+        %br/
+        %input{:type=>'checkbox',:name=>'categories',:checked=>true} &nbsp;  Categories (2nd level)
+        %br/
+        %br/
+        %input.btn.btn-warning{:type=>'submit',:value=>'Update now'}

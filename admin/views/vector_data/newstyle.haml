@@ -1,0 +1,9 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title New Vector style
+    .inner
+      =form_for :vector_style, url(:vectors, :createstyle), :class => :form do |f|
+        =partial "vector_data/formstyle", :locals => { :f => f }
+

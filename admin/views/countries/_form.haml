@@ -1,0 +1,32 @@
+.row.whitebox{:style=>'margin-bottom:0;'}
+  .col-md-4
+    .group
+      =f.label :name
+      =f.error_message_on :name
+      =f.text_field :name, :class => :text_field
+
+    .group
+      =f.label :slug
+      %p=@country.slug
+
+  .col-md-4
+    -#.group
+      =f.label :flag_image
+      =f.error_message_on :flag_image
+      =f.text_field :flag_image, :class => :text_field
+
+    .group
+      =f.label :region_id
+      =f.error_message_on :region_id
+      =f.select :region_id, :collection => @regions, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
+
+  .col-md-4
+    .group
+      =f.label :description
+      =f.error_message_on :description
+      ~f.text_area :description, :class => :text_area, :rows=>5
+
+    %br/
+
+    .group.navform.wat-cf
+      =f.submit pat(:save), :class => 'btn pull-right'

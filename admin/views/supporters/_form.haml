@@ -1,0 +1,47 @@
+.row.whitebox
+  .col-md-4
+    .group
+      =f.label :name
+      =f.error_message_on :name
+      =f.text_field :name, :class => :text_field
+
+    .group
+      =f.label :slug
+      %p= @supporter.slug
+
+    -#.group
+      =f.label :logo_image
+      =f.error_message_on :logo_image
+      =f.text_field :logo_image, :class => :text_field
+
+    .group
+      =f.label :country_id
+      =f.error_message_on :country_id
+      =f.select :country_id, :collection => @countries, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
+
+    -#.group
+      =f.label :other_products
+      =f.error_message_on :other_products
+      ~f.text_area :other_products, :class => :text_area
+
+  .col-md-4
+    .group
+      =f.label :acronym
+      =f.error_message_on :acronym
+      =f.text_field :acronym, :class => :text_field
+
+    .group
+      =f.label :url
+      =f.error_message_on :url
+      =f.text_field :url, :class => :text_field
+
+  .col-md-4
+    .group
+      =f.label :description
+      =f.error_message_on :description
+      ~f.text_area :description, :class => :text_area, :rows=>5
+
+    %br/
+
+    .group.navform.wat-cf
+      =f.submit pat(:save), :class => 'btn pull-right'

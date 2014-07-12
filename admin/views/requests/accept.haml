@@ -1,0 +1,14 @@
+-# coding: utf-8
+.clearfix
+  %h2.pull-left İstek kabulü
+.row
+  .span6.offset3
+    %p 
+      %span 'Kabul et' düğmesine bastığınız takdirde aşağıda görünen bilgileri
+      %strong= @requester.name
+      %span isimli kullanıcıya sizin adınıza e-posta olarak göndereceğiz.
+      %form{:action=>'/requests/accept',:method=>'post'}
+        %input{:type=>'hidden',:name=>'req_id',:value=>@id}
+        %input.btn{:type=>'submit',:value=>'Kabul et'}
+    #conflict_summary= @table
+

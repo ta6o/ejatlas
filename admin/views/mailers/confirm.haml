@@ -1,0 +1,32 @@
+-# coding: utf-8
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        Sayın #{@account.name},
+        %br/
+        %br/
+        Çevre Direnişi Haritası’na üyelik isteğiniz işleme alınmıştır. Üyeliğinizin onaylanması için lütfen aşağıdaki linke tıklayınız.
+        %br/
+        %br/
+        %a{:href=>$siteurl+'/accounts/confirm?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'}
+          %span= $siteurl+'/accounts/confirm?id='+@account.id.to_s+'&hash='+@account.surname
+        %br/
+        %br/
+        Üyeliğinizi onayladıktan sonra şifrenizi belirleyebilirsiniz. Kullanıcı adınız e-posta adresinizle aynıdır.
+        %br/
+        %br/
+        Teşekkür ederiz.
+        %br/
+        %br/
+        %hr/
+      %p{:style => "font-size: 10px; padding-top: 20px; text-align: left;"}
+        %strong 
+          Bilgi ve sorularınız için: 
+          %a{:href=>'mailto:direncevre@gmail.com'} direncevre@gmail.com
+        %br/

@@ -1,0 +1,10 @@
+-# coding: utf-8
+.row
+  .span12
+    .hero-unit
+      %h1.title
+        =mt('Sürümü')
+        =pat('güncelle')
+    .inner
+      =form_for :conflict, url(:conflicts, :update_version, :id => @version.id), :method => :put, :class => :form do |f|
+        =partial "conflicts/version_form", :locals => { :f => f }

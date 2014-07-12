@@ -1,0 +1,146 @@
+-# coding: utf-8
+!!!
+%html{:lang => "en"}
+  %head
+    %link{:href => "http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic&subset=latin,latin-ext", :rel=>'stylesheet', :type=>'text/css'}/
+    %meta{:charset => "utf-8"}/
+    %title= @name ? @name + ' | ' + "EJAtlas Console" : "EJAtlas Console"
+    %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
+    %meta{:content => 'text/html;charset=UTF-8', 'http-equiv' => "content-type"}/
+    %meta{:content => $title, :property => "og:title"}/
+    %meta{:content => $pagedesc, :property => "og:description"}/
+    %meta{:content => $siteurl, :property => "og:url"}/
+    %meta{:content => $siteurl + '/images/direncevre_og.jpg', :property => "og:image"}/
+    %meta{:content => $pagedesc, :name => "description"}/
+    %meta{:content => $pageauthor, :name => "author"}/
+    %meta{:content => $pagekeyws, :name => "keywords"}/
+    /%link{:href => "/stylesheets/bootstrap.less", :rel => "stylesheet/less"}/
+    /=javascript_include_tag 'less'
+    =stylesheet_link_tag 'main'
+    =javascript_include_tag 'main'
+    =yield_content :include
+
+    / Le HTML5 shim, for IE6-8 support of HTML5 elements
+    /[if lt IE 9]
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    %link{:href => "/images/favicon.ico", :rel => "shortcut icon"}/
+    / %link{:href => "assets/ico/apple-touch-icon-114-precomposed.png", :rel => "apple-touch-icon-precomposed", :sizes => "114x114"}/
+    / %link{:href => "assets/ico/apple-touch-icon-72-precomposed.png", :rel => "apple-touch-icon-precomposed", :sizes => "72x72"}/
+    / %link{:href => "assets/ico/apple-touch-icon-57-precomposed.png", :rel => "apple-touch-icon-precomposed"}/
+
+  %body{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
+    #top.contentwrapper
+      .navbar{:role=>'navigation'}
+        .navbar-inner
+          .container
+            .row
+              .col-md-12
+                %a.btn.btn-navbar.pull-left{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
+                  %span.icon-bar
+                  %span.icon-bar
+                  %span.icon-bar
+                .navbar-collapse.collapse
+                  %ul.nav.nav-pills
+                    %li
+                      %a{:href => "/"}= "EJAtlas Home"
+                    -if current_account
+                      -if ['admin','editor'].include? current_account.role
+                        %li.dropdown#conflicts
+                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#conflicts'}
+                            = 'Conflicts'
+                            %b.caret
+                          %ul.dropdown-menu
+                            %li
+                              %a{:href=>'/conflicts/new'} Add new
+                            %li.divider
+                            %li
+                              %a{:href=>'/conflicts/approved'} Approved
+                            %li
+                              %a{:href=>'/conflicts/modified'} Modified
+                            %li
+                              %a{:href=>'/conflicts/queued'} Queued
+                            %li
+                              %a{:href=>'/conflicts/draft'} Draft
+                            %li
+                              %a{:href=>'/conflicts/deleted'} Deleted
+                            %li.divider
+                            %li
+                              %a{:href=>'/conflicts'} All cases
+
+                        %li.dropdown#models
+                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
+                            = 'Models'
+                            %b.caret
+                          %ul.dropdown-menu
+                            %li
+                              %a{:href=>'/types'} Categories
+                            %li
+                              %a{:href=>'/countries'} Countries
+                            %li
+                              %a{:href=>'/companies'} Companies
+                            %li
+                              %a{:href=>'/ifis'} IFI's
+                            -#%li
+                              %a{:href=>'/commodities'} Commodities
+                            %li.divider
+                            %li
+                              %a{:href=>'/vectors'} Vectors
+                            %li
+                              %a{:href=>'/vectors/styles'} Vector styles
+                            %li
+                              %a{:href=>'/accounts'} Collaborators
+
+                        %li.dropdown#editor
+                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#editor'}
+                            = 'Editor Functions'
+                            %b.caret
+                          %ul.dropdown-menu
+                            %li
+                              %a{:href=>'/jobs'}= "Jobs"
+                            %li
+                              %a{:href=>'/cache'} Update cache
+                            %li
+                              %a{:href=>'/export'} Export cases
+
+                      -else
+                        %li
+                          %a{:href=>'/conflicts'} My Conflicts
+                        %li
+                          %a{:href=>'/conflicts/new'} New Conflict
+                        %li
+                          %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
+                      %li
+                        %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
+                          %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                        %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+
+      %header
+        .container
+          =yield_content :outer
+          .inner= yield
+
+      :javascript
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-49025282-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    -#%footer.footer
+      .container
+        .row
+          -#.col-md-1
+            %a{:href=>'http://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>'_blank'}
+              %img#ccbutton{:src=>'/images/by-nc-sa.eu.png',:width=>'100%',:height=>'auto',:title=>'Lisans bilgileri için tıklayınız.',:alt=>'CC BY-NC-SA',:style=>'margin-top:6px'}
+          .col-md-12
+            #footerbottom
+              %a.large{:href=>'http://www.ejolt.org/'} www.ejolt.org
+              -#Environmental Justice Organisations, Liabilities and Trade
+              %span.large ,
+              %span.large= DateTime.now.year
+              .pull-right
+                #totop{:onclick=>'window.scrollTo(0,0);'} ^
+

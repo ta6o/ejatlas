@@ -1,0 +1,10 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Editing: 
+        = @type.name
+    .inner
+      =form_for :type, url(:types, :update, :id => @type.id), :method => :put, :class => :form do |f|
+        =partial "types/form", :locals => { :f => f }

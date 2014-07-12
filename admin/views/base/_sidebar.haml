@@ -1,0 +1,87 @@
+-#coding:utf-8
+.block.sidebar{:style=>'margin-top:7px;'}
+  %br/
+  .clearfix
+    %a{"href"=>"https://twitter.com/EnvJustice", "class"=>"twitter-follow-button", "data-show-count"=>"true", "data-lang"=>"en", "data-size"=>"large", "data-width"=>"100%", 'data-margin-top'=>'8px'} Follow @EnvJustice
+    :javascript
+      !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+  %br/
+  .clearfix
+    #fb-root
+    :javascript
+      (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=323186951125409";
+      fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+
+    .fb-like-box{"data-href"=>"https://www.facebook.com/ejolt", "data-width"=>"285", "data-height"=>"320", "data-colorscheme"=>"light", "data-show-faces"=>"true", "data-header"=>"false", "data-stream"=>"false", "data-show-border"=>"false",:style=>"margin-left:-8px"}
+
+  %h4 EJOLT Links
+  %ul
+    %li
+      %a{:href=>'http://www.ejolt.org/',:target=>'_blank'} EJOLT
+    %li
+      %a{:href=>'http://www.ejolt.org/project/',:target=>'_blank'} Project
+    %li
+      %a{:href=>'http://www.ejolt.org/section/blog/',:target=>'_blank'} Blog
+    %li
+      %a{:href=>'http://www.ejolt.org/section/resources/videos/',:target=>'_blank'} Videos
+    %li
+      %a{:href=>'http://www.ejolt.org/section/resources/glossary/',:target=>'_blank'} Glossary
+    %li
+      %a{:href=>'http://www.ejolt.org/resources/',:target=>'_blank'} Resources
+
+  %h4 EJ Links
+  %ul
+    %li
+      %a{:href=>'http://www.cdca.it/?lang=en',:target=>'_blank'} CDCA – Documentation Centre on Environmental Conflicts
+    %li
+      %a{:href=>'http://basedatos.conflictosmineros.net/ocmal_db/',:target=>'_blank'} OCMAL Database of Environmental Conflicts in Latin America
+    %li
+      %a{:href=>'http://www.conflitoambiental.icict.fiocruz.br/',:target=>'_blank'} The Brazilian Map of Environmental Justice
+    %li
+      %a{:href=>'http://wrm.org.uy/',:target=>'_blank'} World Rainforest Movement
+    %li
+      %a{:href=>'http://www.oilwatch.org/en/',:target=>'_blank'} Oilwatch Network of Resistance to Oil activities in Tropical Countries
+    %li
+      %a{:href=>'http://www.engov.eu/bd_justicia_ambiental_es.php',:target=>'_blank'} ENGOV database on Environmental Justice Databases
+    %li
+      %a{:href=>'http://farmlandgrab.org/',:target=>'_blank'} Grain, Farmlandgrab
+    %li
+      %a{:href=>'http://www.internationalrivers.org/',:target=>'_blank'} International Rivers
+    %li
+      %a{:href=>'http://www.minesandcommunities.org/',:target=>'_blank'} Mines and Communities
+    %li
+      %a{:href=>'http://www.cseindia.org/',:target=>'_blank'} Center for Science and Environment India
+    %li
+      %a{:href=>'http://www.no-burn.org/section.php?id=84',:target=>'_blank'} GAIA
+
+  %h4 EJOLT Reports
+  %ul
+    %li
+      %a{:href=>'http://www.ejolt.org/2014/03/socio-environmental-valuation-and-liabilities-what-strategies-for- environmental-justice-organisations/',:target=>'_blank'} Socio-environmental valuation and liabilities
+    %li
+      %a{:href=>'http://www.ejolt.org/2014/03/the-many-faces-of-land-grabbing-cases-from-africa-and-latin-america/',:target=>'_blank'} The many faces of land grabbing
+    %li
+      %a{:href=>'http://www.ejolt.org/2014/01/international-law-and-ecological-debt/',:target=>'_blank'} International law and ecological debt
+    %li
+      %a{:href=>'http://www.ejolt.org/2013/10/digging-deep-corporate-liability-report/',:target=>'_blank'} Digging deep corporate liability
+    %li
+      %a{:href=>'http://www.ejolt.org/2013/05/towards-a-post-oil-civilization-yasunization-and-other-initiatives-to-leave- fossil-fuels-in-the-soil/ ',:target=>'_blank'} Towards a Post-Oil Civilization
+    %li
+      %a{:href=>'http://www.ejolt.org/2013/02/guide-to-multicriteria-evaluation-for-environmental-justice-organisations/',:target=>'_blank'} Guide to Multicriteria Evaluation
+    %li
+      %a{:href=>'http://www.ejolt.org/2012/12/the-cdm-cannot-deliver-the-money-to-africa-why-the-carbon-trading-gamble-won%E2%80%99t-save-the-planet-from-climate-change-and-how-african-civil-society-is-resisting/',:target=>'_blank'} The CDM Cannot Deliver the Money to Africa
+    %li
+      %a{:href=>'http://www.ejolt.org/2012/11/mining-conflicts-around-the-world-common-grounds-from-an- environmental-justice-perspective/',:target=>'_blank'} Mining conflicts around the world
+    %li
+      %a{:href=>'http://www.ejolt.org/2012/06/an-overview-of-industrial-tree-plantations-in-the-global-south-conflicts-trends-and-resistance-struggles/',:target=>'_blank'} An overview of industrial tree plantations
+    %li
+      %a{:href=>'http://www.ejolt.org/2012/06/issues-in-the-economics-of-ecosystems-and-biodiversity/',:target=>'_blank'} Issues in the economics of ecosystems and biodiversity
+    %li
+      %a{:href=>'http://www.ejolt.org/2012/05/legal-avenues-for-ejos-to-claim-environmental-liability/',:target=>'_blank'} Legal avenues for EJOs to claim environmental liability
+    %li
+      %a{:href=>'http://www.ejolt.org/2012/04/industrial-waste-conflicts-around-the-world/',:target=>'_blank'} Industrial waste conflicts around the world

@@ -1,0 +1,16 @@
+-#coding: utf-8
+.tagline
+  .ejolt-logo
+  %p= $pagedesc
+-2.times do
+  %br/
+
+%h2= "Welcome to EJ Atlas,  #{current_account.name.split(/\s/)[0]}!"
+%p 
+  Now you can
+  %a{:href=>'/conflicts/new'} contribute a case!
+
+-content_for :sidebar do
+  =partial("base/sidebar")
+
+

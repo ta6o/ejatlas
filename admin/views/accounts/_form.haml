@@ -1,0 +1,62 @@
+-#coding:utf-8
+.row
+  .col-md-4.col-md-offset-2
+    .group
+      =f.label 'Name'
+      =f.error_message_on :name
+      =f.text_field :name, :class => :text_field
+
+  .col-md-4
+    .group
+      =f.label 'Organization'
+      =f.error_message_on :organization
+      =f.text_field :organization, :class => :text_field
+
+.row
+  .col-md-4.col-md-offset-2
+    .group
+      =f.label 'E-mail'
+      =f.error_message_on :email
+      =f.text_field :email, :class => :text_field
+
+  .col-md-4
+    .group
+      =f.label 'Address'
+      =f.error_message_on :address
+      =f.text_field :address, :class => :text_field
+
+.row
+  .col-md-4.col-md-offset-2
+    .group
+      =f.label 'Phone'
+      =f.error_message_on :phone
+      =f.text_field :phone, :class => :text_field
+
+    .group
+      =f.label 'public'
+      =f.error_message_on :public
+      &nbsp;
+      %input{:type=>'radio', :name=>'account[public]', :value=>'true', :checked => (!@account.public ? false : '')} Yes
+      &nbsp;
+      %input{:type=>'radio', :name=>'account[public]', :value=>'false', :checked => (@account.public ? false : '')} No
+      %p.description Show your name and organization info publicly in cases you entered?
+
+    -if current_account and current_account.role == 'admin'
+      .group
+        =f.label :role
+        =f.error_message_on :role
+        =f.select :role, :options => access_control.roles
+
+  .col-md-4
+    .group
+      =f.label 'Password'
+      =f.error_message_on :password
+      =f.password_field :password, :class => :password_field
+
+    .group
+      =f.label 'Confirm Password'
+      =f.error_message_on :password_confirmation
+      =f.password_field :password_confirmation, :class => :password_field
+
+    .group.navform.wat-cf.pull-right{:style=>'margin-top:24px;'}
+      =f.submit pat(:save), :class => :btn

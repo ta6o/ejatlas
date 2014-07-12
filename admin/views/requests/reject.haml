@@ -1,0 +1,14 @@
+-# coding: utf-8
+.clearfix
+  %h2.pull-left İstek kabulü
+.row
+  .span6.offset3
+    %p 
+      %span 'Reddet' düğmesine basmadan önce lütfen
+      %strong= @requester.name
+      %span isimli kullanıcıya isteğini neden reddettiğinizi belirten kısa bir açıklama yazınız.
+      %form{:action=>'/requests/reject',:method=>'post'}
+        %input{:type=>'hidden',:name=>'req_id',:value=>@id}
+        %textarea{:name=>:rejection_note,:rows=>4}
+        %input.btn{:type=>'submit',:value=>'Reddet'}
+

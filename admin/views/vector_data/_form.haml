@@ -1,0 +1,247 @@
+.row.whitebox
+  :css
+    .middle {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  .col-md-4
+    .group
+      =f.label :name
+      =f.error_message_on :name
+      =f.text_field :name, :class => :text_field
+
+    .group
+      %label Attached to:
+      %br/
+      %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Country', :checked=>''}
+        %strong &nbsp; Country
+      &nbsp;
+      %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Featured'}
+        %strong &nbsp; Featured Map
+    .group
+      %label#vector_datum_attachable_id Country:
+      %select#vector_datum_attachable_id{:name=>'vector_datum[attachable_id]'}
+    :javascript
+      var attachables = {
+        'Country': "#{@countries}",
+        'Featured': "#{@featureds}",
+      }
+      $("input.attachable_type[value='#{@vector.attachable_type}']").prop('checked',true);
+      $('select#vector_datum_attachable_id').html(attachables[$("input.attachable_type:checked").val()]);
+      $("select#vector_datum_attachable_id option[value='#{@vector.attachable_id}']").prop('selected',true);
+      $('input.attachable_type').on('change',function(){
+        val = $(this).val();
+        $('select#vector_datum_attachable_id').html(attachables[val]);
+        $('select#vector_datum_attachable_id').focus();
+        $('label#vector_datum_attachable_id').text(val+":");
+      });
+
+    .group
+      =f.label :url
+      =f.error_message_on :url
+      =f.text_field :url, :class => :text_field
+
+    -unless @vector.new_record?
+      %br/
+      .middle or
+      %br/
+
+      .group
+        %label Upload vector file
+        %br/
+        %input#vector_file{:type=>'file',:name=>'vector[file]'}
+        %input{:type=>'hidden',:name=>'vector[cache]'}
+        %br/
+        %input{:type=>'checkbox', :name=>'vector[type]', :value=>'kml'}
+          %strong &nbsp; KML
+        %input{:type=>'checkbox', :name=>'vector[type]', :value=>'kmz'}
+          %strong &nbsp; KMZ
+        %input{:type=>'checkbox', :name=>'vector[type]', :value=>'shp'}
+          %strong &nbsp; ZIP (shape)
+
+      .group.hide
+        =f.label :choropleth
+        =f.error_message_on :choropleth
+        =f.text_field :choropleth, :class => :text_field
+      :javascript
+        $('#vector_file').on('change',function(){
+          $('input#vector_datum_url').val('');
+        });
+        $('input#vector_datum_url').on('change',function(){
+          $('#vector_file').val('');
+        });
+      %br/
+      .middle or
+      %br/
+      .group
+        %a#n_choropleth.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#m_choropleth'} Add Choropleth
+
+        -content_for :include do
+          =javascript_include_tag 'upload_iframe'
+        -content_for :outer do
+          #m_choropleth.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+            .modal-dialog
+              .modal-content
+                %form
+                  .modal-header
+                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                    %h3 Choropleth data
+                  .modal-body
+                    %label File with geographical data:
+                    .clearfix
+                      %input.i_choropleth#choropleth_geo{:type=>'file',:name=>'geo[file]'}
+                      %input.i_choropleth#choropleth_geo_cache{:type=>'hidden',:name=>'geo[cache]'}
+                      -#%input.i_choropleth#choropleth_geo_tolerance{:type=>'text',:name=>'geo[tolerance]',:value=>'0.042'}
+                      %input{:type=>'radio', :name=>'geo[type]', :value=>'kml'}
+                        %strong &nbsp; KML
+                      &nbsp;
+                      %input{:type=>'radio', :name=>'geo[type]', :value=>'kmz'}
+                        %strong &nbsp; KMZ
+                      &nbsp;
+                      %input{:type=>'radio', :name=>'geo[type]', :value=>'shp'}
+                        %strong &nbsp; ZIP (shape)
+                    %label CSV file with statistical data:
+                    .clearfix
+                      %input.i_choropleth#choropleth_data{:type=>'file',:name=>'data[file]'}
+                      %input{:type=>'radio', :name=>'data[type]', :value=>'comma'}
+                        %strong &nbsp; Comma
+                      &nbsp;
+                      %input{:type=>'radio', :name=>'data[type]', :value=>'tab'}
+                        %strong &nbsp; Tab
+                      %input.i_choropleth#choropleth_data_cache{:type=>'hidden',:name=>'data[cache]'}
+                    %label CSV file with color &amp; legend data:
+                    .clearfix
+                      %input.i_choropleth#choropleth_legend{:type=>'file',:name=>'legend[file]'}
+                      %input{:type=>'radio', :name=>'legend[type]', :value=>'comma'}
+                        %strong &nbsp; Comma
+                      &nbsp;
+                      %input{:type=>'radio', :name=>'legend[type]', :value=>'tab'}
+                        %strong &nbsp; Tab
+                      %input.i_choropleth#choropleth_legend_cache{:type=>'hidden',:name=>'legend[cache]'}
+                    %label Column headers in provided files:
+                    .clearfix
+                      .pull-left
+                        %label.pull-left Value:
+                        %br/
+                        %input.i_choropleth#choropleth_data_value{:type=>'text',:name=>'headers[value]'}
+                      .pull-left
+                        %label.pull-left Sector name:
+                        %br/
+                        %input.i_choropleth#choropleth_data_name{:type=>'text',:name=>'headers[name]'}
+                      .pull-left
+                        %label.pull-left ID:
+                        %br/
+                        %input.i_choropleth#choropleth_data_id{:type=>'text',:name=>'headers[id]'}
+                      .pull-left
+                        %label.pull-left Legend:
+                        %br/
+                        %input.i_choropleth#choropleth_data_desc{:type=>'text',:name=>'headers[desc]',:value=>'Legend'}
+                      .pull-left
+                        %label.pull-left Color:
+                        %br/
+                        %input.i_choropleth#choropleth_data_color{:type=>'text',:name=>'headers[color]',:value=>'Color'}
+                    %input#vector_data_id{:type=>'hidden',:name=>'choropleth[vector_data_id]',:value=>"#{@vector.id}"}
+                    %p
+                      #upload
+                  .modal-footer
+                    %input.btn#b_choropleth{:type=>'button',:onclick=>"fileUpload(this.form,'index.php','upload'); return false;",:value=>'Send'} 
+        :javascript
+          var uploading = false;
+          function uploadResponse (resp) {
+            console.log(resp)
+            if (uploading){
+              return 
+            }
+            uploading = true;
+            $('iframe#upload_iframe').remove();
+            //console.log(resp);
+            if (resp === 'ok') {
+              window.location = "/jobs"
+            }
+          }
+          $(document).ready(function(){
+            $('#m_choropleth').on('hidden', function () {
+              $('.i_choropleth').val('');
+              $('#b_choropleth').removeClass('disabled');
+              uploading = false;
+            })
+            $('#m_choropleth').on('shown', function() {
+              $('#choropleth_description').focus();
+            });
+            $('.d_choropleth').live('click', function(e){
+              par = $(this).closest('.choropleth');
+              id = par.children('div').children('div').children('input').attr('name').split('_')[2];
+              html = '<input name="choropleth_remove_'+id+'" type="hidden"></input>';
+              par.html(html);
+            });
+            $('#b_choropleth').click(function(e){
+              if ($('#choropleth_color').val()=='') {
+                $('#choropleth_color').focus();
+                return
+              }
+              if ($('#choropleth_data').val()=='') {
+                $('#choropleth_data').focus();
+                return
+              }
+              //$('#b_choropleth').addClass('disabled');
+              e.preventDefault();
+              console.log(this.form)
+              res = fileUpload(this.form,'/vectors/choropleth','upload');
+              console.log(res)
+            });
+          });
+        %br/
+      %input#activetab{:name=>'activetab',:type=>'hidden'}
+
+
+  .col-md-4
+    .group
+      =f.label :description
+      =f.error_message_on :description
+      ~f.text_area :description, :class => :text_area, :rows=>5
+
+    .group
+      =f.label :source
+      =f.error_message_on :source
+      =f.text_field :source, :class => :text_field
+
+    .group
+      =f.label :link
+      =f.error_message_on :link
+      =f.text_field :link, :class => :text_field
+
+    .group
+      .required=f.error_message_on :status
+      =f.label 'Status'
+      %label.checkbox.inline.apstat
+        %input.apstat{:type=>'radio',:value=>'draft',:name=>'vector_datum[status]'} &nbsp;Draft
+      %label.checkbox.inline.apstat
+        %input.apstat{:type=>'radio',:value=>'preview',:name=>'vector_datum[status]'} &nbsp;Preview
+      %label.checkbox.inline.apstat
+        %input.apstat{:type=>'radio',:value=>'published',:name=>'vector_datum[status]'} &nbsp;Published
+
+    .group
+      %label Show by default? &nbsp;
+      =f.label :shown, :class => 'hide'
+      =f.error_message_on :shown
+      %input.shown{:type=>'radio',:value=>'1',:name=>'vector_datum[shown]'} &nbsp;Yes
+      %input.shown{:type=>'radio',:value=>'0',:name=>'vector_datum[shown]'} &nbsp;No
+      
+      :javascript
+        $('input.apstat[value=#{@vector.status}]').prop('checked',true);
+        $('input.shown[value=#{@vector.shown}]').prop('checked',true);
+
+
+  .col-md-4
+    .group
+      =f.label :vector_style_id
+      =f.error_message_on :vector_style_id
+      =f.select :vector_style_id, :collection => @styles, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
+
+    %br/
+
+
+    .group.navform.wat-cf
+      =f.submit pat(:save), :class => 'btn btn-warning', :style=>'width:180px;font-weight:bold'

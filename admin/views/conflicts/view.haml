@@ -1,0 +1,58 @@
+-# coding: utf-8
+%link{:rel=>'stylesheet',:type=>'text/css',:media=>'print',:href=>'/stylesheets/print.css'}
+.clearfix.summary_header
+  %h2.pull-left#name= @name
+  -#.pull-right#commands
+    %ul.clearfix.list-unstyled
+      %li
+        =link_to ('Print'), :id => 'print', :onclick => 'window.print()'
+      -unless current_account.nil?
+        -if @prop
+          %li
+            =link_to ('Düzenle'), url(:conflicts, :edit_contribution, :id => @id), :method => :get, :target => '_blank', :id => 'edit'
+        -else
+          %li
+            =link_to ('Yeni bilgi gir'), url(:conflicts, :new_version, :id => @id), :method => :get, :target => '_blank', :id => 'new_version'
+        -if ['admin','editor'].include? current_account.role
+          -unless @prop
+            %li
+              =link_to ('Düzenle'), url(:conflicts, :edit, :id => @id), :method => :get, :target => '_blank', :id => 'edit'
+        -else
+          %li
+            =link_to ('Detaylı bilgi iste'), url(:conflicts, :details, :id => @id), :method => :get, :target => '_blank', :id => 'details'
+#conflict_summary= @table
+-if current_account and not @print
+  -if ['admin','editor'].include? current_account.role
+    .row
+      .span11.offset1
+        %br/
+        %br/
+        %br/
+        %h4 Sürüm seçimi
+        %form{:action=>'/conflicts/set_pv',:method=>'post','accept-charset'=>'utf-8'}
+          %table.table
+            %thead{:style=>'font-weight:bold;'}
+              %tr
+                %td Açıklama
+                %td &nbsp;
+                %td Seç?
+            %tbody
+              -@versions.each do |v|
+                -if v.account
+                  %tr
+                    %td= v.description
+                    %td
+                      = '<strong>Yaratılma:</strong><br />' + v.created_at.strftime('%d/%m/%Y') + '<br /><strong>Güncellenme</strong><br />' +  v.updated_at.strftime('%d/%m/%Y')
+                      = '<br />'+v.account.name.split(' ').join('&nbsp;')
+                      -if v.account.organization
+                        -if v.account.organization.length > 0
+                          = ' / '+v.account.organization
+                    %td
+                      %input{:type=>'hidden',:name=>'conflict', :value=>@id}
+                      %input{:type=>'radio',:name=>'primary_version',:value=>v.id.to_s, :checked=>('checked' if v.id == v.conflict.primary_version_id)}
+          %input.btn.pull-right{:type=>'submit',:value=>'Varsayılan sürüm yap'}
+
+-if @print
+  :javascript
+    $(document).ready(function(){ window.print(); });
+

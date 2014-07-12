@@ -1,0 +1,70 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'tablesorter/style'
+  =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+.row.wide
+  .col-md-12
+    .hero-unit
+      %h1.title Vector data
+    .inner
+      %svg{:style=>'height:0'}
+        %defs
+          -@defs.each do |d|
+            -p d
+            %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+              %image{"xlink:href"=>"https://s3.amazonaws.com/ejatlas/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+      %table.table.tablesorter#sortme
+        %thead
+          %tr
+            %th.first Name
+            %th Description
+            %th Style
+            %th URL
+            %th.last
+              %form#filter-form
+                %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
+        %tbody
+          -@vectors.each do |vector|
+            %tr
+              %td.first= vector.inspect
+              %td=vector.description
+              %td
+                -if vector.vector_style_id and vector.vector_style
+                  -style = vector.vector_style
+                  %svg{:id=>"s-#{style.id}",:width=>"60",:height=>"20",:viewPort=>"0 0 60 20",:version=>"1.1",:xmlns=>"http://www.w3.org/2000/svg"}
+                    %rect{:x=>4,:y=>4,:width=>52,:height=>12, :rx=>4, :ry=>4}
+                  :css
+                    svg#s-#{style.id} rect {
+                      fill: #{style.fill_color};
+                      stroke: #{style.stroke_color};
+                      fill-opacity: #{style.fill_opacity};
+                      stroke-opacity: #{style.stroke_opacity};
+                      stroke-dasharray: #{style.dash_array};
+                      stroke-width: #{style.weight};
+                    }
+                -else
+                  &nbsp;
+              %td
+                -if vector.url and vector.url.length > 3
+                  %a{:href=>vector.url} [link]
+                -else
+                  =""
+              %td.last
+                =link_to pat('Edit'), url(:vectors, :edit, :id => vector.id), :method => :get
+                =link_to pat('Delete'), url(:vectors, :delete, :id => vector.id), :method => :get
+      :javascript
+        $(document).ready(function(){
+          $('#sortme').tablesorter({
+            headers: { 
+              4: { sorter: false } 
+            } 
+          });
+          var theTable = $('table#sortme')
+          $("#filter").click(function(){$('#filter').focus();});
+          $("#filter").keyup(function() {
+            $.uiTableFilter( theTable, this.value );
+          })
+          $('#filter-form').submit(function(){
+            return false;
+          }).focus(); 
+        });

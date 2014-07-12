@@ -1,0 +1,45 @@
+-#coding:utf-8
+.row
+  %br/
+  %br/
+  .span4.offset4
+    .well
+      %h3 Tebrikler!
+      %p 
+        %strong E-posta adresiniz başarıyla doğrulandı.
+      -if @account.versions.any?
+        %p
+          Girmiş olduğunuz ihtilafı
+          %a{:href=>'/conflicts/edit/'+@account.versions.last.conflict.id.to_s} buradan
+          düzenlemeye devam edebilirsiniz.
+      %p 
+        Lütfen şifrenizi belirleyin.
+
+      =form_for :account, url(:accounts, :update, :id => @account.id), :method => :put, :class => :form do |f|
+        -#
+          .group.hide
+            =f.label 'Ad'
+            =f.error_message_on :name
+            =f.text_field :name, :class => :text_field, :value=>@account.name
+          .group.hide
+            =f.label 'Soyad'
+            =f.error_message_on :surname
+            =f.text_field :surname, :class => :text_field, :value=>@account.name
+          .group.hide
+            =f.label 'E-posta'
+            =f.error_message_on :email
+            =f.text_field :email, :class => :text_field, :value=>@account.name
+          .group.hide
+            =f.label :role
+            =f.error_message_on :role
+            =f.select :role, :options => access_control.roles
+        .group.pull-right
+          =f.label 'Şifre'
+          =f.error_message_on :password
+          =f.password_field :password, :class => :password_field
+        .group.pull-right
+          =f.label 'Şifre (tekrar)'
+          =f.error_message_on :password_confirmation
+          =f.password_field :password_confirmation, :class => :password_field
+        .pull-right.btn-group.png
+          =f.submit pat(:save), :class => 'btn btn-inverse pn'

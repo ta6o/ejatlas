@@ -1,0 +1,38 @@
+-#coding:utf-8
+.content
+  =form_tag url_for(:sessions, :create), :class => 'form login' do
+    .row
+      .col-md-5.col-md-offset-3.clearfix
+        %br/
+        %h2 Welcome to EJAtlas.
+        %p Please fill in your credentials to access the site.
+        %br/
+    .row
+      .col-md-6.col-md-offset-3.clearfix
+        .pull-left
+          %label{:style=>'margin-top:4px;'} E-mail
+        .pull-right=text_field_tag :email, :value => params[:email], :class => :text_field, :style=>'width:200px'
+    .row{:style=>'margin-top:12px;'}
+      .col-md-6.col-md-offset-3.clearfix
+        .pull-left
+          %label{:style=>'margin-top:4px;'} Password
+        .pull-right=password_field_tag :password, :value => params[:password], :class => :text_field, :style=>'width:200px'
+    .row
+      .col-md-6.col-md-offset-3.clearfix
+        .pull-right
+          %a{:href=>'/accounts/resetpassword'} Forgot my password
+    .row
+      .col-md-6.col-md-offset-3.clearfix
+        .pull-right
+          %a{:href=>'/accounts/new'} I want to contribute
+    -#if Padrino.env == :development
+      .row
+        .col-md-6.col-md-offset-3.clearfix
+          .pull-left
+            %label Bypass login?
+          .pull-right=check_box_tag :bypass
+        %br/
+    .row
+      .col-md-6.col-md-offset-3.clearfix
+        %br/
+        .pull-right=submit_tag('Log in', :class => :btn)

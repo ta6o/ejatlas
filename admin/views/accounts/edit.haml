@@ -1,0 +1,12 @@
+-# coding: utf-8
+.row.wide
+  .col-md-6.col-md-offset-2
+    .hero-unit
+      %h1.title 
+        Editing: 
+        = @account.name
+.row.wide
+  .col-md-12
+    .inner
+      =form_for :account, url(:accounts, :update, :id => @account.id), :method => :put, :class => :form do |f|
+        =partial "accounts/form", :locals => { :f => f }

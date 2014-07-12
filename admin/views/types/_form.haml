@@ -1,0 +1,23 @@
+.row
+  .col-md-6
+    .group
+      =f.label :name
+      =f.error_message_on :name
+      =f.text_field :name, :class => :text_field
+
+  .col-md-6
+    .group
+      =f.label :category_id
+      =f.error_message_on :category_id
+      =f.select :category_id, :collection => @categories, :fields => [:name, :id], :include_blank => true, :id => 'category', :class => 'basic_input'
+      
+.group
+  =f.label :description
+  =f.error_message_on :description
+  ~f.text_area :description, :class => 'text_area basic_input', :rows => 6
+
+%br/
+%br/
+.group.navform.wat-cf.pull-right
+  =f.submit pat(:save), :class => :btn
+  =f.submit pat(:cancel), :onclick => "window.location='#{url(:types, :index)}';return false", :class => :btn

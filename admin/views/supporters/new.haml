@@ -1,0 +1,8 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title= @title
+    .inner
+      =form_for :supporter, url(:ifis, :create), :class => :form do |f|
+        =partial "supporters/form", :locals => { :f => f }

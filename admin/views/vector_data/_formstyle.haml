@@ -1,0 +1,266 @@
+-content_for :include do
+  =javascript_include_tag "raphael", "colorwheel"
+.row.whitebox
+  .col-md-3
+    .row
+      .nav.nav-tabs{:style=>'margin-left:22px;'}
+        %li.active
+          %a{:href=>"#plain",'data-toggle'=>"tab"} Plain
+        %li
+          %a{:href=>"#pattern",'data-toggle'=>"tab"} Pattern
+
+      .tab-content
+        #plain.tab-pane.active
+          .col-md-12
+            .group
+              %label Fill color
+              %input#fill_color{:type=>'text',:value=>"",:name=>'style[fill_color]'}
+              #fill_wheel{:style=>'margin:0 auto'}
+              :javascript
+                var fcw = Raphael.colorwheel($('#fill_wheel'), 220);
+                fcw.input($("#fill_color")[0]);
+                $(document).ready(function(){
+                  $("#fill_color").val("#{@style.fill_color}");
+                  if ("#{@style.fill_color}"[0] == "#"){
+                    fcw.color("#{@style.fill_color}");
+                    $("#fill_color").css('background','white');
+                    $("#fill_color").css('color','black');
+                  }
+                });
+                fcw.onchange(function(e){
+                  $("#fill_color").css('background','white');
+                  $("#fill_color").css('color','black');
+                  updatePreview();
+                });
+              %label Fill opacity
+              %input#fill_opacity{:type=>'number',:value=>(@style.fill_opacity.to_f*100).to_i,:min=>0,:max=>100,:name=>'style[fill_opacity]'}
+
+        #pattern.tab-pane
+
+          .col-md-12
+            .group
+              %label Pattern
+              .clearfix
+                .pull-left
+                  %input{:type=>'radio',:value=>'ss',:name=>'pattern',:checked=>''}
+                    %img{:src=>'/img/s.png',:width=>'32',:height=>'32'}
+                .pull-left
+                  %input{:type=>'radio',:value=>'ee',:name=>'pattern'}
+                    %img{:src=>'/img/e.png',:width=>'32',:height=>'32'}
+                .pull-left
+                  %input{:type=>'radio',:value=>'se',:name=>'pattern'}
+                    %img{:src=>'/img/se.png',:width=>'32',:height=>'32'}
+                .pull-left
+                  %input{:type=>'radio',:value=>'sw',:name=>'pattern'}
+                    %img{:src=>'/img/sw.png',:width=>'32',:height=>'32'}
+
+            .group
+              %label Scale
+              .clearfix
+                .pull-left
+                  %input{:type=>'radio',:value=>'64',:name=>'scale',:checked=>''} 1 &nbsp;  &nbsp; 
+                .pull-left
+                  %input{:type=>'radio',:value=>'32',:name=>'scale'} 1/2 &nbsp;  &nbsp; 
+                .pull-left
+                  %input{:type=>'radio',:value=>'16',:name=>'scale'} 1/4 &nbsp;  &nbsp; 
+                .pull-left
+                  %input{:type=>'radio',:value=>'8',:name=>'scale'} 1/8 &nbsp;  &nbsp; 
+
+              .group
+                %label Foreground color
+                %input#fg_color{:type=>'text',:value=>"#000000"}
+                #fg_wheel{:style=>'margin:0 auto'}
+                :javascript
+                  var pfcw = Raphael.colorwheel($('#fg_wheel'), 220);
+                  pfcw.input($("#fg_color")[0]);
+                  $(document).ready(function(){
+                    $("#fg_color").val("#000000");
+                    pfcw.color("#000000");
+                    $("#fg_color").css('background','white');
+                    $("#fg_color").css('color','black');
+                  });
+                  pfcw.onchange(function(e){
+                    $("#fg_color").css('background','white');
+                    $("#fg_color").css('color','black');
+                    updatePattern();
+                  });
+                %label Foreground opacity
+                %input#fg_opacity{:type=>'number',:value=>100,:min=>0,:max=>100}
+
+            .group
+              %label Background color
+              %input#bg_color{:type=>'text',:value=>"#FFFFFF"}
+              #bg_wheel{:style=>'margin:0 auto'}
+              :javascript
+                var pbcw = Raphael.colorwheel($('#bg_wheel'), 220);
+                pbcw.input($("#bg_color")[0]);
+                $(document).ready(function(){
+                  $("#bg_color").val("#FFFFFF");
+                  pbcw.color("#FFFFFF");
+                  $("#bg_color").css('background','white');
+                  $("#bg_color").css('color','black');
+                });
+                pbcw.onchange(function(e){
+                  $("#bg_color").css('background','white');
+                  $("#bg_color").css('color','black');
+                  updatePattern();
+                });
+              %label Background opacity
+              %input#bg_opacity{:type=>'number',:value=>100,:min=>0,:max=>100}
+              %input#pattern_data{:type=>'hidden',:name=>'pattern'}
+
+            :javascript
+              function updatePattern(){
+                data = ($('input[name=pattern]:checked').val()+"-"+$('#fg_color').val()+"-"+$('#fg_opacity').val()+"-"+$('#bg_color').val()+"-"+$('#bg_opacity').val()).replace(/#/g,'');
+                $("#fill_opacity").val($('#fg_opacity').val());
+                console.log(data);
+                $('#pattern_data').val(data);
+              }
+              $("#pattern input").on('change',function(e){
+                updatePattern();
+              });
+              $('.nav-tabs a[href=#plain]').click(function (e) {
+                $('#pattern_data').val('')
+              })
+
+              $('.nav-tabs a').click(function (e) {
+                e.preventDefault();
+                $('.nav-tabs li').removeClass('active')
+                $('.tab-pane').hide();
+                $(this).parent().addClass('active');
+                $($(this).attr('href')).show();
+                if ($(this).attr('href')=='#pattern') {}
+              })
+
+  .col-md-3
+    .group
+      %label Line color
+      %input#stroke_color{:type=>'text',:value=>"",:name=>'style[stroke_color]'}
+      #stroke_wheel{:style=>'margin:0 auto'}
+      :javascript
+        var scw = Raphael.colorwheel($('#stroke_wheel'), 220);
+        scw.input($("#stroke_color")[0]);
+        $(document).ready(function(){
+          $("#stroke_color").val("#{@style.stroke_color}");
+          scw.color("#{@style.stroke_color}");
+          $("#stroke_color").css('background','white');
+          $("#stroke_color").css('color','black');
+        });
+        scw.onchange(function(e){
+          $("#stroke_color").css('background','white');
+          $("#stroke_color").css('color','black');
+          updatePreview();
+        });
+      %label Line opacity
+      %input#stroke_opacity{:type=>'number',:value=>(@style.stroke_opacity.to_f*100).to_i,:min=>0,:max=>100,:name=>'style[stroke_opacity]'}
+
+  .col-md-3
+    .group
+      %label Thickness
+      %input#weight{:type=>'number',:value=>@style.weight,:min=>0,:name=>'style[weight]'}
+    .group
+      %label Dashes
+      %input#dash_array{:type=>'text',:value=>"#{@style.dash_array}",:name=>'style[dash_array]'}
+      %label.checkbox.inline
+        %input{:type=>'radio',:value=>'',:name=>'dash'}
+          %svg{:width=>"200", :height=>"20", :viewPort=>"0 0 20 300", :version=>"1.1", :xmlns=>"http://www.w3.org/2000/svg"}
+            %line{:x1=>"10", :y1=>"13", :x2=>"190", :y2=>"13"}
+      %label.checkbox.inline
+        %input{:type=>'radio',:value=>'5, 5',:name=>'dash'}
+          %svg{:width=>"200", :height=>"20", :viewPort=>"0 0 20 300", :version=>"1.1", :xmlns=>"http://www.w3.org/2000/svg"}
+            %line{"stroke-dasharray"=>"5, 5", :x1=>"10", :y1=>"13", :x2=>"190", :y2=>"13"}
+      %label.checkbox.inline
+        %input{:type=>'radio',:value=>'15, 5',:name=>'dash'}
+          %svg{:width=>"200", :height=>"20", :viewPort=>"0 0 20 300", :version=>"1.1", :xmlns=>"http://www.w3.org/2000/svg"}
+            %line{"stroke-dasharray"=>"15, 5", :x1=>"10", :y1=>"13", :x2=>"190", :y2=>"13"}
+      %label.checkbox.inline
+        %input{:type=>'radio',:value=>'5, 15',:name=>'dash'}
+          %svg{:width=>"200", :height=>"20", :viewPort=>"0 0 20 300", :version=>"1.1", :xmlns=>"http://www.w3.org/2000/svg"}
+            %line{"stroke-dasharray"=>"5, 15", :x1=>"10", :y1=>"13", :x2=>"190", :y2=>"13"}
+      %label.checkbox.inline
+        %input{:type=>'radio',:value=>'5, 5, 1, 5',:name=>'dash'}
+          %svg{:width=>"200", :height=>"20", :viewPort=>"0 0 20 300", :version=>"1.1", :xmlns=>"http://www.w3.org/2000/svg"}
+            %line{"stroke-dasharray"=>"5, 5, 1, 5", :x1=>"10", :y1=>"13", :x2=>"190", :y2=>"13"}
+      :css
+        line{ stroke: black; stroke-width: 2; }
+      :javascript
+        $("input[name=dash]").on('change',function(e){
+          $('#dash_array').val($('input[name=dash]:checked').val());
+        });
+
+    .group
+      %label Name
+      %input#name{:type=>'text',:value=>@style.name,:name=>'style[name]'}
+
+  .col-md-3
+    .group
+      %label Preview
+      %br/
+      %svg#preview{:width=>"180",:height=>"180",:viewPort=>"0 0 180 180",:version=>"1.1",:xmlns=>"http://www.w3.org/2000/svg"}
+        -if @style.defs
+          %defs
+            %pattern{:id=>"#{JSON.parse(@style.defs)['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{JSON.parse(@style.defs)['scale']}",:height=>"#{JSON.parse(@style.defs)['scale']}"}
+              %image{"xlink:href"=>"https://s3.amazonaws.com/ejatlas/patterns/#{JSON.parse(@style.defs)['filename']}.png",:x=>"0",:y=>"0",:width=>"#{JSON.parse(@style.defs)['scale']}",:height=>"#{JSON.parse(@style.defs)['scale']}"}
+        %rect{:x=>20,:y=>20,:width=>140,:height=>140, :rx=>18, :ry=>18}
+      :css
+        svg#preview {
+          background: url('http://a.tile.openstreetmap.org/7/69/42.png');
+        }
+
+      :javascript
+        function updatePreview () {
+          arr = $('form.form').serializeArray();
+          $(arr).each(function(i,v){
+            if (v.name.match(/^style/)){
+              rule = v.name.replace('style[','');
+              rule = rule.replace(']','');
+              rule = rule.replace('_color','');
+              rule = rule.replace('_','-');
+              rule = rule.replace('weight','stroke-width');
+              rule = rule.replace('dash-array','stroke-dasharray');
+              rule = rule.replace(/\s/,'');
+              console.log(rule+': '+v.value)
+              if (rule.match(/opacity$/)){
+                $('svg#preview').css(rule,parseInt(v.value)/100.0);
+              } else if (rule.match(/name/)) {
+              } else {
+                $('svg#preview').css(rule,v.value);
+              }
+            }
+          });
+        }
+        $("input").on('change',updatePreview);
+        $(document).ready(function(){
+          defs = #{@style.defs or false}
+          console.log(defs)
+          if (defs) {
+            $('input[name=pattern]').prop('checked',false);
+            $('input[name=scale]').prop('checked',false);
+            $('.nav-tabs li').removeClass('active')
+            $('.tab-pane').hide();
+            $('.nav-tabs a[href=#pattern]').parent().addClass('active');
+            $('#pattern').show();
+            $('input[name=pattern][value='+defs['filename'].substr(0,2)+']').prop('checked',true);
+            $('input[name=scale][value='+defs['scale']+']').prop('checked',true);
+            $('input#fg_color').val("#"+defs['filename'].substr(2,6));
+            $('input#bg_color').val("#"+defs['filename'].substr(8,6));
+            pfcw.color("#"+defs['filename'].substr(2,6));
+            pbcw.color("#"+defs['filename'].substr(8,6));
+
+            $("#fg_color").css('background','white');
+            $("#fg_color").css('color','black');
+            $("#bg_color").css('background','white');
+            $("#bg_color").css('color','black');
+            fgo = #{@style.fill_opacity};
+
+            bgo = parseInt(defs['filename'].substr(14,2),16)/2.56;
+            $('input#fg_opacity').val(Math.round(fgo * 100));
+            $('input#bg_opacity').val(Math.round(bgo * fgo));
+            updatePattern();
+          }
+          updatePreview();
+        });
+      %br/
+      %br/
+    .group
+      =f.submit pat(:save), :class => 'btn btn-warning pull-left', :style=>'width:180px;font-weight:bold'

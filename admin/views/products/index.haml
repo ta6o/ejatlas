@@ -1,0 +1,31 @@
+.block
+  .secondary-navigation
+    %ul.wat-cf
+      %li.first.active=link_to pat(:list), url(:products, :index)
+      %li=link_to pat(:new), url(:products, :new)
+  .content
+    %h2.title
+      =pat(:all)
+      =mt(:products)
+    .inner
+      %table.table
+        %tr
+          %th.first=mat(:product, :id)
+          %th=mat(:product, :name)
+          %th=mat(:product, :slug)
+          %th=mat(:product, :description)
+          %th.last="&nbsp;"
+        -@products.each do |product|
+          %tr
+            %td.first=product.id
+            %td=product.name
+            %td=product.slug
+            %td=product.description
+            %td.last
+              =button_to pat(:edit), url(:products, :edit, :id => product.id), :method => :get, :class => :button_to
+              ="|"
+              =button_to pat(:delete), url(:products, :destroy, :id => product.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
+      .actions-bar.wat-cf
+        .actions="&nbsp;"
+
+-content_for :sidebar, partial("base/sidebar")

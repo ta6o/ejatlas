@@ -1,0 +1,32 @@
+-# coding: utf-8
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        Dear #{@account.name},
+        %br/
+        %br/
+        You requested a new password at
+        #{DateTime.now.strftime("%d/%m/%Y tarihinde %H:%M")} 
+        %br/
+        %br/
+        You can set a new password by clicking the link below:
+        %br/
+        %br/
+        %a{:href=>$siteurl+'/accounts/reset?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'} Change my password
+        %br/
+        %br/
+        If you haven't made such a request, please contact us at
+        %a{:href=>'mailto:ejoltmap@gmail.com'} ejoltmap@gmail.com
+        %br/
+        %br/
+        Thank you.
+        %br/
+        %strong the EJOLT Mapping Team
+        %br/
+        %a{:href=>'mailto:ejoltmap@gmail.com'} ejoltmap@gmail.com

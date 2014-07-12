@@ -1,0 +1,57 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'tablesorter/style'
+  =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+.row.wide
+  .col-md-12
+    .hero-unit
+      %h1.title
+        =mt('Countries')
+    .inner
+      %table.table.tablesorter#sortme
+        %thead
+          %tr
+            %th.first Name
+            %th #conflicts
+            %th Description
+            %th Flag
+            %th Region
+            %th.last
+              %form#filter-form
+                %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
+        %tbody
+          -@countries.each do |country|
+            %tr
+              %td.first=country.name
+              %td=country.conflicts.count
+              %td=country.description
+              %td
+                -if country.flag_images.any?
+                  %img{:src=>country.flag_images.first.file.url,:height=>"24px"}
+                -else
+                  =""
+              %td
+                -if country.region_id
+                  =country.region.name
+                -else
+                  =""
+              %td.last
+                =link_to pat('Edit'), url(:countries, :edit, :id => country.id), :method => :get
+
+      :javascript
+        $(document).ready(function(){
+          $('#sortme').tablesorter({
+            headers: { 
+              5: { sorter: false } 
+            } 
+          });
+          var theTable = $('table#sortme')
+          $("#filter").click(function(){$('#filter').focus();});
+          $("#filter").keyup(function() {
+            $.uiTableFilter( theTable, this.value );
+          })
+          $('#filter-form').submit(function(){
+            return false;
+          }).focus(); 
+        });
+

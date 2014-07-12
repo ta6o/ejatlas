@@ -1,0 +1,147 @@
+-# coding: utf-8
+-content_for :bodyend do
+  <script type="text/javascript"> var disqus_shortname = 'ejatlas'; (function () { var s = document.createElement('script'); s.async = true; s.type = 'text/javascript'; s.src = '//' + disqus_shortname + '.disqus.com/count.js'; (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s); }()); </script> 
+-content_for :include do
+  :javascript
+    img = new Image(330,30);
+    img.src = 'https://s3.amazonaws.com/ejatlas/static/ikon.png';
+    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
+    var vectorinfo = #{@vectors};
+    window.onload = function(){
+      console.log(markerinfo)
+      console.log(vectorinfo)
+      initMap(markerinfo,"#{@maptitle}",3,vectorinfo);
+      getInfo (#{@cid},"#{@name}",#{@pos})
+    }
+
+.front
+  .tagline
+    %a{:href=>'http://www.ejolt.org',:target=>'_blank'}
+      .ejolt-logo
+    %p= $pagedesc
+    -if @defs
+      %svg{:style=>'height:0'}
+        %defs
+          -@defs.each do |d|
+            %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+              %image{"xlink:href"=>"https://s3.amazonaws.com/ejatlas/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+  #map.map
+  .summary_header
+    .clearfix#disclaimer
+      %h2= @maptitle
+
+    .clearfix
+      %h2.pull-left#name
+      .pull-right#commands{:style=>'display:none;'}
+        %ul.clearfix.list-unstyled
+          %li
+            =link_to ('Print'), url(:conflicts, :view, :id => 0), :method => :get, :target => '_blank', :id => '-'
+          :javascript
+            var clear = false;
+            var clearuser = false;
+          -unless current_account.nil?
+            -if ['admin','editor'].include? current_account.role
+              :javascript
+                var clear = true;
+              %li
+                =link_to ('Edit'), url(:conflicts, :edit, :id => @cid), :method => :get, :target => '_blank', :id => 'edit'
+            -else
+              :javascript
+                var clearuser = true;
+
+    .clearfix.row
+      -if @images.any?
+        #carousel_container{:style=>'display:none'}
+          #left_scroll
+            %span.glyphicon.glyphicon-chevron-left
+          #carousel_inner
+            %ul#carousel_ul
+              -@images.order(:created_at).each do |image|
+                %li
+                  %a{:href=>image.file.url,:target=>'_blank'}
+                    %img{:src=>image.file.thumb.url,:style=>'height:240px;width:auto;display:none;'}
+                  -if image.title and image.title != '-'
+                    -if image.title.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+                      .title
+                        %a{:href=>image.title,:target=>'_blank'} Click to go to the source
+                    -else
+                      .url= image.title
+          #right_scroll
+            %span.glyphicon.glyphicon-chevron-right
+        :javascript
+          $(function() {
+            function imageLoaded() {
+              counter--; 
+              if( counter === 0 ) {
+                if ($('#carousel_ul li img').length == $('#carousel_ul li img.error').length) {
+                  console.log('err');
+                } else {
+                  $('#carousel_ul li img').show();
+                  $('#carousel_container').slideDown('400');
+                }
+                crsgap = 6;
+                crswidth = 0
+                $('#carousel_ul li').each(function(i,v){
+                  crswidth += $(this).width();
+                  crswidth += crsgap;
+                })
+                wdiff = $('#carousel_container').width() - crswidth;
+                if (wdiff >= 0){
+                  $('#carousel_ul').css('left','0px')
+                  $('#left_scroll').hide();
+                  $('#right_scroll').hide();
+                } else {
+                  $('#carousel_ul li:first').before($('#carousel_ul li:last'));
+                  var item_width = $('#carousel_ul li:first').width() + crsgap; 
+                  $('#carousel_ul').css({'left' : String(item_width * -1) + 'px'});
+                }
+                $('#right_scroll').click(function(){
+                  var item_width = $('#carousel_ul li:eq(1)').width() + crsgap;
+                  var left_indent = parseInt($('#carousel_ul').css('left')) - item_width;
+                  $('#carousel_ul').animate({'left' : left_indent},{queue:false, duration:500, complete: function(){
+                    $('#carousel_ul li:last').after($('#carousel_ul li:first'));
+                    var item_width = $('#carousel_ul li:first').width() + crsgap;
+                    $('#carousel_ul').css({'left' : String(item_width * -1) + 'px'});
+                  }});
+                });
+                $('#left_scroll').click(function(){
+                  $('#carousel_ul li:first').before($('#carousel_ul li:last'));
+                  var item_width = $('#carousel_ul li:eq(1)').width() + $('#carousel_ul li:first').width() + crsgap * 2;
+                  $('#carousel_ul').css({'left' : String(item_width * -1) + 'px'});
+                  var item_width = $('#carousel_ul li:eq(1)').width()  + crsgap;
+                  var left_indent = parseInt($('#carousel_ul').css('left')) + item_width;
+                  $('#carousel_ul').animate({'left' : left_indent},{queue:false, duration:500});
+                });
+                $('#carousel_ul li').mouseenter(function(){
+                  $(this).find('.title').show();
+                  $(this).find('.url').show();
+                });
+                $('#carousel_ul li').mouseleave(function(){
+                  $(this).find('.title').hide();
+                  $(this).find('.url').hide();
+                });
+              }
+            }
+            var images = $('img');
+            var counter = images.length;  // initialize the counter
+            images.each(function() {
+              if( this.complete ) {
+                imageLoaded.call( this );
+              } else {
+                $(this).one('load', imageLoaded);
+              }
+            });
+            images.error(function(){
+              imageLoaded();
+              $(this).addClass('error');
+            });
+          });
+
+    #conflict_summary{:style=>'display:none;'}
+
+  <div id="disqus_thread"></div> <script type="text/javascript"> var disqus_shortname = 'ejatlas'; (function() { var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); </script> <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript> <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+-content_for :sidebar do
+  #sat.map
+  #infopane{:style=>'height:340px;'}
+  =partial("base/sidebar")

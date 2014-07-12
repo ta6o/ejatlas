@@ -1,0 +1,55 @@
+-#coding:utf-8
+.content
+  %h2 Queued Jobs
+  -if @jobs.any?
+    %table.table
+      %thead
+        %tr
+          %th Job Type
+          %th Submitted at
+          %th Status
+          %th Arguments
+      %tbody
+        -@jobs.each do |j|
+          -method_name = j.payload_object.method_name
+          -arguments = j.payload_object.args[0]
+          %tr
+            %td
+              %strong= {:csvexport_without_delay=>'Export',:setcache_without_delay=>'Cache',:choropleth_without_delay=>'Choropleth',:backupdb_without_delay=>'DB Backup'}[method_name]
+            %td= j.created_at.strftime("%d/%m/%Y %H:%M")
+            -if j.locked_at != nil
+              %td= "Started at #{j.locked_at.strftime('%H:%M')}"
+            -elsif j.last_error != nil
+              %td Failed
+            -elsif j.locked_at.nil? and j.attempts == 0 
+              %td Pending
+            -else
+              %td &nbsp;
+            -if method_name == :setcache_without_delay
+              -args = arguments.keys.map{|k|k.titlecase}.join(', ')
+              %td
+                %strong Update:
+                =args
+            -elsif method_name == :csvexport_without_delay
+              -order = arguments.delete("order")
+              -ascdsc = arguments.delete("ascdsc")
+              -limit = arguments.delete("limit").to_i
+              -args = arguments.keys.map{|k|k.titlecase}.join(', ')
+              %td
+                %strong Select:
+                =args
+                %strong Order:
+                ={"id"=>"ID", "slug"=>"Name", "created_at"=>"Date of creation", "updated_at"=>"Date of modification", "start_datestamp"=>"Start date", "end_datestamp"=>"End date", "approval_status"=>"Approval status", "contributor"=>"Contributor", "status_id"=>"Intensity of conflict", "reaction_id"=>"Reactionary stage", "project_status_id"=>"Project status", "success_level"=>"Success level", "accuracy_level"=>"Accuracy of location", "project_area"=>"Project area", "investment_sum"=>"Level of investment", "affected_people"=>"Affected population"}[order]
+                -if limit > 0
+                  %strong Limit:
+                  =limit
+            -elsif method_name == :choropleth_without_delay
+              %td &nbsp;
+            -elsif method_name == :backupdb_without_delay
+              %td &nbsp;
+    :javascript
+      setTimeout(function(){location.reload()}, 12000);
+  -else
+    %p There are no pending jobs at the moment.
+      
+

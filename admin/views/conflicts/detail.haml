@@ -1,0 +1,36 @@
+-# coding: utf-8
+%link{:rel=>'stylesheet',:type=>'text/css',:media=>'print',:href=>'/stylesheets/print.css'}
+.clearfix
+  %h2.pull-left#name= @name
+#conflict_summary= @table
+%h2 İhtilafa dair mevcut girişler
+%form{:action=>'/conflicts/request',:method=>'post','accept-charset'=>'utf-8'}
+  %table.table.request
+    %thead{:style=>'font-weight:bold;'}
+      %tr
+        %td Açıklama
+        %td &nbsp;
+        %td Seç?
+    %tbody
+      -@versions.each do |v|
+        -unless v.account == current_account
+          %tr
+            %td= v.description
+            %td= '<strong>Yaratılma:</strong><br />' + v.created_at.strftime('%d/%m/%Y') + '<br /><strong>Güncellenme</strong><br />' +  v.updated_at.strftime('%d/%m/%Y')
+            %td
+              %input{:type=>'checkbox',:name=>v.id.to_s, :value=>''}
+  .row
+    .span6.offset3
+      %h4 Bu konuda neden detaylı bilgi istediğinizi kısaca açıklayınız.
+      %textarea{:type=>'text',:name=>'desc',:rows=>4}
+      %br/
+      %p 
+        <strong>#{@name}</strong> başlıklı ihtilaf için ayrıntı görüntüleme talebinde bulunmak üzeresiniz. 
+        %br/
+        Adınız, soyadınız, e-mail adresiniz ve organizasyonunuz talep göndermekte olduğunuz kullanıcıya gösterilecektir. Onaylıyor musunuz?
+      %input.btn.pull-right{:type=>'submit',:value=>'Evet, kişisel bilgilerimin gösterilmesini onaylıyorum'}
+      %input.btn.pull-left{:type=>'button',:value=>'Hayır, talep göndermekten vazgeçtim',:onclick=>"window.location='/conflicts/view/#{@id}'"}
+:javascript
+  if ($('table.request > tbody tr').length == 1) {
+    $('table.request input[type=checkbox]').prop('checked',true);
+  }

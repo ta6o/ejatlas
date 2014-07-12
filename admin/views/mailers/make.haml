@@ -1,0 +1,45 @@
+-# coding: utf-8
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        Sayın #{@req.requested.name},
+        %br/
+        %br/
+        #{@req.created_at.strftime('%d/%m/%Y')} tarihinde #{@req.requester.name} sizden #{@req.version.conflict.name} başlıklı çevre ihtilafı için girmiş olduğunuz formun tamamını paylaşmanız için bir talepte bulundu ve size aşağıdaki mesajı gönderdi:
+        %br/
+        %br/
+        %strong Kullanıcı ismi: 
+        #{@req.requester.name}
+        %br/
+        %strong E-mail:
+        #{@req.requester.email}
+        -if @req.requester.organization
+          %br/
+          %strong Organizasyon:
+          #{@req.requester.organization}
+        %br/
+        %br/
+        -if @req.description.length > 0
+          %strong Talep mesajı:
+          %br/
+          %span{:style=>"padding:0 24px;color:#333"}= @req.description
+          %br/
+          %br/
+        Kullanıcı adınız ve şifrenizle giriş yapıp <em>istekleriniz</em> sayfasını ziyaret ederek talebi onaylayabilir/reddedebilirsiniz. Talebi onayladığınız takdirde ihtilafa ait bilgiler talepte bulunan kullanıcıya sistem üzerinden gönderilecektir.
+        %br/
+        %br/
+        Teşekkür ederiz.
+        %br/
+        %br/
+        %hr/
+      %p{:style => "font-size: 10px; padding-top: 20px; text-align: left;"}
+        %strong 
+          Bilgi ve sorularınız için: 
+          %a{:href=>'mailto:direncevre@gmail.com'} direncevre@gmail.com
+        %br/

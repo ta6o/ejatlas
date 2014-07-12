@@ -1,0 +1,15 @@
+-# coding: utf-8
+%link{:rel=>'stylesheet',:type=>'text/css',:media=>'print',:href=>'/stylesheets/print.css'}
+.clearfix.summary_header
+  %h2.pull-left#name= @name
+  .pull-right#commands
+    %ul.clearfix
+      %li
+        =link_to ('Yazdır'), :id => 'print', :onclick => 'window.print()'
+      %li
+        =link_to ('Düzenle'), "/conflicts/edit_version/"+@id.to_s, :method => :get, :target => '_blank', :id => 'edit'
+#conflict_summary= @table
+-if @print
+  :javascript
+    $(document).ready(function(){ window.print(); });
+

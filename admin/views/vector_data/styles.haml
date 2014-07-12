@@ -1,0 +1,62 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'tablesorter/style'
+  =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+.row.wide
+  .col-md-12
+    .hero-unit
+      %h1.title Vector styles
+    .inner
+      %svg{:style=>'height:0'}
+        %defs
+          -@defs.each do |d|
+            -p d
+            %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+              %image{"xlink:href"=>"https://s3.amazonaws.com/ejatlas/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+      %table.table.tablesorter#sortme
+        %thead
+          %tr
+            %th.first Name
+            %th Representation
+            %th Used by
+            %th.last
+              %form#filter-form
+                %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
+        %tbody
+          -@styles.each do |style|
+            %tr
+              %td.first=style.name
+              %td
+                %svg{:id=>style.name.downcase.gsub(/\s/,''),:width=>"100",:height=>"40",:viewPort=>"0 0 100 40",:version=>"1.1",:xmlns=>"http://www.w3.org/2000/svg"}
+                  %rect{:x=>4,:y=>4,:width=>92,:height=>32, :rx=>8, :ry=>8}
+                :css
+                  svg##{style.name.downcase.gsub(/\s/,'')} > rect 
+                  {
+                    fill: #{style.fill_color};
+                    stroke: #{style.stroke_color};
+                    fill-opacity: #{style.fill_opacity};
+                    stroke-opacity: #{style.stroke_opacity};
+                    stroke-dasharray: #{style.dash_array};
+                    stroke-width: #{style.weight};
+                  }
+
+              %td= style.vector_data.map{|v|"<a href='/vectors/edit/#{v.id}'>#{v.inspect}</a>"}.join(', ').html_safe
+              %td.last
+                =link_to pat('Edit'), url(:vectors, :editstyle, :id => style.id), :method => :get
+                =link_to pat('Delete'), url(:vectors, :deletestyle, :id => style.id), :method => :get
+      :javascript
+        $(document).ready(function(){
+          $('#sortme').tablesorter({
+            headers: { 
+              2: { sorter: false } 
+            } 
+          });
+          var theTable = $('table#sortme')
+          $("#filter").click(function(){$('#filter').focus();});
+          $("#filter").keyup(function() {
+            $.uiTableFilter( theTable, this.value );
+          })
+          $('#filter-form').submit(function(){
+            return false;
+          }).focus(); 
+        });

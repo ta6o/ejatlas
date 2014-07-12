@@ -1,0 +1,18 @@
+-#coding:utf-8
+.content
+  =form_tag(url(:accounts, :resetpassword), :class => 'form login') do
+    .row
+      .col-md-5.col-md-offset-4.clearfix
+        %br/
+        %h2 Password reset
+        %p Please type your e-mail to request a new password.
+        %hr/
+    .row
+      .col-md-4.col-md-offset-4.clearfix
+        .pull-left
+          %label E-mail
+        .pull-right=text_field_tag :email, :value => params[:email], :class => :text_field, :style=>'width:200px'
+    .row
+      .col-md-4.col-md-offset-4.clearfix
+        %br/
+        .pull-right=submit_tag('Send', :class => :btn)

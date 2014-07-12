@@ -1,0 +1,110 @@
+.modal-dialog
+  .modal-content
+    %form#actorform{:method=>'post',:action=>'/conflicts/actor'}
+      .modal-header
+        %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+        %input{:type=>'hidden',:name=>'model',:value=>(@actor.class.to_s)}
+        %input{:type=>'hidden',:name=>'cid',:value=>@cid.to_s}
+        -unless @actor.new_record?
+          %input{:type=>'hidden',:name=>'id',:value=>(@actor.id)}
+        -namehash = {'Company'=>'Company','Supporter'=>'International or Financial Institution'}
+        -if @actor.new_record?
+          %h3= "New #{namehash[@actor.class.to_s]}"
+        -else
+          %h3= "Editing #{namehash[@actor.class.to_s]}: #{@actor.name}"
+      .modal-body
+        .row
+          .col-md-6
+            -if @actor.has_attribute? :name
+              %label Name of actor
+              %input.i_actor#actor_name{:type=>'text',:name=>'name',:value=>(@actor.name if @actor.name)}
+            -if @actor.has_attribute? :description# and ['admin','editor'].include?(current_account.role)
+              %label Description
+              %textarea.i_actor#actor_description{:type=>'text',:name=>'description',:rows=>6}
+                = @actor.description if @actor.description
+          .col-md-6
+            -if @actor.has_attribute? :acronym #and ['admin','editor'].include?(current_account.role)
+              %label Acronym
+              %input.i_actor#actor_acronym{:type=>'text',:name=>'acronym',:value=>(@actor.acronym if @actor.acronym)}
+            -if @actor.has_attribute? :url# and ['admin','editor'].include?(current_account.role)
+              %label Website
+              %input.i_actor#actor_url{:type=>'text',:name=>'url',:placeholder=>'http://',:value=>(@actor.url if @actor.url)}
+            -if @cactor or @actor.new_record?
+              %label Involvement
+              %input.i_actor#actor_involvement{:type=>'text',:name=>'involvement',:value=>(@cactor.involvement if @cactor)}
+            -if @actor.has_attribute? :country_id# and ['admin','editor'].include?(current_account.role)
+              %label Country of origin
+              %select#actor_countryc.basic_input{:name=>'country_id'}
+                %option{:value=>''} &nbsp;
+                -@countries.each do |c|
+                  %option{:value=>c.id,:selected=>(true if @actor.has_attribute?(:country_id) and c.id == @actor.country_id)}= c.name
+            %br/
+            %br/
+      .modal-footer
+        -if @actor.new_record?
+          %button.btn#b_actor Create
+        -else
+          %button.btn#b_actor Update
+
+        :javascript
+          var $id, $name;
+          model = $('#actorform input[name=model]').val().toLowerCase();
+          cid =  $('#actorform input[name=cid]').val();
+          $.get("/"+model+"_list/",function(data){
+            actordata = {}
+            $(data.split('$%')).each(function(i,v){
+              a = v.split('|')
+              actordata[a[1]] = a[0];
+            });
+            $('#actor_name')
+            .focus()
+            .bind( "keydown", function(event){
+              if ( event.keyCode === $.ui.keyCode.TAB && $( this ).data( "autocomplete" ).menu.active ) {
+                event.preventDefault();
+              }
+            })
+            .autocomplete({
+              minLength: 3,
+              source: Object.keys(actordata),
+              select: function( event, ui ) {
+                $name = ui["item"]['label']
+                $id = actordata[$name]
+                $('#actor').modal('hide');
+              }
+            });
+          });
+          $('#actorform').on('submit',function(e){
+            e.preventDefault();
+            $.ajax({
+              type: 'POST',
+              url: '/conflicts/actor', 
+              data: $(e.target).serialize(), 
+              success: function(data,ts){
+                data = JSON.parse(data)
+                console.log(data)
+                console.log(data['name'] == $('#actor_name').val());
+                if (data['name'] == $('#actor_name').val()){
+                  console.log(data)
+                  $id = undefined;
+                  $name = "";
+                  if ($('.'+model+'_list input[value='+data['id']+']').length == 0) {
+                    html = '<div class="actor"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-8"> <h5>'+data['name']+'</h5> </div> <div class="col-md-2"> <a class="pull-right btn" data-target="#actor" data-toggle="modal" href="/conflicts/modal/'+cid+'/'+model+'/'+data['id']+'">Edit</a> </div> <div class="col-md-2"> <input type="hidden" value="'+data['id']+'"> <a class="d_actor pull-right btn">Remove</a> </div> </div> </div>'
+                    $('.'+model+'_list').append(html)
+                  }
+                }
+                $('#actor').modal('hide');
+              },
+              error: function(data,ts,error){
+                alert(ts+' '+error)
+              }
+            });
+          });
+
+          $('body').on('hidden.bs.modal', '#actor', function () {
+            $(this).removeData('bs.modal');
+            $('#actor').html('');
+            if ($id != undefined && $id > 0 && $name != "") {
+              $('#actor').modal({remote:"/conflicts/modal/"+cid+"/"+model+"/"+$id})
+            }
+            $id = undefined;
+          });

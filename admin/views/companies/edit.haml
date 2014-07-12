@@ -1,0 +1,62 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'neutrino/jquery-ui'
+  =javascript_include_tag 'jquery.validate', 'jquery-ui.min', 'maskedinput', 'modal'
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Editing: 
+        = @company.name
+    .inner
+      =form_for :company, url(:companies, :update, :id => @company.id), :method => :put, :class => :form do |f|
+        =partial "companies/form", :locals => { :f => f }
+
+      .row.whitebox
+        .col-md-8.col-md-offset-2
+          .group
+            %label Merge with
+            %input.text_field#merge_company{:type=>'text',:style=>'width:100%'}
+            %input.text_field.hide#merge_company_id
+            %p.description WARNING - this item will be deleted!
+
+          .group.navform.wat-cf
+            %br/
+            %input.pull-right.btn#merge{:type=>:button,:value=>'Merge'}
+
+          :javascript
+            $('#merge').on('click',function(){
+              sid = #{@company.id};
+              cid = parseInt($('#merge_company_id').val());
+              if (cid > 0){
+                $.ajax({
+                  type: 'POST',
+                  url: '/companies/merge', 
+                  data: {source:sid,target:cid}, 
+                  success: function(data,ts){
+                    if (data == "ok"){
+                      window.location = '/companies';
+                    }
+                  },
+                  error: function(data,ts,error){
+                    alert(ts+' '+error)
+                  }
+                });
+              }
+            })
+            $(document).ready(function(){
+              $('#merge_company').autocomplete({
+                minLength: 1,
+                source: #{@companies},
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $('#merge_company_id').val(ui.item.value);
+                    $(this).val(ui.item.label);
+                  },
+                focus: function(event, ui) {
+                    event.preventDefault();
+                    $(this).val(ui.item.label);
+                  },
+              });
+            });
+

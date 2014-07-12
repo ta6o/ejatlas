@@ -1,0 +1,72 @@
+-# coding: utf-8
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        Dear #{@account.name},
+        %br/
+        %br/
+        We are very happy to finally announce the new platform of the 
+        %strong EJOLT Atlas!
+        %br/
+        We find it is a great website for displaying the maps and the Atlas and hopefully more user friendly for the collection and editing of the cases. 
+        %br/
+        We have just migrated all cases and you are now able to access them again with your email account. 
+        %br/
+        %br/
+        When you enter
+        %a{:href=>$siteurl+'/accounts/reset?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'} this link
+        you will be invited to create a new password. Your old password from the other platform will no longer work. Please note, for some organizations we have merged all the cases so that they appear under one email and all cases can be accessed from one account, and your account is associated with 
+        =@account.conflicts.count
+        cases at the moment.
+        %br/
+        %br/
+        %a{:href=>$siteurl+'/accounts/reset?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'} Take me to my new account!
+        %br/
+        %br/
+        From today onwards, we will be collecting cases and moderate them on this platform, so please do not make any changes, nor enter cases in the old one.
+        %br/
+        Please navigate through the Atlas and give us your feedback and comments!
+        %br/
+        %br/
+        Here is the direct link to the
+        %a{:href=>'http://ejatlas.org/',:target=>"_blank"} new EJatlas website.
+        %br/
+        %br/
+        %strong The Atlas is still not ready to be shared with the public
+        as we are still developing, so
+        %strong please do not pass on.
+        However, please do follow us on 
+        %a{:href=>'https://www.facebook.com/ejolt',:target=>"_blank"} Facebook
+        &amp;
+        %a{:href=>'https://twitter.com/EnvJustice',:target=>"_blank"} Twitter
+        and invite your friends to like us as well to keep track of the upcoming launch.
+        %br/
+        %br/
+        %strong We kindly ask you to do an extra effort before the launch of the map, which will happen on the 19th of March to review your cases.
+        All the approved entries have been moderated so please review the changes. Also, as situations are constantly changing you may want to review some key fields. This includes:
+        %ul
+          %li "Intensity of the conflict", understood as the highest level of intensity the conflict has reached, the "Outcomes", the "Status of the project" and whether it is a success case or not.
+          %li The location can also be easily changed by entering the coordinates. If you adjust the accuracy of location, please change this field as well.
+          %li You will also notice that now the links can come with accompanying titles, so feel free to add titles to your links.
+          %li You may also want to check the home country associated with the companies
+          %li Please check how you want your name and organization to appear under the contributor field in the meta-data tab.
+          %li You may also upload new photos. We will have an attractive slide show for displaying them.
+          %li Please, also report any recent important news on the case, if not already there.
+        The changes will not automatically appear in the platform that is visible, as we will again approve them and then refresh the cache. So, don't worry, if you see the changes in the form, that means they have been made and saved. Also, if there is any change to the contact email for the case please tell us and we will change it.
+        %br/
+        %br/
+        We very much appreciate this work before the final push before the launch. Of course we'll keep collecting cases and information on conflicts for the next year and beyond but let's try to have the most updated and complete map we can by the launch. Please be in touch if you encounter any difficulties or problems and thanks again for the hard work you have all put into this Mapping of Environmental Justice struggles.
+        %br/
+        %br/
+        Warmly,
+        %br/
+        %br/
+        %strong EJOLT Mapping Team
+        %br/
+        %a{:href=>'mailto:ejoltmap@gmail.com'} ejoltmap@gmail.com

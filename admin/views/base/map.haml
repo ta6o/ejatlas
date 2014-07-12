@@ -1,0 +1,81 @@
+-# coding: utf-8
+-content_for :include do
+  :javascript
+    img = new Image(330,30);
+    img.src = 'https://s3.amazonaws.com/ejatlas/static/ikon.png';
+    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
+    var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
+    var vectorinfo = [];
+  -if @vectors
+    :javascript
+      vectorinfo = #{@vectors};
+  :javascript
+    $(document).ready(function(){
+      initMap(markerinfo,"#{@maptitle}",1,vectorinfo);
+      updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+    });
+.front
+  .tagline
+    %a{:href=>'http://www.ejolt.org',:target=>'_blank'}
+      .ejolt-logo
+    %p= $pagedesc
+  #map.map
+  .summary_header
+    %br/
+    .row
+      .col-md-8
+        %h2{:style=>'margin-top:0'} Filter environmental conflicts
+      -#.col-md-4
+        #filterlink.pull-right.clearfix
+          %button.btn.btn-info.pull-left{:href=>'#filter-row'} Filter
+          %input.pull-right{:type=>'text',:placeholder=>'Search'}
+    .row
+      .col-md-12
+        #filter-row
+          #filter= @filter
+    %br/
+
+    -unless @browseinfo.keys.length == 1
+      .row.clearfix
+        .col-md-12
+          %h2 Featured maps (coming soon)
+        -[["Mining Conflicts in Latin America","mining-vulnerability"],["“Renewable” energies ","renewable-energies"],["Ecocide","ecocide"],["Mega Infrastructure Projects","level-of-conflict"]].each do |feat|#,["Land grabbing for land-based investments","land-grabbing"],["Level of conflict","level-of-conflict"],["Spain - corruption and infrastructures","spain-corruption"],["Nuclear reactors and earthquake risk","nuclear-reactors"],["Water grabbing","water-grabbing"],["Mining vulnerability","mining-vulnerability"],["Access to resouces in Africa","resources-africa"],["USA","usa"]].each do |feat|
+          .col-md-3
+            .feat{:onmouseover=>"$(this).find('span').text('Coming soon!')",:onmouseout=>"$(this).find('span').text('#{feat[0]}')"}
+              %img{:src=>"/images/featured/#{feat[1]}.jpg",:alt=>feat[0]}
+              %span= feat[0]
+    .clearfix#disclaimer
+      -#%h2= @maptitle
+      %br/
+      %p{:style=>'font-size:18px;line-height:24px;'} Explore the map by clicking on any conflict, filtering through cases or browse by country, company, commodity and conflict type below.
+      .row
+        -@browseinfo.each do |k,v|
+          .col-md-3.browseinfo
+            %table
+              -unless @browseinfo.keys.length == 1
+                %thead
+                  %tr
+                    %td
+                      %h4="Browse maps by #{k.downcase}"
+              %tbody
+                -v.each do |c|
+                  -j = JSON.parse c[0]
+                  %tr
+                    %td.left
+                      %a{:href=>"/#{k}/#{j['slug']}"}
+                        %span=j["name"]
+                    %td.right
+                      %a{:href=>"/#{k}/#{j['slug']}"}
+                        %span.badge.small.pull-right=c[1]
+                -unless @browseinfo.keys.length == 1
+                  %tr
+                    %td.left
+                      %a.pull-right{:style=>"margin-right:-35px",:href=>"/#{k}"}
+                        %span See more...
+                    %td.right &nbsp;
+
+-content_for :sidebar do
+  #infopane{:style=>'height:340px;'}
+  =partial("base/sidebar")
+
+    	

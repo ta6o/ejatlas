@@ -1,0 +1,23 @@
+-#coding:utf-8
+.row
+  %br/
+  %br/
+  .span4.offset4
+    .well
+      %h3 Üyelik talebiniz işleme alındı.
+      %p Sayın #{@account.name},
+      %p 
+        Üyelik talebiniz işleme alınmıştır. Belirtmiş olduğunuz
+        %strong= '('+@account.email+')'
+        -if @account.email.split('@')[1] == 'gmail.com'
+          e-posta adresine bir onay mesajı gönderilmiştir. Hesabınızın onaylanması için lütfen gelen kutunuzun 
+          %em Güncellemeler
+          %span sekmesindeki mesajımızda bulunan onay bağlantısına tıklayınız.
+        -else
+          e-posta adresine bir onay mesajı gönderilmiştir. Hesabınızın onaylanması için lütfen göndermiş olduğumuz mesajda bulunan onay bağlantısına tıklayınız.
+      %p Kimi durumlarda göndermiş olduğumuz mesajlar istenmeyen posta (spam, junk) filtrelerine takılabilmektedir. E-posta mesajımızın ulaşmadığını düşünüyorsanız lütfen önce istenmeyen posta klasörlerinizi kontrol ediniz.
+      -#%p
+        %a E-posta adresinizi değiştirin
+        %br/
+        %a Onay mesajını tekrar gönderin
+

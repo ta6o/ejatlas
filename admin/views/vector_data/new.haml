@@ -1,0 +1,9 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title New Vector
+    .inner
+      =form_for :vector_datum, url(:vectors, :create), :class => :form do |f|
+        =partial "vector_data/form", :locals => { :f => f }
+

@@ -1,0 +1,62 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'tablesorter/style'
+  =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+.row.wide
+  .col-md-12
+    .hero-unit
+      %h1.title International &amp; Financial Institutions
+    .inner
+      %table.table.tablesorter#sortme
+        %thead
+          %tr
+            %th.first Name
+            %th Acronym
+            %th #conflicts
+            %th Description
+            %th URL
+            %th Logo
+            %th Country
+            %th.last
+              %form#filter-form
+                %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
+        %tbody
+          -@supporters.each do |supporter|
+            %tr
+              %td.first=supporter.name
+              %td=supporter.acronym
+              %td=supporter.conflicts.count
+              %td=supporter.description
+              %td
+                -if supporter.url and supporter.url.length > 3
+                  %a{:href=>supporter.url} [link]
+                -else
+                  =""
+              %td
+                -if supporter.logo_images.any?
+                  %img{:src=>supporter.logo_images.first.file.thumb.url,:style=>'max-height:50px;'}
+                -else
+                  =""
+              %td
+                -if supporter.country_id and supporter.country_id > 0 and supporter.country
+                  =supporter.country.name
+                -else
+                  =""
+              %td.last
+                =link_to pat('Edit'), url(:ifis, :edit, :id => supporter.id), :method => :get
+      :javascript
+        $(document).ready(function(){
+          $('#sortme').tablesorter({
+            headers: { 
+              7: { sorter: false } 
+            } 
+          });
+          var theTable = $('table#sortme')
+          $("#filter").click(function(){$('#filter').focus();});
+          $("#filter").keyup(function() {
+            $.uiTableFilter( theTable, this.value );
+          })
+          $('#filter-form').submit(function(){
+            return false;
+          }).focus(); 
+        });

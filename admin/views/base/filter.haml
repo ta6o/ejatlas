@@ -1,0 +1,521 @@
+-# coding: utf-8
+%form#conflict_filter
+  .col-md-3
+    #filterInfo{:style=>'margin-top:8px;'}
+      %p.large
+        Please pick the
+        %strong filter options 
+        from the panel on the left.
+  .col-md-9
+    .row
+      .nav.nav-tabs
+        %li.active
+          %a{:href=>"#basic",'data-toggle'=>"tab"} Basic Data
+        %li
+          %a{:href=>"#categories",'data-toggle'=>"tab"} Category
+        %li
+          %a{:href=>"#project",'data-toggle'=>"tab"} Project
+        %li
+          %a{:href=>"#conflict",'data-toggle'=>"tab"} Conflict
+        %li
+          %a{:href=>"#resistance",'data-toggle'=>"tab"} Resistance
+        %li
+          %a{:href=>"#impacts",'data-toggle'=>"tab"} Impacts
+        %li
+          %a{:href=>"#outcomes",'data-toggle'=>"tab"} Outcomes
+
+      .tab-content
+        #basic.tab-pane.active{"data-name"=>"Basic Data"}
+          .col-md-4
+            %h4 Success
+            .col
+              %table#success{"data-name"=>"Success Level"}
+                -@filterform["success"].each_with_index do |c,i|
+                  %tr.rw
+                    %td
+                      %input{:type=>'checkbox', :value=>i, :name=>"success"}
+                    %td.lbl
+                      %label= c
+
+          .col-md-4
+            %h4 Type of Population
+            .col
+              %table#poptype{"data-name"=>"Type of Population"}
+                -@filterform["poptype"].each_with_index do |c,i|
+                  %tr.rw
+                    %td
+                      %input{:type=>'checkbox', :value=>i+1, :name=>"poptype"}
+                    %td.lbl
+                      %label= c
+
+          .col-md-4
+            %h4 Country
+            .col
+              %table#cntry{"data-name"=>"Country"}
+                %tbody
+                  -@filterform["cntry"].each do |cc|
+                    -c = cc["country"]
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"cntry"}
+                      %td.lbl
+                        %label= c["name"]
+
+        #categories.tab-pane
+          .col-md-6
+            %h4 Category
+            .col
+              %table#category{"data-name"=>"Category"}
+                %tbody
+                  -@filterform["category"].each do |cc|
+                    -c = cc["category"]
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c['id'], :name=>"category"}
+                      %td.lbl
+                        %label= c['name']
+
+          .col-md-6
+            %h4 Type (2nd level)
+            .col
+              %table#types{"data-name"=>"Type"}
+                %tbody
+                  -@filterform["type"].each do |cc|
+                    -c = cc["type"]
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c['id'], :name=>"types"}
+                      %td.lbl
+                        %label= c['name']
+
+
+        #project.tab-pane
+          .col-md-4
+            %h4 Specific Commodities
+            .col
+              %table#product{"data-name"=>"Specific Commodities"}
+                -@filterform["product"].each do |cc|
+                  -c = cc["product"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"product"}
+                      %td.lbl
+                        %label= c["name"]
+
+          .col-md-8
+            %h4 Financial Data
+            .col
+              %h5 Investment Sum ($)
+              #invest
+              %br/
+              .row
+                .col-md-5
+                  %input#invest-g{:type=>"number",:name=>'invest-g',"data-name"=>"Investment sum more than"}
+                .col-md-2
+                  .large ~
+                .col-md-5
+                  %input#invest-l{:type=>"number",:name=>'invest-l',"data-name"=>"Investment sum less than"}
+              %br/
+
+              %h5 Companies
+              %p (coming soon)
+
+              %h5 Company Home Countries
+              %p (coming soon)
+
+              %h5 International Financial Institutions
+              %p (coming soon)
+
+        #conflict.tab-pane
+          .col-md-4
+            %h4 Dates
+            .col
+              %h5 Start Date
+              #start
+              %br/
+              .row
+                .col-md-5
+                  %input#start-g{:type=>"number",:name=>'start-g',"data-name"=>"Start date after"}
+                .col-md-2
+                  .large ~
+                .col-md-5
+                  %input#start-l{:type=>"number",:name=>'start-l',"data-name"=>"Start date before"}
+              %br/
+
+              %h5 End Date
+              #end
+              %br/
+              .row
+                .col-md-5
+                  %input#end-g{:type=>"number",:name=>'end-g',"data-name"=>"End date after"}
+                .col-md-2
+                  .large ~
+                .col-md-5
+                  %input#end-l{:type=>"number",:name=>'end-l',"data-name"=>"End date before"}
+              %br/
+
+          .col-md-4
+            %h4 Intensity
+            .col
+              %table#intensity{"data-name"=>"Intensity"}
+                -@filterform["intensity"].each do |cc|
+                  -c = cc["status"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"intensity"}
+                      %td.lbl
+                        %label= c["name"]
+
+          .col-md-4
+            %h4 Reaction Stage
+            .col
+              %table#stage{"data-name"=>"Reaction Stage"}
+                -@filterform["stage"].each do |cc|
+                  -c = cc["reaction"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"stage"}
+                      %td.lbl
+                        %label= c["name"]
+
+
+        #resistance.tab-pane
+          .col-md-6
+            %h4 Mobilizing Groups
+            .col
+              %table#mobgroup{"data-name"=>"Mobilizing groups"}
+                -@filterform["mobgroup"].each do |cc|
+                  -c = cc["mobilizing_group"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"mobgroup"}
+                      %td.lbl
+                        %label= c["name"]
+
+
+          .col-md-6
+            %h4 Mobilizing Forms
+            .col
+              %table#mobform{"data-name"=>"Mobilizing forms"}
+                -@filterform["mobform"].each do |cc|
+                  -c = cc["mobilizing_form"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"mobform"}
+                      %td.lbl
+                        %label= c["name"]
+
+
+        #impacts.tab-pane
+          .col-md-4
+            %h4 Environmental Impacts
+            .col
+              %table#envi{"data-name"=>"Environmental Impacts"}
+                -@filterform["envi"].each do |cc|
+                  -c = cc["env_impact"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"envi"}
+                      %td.lbl
+                        %label= c["name"]
+
+          .col-md-4
+            %h4 Health Impacts
+            .col
+              %table#hlti{"data-name"=>"Health Impacts"}
+                -@filterform["hlti"].each do |cc|
+                  -c = cc["hlt_impact"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"hlti"}
+                      %td.lbl
+                        %label= c["name"]
+
+
+          .col-md-4
+            %h4 Socio-economical Impacts
+            .col
+              %table#seci{"data-name"=>"Socio-economical Impacts"}
+                -@filterform["seci"].each do |cc|
+                  -c = cc["sec_impact"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"seci"}
+                      %td.lbl
+                        %label= c["name"]
+
+        #outcomes.tab-pane
+          .col-md-6
+            %h4 Current Status
+            .col
+              %table#pstatus{"data-name"=>"Current Status"}
+                -@filterform["pstatus"].each do |cc|
+                  -c = cc["project_status"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"pstatus"}
+                      %td.lbl
+                        %label= c["name"]
+
+          .col-md-6
+            %h4 Outcomes
+            .col
+              %table#outcome{"data-name"=>"Outcomes"}
+                -@filterform["outcome"].each do |cc|
+                  -c = cc["conflict_event"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"outcome"}
+                      %td.lbl
+                        %label= c["name"]
+
+
+
+    .row
+      .col-md-4
+        .filt
+          %button.btn.clr{:type=>'button'} Clear Filter
+      .col-md-8
+        .filt
+          %button.btn.or{:type=>'submit'} Filter
+
+      :javascript
+        function filterMarkers(filter,update) {
+          //console.log("init filter:",filter);
+          $('#conflict_filter input[type=checkbox]').prop('checked',false)
+          if (filter.length == 0 || (filter.length == 1 && filter[0] == "")) {
+            markers = [];
+            $.each(filterinfo,function(i,v){
+              markers.push(v["id"]);
+            });
+            infoToUpdate = markerCount+" cases documented."
+            showMarkers(markers,infoToUpdate);
+          } else {
+            filterdesc = "";
+            single = [];
+            group = {};
+            ops = {"=":"==","~":"==","-g=":">","-l=":"<"};
+            $.each(filter,function(i,v){
+              r = v.split(/(-g=|-l=|=|\~)/)
+              elid = v.split(/(=|~)/)[0]
+              title = $("#"+elid).attr("data-name")
+              filterdesc += "<strong>"+title+": </strong>"
+              if (r[1]=="~") {
+                arr = r[2].split(',')
+                $.each(arr,function(index,value){arr[index] = parseInt(value)})
+                group[r[0]] = arr
+                $.each(arr,function(ind,val){
+                  //if (r[0]=='types'){r[0] = 'category';$('#types').prop('checked',true)}
+                  el = $('#conflict_filter #'+r[0]+' input[value='+val+']')
+                  $(el).prop('checked',true)
+                  filterdesc += $(el).closest('.rw').find('label').text()+", "
+                });
+              } else {
+                single.push('n["'+r[0]+'"]'+ops[r[1]]+r[2]);
+                el = $('#'+elid+" input[value="+r[2]+"]")
+                if (el.next('label').length > 0){
+                  $(el).prop('checked',true)
+                  filterdesc += el.closest('.rw').find('label').text()+", "
+                } else {
+                  $("#"+elid).val(r[2])
+                  filterdesc += r[2]+", "
+                }
+              }
+              filterdesc = filterdesc.replace(/, $/,'<br/>')
+            });
+            command = "("+single.join(" && ")+")";
+            mingle = grepFields(command);
+            mroup = grepSubFields(group)
+            query = $(single).filter($(group))
+            if (single != undefined && single.length > 0 && !$.isEmptyObject(group)) {
+              //console.log('case ++')
+              query = $(mingle).filter($(mroup))
+            } else if (single == undefined || single.length == 0) {
+              //console.log('case -+')
+              query = mroup
+            } else {
+              //console.log('case +-')
+              query = mingle
+            }
+            if (!update) {
+              queryhash['filter'] = filter
+              search = []
+              $.each(queryhash,function(k,v){ search.push( k+'='+v.join('/'))})
+              location.hash = search.join('&')
+            }
+            infoToUpdate = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases filtered with the following options:</p>"+filterdesc;
+            sideInfo = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases filtered.</p>";
+            $('#filterInfo').html(infoToUpdate);
+            showMarkers(query,sideInfo);
+          }
+        }
+
+        function grepSubFields (group) {
+          if ($.isEmptyObject(group)){return []}
+          ints = []
+          $.each(group,function(k,v){
+            result = $.grep(filterinfo,function(n,i){
+              src = n[k];
+              src instanceof Array ? src = src : src = [src]
+              return $(src).filter($(v)).length > 0
+            });
+            ints.push(result)
+          });
+          result = ints[0]
+          $.each(ints,function(i,v){
+            if (i>0){ result = $(result).filter($(v))}
+          });
+          $.each(result,function(index,value){result[index] = parseInt(value["id"])})
+          return result
+        }
+
+        function grepFields (command) {
+          if (command=="()"){return []}
+          result = $.grep(filterinfo,function(n,i){
+            return eval(command);
+          });
+          $.each(result,function(index,value){result[index] = parseInt(value["id"])})
+          return result
+        }
+
+        function showMarkers (idso, infoToUpdate) {
+          ids = $.makeArray(idso)
+          updateInfo(1, infoToUpdate)
+          classes = ".id_"+ids.join(", .id_");
+          $('.leaflet-marker-icon').hide();
+          if (ids.length == 0) {return}
+          $(classes).show();
+          bounds = L.latLngBounds(markerc[ids[0]]._latlng);
+          $(ids).each(function(i,v){
+            bounds.extend(markerc[v]._latlng);
+          })
+          map.fitBounds(bounds);
+        }
+
+        function clearFilter() {
+          $('#conflict_filter input[type=number]').val('')
+          filterMarkers("",true);
+          queryhash['filter'] = ""
+          search = []
+          location.hash = ""
+          $('#filterInfo').html('<p class="large"> Please pick the <strong>filter options</strong> from the panel on the left. </p>')
+        }
+
+        function exp(base,roof) {
+          div = 1
+          if (roof % 2 == 1) {div = 2}
+          return Math.pow(base,Math.ceil(roof/2))/div
+        }
+
+        var srar, names, search, grpd, query, grup, sing;
+        var queryhash = {};
+
+        $(document).ready(function(){
+          $('.desrad').on('click', function() { 
+            var previousValue = $(this).attr('previousValue');
+            if(previousValue == 'true'){
+              $(this).prop('checked', false)
+            }
+            $('input[name='+$(this).attr('name')+']').attr('previousValue', false)
+            $(this).attr('previousValue', $(this).prop('checked'));
+          });
+          $('.col').on('mousewheel', function(e, d) {
+            if((this.scrollTop === ($(this).get(0).scrollHeight - $(this).height()) && d < 0) || (this.scrollTop === 0 && d > 0)) {
+              e.preventDefault();
+            }
+          })
+
+          $('#conflict_filter .clr').on('click',function(){
+            clearFilter();
+          });
+
+          $('#conflict_filter').on('submit',function(e){
+            e.preventDefault();
+            /*
+            types = false;
+            if($("#types").prop('checked')) {
+              types = true;
+              $("#types").prop('checked',false);
+            }
+            */
+            srar = $(this).serializeArray()
+
+            grpd = {};
+            names = [];
+            $.each(srar, function(i, el) {
+              if (!grpd[el.name]) { grpd[el.name] = true; names.push(el.name); }
+            });
+
+            grpd = {};
+            $.each(names, function(i, el) {
+              grpd[el] = $.grep(srar,function(n,ind){ return n['name'] == el});
+            });
+           // if (types) {grpd["types"] = grpd["category"]; delete grpd["category"]}
+
+            names = [];
+            $.each(grpd, function(k, v) {
+              s = []
+              $.each(v, function(i,el){s.push(el.value)})
+              del = "~"
+              if (['start','end','invest'].indexOf(k.split('-')[0])>=0){ del = "=" }
+              if (v[0]["value"] != "" ) {names.push( k+del+s.join(',') )}
+            });
+            filterMarkers(names,false)
+
+          })
+          $('#conflict_filter .nav-tabs a').click(function (e) {
+            $('.nav-tabs li').removeClass('active')
+            $(this).tab('show')
+          })
+          $("#invest").noUiSlider({ range: [0,20], start: [0,20], step: 1, behaviour: 'extend'});
+          $("#start, #end").noUiSlider({ range: [1880,2020], start: [1880,2020], behaviour: 'extend'});
+          $("#invest").on('change',function(){
+            val = $(this).val()
+            g = exp(10,parseInt(val[0]))
+            if(g==1) {
+              $('input[name=invest-g]').val(null)
+            } else {
+              $('input[name=invest-g]').val(g)
+            }
+            l = exp(10,parseInt(val[1]))
+            if(l==10000000000) {
+              $('input[name=invest-l]').val(null)
+            } else {
+              $('input[name=invest-l]').val(l)
+            }
+          });
+          $("#start, #end").on('change',function(){
+            val = $(this).val()
+            g = parseInt(val[0])
+            if(g==1880) {
+              $('input[name=start-g]').val(null)
+            } else {
+              $('input[name=start-g]').val(g)
+            }
+            l = parseInt(val[1])
+            if(l==2020) {
+              $('input[name=start-l]').val(null)
+            } else {
+              $('input[name=start-l]').val(l)
+            }
+          });
+          $.each(window.location.hash.substr(1).split('&'), function(i,v) {
+            q = v.split('=');
+            n = q.shift();
+            queryhash[n] = q.join('=').replace(/\+/g,' ').split('/');
+          });
+          if (queryhash["filter"]!=undefined) {
+            filterMarkers(queryhash['filter'],true)
+            $('#filter-row .dnone').slideDown()
+          }
+        })

@@ -1,0 +1,68 @@
+-# coding: utf-8
+.clearfix
+  %h2.pull-left İstekler
+
+%ul#request-tabs.nav.nav-tabs{:style=>'margin-bottom:0'}
+  %li.active
+    %a{:href=>'#requested'} İstediklerim
+  %li
+    %a{:href=>'#asked_for'} Benden istenenler
+
+.tab-content.whitebox
+  #requested.tab-pane.active
+    %table.table
+      %thead{:style=>'font-weight:bold;'}
+        %tr
+          %td İhtilaf
+          %td Sürüm tarihi
+          %td İsteme sebebi
+          %td İsteme tarihi
+          %td Durum
+      %tbody
+        -@requested.each do |r|
+          %tr
+            %td= r.version.conflict.name
+            %td= r.version.created_at.strftime '%d/%m/%Y'
+            %td= r.description
+            %td= r.created_at.strftime '%d/%m/%Y'
+            %td
+              -if r.accepted
+                %span.green Kabul edildi
+              -elsif r.rejected
+                %span.red Reddedildi
+              -elsif !r.accepted and !r.rejected
+                Beklemede
+
+  #asked_for.tab-pane
+    %table.table
+      %thead{:style=>'font-weight:bold;'}
+        %tr
+          %td İhtilaf
+          %td İsteme sebebi
+          %td İsteme tarihi
+          %td İsteyen
+          %td &nbsp;
+      %tbody
+        -@asked_for.each do |a|
+          %tr
+            %td= a.version.conflict.name
+            %td= a.description
+            %td= a.created_at.strftime '%d/%m/%Y'
+            %td
+              %a{:href=>'mailto:'+a.requester.email}= a.requester.name
+            %td
+              -if a.accepted
+                %span.green Kabul edildi
+              -elsif a.rejected
+                %span.red Reddedildi
+              -elsif !a.accepted and !a.rejected
+                %a{:href=>'/requests/accept/'+a.id.to_s} Kabul et
+                %span= '|'
+                %a{:href=>'/requests/reject/'+a.id.to_s} Reddet
+
+:javascript
+  $('#request-tabs a').click(function (e) {
+    e.preventDefault();
+    //console.log(e);
+    $(this).tab('show');
+  })

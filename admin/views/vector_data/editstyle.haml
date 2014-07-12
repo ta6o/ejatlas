@@ -1,0 +1,14 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'neutrino/jquery-ui'
+  =javascript_include_tag 'jquery.validate', 'jquery-ui.min', 'maskedinput', 'modal'
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Editing style: 
+        = @style.name
+    .inner
+      =form_for @style, url(:vectors, :updatestyle, :id => @style.id), :method => :put, :class => :form do |f|
+        =partial "vector_data/formstyle", :locals => { :f => f }
+

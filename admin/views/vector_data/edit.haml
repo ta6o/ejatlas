@@ -1,0 +1,16 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'neutrino/jquery-ui'
+  =javascript_include_tag 'jquery.validate', 'jquery-ui.min', 'maskedinput', 'modal'
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Editing: 
+        = @vector.name
+        of
+        = @vector.attachable.name
+    .inner
+      =form_for @vector, url(:vectors, :update, :id => @vector.id), :method => :put, :class => :form, :enctype => 'multipart/form-data' do |f|
+        =partial "vector_data/form", :locals => { :f => f }
+

@@ -1,0 +1,148 @@
+-# coding: utf-8
+-content_for :include do
+  =javascript_include_tag 'jquery.validate', 'jquery-ui.min', 'maskedinput', 'bootstrap-modal'
+
+#basic
+  .span8.offset2
+    %p.lead İletişim bilgileriniz, siz istemediğiniz sürece kimseyle paylaşılmayacaktır.
+    .row
+      .span3
+        .group
+          =f.label 'Ad - Soyad'
+          %span.required.large *
+          .required=f.error_message_on :subm_name
+          =f.text_field :name, :class => :text_field
+
+      .span4
+        .group
+          =f.label 'Organizasyon'
+          .required=f.error_message_on :subm_org
+          =f.text_field :organization, :class => :text_field
+
+    .row
+      .span3
+        .group
+          =f.label 'E-posta'
+          %span.required.large *
+          .required=f.error_message_on :subm_mail
+          =f.text_field :email, :class => :text_field
+        .group
+          =f.label 'Telefon'
+          .required=f.error_message_on :subm_phone
+          =f.text_field :phone, :class => :text_field
+
+      .span4
+        .group
+          =f.label 'Adres'
+          .required=f.error_message_on :subm_address
+          ~f.text_area :address, :class => :text_area, :rows => 4
+
+  .span6.offset2
+    .pull-left
+      %input#iaccept{:type=>'checkbox'}
+    .pull-left
+      &nbsp;
+      %a{:href=>'/licence',:target=>'_blank'} Kullanım sözleşmesini
+      okudum ve kabul ediyorum.
+  .span1
+    .pull-right
+      %button.btn.btn-inverse.disabled#save Kaydet
+      %br/
+
+:javascript
+  $(document).ready(function(){
+    $("#save").on('click',function(e){
+      if (!$('#iaccept').prop('checked')) {
+        e.preventDefault();
+      }
+    });
+    $('#iaccept').on('change',function(e){
+      if ($('#iaccept').prop('checked')) {
+        $('#save').removeClass('disabled');
+      } else {
+        $('#save').addClass('disabled');
+      }
+    });
+    $(".datemask").mask("99/99/9999");
+    $('.datemask').attr('placeholder','__/__/____');
+    $.extend(jQuery.validator.messages, {
+      required: 'Bu alan zorunludur.',
+      email: 'Geçersiz e-posta adresi.',
+    });
+    $.validator.addMethod("minwords",
+       function(value, element, params) {
+          var trimmed = jQuery.trim(value).replace(/  +/g, ' ')
+          var typedWords = trimmed.split(' ').length;
+          if(typedWords > params) {
+            return true;
+          } else {
+            return false;
+          }
+       },
+       jQuery.format("En az {0} kelimelik bir açıklama yazınız.")
+    );
+    $.validator.addMethod("maxwords",
+       function(value, element, params) {
+          var trimmed = jQuery.trim(value).replace(/  +/g, ' ')
+          var typedWords = trimmed.split(' ').length;
+          if(typedWords <= params) {
+            return true;
+          } else {
+            return false;
+          }
+       },
+       $.format("{0} kelimeyi geçtiniz.")
+    );
+    $.validator.addMethod("valuenot", 
+      function(value, element, params){
+        return params != value;
+      }, 
+      "Lütfen bir seçim yapınız."
+    );
+    $rules = {
+        'conflict[name]': {
+          required: true,
+          maxlength: 255
+        },
+        'conflict[description]': {
+          required: true,
+          minwords: 1
+        },
+        'conflict[province_id]': {
+          required: true,
+          min: 1
+        },
+        'conflict[category_id]': {
+          required: true,
+          valuenot: ''
+        },
+        'version[type_id]': {
+          required: true,
+          valuenot: ''
+        },
+        'account[name]': {
+          required: true,
+          valuenot: ''
+        },
+        'account[email]': {
+          required: true,
+          email: true,
+          valuenot: ''
+        },
+      }
+    $(".form").validate({
+      rules: $rules,
+      errorPlacement: function(error, element) {
+        error.appendTo( element.parent().children('span.required')[0]);
+      },
+    });
+  });
+  /*
+  $(document).ready(function (){
+    $( ".datepicker" ).datepicker($.datepicker.regional['tr']);
+    $( ".datepicker" ).datepicker( "option", "changeYear", true );
+    $( ".datepicker" ).datepicker( "option", "changeMonth", true );
+    $( ".datepicker" ).datepicker( "option", "maxDate", "+1y" );
+  });
+  */
+

@@ -1,0 +1,8 @@
+-# coding: utf-8
+.row
+  .span12
+    .hero-unit
+      %h1.title= @title
+    .inner
+      =form_for :account, url(:conflicts, :create_account), :class => :form do |f|
+        =partial "conflicts/accountform", :locals => { :f => f }

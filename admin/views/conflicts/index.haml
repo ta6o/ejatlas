@@ -1,0 +1,95 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'tablesorter/style'
+  =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+.row.wide
+  .col-md-12
+    .hero-unit
+      %h1.title
+        =mt('Conflicts')
+    .inner
+      %table.table.tablesorter#sortme
+        %thead
+          %tr
+            %th.first=mat(:conflict, :name)
+            %th=mat(:conflict, 'type')
+            %th=mat(:conflict, :submitted_by)
+            %th=mat(:conflict, 'last&nbsp;modified')
+            %th=mat(:conflict, 'approval')
+            %th.last
+              %form#filter-form
+                %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
+        %tbody
+          -@conflicts.each do |conflict|
+            -if conflict.approval_status == 'approved'
+              %tr
+                %td.first=conflict.name
+                %td
+                  %span=conflict.category.name if conflict.category
+                %td
+                  %span
+                    -if conflict.account
+                      %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
+                %td
+                  %span=conflict.updated_at.strftime '%Y-%m-%d'
+                %td
+                  %span=conflict.approval_status
+                %td.last
+                  =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
+                  -if ["admin","editor"].include? current_account.role
+                    %br/
+                    =link_to pat('Disapprove'), url(:conflicts, :disapprove, :id => conflict.id), :method => :get
+
+            -else
+              -unless current_account.nil?
+                %tr{:style=>'color:#bbb'}
+                  %td.first=conflict.name
+                  %td
+                    %span=conflict.category.name if conflict.category
+                  %td
+                    -if conflict.account
+                      %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
+                  %td
+                    %span=conflict.updated_at.strftime '%Y-%m-%d'
+                  %td
+                    %span=conflict.approval_status
+                  %td.last
+                    =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
+                    -if ["admin","editor"].include? current_account.role
+                      %br/
+                      =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict.id), :method => :get
+      -unless current_account.nil?
+        -if ["admin","editor"].include? current_account.role
+          :javascript
+            $(document).ready(function(){
+              $('#sortme').tablesorter({
+                headers: { 
+                  6: { sorter: false } 
+                } 
+              });
+              var theTable = $('table#sortme')
+              $("#filter").click(function(){$('#filter').focus();});
+              $("#filter").keyup(function() {
+                $.uiTableFilter( theTable, this.value );
+              })
+              $('#filter-form').submit(function(){
+                return false;
+              }).focus(); 
+            });
+        -else
+          :javascript
+            $(document).ready(function(){
+              $('#sortme').tablesorter({
+                headers: { 
+                  6: { sorter: false }
+                } 
+              });
+              var theTable = $('table#sortme')
+              $("#filter").click(function(){$('#filter').focus();});
+              $("#filter").keyup(function() {
+                $.uiTableFilter( theTable, this.value );
+              })
+              $('#filter-form').submit(function(){
+                return false;
+              }).focus(); 
+            });

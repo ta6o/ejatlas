@@ -1,0 +1,33 @@
+-#coding:utf-8
+.content
+  %form{:method=>'POST',:action=>'/export'}
+    .row
+      .col-md-6.col-md-offset-3.clearfix
+        %h2 Export cases
+        %p You can filter cases by approval status.
+        %input{:type=>'checkbox',:name=>'approved',:checked=>true} &nbsp; Approved
+        %br/
+        %input{:type=>'checkbox',:name=>'modified',:checked=>true} &nbsp; Modified
+        %br/
+        %input{:type=>'checkbox',:name=>'queued',:checked=>true} &nbsp; Queued
+        %br/
+        %input{:type=>'checkbox',:name=>'draft',:checked=>true} &nbsp; Draft
+        %br/
+        %input{:type=>'checkbox',:name=>'deleted',:checked=>false} &nbsp; Deleted
+        %br/
+        .row
+          .col-md-4
+            %label Order
+            %select{:name=>'order'}
+              -{"id"=>"ID", "slug"=>"Name", "created_at"=>"Date of creation", "updated_at"=>"Date of modification", "start_datestamp"=>"Start date", "end_datestamp"=>"End date", "approval_status"=>"Approval status", "contributor"=>"Contributor", "status_id"=>"Intensity of conflict", "reaction_id"=>"Reactionary stage", "project_status_id"=>"Project status", "success_level"=>"Success level", "accuracy_level"=>"Accuracy of location", "project_area"=>"Project area", "investment_sum"=>"Level of investment", "affected_people"=>"Affected population"}.each do |k,v|
+                %option{:value=>k}= v
+            %br/
+            %br/
+            %input{:type=>'radio',:name=>'ascdsc',:value=>'asc',:checked=>true} &nbsp; Ascending
+            %br/
+            %input{:type=>'radio',:name=>'ascdsc',:value=>'desc',:checked=>false} &nbsp; Descending
+            %br/
+            %label Limit
+            %input{:type=>'number',:name=>'limit',:style=>'width:40px !important'}
+        %br/
+        %input.btn.btn-warning{:type=>'submit',:value=>'Export now'}

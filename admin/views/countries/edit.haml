@@ -1,0 +1,62 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'neutrino/jquery-ui'
+  =javascript_include_tag 'jquery.validate', 'jquery-ui.min', 'maskedinput', 'modal'
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Editing: 
+        = @country.name
+    .inner
+      =form_for :country, url(:countries, :update, :id => @country.id), :method => :put, :class => :form do |f|
+        =partial "countries/form", :locals => { :f => f }
+
+      .row.whitebox
+        .col-md-8.col-md-offset-2
+          .group
+            %label Merge with
+            %input.text_field#merge_country{:type=>'text',:style=>'width:100%'}
+            %input.text_field.hide#merge_country_id
+            %p.description WARNING - this item will be deleted!
+
+          .group.navform.wat-cf
+            %br/
+            %input.pull-right.btn#merge{:type=>:button,:value=>'Merge'}
+
+          :javascript
+            $('#merge').on('click',function(){
+              sid = #{@country.id};
+              cid = parseInt($('#merge_country_id').val());
+              if (cid > 0){
+                $.ajax({
+                  type: 'POST',
+                  url: '/countries/merge', 
+                  data: {source:sid,target:cid}, 
+                  success: function(data,ts){
+                    if (data == "ok"){
+                      window.location = '/countries';
+                    }
+                  },
+                  error: function(data,ts,error){
+                    alert(ts+' '+error)
+                  }
+                });
+              }
+            })
+            $(document).ready(function(){
+              $('#merge_country').autocomplete({
+                minLength: 1,
+                source: #{@countries},
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $('#merge_country_id').val(ui.item.value);
+                    $(this).val(ui.item.label);
+                  },
+                focus: function(event, ui) {
+                    event.preventDefault();
+                    $(this).val(ui.item.label);
+                  },
+              });
+            });
+

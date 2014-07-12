@@ -1,0 +1,10 @@
+-# coding: utf-8
+.row
+  .span12
+    .hero-unit
+      %h1.title
+        =pat('yeni')
+        =mt('İhtilaf')
+    .inner
+      =form_for :conflict, url(:conflicts, :create_with_account), :class => :form do |f|
+        =partial "conflicts/newform", :locals => { :f => f }
