@@ -10,11 +10,10 @@ gem 'rake'
 gem 'sinatra-flash', :require => 'sinatra/flash'
 
 # Component requirements
-gem 'bcrypt-ruby', :require => "bcrypt"
+gem 'bcrypt'
 gem 'haml'
 gem 'activerecord', :require => "active_record"
 gem 'rainbow'
-#gem 'rmagick'
 gem "rmagick", :require => 'RMagick'
 gem 'unicode_utils'
 gem 'carrierwave', :require => %w(carrierwave carrierwave/orm/activerecord)
