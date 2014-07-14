@@ -52,6 +52,7 @@ GEM
     fog-json (1.0.0)
       multi_json (~> 1.0)
     formatador (0.2.4)
+    gdal (0.0.5)
     haml (4.0.5)
       tilt
     http_router (0.11.1)
@@ -151,6 +152,7 @@ DEPENDENCIES
   delayed_job
   delayed_job_active_record
   fog!
+  gdal
   haml
   padrino (= 0.12.1)
   pg
