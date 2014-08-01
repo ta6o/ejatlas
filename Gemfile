@@ -23,7 +23,7 @@ gem 'pg'
 gem 'zip-zip'
 gem 'delayed_job'
 gem 'delayed_job_active_record'
-gem 'gdal'
+#gem 'gdal'
 gem 'unidecoder'
 
 # Padrino Stable Gem
