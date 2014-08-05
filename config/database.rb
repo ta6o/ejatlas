@@ -28,7 +28,7 @@ ActiveRecord::Base.configurations[:production] = {
   :host => '172.17.42.1',
   :port => 49155,
   :user => 'root',
-  :password => 'PlbspeJ2LLI6MJVY',
+  :password => 'QO55GrzNTSySw2JW',
   :database => 'db',
   :url => 'postgres://root:PlbspeJ2LLI6MJVY@172.17.42.1:49155/db'
 }
