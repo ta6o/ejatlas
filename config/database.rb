@@ -23,14 +23,7 @@ ActiveRecord::Base.configurations[:development] = {
 }
 
 ActiveRecord::Base.configurations[:production] = {
-  :adapter  => 'postgresql',
-  :encoding => 'utf8',
-  :host => '172.17.42.1',
-  :port => 49155,
-  :user => 'root',
-  :password => 'QO55GrzNTSySw2JW',
-  :database => 'db',
-  :url => 'postgres://root:PlbspeJ2LLI6MJVY@172.17.42.1:49155/db'
+  :url => ENV['DATABASE_URL']
 }
 
 # Setup our logger
