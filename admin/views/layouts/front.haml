@@ -75,7 +75,7 @@
                           = 'Login'
                           %b.right-caret
                         %ul.dropdown-menu.dropdown-right
-                          =form_tag(url(:sessions, :create), :class => 'form login', :style=>'margin:0') do
+                          =form_tag("http://console.ejatlas.org/sessions/create/", :class => 'form login', :style=>'margin:0') do
                             .clearfix
                               .pull-left
                                 &nbsp; Email:
@@ -85,7 +85,7 @@
                               .pull-left=password_field_tag :password, :value => params[:password]
                               .pull-left=submit_tag('Enter', :class => :btn)
                               .pull-left.small
-                                %a{:href=>'/sessions/login'} Help!
+                                %a{:href=>'http://console.ejatlas.org/sessions/login'} Help!
 
                     -else
                       %li.dropdown#profile

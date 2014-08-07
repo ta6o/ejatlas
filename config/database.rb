@@ -22,13 +22,15 @@ ActiveRecord::Base.configurations[:development] = {
   :host     => '127.0.0.1'
 }
 
-db_from_env = ENV["DATABASE_URL"].sub(/^postgres:\/\//,'').split(':')
 dbconfig = {}
-dbconfig[:user] = db_from_env[0]
-dbconfig[:password] = db_from_env[1].split('@')[0]
-dbconfig[:host] = db_from_env[1].split('@')[1]
-dbconfig[:port] = db_from_env[2].split('/')[0]
-dbconfig[:database] = db_from_env[2].split('/')[1]
+if ENV["DATABASE_URL"]
+  db_from_env = ENV["DATABASE_URL"].sub(/^postgres:\/\//,'').split(':')
+  dbconfig[:user] = db_from_env[0]
+  dbconfig[:password] = db_from_env[1].split('@')[0]
+  dbconfig[:host] = db_from_env[1].split('@')[1]
+  dbconfig[:port] = db_from_env[2].split('/')[0]
+  dbconfig[:database] = db_from_env[2].split('/')[1]
+end
 ActiveRecord::Base.configurations[:production] = {
   :adapter  => 'postgresql',
   :encoding => 'utf8',

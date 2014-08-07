@@ -13,6 +13,30 @@ Admin.controllers :companies do
     render 'companies/index'
   end
 
+  get :merge do
+    @keywords = {}
+    render 'companies/merge'
+  end
+
+  post :merging do
+    keywordz = params['keys'].downcase.gsub(/\s*,\s*/,',').split(',')
+    slugz = ","
+    Company.all.each {|c| slugz += "#{c.slug},"}
+    @keywords = {}
+    keywordz.each do |keyword|
+      key = []
+      modifier = -1
+      slugz.scan(/[^,]*#{keyword}[^,]*/).to_set.to_a.each do |slug,index|
+        Company.find_all_by_slug(slug).each do |comp|
+          key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id})"}.join("\n")}
+        end
+      end
+      @keywords[keyword] = key
+    end
+    puts @keywords
+    render 'companies/merge'
+  end
+
   get :new do
     @company = Company.new
     @countries = Country.all :order => :slug
