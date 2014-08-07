@@ -75,7 +75,9 @@ Admin.controllers :companies do
     modifier = -1
     slugz.scan(/[^,]*#{token}[^,]*/).to_set.to_a.each do |slug,index|
       Company.find_all_by_slug(slug).each do |comp|
-        key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id})"}.join("\n")}
+        country = ""
+        country = comp.country.name if comp.country
+        key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id})"}.join("\n"), :country => country}
       end
     end
     @keywords = {}
@@ -93,7 +95,9 @@ Admin.controllers :companies do
       modifier = -1
       slugz.scan(/[^,]*#{keyword}[^,]*/).to_set.to_a.each do |slug,index|
         Company.find_all_by_slug(slug).each do |comp|
-          key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id})"}.join("\n")}
+          country = ""
+          country = comp.country.name if comp.country
+          key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id})"}.join("\n"), :country => country}
         end
       end
       @keywords[keyword] = key

@@ -35,8 +35,10 @@
                   -else
                     %span=s[:name]
                   &nbsp;
+                  %small="[#{s[:country]}]"
+                  &nbsp;
                   %span.badge{:title=>s[:confs]}=s[:count]
-                  %a{:href=>"/companies/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
+                  %a{:target=>'_blank',:href=>"/companies/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
             %br/
             %input{:type=>'hidden',:value=>k,:name=>'token'}
             %button{:type=>'submit'} Merge

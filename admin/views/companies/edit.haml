@@ -15,6 +15,17 @@
       .row.whitebox
         .col-md-8.col-md-offset-2
           .group
+            %label Cases
+            %ul{:style=>'padding:0'}
+              -@company.conflicts.each do |conflict|
+                %li{:style=>'list-style-type:none;'}
+                  =conflict.name
+                  %a{:href=>"/conflicts/edit/#{conflict.id}"} Edit
+                  %a{:href=>"/conflict/#{conflict.slug}"} View
+
+      .row.whitebox
+        .col-md-8.col-md-offset-2
+          .group
             %label Merge with
             %input.text_field#merge_company{:type=>'text',:style=>'width:100%'}
             %input.text_field.hide#merge_company_id
