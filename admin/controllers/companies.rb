@@ -70,7 +70,7 @@ Admin.controllers :companies do
     end
     slugz = ","
     puts token
-    Company.all.each {|c| slugz += "#{c.slug},"}
+    Company.order('slug').each {|c| slugz += "#{c.slug},"}
     key = []
     modifier = -1
     slugz.scan(/[^,]*#{token}[^,]*/).to_set.to_a.each do |slug,index|
@@ -88,7 +88,7 @@ Admin.controllers :companies do
   post :merging do
     keywordz = params['keys'].downcase.gsub(/\s*,\s*/,',').split(',')
     slugz = ","
-    Company.all.each {|c| slugz += "#{c.slug},"}
+    Company.order('slug').each {|c| slugz += "#{c.slug},"}
     @keywords = {}
     keywordz.each do |keyword|
       key = []
