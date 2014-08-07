@@ -232,7 +232,7 @@ class AsyncTask
       puts 'nein!'
     end
   end
-  handle_asynchronously :csvexport
+  #handle_asynchronously :csvexport
 
   def setcache params
     unless ca = Cached.first

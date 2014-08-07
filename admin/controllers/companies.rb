@@ -1,5 +1,28 @@
 Admin.controllers :companies do
 
+  def self.mergeCompanies src, trg
+    source = Company.find src
+    target = Company.find trg
+    begin
+      if source and target
+        source.c_companies.each do |cc|
+          cc.company_id = target.id
+          cc.save
+        end
+        source.old_slugs.each do |os|
+          os.company_id = target.id
+          os.save
+        end
+        source.destroy
+        return "ok"
+      else
+        return 'no'
+      end
+    rescue => exc
+      return exc.to_s
+    end
+  end
+
   before do
     if current_account and ["admin","editor"].include?(current_account.role)
       @name = "Companies"
@@ -16,6 +39,32 @@ Admin.controllers :companies do
   get :merge do
     @keywords = {}
     render 'companies/merge'
+  end
+
+  post :mergethem do
+    action = params.delete 'act'
+    if action == "delete"
+      line = []
+      params.each do |k,v|
+        if k[0] == 'p'
+          line << k[2..-1]
+        end
+      end
+      p line
+    elsif action == 'merge'
+      line = []
+      master = nil
+      params.each do |k,v|
+        if k[0] == 'p'
+          line << k[2..-1]
+        elsif k[0] == 'a'
+          master = Company.find v.to_i
+        end
+      end
+      puts master.name
+      p line
+    end
+    return params.to_s
   end
 
   post :merging do
@@ -71,25 +120,7 @@ Admin.controllers :companies do
   end
 
   post :merge do
-    source = Company.find params['source']
-    target = Company.find params['target']
-    begin
-      if source and target
-        puts source.name
-        puts target.name
-        source.c_companies.each do |cc|
-          cc.company_id = target.id
-          cc.save
-        end
-        puts source.conflicts
-        source.destroy
-        return "ok"
-      else
-        return 'no'
-      end
-    rescue => exc
-      return exc.to_s
-    end
+    return Admin.mergeCompanies params['source'], params['target']
   end
 
   delete :destroy, :with => :id do

@@ -20,11 +20,11 @@
               %li.clearfix{:style=>'list-style-type:none'}
                 .pull-left
                   &nbsp;
-                  %input{:type=>'radio',:name=>"a_#{k}",:value=>s['id']}
+                  %input{:type=>'radio',:name=>"a_#{k}",:value=>s[:id]}
                   &nbsp;
                 .pull-left
                   &nbsp;
-                  %input{:type=>'checkbox',:name=>"p_#{s['id']}",:value=>s['id']}
+                  %input{:type=>'checkbox',:name=>"p_#{s[:id]}"}
                   &nbsp;
                 .pull-left
                   -if s[:name].length > 48
@@ -34,7 +34,27 @@
                   &nbsp;
                   %span.badge{:title=>s[:confs]}=s[:count]
             %br/
-            %input{:type=>'hidden',:value=>'merge',:name=>'action'}
             %button{:type=>'submit'} Merge
             %button{:type=>'submit'} Delete
+:javascript
+  $(document).ready(function(){
+    $('input[type=radio]').on('change',function(e){
+      $('input[type=checkbox]').removeAttr('disabled');
+      //$(this).parent().next('.pull-left').find('input[type=checkbox]').attr('checked',true);
+      $(this).parent().next('.pull-left').find('input[type=checkbox]').attr('disabled',true);
+    })
+    $('button[type=submit]').on('click',function(e){
+      e.preventDefault();
+      data = $(this).closest('form').serialize();
+      data += "&act="+$(this).text().toLowerCase()
+      $.ajax({
+        type: 'POST',
+        url: '/companies/mergethem',
+        data: data, 
+        success: function(data,ts){
+          console.log(data);
+        }
+      })
+    })
+  })
 
