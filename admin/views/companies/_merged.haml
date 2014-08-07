@@ -1,0 +1,30 @@
+-@keywords.each do |k,v|
+  -unless v.any?
+    %h3= "No data for #{k}"
+    -next
+  %h3= k
+  %form.merge{:method=>'POST',:action=>"/companies/mergethem/"}
+    %ul
+    -v.each do |s|
+      %li.clearfix{:style=>'list-style-type:none'}
+        .pull-left
+          &nbsp;
+          %input{:type=>'radio',:name=>"a_#{k}",:value=>s[:id]}
+          &nbsp;
+        .pull-left
+          &nbsp;
+          %input{:type=>'checkbox',:name=>"p_#{s[:id]}"}
+          &nbsp;
+        .pull-left
+          -if s[:name].length > 48
+            %span{:title=>s[:name]}=s[:name][0..48]+"..."
+          -else
+            %span=s[:name]
+          &nbsp;
+          %span.badge{:title=>s[:confs]}=s[:count]
+          %a{:href=>"/companies/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
+    %br/
+    %input{:type=>'hidden',:value=>k,:name=>'token'}
+    %button{:type=>'submit'} Merge
+    %button{:type=>'submit'} Delete
+

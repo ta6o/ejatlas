@@ -1,9 +1,9 @@
 Admin.controllers :companies do
 
   def self.mergeCompanies src, trg
-    source = Company.find src
-    target = Company.find trg
     begin
+      source = Company.find src
+      target = Company.find trg
       if source and target
         source.c_companies.each do |cc|
           cc.company_id = target.id
@@ -43,6 +43,7 @@ Admin.controllers :companies do
 
   post :mergethem do
     action = params.delete 'act'
+    token = params.delete 'token'
     if action == "delete"
       line = []
       params.each do |k,v|
@@ -50,21 +51,36 @@ Admin.controllers :companies do
           line << k[2..-1]
         end
       end
-      p line
+      line.each do |i|
+        Company.find(i).destroy
+      end
     elsif action == 'merge'
       line = []
-      master = nil
+      master = 0
       params.each do |k,v|
         if k[0] == 'p'
           line << k[2..-1]
         elsif k[0] == 'a'
-          master = Company.find v.to_i
+          master = v
         end
       end
-      puts master.name
-      p line
+      line.each do |i|
+        Admin.mergeCompanies i, master
+      end
     end
-    return params.to_s
+    slugz = ","
+    puts token
+    Company.all.each {|c| slugz += "#{c.slug},"}
+    key = []
+    modifier = -1
+    slugz.scan(/[^,]*#{token}[^,]*/).to_set.to_a.each do |slug,index|
+      Company.find_all_by_slug(slug).each do |comp|
+        key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id})"}.join("\n")}
+      end
+    end
+    @keywords = {}
+    @keywords[token] = key
+    return render 'companies/_merged', :layout => false
   end
 
   post :merging do
@@ -82,7 +98,6 @@ Admin.controllers :companies do
       end
       @keywords[keyword] = key
     end
-    puts @keywords
     render 'companies/merge'
   end
 

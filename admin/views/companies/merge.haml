@@ -7,14 +7,17 @@
     .inner
       %p Please type the keywords below, separated by commas.
       %form{:method=>'POST',:action=>'/companies/merging'}
-        %textarea{:name=>'keys'}
+        %textarea{:name=>'keys'}= @keywords.keys.join(', ')
         %button{:type=>'submit'} Submit
       %hr/
       -@keywords.each do |k,v|
-        -next unless v.any?
+        -unless v.any?
+          .well
+            %h3= "No data for #{k}"
+          -next
         .well
           %h3= k
-          %form{:method=>'POST',:action=>"/companies/mergethem/"}
+          %form.merge{:method=>'POST',:action=>"/companies/mergethem/"}
             %ul
             -v.each do |s|
               %li.clearfix{:style=>'list-style-type:none'}
@@ -33,26 +36,29 @@
                     %span=s[:name]
                   &nbsp;
                   %span.badge{:title=>s[:confs]}=s[:count]
+                  %a{:href=>"/companies/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
             %br/
+            %input{:type=>'hidden',:value=>k,:name=>'token'}
             %button{:type=>'submit'} Merge
             %button{:type=>'submit'} Delete
 :javascript
   $(document).ready(function(){
-    $('input[type=radio]').on('change',function(e){
+    $('.inner').on('change','input[type=radio]',function(e){
       $('input[type=checkbox]').removeAttr('disabled');
-      //$(this).parent().next('.pull-left').find('input[type=checkbox]').attr('checked',true);
+      $(this).parent().next('.pull-left').find('input[type=checkbox]').attr('checked',false);
       $(this).parent().next('.pull-left').find('input[type=checkbox]').attr('disabled',true);
     })
-    $('button[type=submit]').on('click',function(e){
+    $('.inner').on('click','form.merge button[type=submit]',function(e){
       e.preventDefault();
       data = $(this).closest('form').serialize();
       data += "&act="+$(this).text().toLowerCase()
+      baby = $(this)
       $.ajax({
         type: 'POST',
         url: '/companies/mergethem',
         data: data, 
         success: function(data,ts){
-          console.log(data);
+          baby.closest('.well').html(data);
         }
       })
     })
