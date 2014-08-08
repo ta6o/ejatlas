@@ -376,6 +376,7 @@ Admin.controllers :conflicts do
       @conflict.account = current_account
       clearDups @conflict.id
       @conflict.ping
+      @conflict.modified_at = Time.now
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
         redirect url(:conflicts, :edit, :id => @conflict.id)
@@ -479,6 +480,7 @@ Admin.controllers :conflicts do
         @conflict.update_attribute k, v
       end
       @conflict.ping
+      @conflict.modified_at = Time.now
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
         redirect "/conflicts/edit/#{@conflict.id}#{hash}"

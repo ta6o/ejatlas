@@ -211,6 +211,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "updated_at",                           :null => false
     t.text     "ejos"
     t.text     "govt_actors"
+    t.datetime "modified_at"
   end
 
   create_table "contact_people", :force => true do |t|

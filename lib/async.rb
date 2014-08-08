@@ -266,7 +266,9 @@ class AsyncTask
 
     if params["conflicts"] == "on"
       puts "Updating conflicts..."
-      markers, json = [], []
+      Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
+      FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
+      Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
       Conflict.all.each do |c|
         if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
           c.related_conflict_id = rc.id
@@ -277,12 +279,12 @@ class AsyncTask
           c.save
         end
         if c.approval_status == "approved"
-          markers << c.marker
-          json << c.json
+          open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
+          open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts(c.json.to_json) }
         end
       end
-      ca.conflicts_marker = markers.to_json
-      ca.conflicts_json = json.to_json
+      ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
+      ca.conflicts_json = "["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
     end
 
     if params["countries"] == "on"
