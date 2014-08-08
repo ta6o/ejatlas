@@ -269,7 +269,7 @@ class AsyncTask
       Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
       FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
       Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
-      Conflict.all.find_in_batches(batch_size: 64) do |batch|
+      Conflict.find_in_batches(batch_size: 64) do |batch|
         batch.each do |c|
           if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
             c.related_conflict_id = rc.id
