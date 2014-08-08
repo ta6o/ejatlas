@@ -195,9 +195,9 @@ Admin.controllers :conflicts do
   get :index do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.order('updated_at desc').select('id,name,slug,account_id,category_id,updated_at,approval_status')
+        @conflicts = Conflict.order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
       else
-        @conflicts = Conflict.where(account_id: current_account.id).order('updated_at desc').select('id,name,slug,account_id,approval_status,category_id,updated_at')
+        @conflicts = Conflict.where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
       end
     end
     render 'conflicts/index'
@@ -206,9 +206,9 @@ Admin.controllers :conflicts do
   get :approved do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'approved').order('updated_at desc').select('id,name,slug,account_id,category_id,updated_at,approval_status')
+        @conflicts = Conflict.where(approval_status: 'approved').order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
       else
-        @conflicts = Conflict.where(approval_status: 'approved').where(account_id: current_account.id).order('updated_at desc').select('id,name,slug,account_id,approval_status,category_id,updated_at')
+        @conflicts = Conflict.where(approval_status: 'approved').where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
       end
     end
     render 'conflicts/index'
@@ -217,9 +217,9 @@ Admin.controllers :conflicts do
   get :modified do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'modified').order('updated_at desc').select('id,name,slug,account_id,category_id,updated_at,approval_status')
+        @conflicts = Conflict.where(approval_status: 'modified').order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
       else
-        @conflicts = Conflict.where(approval_status: 'modified').where(account_id: current_account.id).order('updated_at desc').select('id,name,slug,account_id,approval_status,category_id,updated_at')
+        @conflicts = Conflict.where(approval_status: 'modified').where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
       end
     end
     render 'conflicts/index'
@@ -228,9 +228,9 @@ Admin.controllers :conflicts do
   get :queued do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'queued').order('updated_at desc').select('id,name,slug,account_id,category_id,updated_at,approval_status')
+        @conflicts = Conflict.where(approval_status: 'queued').order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
       else
-        @conflicts = Conflict.where(approval_status: 'queued').where(account_id: current_account.id).order('updated_at desc').select('id,name,slug,account_id,approval_status,category_id,updated_at')
+        @conflicts = Conflict.where(approval_status: 'queued').where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
       end
     end
     render 'conflicts/index'
@@ -239,9 +239,9 @@ Admin.controllers :conflicts do
   get :draft do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'draft').order('updated_at desc').select('id,name,slug,account_id,category_id,updated_at,approval_status')
+        @conflicts = Conflict.where(approval_status: 'draft').order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
       else
-        @conflicts = Conflict.where(approval_status: 'draft').where(account_id: current_account.id).order('updated_at desc').select('id,name,slug,account_id,approval_status,category_id,updated_at')
+        @conflicts = Conflict.where(approval_status: 'draft').where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
       end
     end
     render 'conflicts/index'
@@ -250,9 +250,9 @@ Admin.controllers :conflicts do
   get :deleted do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'deleted').order('updated_at desc').select('id,name,slug,account_id,category_id,updated_at,approval_status')
+        @conflicts = Conflict.where(approval_status: 'deleted').order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
       else
-        @conflicts = Conflict.where(approval_status: 'deleted').where(account_id: current_account.id).order('updated_at desc').select('id,name,slug,account_id,approval_status,category_id,updated_at')
+        @conflicts = Conflict.where(approval_status: 'deleted').where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
       end
     end
     render 'conflicts/index'
