@@ -269,18 +269,20 @@ class AsyncTask
       Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
       FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
       Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
-      Conflict.all.each do |c|
-        if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
-          c.related_conflict_id = rc.id
-          c.ping
-          c.save
-        else
-          c.ping
-          c.save
-        end
-        if c.approval_status == "approved"
-          open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
-          open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts(c.json.to_json) }
+      Conflict.all.find_in_batches(batch_size: 64) do |batch|
+        batch.each do |c|
+          if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
+            c.related_conflict_id = rc.id
+            c.ping
+            c.save
+          else
+            c.ping
+            c.save
+          end
+          if c.approval_status == "approved"
+            open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
+            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts(c.json.to_json) }
+          end
         end
       end
       ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
