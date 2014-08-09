@@ -39,7 +39,7 @@ class Country < ActiveRecord::Base
 
   def old_slug
     if self.old_slugs.any?
-      return self.old_slugs[0]
+      return self.old_slugs[0].name
     end
     return self.slug
   end

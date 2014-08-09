@@ -289,6 +289,7 @@ class AsyncTask
     end
 
     if params["images"] == "on"
+      puts "Updating images..."
       docs = []
       ext = ["jpg", "bmp", "png", "jpeg", "gif"]
       Document.all.each do |doc|
@@ -296,7 +297,7 @@ class AsyncTask
           docs << doc.id
         end
       end
-      puts "Updating #{docs.length} images..."
+      puts "Found #{docs.length} images to update..."
       docs.each do |d|
         doc = Document.find d
         fns = []
