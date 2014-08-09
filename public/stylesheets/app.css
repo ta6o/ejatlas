@@ -5657,6 +5657,9 @@ ul.sidelink li.active {
     display: none;
   }
 }
+#carousel_container {
+  position: relative;
+}
 #carousel_inner {
   float: left;
   width: 100%;
@@ -5699,7 +5702,7 @@ ul.sidelink li.active {
   text-align: left;
 }
 #carousel_ul li .title:hover {
-  background: #ffc40d;
+  background: #049cdb;
 }
 #carousel_ul li .title:hover a {
   color: #333;
@@ -5719,7 +5722,7 @@ ul.sidelink li.active {
 #left_scroll,
 #right_scroll {
   position: absolute;
-  top: 160px;
+  top: 100px;
   color: #333;
   font-size: 32px;
   cursor: pointer;
@@ -5735,7 +5738,7 @@ ul.sidelink li.active {
 }
 #left_scroll:hover,
 #right_scroll:hover {
-  background: #ffc40d;
+  background: #049cdb;
 }
 #left_scroll {
   left: 12px;
