@@ -313,10 +313,10 @@ class AsyncTask
         doc.conflict.images << img
         begin
           img.save!
+          puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
         rescue
           puts "  problem saving image with url: \n#{doc.file.file.url}\n"
         end
-        puts "#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
       end
     end
 
