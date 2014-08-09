@@ -242,53 +242,6 @@ class AsyncTask
       #cachestamp = ca.updated_at
     end
 
-    if params["filter"] == "on"
-      puts "Updating filter..."
-      filterdata = {}
-      filterdata[:cntry] = Country.order(:name).select('name, id')
-      filterdata[:comp] = Company.order(:name).select('name, id')
-      filterdata[:success] = ['Success', 'Not sure', 'Failure']
-      filterdata[:poptype] = ['Unknown','Urban','Semi-urban','Rural']
-      filterdata[:category] = Category.order(:name).select('name, id')
-      filterdata[:type] = Type.order(:name).select('name, id')
-      filterdata[:intensity] = Status.order(:name).select('name, id')
-      filterdata[:envi] = EnvImpact.order(:name).select('name, id')
-      filterdata[:hlti] = HltImpact.order(:name).select('name, id')
-      filterdata[:seci] = SecImpact.order(:name).select('name, id')
-      filterdata[:mobgroup] =  MobilizingGroup.order(:name).select('name, id')
-      filterdata[:mobform] =  MobilizingForm.order(:name).select('name, id')
-      filterdata[:product] =  Product.order(:name).select('name, id')
-      filterdata[:pstatus] =  ProjectStatus.order(:name).select('name, id')
-      filterdata[:stage] =  Reaction.order(:name).select('name, id')
-      filterdata[:outcome] =  ConflictEvent.order(:name).select('name, id')
-      ca.filterdata = filterdata.to_json
-    end
-
-    if params["conflicts"] == "on"
-      puts "Updating conflicts..."
-      Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
-      FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
-      Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
-      Conflict.find_in_batches(batch_size: 64) do |batch|
-        batch.each do |c|
-          if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
-            c.related_conflict_id = rc.id
-            c.ping
-            c.save
-          else
-            c.ping
-            c.save
-          end
-          if c.approval_status == "approved"
-            open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
-            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts(c.json.to_json) }
-          end
-        end
-      end
-      ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
-      ca.conflicts_json = "["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
-    end
-
     if params["countries"] == "on"
       countries = []
       puts "Updating countries..."
@@ -352,8 +305,6 @@ class AsyncTask
           puts "image already present: #{doc.file.file.filename}"
         end
         img = Image.new
-        #img.attachable_type = "Conflict"
-        #img.attachable_id = doc.conflict.id
         img.file = doc.file
         img.title = doc.title
         img.description = doc.description
@@ -361,6 +312,53 @@ class AsyncTask
         img.save
         puts "#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
       end
+    end
+
+    if params["conflicts"] == "on"
+      puts "Updating conflicts..."
+      Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
+      FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
+      Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
+      Conflict.find_in_batches(batch_size: 64) do |batch|
+        batch.each do |c|
+          if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
+            c.related_conflict_id = rc.id
+            c.ping
+            c.save
+          else
+            c.ping
+            c.save
+          end
+          if c.approval_status == "approved"
+            open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
+            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts(c.json.to_json) }
+          end
+        end
+      end
+      ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
+      ca.conflicts_json = "["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
+    end
+
+    if params["filter"] == "on"
+      puts "Updating filter..."
+      filterdata = {}
+      filterdata[:cntry] = Country.order(:name).select('name, id')
+      filterdata[:comp] = Company.order(:name).select('name, id')
+      filterdata[:success] = ['Success', 'Not sure', 'Failure']
+      filterdata[:poptype] = ['Unknown','Urban','Semi-urban','Rural']
+      filterdata[:category] = Category.order(:name).select('name, id')
+      filterdata[:type] = Type.order(:name).select('name, id')
+      filterdata[:intensity] = Status.order(:name).select('name, id')
+      filterdata[:envi] = EnvImpact.order(:name).select('name, id')
+      filterdata[:hlti] = HltImpact.order(:name).select('name, id')
+      filterdata[:seci] = SecImpact.order(:name).select('name, id')
+      filterdata[:mobgroup] =  MobilizingGroup.order(:name).select('name, id')
+      filterdata[:mobform] =  MobilizingForm.order(:name).select('name, id')
+      filterdata[:product] =  Product.order(:name).select('name, id')
+      filterdata[:pstatus] =  ProjectStatus.order(:name).select('name, id')
+      filterdata[:stage] =  Reaction.order(:name).select('name, id')
+      filterdata[:outcome] =  ConflictEvent.order(:name).select('name, id')
+      ca.filterdata = filterdata.to_json
     end
 
     ca.save
