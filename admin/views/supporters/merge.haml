@@ -1,0 +1,68 @@
+-# coding: utf-8
+.row.wide
+  .col-md-12
+    .hero-unit
+      %h1.title
+        =mt('IFI\'s to merge')
+    .inner
+      %p Please type the keywords below, separated by commas.
+      %form{:method=>'POST',:action=>'/supporters/merging'}
+        %textarea{:name=>'keys'}= @keywords.keys.join(', ')
+        %button{:type=>'submit'} Submit
+      %hr/
+      -@keywords.each do |k,v|
+        -unless v.any?
+          .well
+            %h3= "No data for #{k}"
+          -next
+        .well
+          %h3= k
+          %form.merge{:method=>'POST',:action=>"/supporters/mergethem/"}
+            %ul
+            -v.each do |s|
+              %li.clearfix{:style=>'list-style-type:none'}
+                .pull-left
+                  &nbsp;
+                  %input{:type=>'radio',:name=>"a_#{k}",:value=>s[:id]}
+                  &nbsp;
+                .pull-left
+                  &nbsp;
+                  %input{:type=>'checkbox',:name=>"p_#{s[:id]}"}
+                  &nbsp;
+                .pull-left
+                  -if s[:name].length > 48
+                    %span{:title=>s[:name]}=s[:name][0..48]+"..."
+                  -else
+                    %span=s[:name]
+                  &nbsp;
+                  %small="[#{s[:country]}]"
+                  &nbsp;
+                  %span.badge{:title=>s[:confs]}=s[:count]
+                  %a{:target=>'_blank',:href=>"/supporters/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
+            %br/
+            %input{:type=>'hidden',:value=>k,:name=>'token'}
+            %button{:type=>'submit'} Merge
+            %button{:type=>'submit'} Delete
+:javascript
+  $(document).ready(function(){
+    $('.inner').on('change','input[type=radio]',function(e){
+      $('input[type=checkbox]').removeAttr('disabled');
+      $(this).parent().next('.pull-left').find('input[type=checkbox]').attr('checked',false);
+      $(this).parent().next('.pull-left').find('input[type=checkbox]').attr('disabled',true);
+    })
+    $('.inner').on('click','form.merge button[type=submit]',function(e){
+      e.preventDefault();
+      data = $(this).closest('form').serialize();
+      data += "&act="+$(this).text().toLowerCase()
+      baby = $(this)
+      $.ajax({
+        type: 'POST',
+        url: '/supporters/mergethem',
+        data: data, 
+        success: function(data,ts){
+          baby.closest('.well').html(data);
+        }
+      })
+    })
+  })
+

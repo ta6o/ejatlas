@@ -64,6 +64,7 @@ Admin.controller do
     #last_modified c.updated_at
     redirect to "/" unless c
     @markerinfo = c.country.conflicts_marker
+    @cmarker = c.as_marker.to_json
     @defs = []
     c.country.vector_data.each do |vd|
       if vd.vector_style and vd.vector_style.defs

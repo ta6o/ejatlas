@@ -302,7 +302,7 @@ class AsyncTask
         fns = []
         doc.conflict.images.each {|i| fns << i.file.file.filename}
         if fns.include? doc.file.file.filename
-          puts "image already present: #{doc.file.file.filename}"
+          puts "\rimage already present: #{doc.file.file.filename}"
           next
         end
         img = Image.new
@@ -310,7 +310,11 @@ class AsyncTask
         img.title = doc.title
         img.description = doc.description
         doc.conflict.images << img
-        img.save!
+        begin
+          img.save!
+        rescue
+          puts "  problem saving image with url: \n#{doc.file.file.url}\n"
+        end
         puts "#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
       end
     end

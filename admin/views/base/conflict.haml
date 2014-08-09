@@ -8,6 +8,10 @@
     var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var vectorinfo = #{@vectors};
     window.onload = function(){
+      if ($.grep(markerinfo,function(a,b){return (a['id'] == #{@cid})}).length == 0) {
+        cmarker = JSON.parse(#{@cmarker});
+        markerinfo.push(cmarker);
+      }
       console.log(markerinfo)
       console.log(vectorinfo)
       initMap(markerinfo,"#{@maptitle}",3,vectorinfo);
