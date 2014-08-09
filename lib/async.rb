@@ -310,7 +310,7 @@ class AsyncTask
         img.title = doc.title
         img.description = doc.description
         doc.conflict.images << img
-        img.save
+        img.save!
         puts "#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
       end
     end
