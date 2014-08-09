@@ -14,7 +14,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
   storage :fog
   def store_dir
-    "img/#{self.model.attachable.class}/#{self.model.attachable.slug}"
+    "img/#{self.model.attachable.class}/#{self.model.attachable.old_slug}"
   end
 
   def cache_dir
@@ -29,7 +29,7 @@ end
 class DocumentUploader < CarrierWave::Uploader::Base
   storage :fog
   def store_dir
-    "docs/"+self.model.conflict.slug
+    "docs/"+self.model.conflict.old_slug
   end
 
   def cache_dir

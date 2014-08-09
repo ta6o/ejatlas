@@ -81,6 +81,13 @@ class Conflict < ActiveRecord::Base
     Conflict.find(:first, :conditions => ["slug = lower(?)", slug])
   end
 
+  def old_slug
+    if self.old_slugs.any?
+      return self.old_slugs[0]
+    end
+    return self.slug
+  end
+
   def ping
     self.json = self.jsonize
     self.marker = self.as_marker

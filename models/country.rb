@@ -37,6 +37,13 @@ class Country < ActiveRecord::Base
     Country.find(:first, :conditions => ["slug = lower(?)", slug])
   end
 
+  def old_slug
+    if self.old_slugs.any?
+      return self.old_slugs[0]
+    end
+    return self.slug
+  end
+
   def ping
     json, marker, link = [], [], []
     self.conflicts.order("name asc").where(approval_status: 'approved').each do |c|
