@@ -290,22 +290,23 @@ class AsyncTask
 
     if params["images"] == "on"
       docs = []
-      puts "Updating images..."
       ext = ["jpg", "bmp", "png", "jpeg", "gif"]
       Document.all.each do |doc|
         if ext.include? doc.file.file.filename.split('.')[-1].downcase
           docs << doc.id
         end
       end
+      puts "Updating #{docs.length} images..."
       docs.each do |d|
         doc = Document.find d
         fns = []
         doc.conflict.images.each {|i| fns << i.file.file.filename}
         if fns.include? doc.file.file.filename
           puts "image already present: #{doc.file.file.filename}"
+          next
         end
         img = Image.new
-        img.file = doc.file
+        img.remote_file_url = doc.file.file.url
         img.title = doc.title
         img.description = doc.description
         doc.conflict.images << img
