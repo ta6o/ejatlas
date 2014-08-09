@@ -809,6 +809,9 @@ ul.sidelink {
     }
   }
 }
+#carousel_container {
+position: relative;
+}
 #carousel_inner {
   float:left;
   width:100%;
@@ -853,7 +856,7 @@ ul.sidelink {
     text-align: left;
   }
   &:hover {
-    background: @yellow;
+    background: @blue;
     a {
       color: #333;
     }
@@ -875,7 +878,7 @@ ul.sidelink {
 
 #left_scroll, #right_scroll{
   position:absolute;
-  top: 160px;
+  top: 100px;
   color: #333;
   font-size:32px;
   cursor: pointer;
@@ -887,7 +890,7 @@ ul.sidelink {
   line-height: 52px;
   .border-radius(32px);
   &:hover {
-    background: @yellow;
+    background: @blue;
   }
 }
 #left_scroll {left:12px; span{margin-left:-3px;}}
