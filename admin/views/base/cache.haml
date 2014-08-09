@@ -20,5 +20,11 @@
         %br/
         %input{:type=>'checkbox',:name=>'categories',:checked=>true} &nbsp;  Categories (2nd level)
         %br/
+        %input{:type=>'checkbox',:name=>'images'} &nbsp;  Images
+        %br/
+        %a{:href=>"#",:onclick=>"deselect()"} Deselect all
+        %br/
         %br/
         %input.btn.btn-warning{:type=>'submit',:value=>'Update now'}
+  :javascript
+    function deselect() { $('input[type=checkbox]').attr('checked',false); }

@@ -335,8 +335,37 @@ class AsyncTask
       ca.types = types.to_json
     end
 
+    if params["images"] == "on"
+      docs = []
+      puts "Updating images..."
+      ext = ["jpg", "bmp", "png", "jpeg", "gif"]
+      Document.all.each do |doc|
+        if ext.include? doc.file.file.filename.split('.')[-1].downcase
+          docs << doc.id
+        end
+      end
+      docs.each do |d|
+        doc = Document.find d
+        fns = []
+        doc.conflict.images.each {|i| fns << i.file.file.filename}
+        if fns.include? doc.file.file.filename
+          puts "image already present: #{doc.file.file.filename}"
+        end
+        img = Image.new
+        #img.attachable_type = "Conflict"
+        #img.attachable_id = doc.conflict.id
+        img.file = doc.file
+        img.title = doc.title
+        img.description = doc.description
+        doc.conflict.images << img
+        img.save
+        puts "#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
+      end
+    end
+
     ca.save
     puts "Cache updated."
+    GC.start
 
   end
   handle_asynchronously :setcache
