@@ -6,7 +6,7 @@
         =mt('IFI\'s to merge')
     .inner
       %p Please type the keywords below, separated by commas.
-      %form{:method=>'POST',:action=>'/supporters/merging'}
+      %form{:method=>'POST',:action=>'/ifis/merging'}
         %textarea{:name=>'keys'}= @keywords.keys.join(', ')
         %button{:type=>'submit'} Submit
       %hr/
@@ -17,7 +17,7 @@
           -next
         .well
           %h3= k
-          %form.merge{:method=>'POST',:action=>"/supporters/mergethem/"}
+          %form.merge{:method=>'POST',:action=>"/ifis/mergethem/"}
             %ul
             -v.each do |s|
               %li.clearfix{:style=>'list-style-type:none'}
@@ -38,7 +38,7 @@
                   %small="[#{s[:country]}]"
                   &nbsp;
                   %span.badge{:title=>s[:confs]}=s[:count]
-                  %a{:target=>'_blank',:href=>"/supporters/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
+                  %a{:target=>'_blank',:href=>"/ifis/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
             %br/
             %input{:type=>'hidden',:value=>k,:name=>'token'}
             %button{:type=>'submit'} Merge
@@ -57,7 +57,7 @@
       baby = $(this)
       $.ajax({
         type: 'POST',
-        url: '/supporters/mergethem',
+        url: '/ifis/mergethem',
         data: data, 
         success: function(data,ts){
           baby.closest('.well').html(data);

@@ -5,7 +5,7 @@ Admin.controllers :ifis do
       source = Supporter.find src
       target = Supporter.find trg
       if source and target
-        source.c_companies.each do |cc|
+        source.c_supporters.each do |cc|
           cc.supporter_id = target.id
           cc.save
         end
