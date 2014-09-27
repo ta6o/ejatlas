@@ -31,7 +31,10 @@
                     -if conflict.account
                       %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
                 %td
-                  %span=conflict.modified_at.strftime '%Y-%m-%d'
+                  -if conflict.modified_at
+                    %span=conflict.modified_at.strftime '%Y-%m-%d'
+                  -else
+                    %span=conflict.updated_at.strftime '%Y-%m-%d'
                 %td
                   %span=conflict.approval_status
                 %td.last
@@ -50,7 +53,10 @@
                     -if conflict.account
                       %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
                   %td
-                    %span=conflict.modified_at.strftime '%Y-%m-%d'
+                    -if conflict.modified_at
+                      %span=conflict.modified_at.strftime '%Y-%m-%d'
+                    -else
+                      %span=conflict.updated_at.strftime '%Y-%m-%d'
                   %td
                     %span=conflict.approval_status
                   %td.last

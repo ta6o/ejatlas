@@ -915,7 +915,7 @@ def checkdocs
       titles[line[0].to_i] = {}
     end
     begin
-      titles[line[0].to_i]= [line[1], line[2]]
+      titles[line[0].to_i] = [line[1], line[2], line[3]]
     rescue
       puts 'nope!'
     end
@@ -925,14 +925,14 @@ def checkdocs
     if conf = Conflict.find_by_formerid(k) 
       if File.file?("#{PADRINO_ROOT}/misc/docs/#{titles[k][0]}")
         filename = titles[k][0]
-        if ["jpg","jpeg","png","gif"].include? filename.split('.')[-1].downcase
+        if ["jpg","jpeg","png","gif","bmp"].include? filename.split('.')[-1].downcase
           i = Image.new
           conf.images << i
           i.file.store! File.open("#{PADRINO_ROOT}/misc/docs/#{filename}",'r')
           i.title = titles[k][1]
           i.save
-          puts "#{conf.name}: #{titles[k][0]}, #{titles[k][1]}"
-        elsif filename.split('.')[-1].downcase == "pdf"
+          #puts "OK with #{conf.name}: #{titles[k][0]}, #{titles[k][1]}"
+        elsif filename.split('.')[-1].downcase == "pdf" and false
           i = Document.new
           i.conflict = conf
           i.file.store! File.open("#{PADRINO_ROOT}/misc/docs/#{filename}",'r')
@@ -941,12 +941,11 @@ def checkdocs
           puts "#{conf.name}: #{titles[k][0]}, #{titles[k][1]}"
         end
       else
-        puts "#{conf.name}: #{titles[k][0]}, #{titles[k][1]}"
+        puts "  File not found for #{conf.name}: #{titles[k][0]}, #{titles[k][1]}"
       end
     else
-      puts "#{k}: #{titles[k][0]}, #{titles[k][1]}"
+      puts "  Conflict #{k} not found: #{titles[k][0]}, #{titles[k][1]}"
     end
-    puts
   end
 
 end

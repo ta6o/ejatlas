@@ -25,8 +25,6 @@ class Admin < Padrino::Application
   enable :store_location
 
   set :login_page, "/sessions/login"
-  set :static_cache_control, [:public, :max_age => 60*60*24*365]
-
   set :delivery_method, :smtp => { 
     :address              => "smtp.sendgrid.net",
     :port                 => 587,
