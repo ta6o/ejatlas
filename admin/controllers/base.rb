@@ -346,11 +346,11 @@ Admin.controller do
       message = {  
        :subject=> mail['msg']['subject'],
        :from_name=> "#{mail['msg']['from_name']} <#{mail['msg']['from_email']}>",
-       :to=>[{  
-         :email=> 'yakup.cetinkaya@gmail.com',
-         :name=> 'Yako'
-       }],  
-       :html=> mail['msg']['mail'],
+       :to=>[
+         {:email=> 'yakup.cetinkaya@gmail.com', :name=> 'Yakup' },
+         {:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
+       ],  
+       :html=> mail['msg']['html'],
        :from_email=> 'forwards@ejatlas.org'
       }  
       sending = mandrill.messages.send message  
