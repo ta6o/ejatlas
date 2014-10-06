@@ -343,6 +343,7 @@ Admin.controller do
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
     mails = JSON.parse params['mandrill_events']
     mails.each do |mail|
+      puts mail['msg']['subject']
       message = {  
        :subject=> mail['msg']['subject'],
        :from_name=> "#{mail['msg']['from_name']} <#{mail['msg']['from_email']}>",
