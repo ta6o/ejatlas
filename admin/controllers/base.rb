@@ -341,6 +341,8 @@ Admin.controller do
   post :forward do
     require 'mandrill'
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
+    html = JSON.parse params['mandrill_events']
+    puts html
     message = {  
      :subject=> "Mail forward test",
      :from_name=> "EJOLT Project",  
@@ -348,7 +350,7 @@ Admin.controller do
        :email=> 'yakup.cetinkaya@gmail.com',
        :name=> 'Yako'
      }],  
-     :html=> params.to_s,
+     :html=> html,
      :from_email=>$sitemail
     }  
     sending = mandrill.messages.send message  
