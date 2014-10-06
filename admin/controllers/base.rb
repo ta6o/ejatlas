@@ -340,21 +340,22 @@ Admin.controller do
 
   post :forward do
     require 'mandrill'
-    require 'pp'
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
-    html = JSON.parse params['mandrill_events']
-    message = {  
-     :subject=> html['msg']['subject'],
-     :from_name=> "#{html['msg']['from_name']} <#{html['msg']['from_email']}>",
-     :to=>[{  
-       :email=> 'yakup.cetinkaya@gmail.com',
-       :name=> 'Yako'
-     }],  
-     :html=> html['msg']['html'],
-     :from_email=> 'forwards@ejatlas.org'
-    }  
-    sending = mandrill.messages.send message  
-    puts "  MANDRILL #{sending}"
+    mails = JSON.parse params['mandrill_events']
+    mails.each do |mail|
+      message = {  
+       :subject=> mail['msg']['subject'],
+       :from_name=> "#{mail['msg']['from_name']} <#{mail['msg']['from_email']}>",
+       :to=>[{  
+         :email=> 'yakup.cetinkaya@gmail.com',
+         :name=> 'Yako'
+       }],  
+       :html=> mail['msg']['mail'],
+       :from_email=> 'forwards@ejatlas.org'
+      }  
+      sending = mandrill.messages.send message  
+      puts "  MANDRILL #{sending}"
+    end
   end
 
   get :export do
