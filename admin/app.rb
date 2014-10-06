@@ -25,15 +25,6 @@ class Admin < Padrino::Application
   enable :store_location
 
   set :login_page, "/sessions/login"
-  set :delivery_method, :smtp => { 
-    :address              => "smtp.sendgrid.net",
-    :port                 => 587,
-    :domain               => 'heroku.com',
-    :user_name            => ENV['SENDGRID_USERNAME'],
-    :password             => ENV['SENDGRID_PASSWORD'],
-    :authentication       => :plain,
-    :enable_starttls_auto => true  
-  }
 
   $title = 'EJAtlas'
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
@@ -41,6 +32,14 @@ class Admin < Padrino::Application
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
+
+  configure :development do
+    $consurl = 'http://0.0.0.0:3000'
+  end
+
+  configure :production do
+    $consurl = 'http://console.ejatlas.org'
+  end
 
   def self.slugify str
     return str if str.nil?
@@ -53,17 +52,29 @@ class Admin < Padrino::Application
     return res
   end
 
+
+  def self.send_mail account, subject, message
+    require 'mandrill'
+    mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
+    message = {  
+     :subject=> subject,
+     :from_name=> "EJOLT Project",  
+     :to=>[{  
+       :email=> account.email,
+       :name=> account.name  
+     }],  
+     :html=> message,
+     :from_email=>$sitemail
+    }  
+    puts mandrill
+    sending = mandrill.messages.send message  
+    puts "  MANDRILL #{sending}"
+  end
+
   def self.new_account(a)
-    configure :production do
-      deliver(:welcome, :confirm_account, a)
-    end
-    configure :development do
-      acc = Account.find a
-      puts 'Mailing: '+acc.full_name
-      puts acc.name
-      puts acc.id
-      puts acc.surname
-    end
+    @account = a
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/confirm.haml").render(self)
+    Admin.send_mail(a, 'Welcome to EJAtlas', html)
   end
 
   def self.welcome(c)

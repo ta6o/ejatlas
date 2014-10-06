@@ -60,6 +60,7 @@ Admin.controllers :accounts do
     @account.role = "user"
     if @account.save
       set_current_account(@account)
+      Admin.new_account @account
       redirect to "/welcome"
     else
       render 'accounts/new'

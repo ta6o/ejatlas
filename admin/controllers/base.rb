@@ -338,6 +338,23 @@ Admin.controller do
     redirect to 'jobs'
   end
 
+  post :forward do
+    require 'mandrill'
+    mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
+    message = {  
+     :subject=> "Mail forward test",
+     :from_name=> "EJOLT Project",  
+     :to=>[{  
+       :email=> 'yakup.cetinkaya@gmail.com',
+       :name=> 'Yako'
+     }],  
+     :html=> params.to_s,
+     :from_email=>$sitemail
+    }  
+    sending = mandrill.messages.send message  
+    puts "  MANDRILL #{sending}"
+  end
+
   get :export do
     redirect to "/sessions/login" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role

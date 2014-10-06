@@ -31,13 +31,11 @@ GEM
       activesupport (>= 3.2.0)
       json (>= 1.7)
       mime-types (>= 1.16)
-    daemons (1.1.9)
     delayed_job (3.0.5)
       activesupport (~> 3.0)
     delayed_job_active_record (4.0.1)
       activerecord (>= 3.0, < 4.2)
       delayed_job (>= 3.0, < 4.1)
-    eventmachine (1.0.3)
     excon (0.33.0)
     fog-brightbox (0.0.2)
       fog-core
@@ -63,6 +61,9 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    mandrill-api (1.0.52)
+      excon (>= 0.16.0, < 1.0)
+      json (>= 1.7.7, < 2.0)
     mime-types (1.25.1)
     mini_portile (0.5.3)
     moneta (0.7.20)
@@ -108,6 +109,8 @@ GEM
       activesupport (>= 3.1)
     pg (0.17.1)
     polyglot (0.3.4)
+    puma (2.8.2)
+      rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
@@ -121,10 +124,6 @@ GEM
       tilt (~> 1.3, >= 1.3.4)
     sinatra-flash (0.3.0)
       sinatra (>= 1.0.0)
-    thin (1.6.2)
-      daemons (>= 1.0.9)
-      eventmachine (>= 1.0.0)
-      rack (>= 1.0.0)
     thor (0.18.1)
     tilt (1.4.1)
     treetop (1.4.15)
@@ -152,13 +151,14 @@ DEPENDENCIES
   delayed_job_active_record
   fog!
   haml
+  mandrill-api
   padrino (= 0.12.1)
   pg
+  puma
   rainbow
   rake
   rmagick
   sinatra-flash
-  thin
   unf
   unicode_utils
   unidecoder

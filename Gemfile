@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 ruby '2.1.2'
 
 # Server requirements (defaults to WEBrick)
-gem 'thin'
+gem 'puma'
 # gem 'mongrel'
 
 # Project requirements
@@ -21,6 +21,7 @@ gem 'unf'
 gem 'fog', :git => 'https://github.com/fog/fog.git'
 gem 'pg'
 gem 'zip-zip'
+gem 'mandrill-api'
 gem 'delayed_job'
 gem 'delayed_job_active_record'
 #gem 'gdal'
