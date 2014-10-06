@@ -343,16 +343,15 @@ Admin.controller do
     require 'pp'
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
     html = JSON.parse params['mandrill_events']
-    pp html
     message = {  
-     :subject=> "Mail forward test",
-     :from_name=> "EJOLT Project",  
+     :subject=> html['msg']['subject'],
+     :from_name=> "#{html['msg']['from_name']} <#{html['msg']['from_email']}>",
      :to=>[{  
        :email=> 'yakup.cetinkaya@gmail.com',
        :name=> 'Yako'
      }],  
-     :html=> JSON.pretty_generate(html),
-     :from_email=>$sitemail
+     :html=> html['msg']['html'],
+     :from_email=> 'forwards@ejatlas.org'
     }  
     sending = mandrill.messages.send message  
     puts "  MANDRILL #{sending}"
