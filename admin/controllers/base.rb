@@ -348,7 +348,7 @@ Admin.controller do
        :from_name=> "#{mail['msg']['from_name']} <#{mail['msg']['from_email']}>",
        :to=>[
          {:email=> 'yakup.cetinkaya@gmail.com', :name=> 'Yakup' },
-         {:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
+         #{:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
        ],  
        :html=> mail['msg']['html'],
        :from_email=> 'forwards@ejatlas.org'
