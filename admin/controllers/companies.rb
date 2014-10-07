@@ -32,7 +32,12 @@ Admin.controllers :companies do
   end
 
   get :index do
-    @companies = Company.order('slug').select("id, name, slug, acronym, description, url, logo_image, country_id")
+    @companies = []
+    Company.select("id, name, slug, acronym, description, url, logo_image, country_id").find_in_batches do |batch|
+      @companies << batch
+    end
+    @companies.flatten!
+    puts @companies.count
     render 'companies/index'
   end
 
