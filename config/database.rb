@@ -22,7 +22,6 @@ ActiveRecord::Base.configurations[:development] = {
   :host     => '127.0.0.1'
 }
 
-
 ActiveRecord::Base.configurations[:production] = {
   adapter:      'postgresql',
   host:         '178.62.205.134',
