@@ -32,14 +32,16 @@ if ENV["DATABASE_URL"]
   dbconfig[:database] = db_from_env[2].split('/')[1]
 end
 ActiveRecord::Base.configurations[:production] = {
-  :adapter  => 'postgresql',
-  :encoding => 'utf8',
-  :host => dbconfig[:host],
-  :port => dbconfig[:port].to_i,
-  :user => dbconfig[:user],
-  :password => dbconfig[:password],
-  :database => dbconfig[:database],
-  :url => ENV["DATABASE_URL"]
+  adapter:      'postgresql',
+  host:         'db.ejatlas.org',
+  username:     'root',
+  port:         '5432',
+  password:     '***REMOVED***',
+  database:     'test',
+  encoding:     'utf8',
+  pool:         ENV['DB_POOL'] || 6,
+  connections:  ENV['DB_CONNECTIONS'] || 20,
+  reaping_frequency: ENV['DB_REAP_FREQ'] || 10
 }
 
 # Setup our logger
