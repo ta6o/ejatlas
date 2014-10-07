@@ -33,7 +33,7 @@ if ENV["DATABASE_URL"]
 end
 ActiveRecord::Base.configurations[:production] = {
   adapter:      'postgresql',
-  host:         'db.ejatlas.org',
+  host:         'http://db.ejatlas.org',
   username:     'root',
   port:         '5432',
   password:     '***REMOVED***',
