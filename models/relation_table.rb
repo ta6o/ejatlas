@@ -2,6 +2,10 @@ class RelatedConflict < ActiveRecord::Base
   belongs_to :conflict
   belongs_to :related, :class_name => 'Conflict'
 end
+class CTag < ActiveRecord::Base
+  belongs_to :tag
+  belongs_to :conflict
+end
 class CType < ActiveRecord::Base
   belongs_to :type
   belongs_to :conflict
