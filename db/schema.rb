@@ -212,6 +212,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text     "ejos"
     t.text     "govt_actors"
     t.datetime "modified_at"
+    t.text     "features"
   end
 
   create_table "contact_people", :force => true do |t|
@@ -277,6 +278,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text   "conflicts_marker"
     t.text   "conflicts_json"
     t.text   "conflicts_link"
+    t.text   "features"
   end
 
   create_table "government_actors", :force => true do |t|

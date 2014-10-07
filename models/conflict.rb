@@ -15,6 +15,9 @@ class Conflict < ActiveRecord::Base
   belongs_to :related_conflict
   has_one :related_conflict
 
+  has_many :c_tags
+  has_many :tags, :through => :c_tags
+
   has_many :c_types
   has_many :types, :through => :c_types
 
