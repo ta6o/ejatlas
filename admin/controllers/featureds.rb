@@ -54,6 +54,7 @@ Admin.controllers :featureds do
     end
   end
 
+
   get :csv do
     render 'featureds/csv'
   end
