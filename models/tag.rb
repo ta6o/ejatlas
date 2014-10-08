@@ -28,7 +28,6 @@ class Tag < ActiveRecord::Base
   end
 
   def self.find_name name
-    slug = Admin.slugify name
     Tag.find(:first, :conditions => ["name = lower(?)", name])
   end
 

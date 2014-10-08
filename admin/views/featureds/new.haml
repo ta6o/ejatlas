@@ -1,0 +1,8 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title= @title
+    .inner
+      =form_for :featured, url(:featureds, :create), :class => :form do |f|
+        =partial "featureds/form", :locals => { :f => f }

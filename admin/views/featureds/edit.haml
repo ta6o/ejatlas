@@ -1,0 +1,32 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'neutrino/jquery-ui'
+  =javascript_include_tag 'jquery.validate', 'jquery-ui.min', 'maskedinput', 'modal'
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Editing: 
+        = @featured.name
+    .inner
+      =form_for :featured, url(:featureds, :update, :id => @featured.id), :method => :put, :class => :form do |f|
+        =partial "featureds/form", :locals => { :f => f }
+
+      .row.whitebox
+        .col-md-8.col-md-offset-2
+          .group
+            %label Tags
+            -@followed.each do |tag|
+              %h4=tag.name
+              %ul{:style=>'padding:0'}
+                -tag.conflicts.each do |conflict|
+                  %li{:style=>'list-style-type:none;'}
+                    =conflict.name
+                    %small
+                      -if conflict.country
+                        ="[#{conflict.country.name}]"
+                      %em=conflict.approval_status
+                    &nbsp;
+                    %a{:href=>"/conflicts/edit/#{conflict.id}"} Edit
+                    %a{:href=>"/conflict/#{conflict.slug}"} View
+

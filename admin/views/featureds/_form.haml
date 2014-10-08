@@ -1,0 +1,50 @@
+.row.whitebox
+  .col-md-4
+    .group
+      =f.label :name
+      =f.error_message_on :name
+      =f.text_field :name, :class => :text_field
+
+    .group
+      =f.label :slug
+      %p= @featured.slug
+
+    .group
+      =f.label :slogan
+      =f.error_message_on :slogan
+      ~f.text_field :slogan, :class => :text_field
+
+  .col-md-4
+    .group
+      =f.label :description
+      =f.error_message_on :description
+      ~f.text_area :description, :class => :text_area, :rows=>5
+
+    .group
+      =f.label :image
+      =f.error_message_on :image
+      =f.text_field :image, :class => :text_field
+
+  .col-md-4
+    .group
+      %label Data
+      %textarea.feature{:name=>'data', :class => :text_area, :rows => 2}=@features['data'].join(', ')
+
+    .group
+      %label Tags
+      %textarea.feature{:name=>'tags', :class => :text_area, :rows => 2}=@features['tags'].join(', ')
+
+    %br/
+    .group
+      =f.text_field :features, :type => :hidden, :value=>@featured.features, :id => 'features'
+
+    .group.navform.wat-cf
+      =f.submit pat(:save), :class => 'btn pull-right'
+
+    :javascript
+      $('.feature').on('change',function(e){
+        data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
+        tags = $('textarea[name=tags]').val().replace(/\n/,' ').split(/,\ ?/);
+        hash = {'data':data,'tags':tags};
+        $('#features').val(JSON.stringify(hash));
+      });

@@ -288,6 +288,22 @@ class AsyncTask
       ca.types = types.to_json
     end
 
+    if params["featureds"] == "on"
+      types = []
+      puts "Updating featureds..."
+      Featured.all.each do |featured|
+        confs = []
+        features = JSON.parse(featured.features)
+        features['tags'].each {|t| tag = Tag.find_slug(slugify(t)); confs << tag.conflicts if tag}
+        confs = confs.flatten.to_set.to_a
+        conflicts = []
+        confs.each do |conf|
+          conflicts << conf if conf.approval_status == "approved"
+        end
+        featured.ping(conflicts)
+      end
+    end
+
     if params["images"] == "on"
       puts "Updating images..."
       docs = []
@@ -563,17 +579,12 @@ class AsyncTask
 
   def slugify str
     return str if str.nil?
-    res = str
-      .gsub(/[Çç]/,'c')
-      .gsub(/[Ğğ]/,'g')
-      .gsub(/[İı]/,'i')
-      .gsub(/[Öö]/,'o')
-      .gsub(/[Şş]/,'s')
-      .gsub(/[Üü]/,'u')
+    res = str.to_ascii
       .downcase
       .strip
       .gsub(/[-_\s\/]+/, '-')
-      .gsub(/[^\.\w-]/, '')
+      .gsub(/[^\w-]/, '')
+      .gsub(/-+/,'-')
     return res
   end
 

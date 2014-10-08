@@ -1,0 +1,11 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title= @title
+    .inner
+      =form_for :featured, url(:featureds, :csv), :class => :form, :enctype => 'multipart/form-data' do |f|
+        %input#file{:type=>'file',:name=>'featured[file]'}
+        %input{:type=>'hidden',:name=>'featured[cache]'}
+        .group.navform.wat-cf
+          =f.submit pat(:save), :class => 'btn btn-warning', :style=>'width:180px;font-weight:bold'
