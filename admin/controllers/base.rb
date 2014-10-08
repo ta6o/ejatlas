@@ -359,6 +359,7 @@ Admin.controller do
       sending = nil#mandrill.messages.send message  
       pp message
       puts "  MANDRILL #{sending || 'hi!'}"
+      [200,{},'']
     end
   end
 
