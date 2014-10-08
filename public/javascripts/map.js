@@ -71,8 +71,7 @@ function initMap (markers) {
   map.addControl(new HomeButton());
   $('.home-button').html('<span class="glyphicon glyphicon-home"></span>')
 
-  $.each(markers, function(i,m){
-    mark = JSON.parse(m);
+  $.each(markers, function(i,mark){
     popcontent = "<div class='loading'><img src='/images/loading.gif'></div><h4 class='maplink'><a onclick=\"getInfo("+mark.id+",'"+mark.name+"')\">"+mark.name + "</a></h4><div class='clearfix' style='padding:24px 16px;'><div class='map-icon i_"+mark.clr+" s_1 pull-left'></div><div class='pull-left' style='position:relative;top:-20px;left:12px;width:210px;'>";
     if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
     if (mark.start !== '' ) {popcontent += "<br /><small><strong>Start date:</strong> "+mark.start+"</small>"};
