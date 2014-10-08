@@ -340,10 +340,11 @@ Admin.controller do
 
   post :forward do
     require 'mandrill'
+    require 'pp'
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
     mails = JSON.parse params['mandrill_events']
     p mails.map{|m| m['msg']['subject']}
-    puts mails.class
+    puts mails.length
     mails.each do |mail|
       message = {  
        :subject=> mail['msg']['subject'],
@@ -356,6 +357,7 @@ Admin.controller do
        :from_email=> 'forwards@ejatlas.org'
       }  
       sending = nil#mandrill.messages.send message  
+      pp message
       puts "  MANDRILL #{sending || 'hi!'}"
     end
   end
