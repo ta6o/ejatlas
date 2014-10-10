@@ -52,7 +52,6 @@ class Admin < Padrino::Application
     return res
   end
 
-
   def self.send_mail account, subject, message
     require 'mandrill'
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
