@@ -372,7 +372,7 @@ function highlightChFeature(e) {
 }
 var lay = null;
 function resetHighlight(e) {
-  updateInfo(1,disclaimer);
+  //updateInfo(1,disclaimer);
   var layer = e.target;
   lay = e
   layer.setStyle(jsons[layer.feature.category]['style']);
