@@ -276,7 +276,26 @@ class Conflict < ActiveRecord::Base
   end
 
   def as_button(options={})
-    return "<p><a href='/conflict/#{self.slug}'>#{self.name}</a></p>"
+    html = "<p><a href='/conflict/#{self.slug}'>#{self.name}</a>"
+    unless options.empty?
+      features = JSON.parse(self.features)
+      list = []
+      options["data"].each do |data|
+        dat = "#{options['id']}:#{data}"
+        next unless features[dat]
+        list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{features[dat]}</span>"
+      end
+      tags = []
+      ftags = options["tags"].map{|t| Tag.find_slug(t)}
+      ftags.each do |tag|
+        next unless self.tags.include?(tag)
+        tags << "<span class='badge' style='background-color:##{tag.domain || '666'}'>#{tag.name}</span>"
+      end
+      html += " &nbsp; #{tags.join(" &nbsp; ")}" if tags.any?
+      html += "<br class='small'/>#{list.join("<br class='small'/>")}" if list.any?
+    end
+    html += "</p>"
+    return html
   end
 
   def as_table(options={})

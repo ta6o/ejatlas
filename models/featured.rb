@@ -17,20 +17,24 @@ class Featured < ActiveRecord::Base
 
   def ping conflicts
     json, marker, link = [], [], []
+    data = JSON.parse(self.features)
+    data["id"] = self.id
+    ftags = data['tags'].map {|t| Tag.find_slug(t)}
     conflicts.each do |c|
       cmarker = JSON.parse(c.marker)
-      data = JSON.parse(self.features)['data']
       JSON.parse(c.features).each do |k,v|
         cmarker[k] = v
       end
+      cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain}
+      cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
       json << c.json
-      marker << cmarker
-      link << c.as_button
+      marker << cmarker.to_json
+      link << c.as_button(data)
     end
     self.conflicts_json = json.to_json
     self.conflicts_marker = marker.to_json
     self.conflicts_link = link.join
-    self.save
+    self.save!
   end
 
   def self.find_slug slug

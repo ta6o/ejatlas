@@ -24,7 +24,10 @@
             %tr
               %td.first=country.name
               %td=country.conflicts.count
-              %td=country.description
+              -if country.description
+                %td=country.description.split(/\n/)[0]
+              -else
+                %td &nbsp;
               %td
                 -if country.flag_images.any?
                   %img{:src=>country.flag_images.first.file.url,:height=>"24px"}

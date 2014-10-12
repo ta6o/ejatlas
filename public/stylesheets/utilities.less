@@ -103,6 +103,7 @@ p {
 
 small {
   font-size: smaller;
+  line-height: 50%;
 }
 
 .loading {
@@ -515,6 +516,10 @@ ul.sidelink {
     position:absolute;
     top:0px;
   }
+  .features {
+    font-size: smaller;
+    margin: -12px 0 0 -12px;
+  }
   .legend {
     position: absolute;
     bottom: 0;
@@ -544,10 +549,26 @@ ul.sidelink {
   padding: 0 15px;
   background: #fff;
   .border-radius(@border-radius-base);
-  #disclaimer small{
-    color: @brand-primary;
+  #disclaimer {
+    p {
+      line-height: 20px;
+      span.small {
+        line-height: 12px;
+      }
+    }
+    br {
+      display: block;
+      margin: 4px 0;
+      &.small {
+        margin: -2px 0;
+      }
+    }
+    small{
+      color: @brand-primary;
+    }
   }
 }
+
 #conflict_summary {
   h2 {
     margin-bottom:4px;

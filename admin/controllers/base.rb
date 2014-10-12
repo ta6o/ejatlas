@@ -233,6 +233,38 @@ Admin.controller do
     render "base/front"
   end
 
+  get :featured, :with => :slug do
+    ca = Cached.select(:filterdata).first
+    @filterform = JSON.parse(ca.filterdata)
+    @filter = render "base/filter", :layout => false
+    con = Featured.find_slug(params[:slug])
+    return redirect to '/' unless con
+    @markerinfo = con.conflicts_marker
+    contents = File.read('admin/views/base/filter.haml')
+    @filterinfo = con.conflicts_json
+    @load = con.conflicts_link
+    @name = con.name
+    @description = con.description
+    @id = con.id
+    @desc = con.description
+    @markercount = JSON.parse(@markerinfo).count
+    @defs = []
+    con.vector_data.each do |vd|
+      if vd.vector_style and vd.vector_style.defs
+        @defs << JSON.parse(vd.vector_style.defs)
+      end
+    end
+    @defs = @defs.to_set.to_a
+    @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown').to_json
+    @fimage = con.image
+    @feature = true
+    @maptitle = con.slogan
+    @layertype = 2
+    @domains = JSON.parse(con.features)['tags']
+    @fid = con.id
+    render "base/front", :layout => :front
+  end
+
   get :company_list do
     return Company.all.map{|c| "#{c.id}|#{c.name}"}.join('$%')
   end

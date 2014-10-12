@@ -4910,6 +4910,7 @@ p {
 }
 small {
   font-size: smaller;
+  line-height: 50%;
 }
 .loading {
   width: 32px;
@@ -5353,6 +5354,10 @@ ul.sidelink li.active {
   position: absolute;
   top: 0px;
 }
+#infopane .features {
+  font-size: smaller;
+  margin: -12px 0 0 -12px;
+}
 #infopane .legend {
   position: absolute;
   bottom: 0;
@@ -5384,6 +5389,19 @@ ul.sidelink li.active {
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
+}
+.summary_header #disclaimer p {
+  line-height: 20px;
+}
+.summary_header #disclaimer p span.small {
+  line-height: 12px;
+}
+.summary_header #disclaimer br {
+  display: block;
+  margin: 4px 0;
+}
+.summary_header #disclaimer br.small {
+  margin: -2px 0;
 }
 .summary_header #disclaimer small {
   color: #0380a5;

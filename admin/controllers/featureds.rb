@@ -63,6 +63,7 @@ Admin.controllers :featureds do
     csv = CSV.parse params['featured']['file'][:tempfile].read.force_encoding('utf-8')
     header = csv.shift
     tags = header.dup
+
     csv.each do |row|
       row.each_with_index do |cell,index|
         if cell != '1' and cell != nil
@@ -70,14 +71,29 @@ Admin.controllers :featureds do
         end
       end
     end
+    
     tags.delete nil
     ftags = []
-    tags.each do |tag|
+    tags.each_with_index do |tag,index|
+      domain = tag.split(":")[-1]
+      tag = tag.split(":")[0]
       slug = Admin.slugify(tag)
       ftags << slug
-      next if Tag.find_slug(slug)
-      Tag.create :name => UnicodeUtils::titlecase(tag.gsub(/[-_]/,' '))
+      if ftag = Tag.find_slug(slug)
+        ftag.domain = domain
+        ftag.save
+      else
+        Tag.create :name => UnicodeUtils::titlecase(tag.gsub(/[-_]/,' ')), :domain => domain
+      end
     end
+    p tags
+    p ftags
+
+    name = UnicodeUtils::titlecase(params['featured']['file'][:filename].split('.')[0].gsub(/[-_]/,' '))
+    unless feat = Featured.find_by_slug(Admin.slugify(name))
+      feat = Featured.create :name => name
+    end
+
     csv.each do |row|
       next unless row[0]
       conflict = Conflict.find(row[0].to_i)
@@ -86,25 +102,19 @@ Admin.controllers :featureds do
         next if header[index] == 'id'
         if tags.include? header[index]
           next unless cell == '1'
-          tag = Tag.find_slug(Admin.slugify(header[index]))
+          tag = Tag.find_slug(Admin.slugify(header[index].split(":")[0]))
           conflict.tags << tag unless conflict.tags.include?(tag)
         else
-          features[header[index]] = cell
+          features["#{feat.id}:#{header[index]}"] = cell
         end
       end
-      p features
       conflict.features = features.to_json
       conflict.save
     end
     header.delete 'id'
     features = {:data=>header - tags, :tags => ftags }
-    name = UnicodeUtils::titlecase(params['featured']['file'][:filename].split('.')[0].gsub(/[-_]/,' '))
-    if feat = Featured.find_by_slug(Admin.slugify(name))
-      feat.features = features.to_json
-      feat.save
-    else
-      feat = Featured.create :name => name, :features => features.to_json
-    end
+    feat.features = features.to_json
+    feat.save
     redirect to '/featureds'
   end
 

@@ -11,7 +11,7 @@
       vectorinfo = #{@vectors};
   :javascript
     window.onload = function(){
-      initMap(markerinfo,"#{@maptitle}",1,vectorinfo);
+      initMap(markerinfo,"#{@maptitle}",#{@layertype || 1},vectorinfo, #{@fid || 0});
       updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
     }
 
@@ -33,9 +33,11 @@
       .col-md-12
         -if @image
           %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
+        -elsif @fimage
+          %img.pull-left{:src=>@fimage,:style=>'max-height:50px;width:auto;margin-right:12px;'}
         .pull-left
           %h1{:style=>'margin:0;font-size: 48px'}= @name
-    -if @description and @description.length > 0
+    -if @description and @description.length > 0 and not @feature
       %br/
       %br/
       .row
@@ -52,8 +54,9 @@
     -else
       .clearfix#disclaimer
         %h2= @maptitle
+        -if @description
+          %p.description= @description.gsub("\n","<br />").html_safe
         =@load.html_safe
-
       .clearfix
         %h2.pull-left#name
           

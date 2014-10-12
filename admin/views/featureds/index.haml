@@ -6,7 +6,12 @@
   .col-md-12
     .hero-unit
       %h1.title
-        =mt('featureds')
+        Featured maps
+        %small
+          |
+          %a{:href=>'/featureds/new'} add new
+          |
+          %a{:href=>'/featureds/csv'} upload csv
     .inner
       %table.table.tablesorter#sortme
         %thead
