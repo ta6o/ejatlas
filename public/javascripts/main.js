@@ -2696,12 +2696,21 @@ function initMap (markers, maptitle, layertype, vector, fid) {
       popcontent += "</div>";
     }
     popcontent += '</div>';
-    var marker = L.marker([mark.lat, mark.lon],{
-      icon: L.divIcon({
-          className: 'map_icon mic i_'+mark.clr+' s_1 id_'+mark.id+' c_'+mark.dmn[0],
-        }),
-      riseOnHover: true,
-    }).addTo(markerLayer);
+    if ('dmn' in mark) {
+      var marker = L.marker([mark.lat, mark.lon],{
+        icon: L.divIcon({
+            className: 'map_icon mic i_'+mark.clr+' s_1 id_'+mark.id+' c_'+mark.dmn[0],
+          }),
+        riseOnHover: true,
+      }).addTo(markerLayer);
+    } else {
+      var marker = L.marker([mark.lat, mark.lon],{
+        icon: L.divIcon({
+            className: 'map_icon mic i_'+mark.clr+' s_1 id_'+mark.id,
+          }),
+        riseOnHover: true,
+      }).addTo(markerLayer);
+    }
     marker.id = mark.id;
     marker.name = mark.name;
     marker.slug = mark.slug;
