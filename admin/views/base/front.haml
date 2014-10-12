@@ -62,5 +62,6 @@
           
 -content_for :sidebar do
   #infopane{:style=>'height:340px;'}
-  =partial("base/sidebar")
+  -unless @feature
+    =partial("base/sidebar")
 
