@@ -2596,7 +2596,7 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-function initMap (markers, maptitle, layertype, vector, fid=null ) {
+function initMap (markers, maptitle, layertype, vector, fid) {
   info = $("#infopane");
   var natgeo = L.tileLayer.provider('Esri.NatGeoWorldMap', {minZoom: 2, maxzoom:18, });
   var gray = L.tileLayer.provider('Esri.WorldPhysical', {minZoom: 2, maxzoom:18, });
