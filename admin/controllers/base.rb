@@ -374,12 +374,18 @@ Admin.controller do
     require 'mandrill'
     require 'pp'
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
-    mails = JSON.parse params['mandrill_events']
+    begin
+      mails = JSON.parse params['mandrill_events']
+    rescue
+      return 400
+    end
     keys = ['subject','from_email','from_name','html']
     subjs = []
     mails.each do |mail|
       msg = mail['msg']
+      return 400 if msg.nil?
       return 400 if keys & msg.keys != keys
+      puts msg.keys
       message = {  
        :subject=> msg['subject'],
        :from_name=> "#{msg['from_name']} <#{msg['from_email']}>",
