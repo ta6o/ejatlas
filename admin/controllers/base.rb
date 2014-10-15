@@ -379,8 +379,10 @@ Admin.controller do
     rescue
       return 400
     end
+    pp mails
     keys = ['subject','from_email','from_name','html']
-    subjs = []
+    oks = []
+    nots = []
     mails.each do |mail|
       msg = mail['msg']
       return 400 if msg.nil?
@@ -397,7 +399,11 @@ Admin.controller do
        :from_email=> 'forwards@ejatlas.org'
       }  
       sending = mandrill.messages.send message  
-      subjs << msg['subject']
+      if sending[0]['status'] == "sent"
+        oks << msg['subject']
+      else
+        nots << msg['subject']
+      end
       puts "  MANDRILL #{sending || 'hi!'}"
     end
     [200,{},'']
