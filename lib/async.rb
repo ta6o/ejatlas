@@ -326,12 +326,13 @@ class AsyncTask
         end
       end
       puts "Found #{docs.length} images to update..."
+      iids = []
       docs.each do |d|
         doc = Document.find d
         fns = []
         doc.conflict.images.each {|i| fns << i.file.file.filename}
         if fns.include? doc.file.file.filename
-          puts "\rimage already present: #{doc.file.file.filename}"
+          #puts "\rimage already present: #{doc.file.file.filename}"
           next
         end
         img = Image.new
@@ -343,8 +344,9 @@ class AsyncTask
           img.save!
           puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
         rescue => e
-          puts "  problem saving image with url: \n#{doc.file.file.url}\n"
-          p e
+          #puts "  problem saving image with url: \n#{doc.file.file.url}\n"
+          #p e
+          puts doc.file.file.url
         end
       end
     end
@@ -354,7 +356,11 @@ class AsyncTask
       Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
       FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
       Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
+      total = Conflict.count / 64.0
+      counter = 0
       Conflict.find_in_batches(batch_size: 64) do |batch|
+        puts "\r #{(counter/total*100).to_i}% done."
+        counter += 1
         batch.each do |c|
           if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
             c.related_conflict_id = rc.id

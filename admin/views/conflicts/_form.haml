@@ -787,11 +787,11 @@
   #materials.tab-pane
     :javascript
       function handleModal(model) {
-        $('#m_'+model).on('hidden', function () {
+        $('#m_'+model).on('hidden.bs.modal', function () {
           $('.i_'+model).val('');
           $('#b_'+model).removeClass('disabled');
         })
-        $('#m_'+model).on('shown', function() {
+        $('#m_'+model).on('shown.bs.modal', function() {
           $('#'+model+'_description').focus();
         });
         $('.d_'+model).live('click', function(e){
@@ -1053,13 +1053,26 @@
             -@conflict.documents.each do |d|
               .document
                 %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-10
-                    %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                    %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
-                  .col-md-2
-                    %a.d_document.pull-right.btn Remove
-                %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+                -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1])
+                  .row
+                    .col-md-3
+                      %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                    .col-md-9
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-9
+                          %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                          %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                        .col-md-3
+                          %a.d_document.pull-right.btn Remove
+                      %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+                -else
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-10
+                      %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                      %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                    .col-md-2
+                      %a.d_document.pull-right.btn Remove
+                  %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
           :javascript
             var uploading = false;
             function uploadResponse (resp) {
@@ -1067,7 +1080,7 @@
                 return 
               }
               uploading = true;
-              $('iframe#upload_iframe').remove();
+              //$('iframe#upload_iframe').remove();
               //console.log(resp);
               if (resp === 'no') {
                 alert ('A problem occured uploading the file.');
@@ -1082,13 +1095,14 @@
               $('#m_document').modal('hide');
             }
             $(document).ready(function(){
-              $('#m_document').on('hidden', function () {
+              $('#m_document').on('hidden.bs.modal', function () {
                 $('.i_document').val('');
                 $('#b_document').removeClass('disabled');
                 uploading = false;
               })
-              $('#m_document').on('shown', function() {
-                $('#document_description').focus();
+              $('#m_document').on('shown.bs.modal', function() {
+                $('#document_title').focus();
+                $('#b_document').removeClass('disabled');
               });
               $('.d_document').live('click', function(e){
                 par = $(this).closest('.document');
