@@ -133,6 +133,8 @@ class Conflict < ActiveRecord::Base
     self.env_impacts.each {|p| seci << {:name=>p.name,:id=>p.id}}
     outcomes = []
     self.conflict_events.each {|p| outcomes << {:name=>p.name,:id=>p.id}}
+    tags = []
+    self.tags.each {|p| tags << {:name=>p.name,:id=>p.id}}
     return {
       :id=>self.id,
       :name=>self.name,
@@ -164,6 +166,7 @@ class Conflict < ActiveRecord::Base
       :success=>self.success_level,
 
       :outcomes=>outcomes,
+      :tags=>tags,
 
       :lon=>self.lon.to_i,:lat=>self.lat.to_i,
     }.to_json
@@ -286,7 +289,7 @@ class Conflict < ActiveRecord::Base
         list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{features[dat]}</span>"
       end
       tags = []
-      ftags = options["tags"].map{|t| Tag.find_slug(t)}
+      ftags = options["tag"].map{|t| Tag.find_slug(t)}
       ftags.each do |tag|
         next unless self.tags.include?(tag)
         tags << "<span class='badge' style='background-color:##{tag.domain || '666'}'>#{tag.name}</span>"
@@ -421,10 +424,11 @@ class Conflict < ActiveRecord::Base
             url = '<a class="refanch" href="'+m.file.url+'" target="_blank">'+m.file.url.split("#{c.slug}/")[-1]+'</a>' if m.has_attribute? 'file' and m.file
             tit = m.title if m.has_attribute?('title') and m.title and m.title.length > 2
             tit = m.name if m.has_attribute?('name') and m.name and m.name.length > 2
+            tit = "<strong>#{tit}</strong>" if tit.length > 0
             dsc = m.description if m.has_attribute?('description') and m.description and m.description.length > 2
             sep = ''
             sep = '<br/>' if (tit or dsc) and url
-            arr << '<td><p>'+tit.to_s+''+dsc.to_s+''+sep+''+url.to_s+'</p></td>'
+            arr << '<td><p>'+tit.to_s+' '+dsc.to_s+''+sep+''+url.to_s+'</p></td>'
           end
           cnt = '<table><tr>'
           cnt += arr.join '</tr><tr>'

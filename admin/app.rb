@@ -141,4 +141,28 @@ class Admin < Padrino::Application
     role.allow "/"
   end
 
+  def self.filter options
+    map = {"cntry" => "country_id", "comp" => "companies", "success" => "success_level", "poptype" => "population_type", "category" => "category_id", "type" => "types", "intensity" => "status_id", "envi" => "env_impacts", "hlti" => "hlt_impacts", "seci" => "sec_impacts", "mobgroup" => "mobilizing_groups", "mobform" => "mobilizing_forms", "product" => "products", "pstatus" => "project_status_id", "stage" => "reaction_id", "outcome" => "conflict_events", "tag" => "tags"}
+    simple = ["country_id", "success_level", "population_type", "category_id", "status_id", "project_status_id", "reaction_id"]
+    multi = ["companies", "types", "env_impacts", "hlt_impacts", "sec_impacts", "mobilizing_groups", "mobilizing_forms", "products", "conflict_events", "tags"]
+    hash = {}
+    if options.class == String
+      arr = options.split('/')
+      arr.each do |a|
+        h = a.split(/[~=]/)
+        map.has_key?(h[0]) ? k = map[h[0]] : k = h[0]
+        h[-1].match(/,/) ? v = h[-1].split(',').map{|i|i.to_i} : v = h[-1].to_i
+        hash[k] = v
+      end
+    else
+      options.each do |k,v|
+        map.has_key?(k) ? k = map[k] : k = k
+        v.match(/,/) ? v = v.split(',').map{|i|i.to_i} : v = v.to_i
+        hash[k] = v
+      end
+    end
+    p map.values
+    hash
+  end
+
 end

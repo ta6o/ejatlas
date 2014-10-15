@@ -36,11 +36,16 @@ Admin.controllers :featureds do
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
     @features = JSON.parse(@featured.features)
+    @filter = JSON.parse(@featured.filter || "{}")
     @followed = []
-    @features['tags'].each do |tag|
+    (@filter['tag'] || []).each do |tag|
       t = Tag.find_slug(tag)
-      @followed << t if t
+      @followed << t.conflicts.includes('tags').select('conflicts.id, name, slug, features, approval_status') if t
     end
+    p @followed
+    @followed.flatten!
+    @followed.sort! {|a,b| a.slug <=> b.slug}
+    @filterform = Cached.last.filterdata
     render 'featureds/edit'
   end
 
@@ -48,9 +53,16 @@ Admin.controllers :featureds do
     @featured = Featured.find(params[:id])
     if @featured.update_attributes(params[:featured])
       flash[:notice] = 'Featured was successfully updated.'
+      params["conflict"].each do |k,v|
+        conflict = Conflict.find k.split(':')[-1]
+        feats = JSON.parse(conflict.features)
+        feats["#{@featured.id}:#{k.split(':')[0]}"] = v
+        conflict.features = feats.to_json
+        conflict.save
+      end
       redirect url(:featureds, :edit, :id => @featured.id)
     else
-      render 'featureds/edit'
+      redirect url(:featureds, :edit, :id => @featured.id)
     end
   end
 
@@ -97,7 +109,7 @@ Admin.controllers :featureds do
     csv.each do |row|
       next unless row[0]
       conflict = Conflict.find(row[0].to_i)
-      features = {}
+      features = JSON.parse(conflict.features) || {}
       row.each_with_index do |cell,index|
         next if header[index] == 'id'
         if tags.include? header[index]
@@ -112,8 +124,9 @@ Admin.controllers :featureds do
       conflict.save
     end
     header.delete 'id'
-    features = {:data=>header - tags, :tags => ftags }
+    features = header - tags
     feat.features = features.to_json
+    feat.filter = {:tags => ftags}.to_json
     feat.save
     redirect to '/featureds'
   end

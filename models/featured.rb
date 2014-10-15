@@ -17,9 +17,11 @@ class Featured < ActiveRecord::Base
 
   def ping conflicts
     json, marker, link = [], [], []
-    data = JSON.parse(self.features)
+    data = JSON.parse(self.filter || "{}")
+    feats = JSON.parse(self.features || "{}")
     data["id"] = self.id
-    ftags = data['tags'].map {|t| Tag.find_slug(t)}
+    data["data"] = feats
+    ftags = (data['tag'] || []).map {|t| Tag.find_slug(t)}
     conflicts.each do |c|
       cmarker = JSON.parse(c.marker)
       JSON.parse(c.features).each do |k,v|
@@ -29,6 +31,8 @@ class Featured < ActiveRecord::Base
       cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
       json << c.json
       marker << cmarker.to_json
+      puts
+      p data
       link << c.as_button(data)
     end
     self.conflicts_json = json.to_json

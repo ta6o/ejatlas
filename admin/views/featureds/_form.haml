@@ -29,11 +29,22 @@
   .col-md-4
     .group
       %label Data
-      %textarea.feature{:name=>'data', :class => :text_area, :rows => 2}=@features['data'].join(', ')
+      %textarea.feature{:name=>'data', :class => :text_area, :rows => 2}=@features.join(', ')
 
     .group
-      %label Tags
-      %textarea.feature{:name=>'tags', :class => :text_area, :rows => 2}=@features['tags'].join(', ')
+      %label Filter options
+      -if @filter.any?
+        :javascript
+          var filterdata = #{@filterform}
+        -@filter.each do |key,value|
+          .row
+            .col-xs-2
+              -label = JSON.parse(@filterform)[key][0].keys[0]
+              %strong= UnicodeUtils.titlecase label.gsub(/[-_]/,' ')
+            .col-xs-10
+              - if value.class == Array
+                %textarea.conflict{:type=>'text',:name=>"filter[#{key}]"}=value.join(', ')
+
 
     %br/
     .group
@@ -42,10 +53,64 @@
     .group.navform.wat-cf
       =f.submit pat(:save), :class => 'btn pull-right'
 
-    :javascript
-      $('.feature').on('change',function(e){
-        data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
-        tags = $('textarea[name=tags]').val().replace(/\n/,' ').split(/,\ ?/);
-        hash = {'data':data,'tags':tags};
-        $('#features').val(JSON.stringify(hash));
-      });
+.row.whitebox
+  .col-md-8.col-md-offset-2
+    .group
+      -@followed ||= []
+      -@followed.each do |conflict|
+        .row
+          .clearfix
+            .pull-left
+              =conflict.name
+              %small
+                %em=conflict.approval_status
+                -conflict.tags.each do |tag|
+                  &nbsp;
+                  %span.small.badge{:style=>"background-color:##{tag.domain}"}=tag.name
+            .pull-right
+              .small
+                %a{:id=>"oc_#{conflict.id}",:onclick=>"editFeature(#{conflict.id})",:style=>'cursor:pointer;'} Edit features
+          .small{:id=>"feat_#{conflict.id}",:style=>'display:none'}
+            .clearfix
+              .pull-right
+                %a{:target=>'_blank',:href=>"/conflicts/edit/#{conflict.id}"} Edit Original
+                |
+                %a{:target=>'_blank',:href=>"/conflict/#{conflict.slug}"} View Conflict
+            -JSON.parse(conflict.features).each do |feat, value|
+              -if feat.split(":")[0].to_i == @featured.id
+                -fname = feat.split(":")[1]
+                .row
+                  .col-xs-2
+                    %strong= UnicodeUtils.titlecase fname.gsub(/[-_]/,' ')
+                  .col-xs-10
+                    %input.conflict{:type=>'text',:name=>"conflict[#{fname}:#{conflict.id}]",:value=>value}
+            %br/
+
+:javascript
+  $('.feature').on('change',function(e){
+    data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
+    tags = $('textarea[name=tags]').val().replace(/\n/,' ').split(/,\ ?/);
+    hash = {'data':data,'tags':tags};
+    $('#features').val(JSON.stringify(hash));
+  });
+
+  $('input.conflict').on('change',function(e){
+    $(this).addClass('changed');
+  });
+
+  function editFeature(id) {
+    feat = $('#feat_'+id)
+    if (feat.is(':visible')) {
+      feat.slideUp('slow');
+      $('#oc_'+id).text('Edit features');
+    } else {
+      feat.slideDown('fast');
+      $('#oc_'+id).text('Finished editing');
+    }
+  }
+
+  $('form').on('submit',function(){
+    console.log($('form').serialize())
+    $('input.conflict').not('.changed').remove();
+  });
+

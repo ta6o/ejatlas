@@ -291,10 +291,25 @@ class AsyncTask
     if params["featureds"] == "on"
       types = []
       puts "Updating featureds..."
+      fids = Featured.all.map &:id
+      Conflict.where('features is not null').each do |c|
+        f = JSON.parse(c.features)
+        puts f
+        f.each do |k,v|
+          id = k.split(':')[0]
+          next if id != id.to_i.to_s
+          unless fids.include? id.to_i
+            f.delete k
+          end
+        end
+        puts f
+        c.features = f.to_json
+        c.save
+      end
       Featured.all.each do |featured|
         confs = []
-        features = JSON.parse(featured.features)
-        features['tags'].each {|t| tag = Tag.find_slug(slugify(t)); confs << tag.conflicts.where(approval_status: 'approved') if tag}
+        features = JSON.parse(featured.filter || '{}')
+        (features['tag'] || []).each {|t| tag = Tag.find_slug(slugify(t)); confs << tag.conflicts.where(approval_status: 'approved') if tag}
         confs = confs.flatten.to_set.to_a
         confs.sort!{|a,b|a.slug<=>b.slug}
         featured.ping(confs)
@@ -327,8 +342,9 @@ class AsyncTask
         begin
           img.save!
           puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
-        rescue
+        rescue => e
           puts "  problem saving image with url: \n#{doc.file.file.url}\n"
+          p e
         end
       end
     end
@@ -377,6 +393,7 @@ class AsyncTask
       filterdata[:pstatus] =  ProjectStatus.order(:name).select('name, id')
       filterdata[:stage] =  Reaction.order(:name).select('name, id')
       filterdata[:outcome] =  ConflictEvent.order(:name).select('name, id')
+      filterdata[:tag] =  Tag.order(:name).select('name, id')
       ca.filterdata = filterdata.to_json
     end
 
