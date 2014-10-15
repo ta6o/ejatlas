@@ -379,18 +379,17 @@ Admin.controller do
     rescue
       return 400
     end
-    pp mails
-    keys = ['subject','from_email','from_name','html']
+    keys = ['subject','from_email','html']
     oks = []
     nots = []
     mails.each do |mail|
       msg = mail['msg']
-      return 400 if msg.nil?
-      return 400 if keys & msg.keys != keys
-      puts msg.keys
+      if msg.nil? or keys & msg.keys != keys
+        nots << msg
+      end
       message = {  
        :subject=> msg['subject'],
-       :from_name=> "#{msg['from_name']} <#{msg['from_email']}>",
+       :from_name=> "#{msg['from_name'] || 'no name'} <#{msg['from_email']}>",
        :to=>[
          {:email=> 'yakup.cetinkaya@gmail.com', :name=> 'Yakup' },
          #{:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
@@ -400,12 +399,12 @@ Admin.controller do
       }  
       sending = mandrill.messages.send message  
       if sending[0]['status'] == "sent"
-        oks << msg['subject']
+        oks << msg
       else
-        nots << msg['subject']
+        nots << msg
       end
-      puts "  MANDRILL #{sending || 'hi!'}"
     end
+    puts "  MANDRILL \n  SUCCESS: #{oks} \n  FAIL: #{nots}"
     [200,{},'']
   end
 
