@@ -147,7 +147,7 @@ Admin.controllers :companies do
     return Admin.mergeCompanies params['source'], params['target']
   end
 
-  delete :destroy, :with => :id do
+  get :destroy, :with => :id do
     company = Company.find(params[:id])
     if company.destroy
       flash[:notice] = 'Company was successfully destroyed.'

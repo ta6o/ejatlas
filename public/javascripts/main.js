@@ -2601,7 +2601,7 @@ function initMap (markers, maptitle, layertype, vector, fid) {
   var natgeo = L.tileLayer.provider('Esri.NatGeoWorldMap', {minZoom: 2, maxzoom:18, });
   var gray = L.tileLayer.provider('Esri.WorldPhysical', {minZoom: 2, maxzoom:18, });
   var terrain = L.tileLayer.provider('Esri.WorldTerrain', {minZoom: 2, maxZoom: 18, });
-  var mapstr = L.tileLayer.provider('OpenStreetMap.Mapnik', {minZoom: 2, maxzoom:18, });
+  var mapstr = L.tileLayer.provider('Thunderforest.OpenCycleMap', {minZoom: 2, maxzoom:18, });
   var mapsat = L.tileLayer.provider('Esri.WorldImagery', {minZoom: 2, maxzoom:18, });
   var satellite = L.tileLayer.provider('Esri.WorldImagery', {minZoom: 2, maxZoom: 18, });
   var street = L.tileLayer.provider('OpenStreetMap.Mapnik', {minZoom: 2, maxZoom: 18, });

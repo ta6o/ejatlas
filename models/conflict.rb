@@ -289,7 +289,13 @@ class Conflict < ActiveRecord::Base
         list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{features[dat]}</span>"
       end
       tags = []
-      ftags = options["tag"].map{|t| Tag.find_slug(t)}
+      ftags = (options['tag'] || []).map do |t| 
+        if t.is_a?(Integer) or t == t.to_i.to_s
+          Tag.find(t.to_i)
+        else
+          Tag.find_slug(t)
+        end
+      end
       ftags.each do |tag|
         next unless self.tags.include?(tag)
         tags << "<span class='badge' style='background-color:##{tag.domain || '666'}'>#{tag.name}</span>"

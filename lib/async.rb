@@ -305,10 +305,8 @@ class AsyncTask
         c.save
       end
       Featured.all.each do |featured|
-        confs = []
         features = JSON.parse(featured.filter || '{}')
-        (features['tag'] || []).each {|t| tag = Tag.find_slug(slugify(t)); confs << tag.conflicts.where(approval_status: 'approved') if tag}
-        confs = confs.flatten.to_set.to_a
+        confs = Admin.filter featured.filter
         confs.sort!{|a,b|a.slug<=>b.slug}
         featured.ping(confs)
       end

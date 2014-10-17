@@ -39,8 +39,8 @@
         -@filter.each do |key,value|
           .row
             .col-xs-2
-              -label = JSON.parse(@filterform)[key][0].keys[0]
-              %strong= UnicodeUtils.titlecase label.gsub(/[-_]/,' ')
+              -#label = JSON.parse(@filterform)[key]
+              %strong= UnicodeUtils.titlecase key.gsub(/[-_]/,' ')
             .col-xs-10
               - if value.class == Array
                 %textarea.conflict{:type=>'text',:name=>"filter[#{key}]"}=value.join(', ')

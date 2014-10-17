@@ -37,13 +37,7 @@ Admin.controllers :featureds do
     @featured = Featured.find(params[:id])
     @features = JSON.parse(@featured.features)
     @filter = JSON.parse(@featured.filter || "{}")
-    @followed = []
-    (@filter['tag'] || []).each do |tag|
-      t = Tag.find_slug(tag)
-      @followed << t.conflicts.includes('tags').select('conflicts.id, name, slug, features, approval_status') if t
-    end
-    p @followed
-    @followed.flatten!
+    @followed = Admin.filter @filter
     @followed.sort! {|a,b| a.slug <=> b.slug}
     @filterform = Cached.last.filterdata
     render 'featureds/edit'

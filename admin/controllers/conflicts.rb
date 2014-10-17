@@ -195,9 +195,9 @@ Admin.controllers :conflicts do
   get :index do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
+        @conflicts = Conflict.select('id,name,slug,account_id,category_id,modified_at,approval_status').order('modified_at desc')
       else
-        @conflicts = Conflict.where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
+        @conflicts = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id).order('modified_at desc')
       end
     end
     render 'conflicts/index'

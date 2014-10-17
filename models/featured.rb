@@ -21,7 +21,13 @@ class Featured < ActiveRecord::Base
     feats = JSON.parse(self.features || "{}")
     data["id"] = self.id
     data["data"] = feats
-    ftags = (data['tag'] || []).map {|t| Tag.find_slug(t)}
+    ftags = (data['tag'] || []).map do |t| 
+      if t.is_a?(Integer) or t == t.to_i.to_s
+        Tag.find(t.to_i)
+      else
+        Tag.find_slug(t)
+      end
+    end
     conflicts.each do |c|
       cmarker = JSON.parse(c.marker)
       JSON.parse(c.features).each do |k,v|
@@ -31,8 +37,6 @@ class Featured < ActiveRecord::Base
       cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
       json << c.json
       marker << cmarker.to_json
-      puts
-      p data
       link << c.as_button(data)
     end
     self.conflicts_json = json.to_json

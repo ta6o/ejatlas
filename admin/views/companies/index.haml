@@ -45,6 +45,8 @@
                   =""
               %td.last
                 =link_to pat('Edit'), url(:companies, :edit, :id => company.id), :method => :get
+                |
+                =link_to pat(:delete), url(:companies, :destroy, :id => company.id), :method => :get
       :javascript
         $(document).ready(function(){
           $('#sortme').tablesorter({

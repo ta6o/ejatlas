@@ -260,7 +260,7 @@ Admin.controller do
     @feature = true
     @maptitle = con.slogan
     @layertype = 2
-    @domains = JSON.parse(con.features)['tags']
+    @domains = JSON.parse(con.filter)['tag']
     @fid = con.id
     render "base/front", :layout => :front
   end
@@ -395,7 +395,7 @@ Admin.controller do
        },
        :to=>[
          {:email=> 'yakup.cetinkaya@gmail.com', :name=> 'Yakup' },
-         #{:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
+         {:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
        ],  
        :html=> msg['html'],
        :from_email=> 'forwards@ejatlas.org'

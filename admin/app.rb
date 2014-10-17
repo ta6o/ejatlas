@@ -143,27 +143,57 @@ class Admin < Padrino::Application
   end
 
   def self.filter options
-    map = {"cntry" => "country_id", "comp" => "companies", "success" => "success_level", "poptype" => "population_type", "category" => "category_id", "type" => "types", "intensity" => "status_id", "envi" => "env_impacts", "hlti" => "hlt_impacts", "seci" => "sec_impacts", "mobgroup" => "mobilizing_groups", "mobform" => "mobilizing_forms", "product" => "products", "pstatus" => "project_status_id", "stage" => "reaction_id", "outcome" => "conflict_events", "tag" => "tags"}
+    require 'pp'
+    map = {"cntry" => "country_id", "comp" => "company", "success" => "success_level", "poptype" => "population_type", "category" => "category_id", "type" => "type", "intensity" => "status_id", "envi" => "env_impact", "hlti" => "hlt_impact", "seci" => "sec_impact", "mobgroup" => "mobilizing_group", "mobform" => "mobilizing_form", "product" => "product", "pstatus" => "project_status_id", "stage" => "reaction_id", "outcome" => "conflict_event", "tag" => "tag"}
     simple = ["country_id", "success_level", "population_type", "category_id", "status_id", "project_status_id", "reaction_id"]
-    multi = ["companies", "types", "env_impacts", "hlt_impacts", "sec_impacts", "mobilizing_groups", "mobilizing_forms", "products", "conflict_events", "tags"]
+    relation = ["company", "type", "env_impact", "hlt_impact", "sec_impact", "mobilizing_group", "mobilizing_form", "product", "conflict_event", "tag"]
     hash = {}
     if options.class == String
-      arr = options.split('/')
-      arr.each do |a|
-        h = a.split(/[~=]/)
-        map.has_key?(h[0]) ? k = map[h[0]] : k = h[0]
-        h[-1].match(/,/) ? v = h[-1].split(',').map{|i|i.to_i} : v = h[-1].to_i
-        hash[k] = v
-      end
-    else
-      options.each do |k,v|
-        map.has_key?(k) ? k = map[k] : k = k
-        v.match(/,/) ? v = v.split(',').map{|i|i.to_i} : v = v.to_i
-        hash[k] = v
+      if options[0] == "{"
+        options = JSON.parse(options)
+      else
+        arr = options.split('/')
+        options = {}
+        arr.each do |a|
+          h = a.split(/[~=]/)
+          map.has_key?(h[0]) ? k = map[h[0]] : k = h[0]
+          h[-1].match(/,/) ? v = h[-1].split(',').map{|i|i.to_i} : v = [h[-1].to_i]
+          options[k] = v
+        end
       end
     end
-    p map.values
-    hash
+    rarray = []
+    options.each do |k,v|
+      map.has_key?(k) ? k = map[k] : k = k
+      rarray << []
+      if simple.include? k
+        v.each do |va|
+          rarray[-1] << Conflict.where(approval_status: 'approved').where("#{k} = ?",va)#.select('conflicts.id, name, slug, features, approval_status')
+        end
+      elsif relation.include? k
+        model = eval(UnicodeUtils.titlecase(k.gsub(/_-/,' ')).gsub(/\s/,''))
+        v.each do |va|
+          if va.is_a?(Integer) or va == va.to_i.to_s
+            rarray[-1] << model.find(va.to_i).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')
+          else
+            rarray[-1] << model.find_by_slug(va).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')
+          end
+        end
+      end
+    end
+    resu = []
+    rarray.each do |res|
+      re = []
+      res.each do |r|
+        re = re | r
+      end
+      resu << re
+    end
+    result = resu.first
+    resu.each do |res|
+      result = result & res
+    end
+    result
   end
 
 end

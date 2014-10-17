@@ -11,7 +11,7 @@
       vectorinfo = #{@vectors};
   :javascript
     window.onload = function(){
-      initMap(markerinfo,"#{@maptitle}",#{@layertype || 1},vectorinfo, #{@fid || 0});
+      initMap(markerinfo,"#{@maptitle}",#{@layertype || 2},vectorinfo, #{@fid || 0});
       updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
     }
 
