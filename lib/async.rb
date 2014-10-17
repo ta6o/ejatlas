@@ -294,7 +294,6 @@ class AsyncTask
       fids = Featured.all.map &:id
       Conflict.where('features is not null').each do |c|
         f = JSON.parse(c.features)
-        puts f
         f.each do |k,v|
           id = k.split(':')[0]
           next if id != id.to_i.to_s
@@ -302,7 +301,6 @@ class AsyncTask
             f.delete k
           end
         end
-        puts f
         c.features = f.to_json
         c.save
       end

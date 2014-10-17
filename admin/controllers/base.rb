@@ -397,6 +397,8 @@ Admin.controller do
        :html=> msg['html'],
        :from_email=> 'forwards@ejatlas.org'
       }  
+      message['attachments'] = msg['attachments'] if msg['attachments'].any?
+      message['images'] = msg['images'] if msg['images'].any?
       sending = mandrill.messages.send message  
       if sending[0]['status'] == "sent"
         oks << msg
