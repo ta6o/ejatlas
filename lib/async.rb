@@ -355,7 +355,7 @@ class AsyncTask
       total = Conflict.count / 64.0
       counter = 0
       Conflict.find_in_batches(batch_size: 64) do |batch|
-        puts "\r #{(counter/total*100).to_i}% done."
+        print "\r #{(counter/total*100).to_i}% done."
         counter += 1
         batch.each do |c|
           if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
@@ -368,10 +368,12 @@ class AsyncTask
           end
           if c.approval_status == "approved"
             open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
-            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts(c.json.to_json) }
+            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
           end
         end
       end
+      print "\rDone.         "
+      puts
       ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
       ca.conflicts_json = "["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
     end

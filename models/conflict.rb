@@ -113,7 +113,6 @@ class Conflict < ActiveRecord::Base
   def as_filter
     clr = self.category ? self.category.id : 0
     cat = self.category ? self.category.name : ''
-    sta = self.start_date ? self.start_date : ''
     parea = self.project_area ? self.project_area.to_i : self.project_length.to_i
     products = []
     self.products.each {|p| products << {:name=>p.name,:id=>p.id}}
@@ -154,7 +153,8 @@ class Conflict < ActiveRecord::Base
       :ptype=>self.population_type,
 
       :isum=>self.investment_sum,
-      :start=>sta,
+      :start=>self.start_datestamp.year,
+      :end=>self.end_datestamp.year,
       :mgrps=>mgrps,
       :mfrms=>mfrms,
 
@@ -228,8 +228,8 @@ class Conflict < ActiveRecord::Base
     @json['cmpcntry'].delete(nil) if @json.has_key?('cmpcntry')
     @json['poptype'] = c.population_type+1 if c.population_type
     @json['invest'] = v.investment_sum
-    @json['start'] = c.start_date if c.start_date
-    @json['end'] = v.end_date if c.end_date
+    @json['start'] = c.start_datestamp.year if c.start_datestamp
+    @json['end'] = c.end_datestamp.year if c.end_datestamp
     @json['success'] = v.success_level
     @json['intensity'] = v.status.id if v.status
     @json['pstatus'] = v.project_status_id if v.project_status

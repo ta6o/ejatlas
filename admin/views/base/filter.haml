@@ -336,6 +336,8 @@
             command = "("+single.join(" && ")+")";
             mingle = grepFields(command);
             mroup = grepSubFields(group)
+            console.log(mingle);
+            console.log(mroup);
             query = $(single).filter($(group))
             if (single != undefined && single.length > 0 && !$.isEmptyObject(group)) {
               //console.log('case ++')
@@ -361,6 +363,7 @@
         }
 
         function grepSubFields (group) {
+          console.log(group)
           if ($.isEmptyObject(group)){return []}
           ints = []
           $.each(group,function(k,v){

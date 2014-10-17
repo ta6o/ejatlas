@@ -147,6 +147,7 @@ class Admin < Padrino::Application
     map = {"cntry" => "country_id", "comp" => "company", "success" => "success_level", "poptype" => "population_type", "category" => "category_id", "type" => "type", "intensity" => "status_id", "envi" => "env_impact", "hlti" => "hlt_impact", "seci" => "sec_impact", "mobgroup" => "mobilizing_group", "mobform" => "mobilizing_form", "product" => "product", "pstatus" => "project_status_id", "stage" => "reaction_id", "outcome" => "conflict_event", "tag" => "tag"}
     simple = ["country_id", "success_level", "population_type", "category_id", "status_id", "project_status_id", "reaction_id"]
     relation = ["company", "type", "env_impact", "hlt_impact", "sec_impact", "mobilizing_group", "mobilizing_form", "product", "conflict_event", "tag"]
+    comparison = ["invest-g","invest-l","start-g","start-l","end-g","end-l"]
     hash = {}
     if options.class == String
       if options[0] == "{"
@@ -179,6 +180,14 @@ class Admin < Padrino::Application
             rarray[-1] << model.find_by_slug(va).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')
           end
         end
+      elsif comparison.include? k
+        operator = {'g'=>'>=','l'=>'<='}[k.split('-')[-1]]
+        field = {'invest'=>'investment_sum','start'=>'start_datestamp','end'=>'end_datestamp'}[k.split('-')[0]]
+        v = v[0].to_i
+        v = Date.parse("#{v}-01-01") if ['start-g','end-g'].include? k
+        v = Date.parse("#{v}-12-31") if ['start-l','end-l'].include? k
+        p Conflict.where("#{field} #{operator} ?",v).to_sql
+        rarray[-1] << Conflict.where("#{field} #{operator} ?",v)#.select('conflicts.id, name, slug, features, approval_status')
       end
     end
     resu = []
