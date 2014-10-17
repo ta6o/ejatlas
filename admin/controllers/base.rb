@@ -390,6 +390,9 @@ Admin.controller do
       message = {  
        :subject=> msg['subject'],
        :from_name=> "#{msg['from_name'] || 'no name'} <#{msg['from_email']}>",
+       :headers=> {
+         "Reply-To"=> msg['from_email']
+       },
        :to=>[
          {:email=> 'yakup.cetinkaya@gmail.com', :name=> 'Yakup' },
          #{:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
