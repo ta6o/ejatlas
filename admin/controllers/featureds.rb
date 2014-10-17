@@ -120,7 +120,7 @@ Admin.controllers :featureds do
     header.delete 'id'
     features = header - tags
     feat.features = features.to_json
-    feat.filter = {:tags => ftags}.to_json
+    feat.filter = {:tag => ftags}.to_json
     feat.save
     redirect to '/featureds'
   end
