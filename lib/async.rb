@@ -288,6 +288,7 @@ class AsyncTask
       ca.types = types.to_json
     end
 
+=begin
     if params["featureds"] == "on"
       types = []
       puts "Updating featureds..."
@@ -311,6 +312,7 @@ class AsyncTask
         featured.ping(confs)
       end
     end
+=end
 
     if params["images"] == "on"
       puts "Updating images..."
