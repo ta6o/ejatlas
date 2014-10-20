@@ -148,9 +148,10 @@ Admin.controllers :featureds do
         end
         nfields += 1
       end
+      p tags
       tags.each do |tag|
         header << tag.slug if index == 0
-        conf.tags.include? tag ? t = 1 : t = ""
+        conf.tags.include?(tag) ? t = 1 : t = ""
         line << t
       end
       rows << line
