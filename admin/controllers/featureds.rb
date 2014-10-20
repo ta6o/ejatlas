@@ -76,7 +76,7 @@ Admin.controllers :featureds do
     stack.each_with_index do |conf,index|
       nfields = 0
       line = [conf.id,conf.name]
-      features = JSON.parse(conf.features)
+      features = JSON.parse(conf.features || "{}")
       JSON.parse(featured.features).each do |k|
         next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
         if Conflict.attribute_names.include? k
