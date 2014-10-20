@@ -69,6 +69,9 @@ Admin.controllers :featureds do
   get :export, :with => :id do
     featured = Featured.find(params['id'])
     stack = Admin.filter(featured.filter || "")
+    tags = (featured.filter || "").split('/').grep(/^tag~/)
+    tags = tags[0].split('~')[-1].split(',') if tags.any?
+    tags = tags.map {|t| Tag.find(t)}
     rows = []
     header = ['id','name']
     mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms']
@@ -144,6 +147,11 @@ Admin.controllers :featureds do
           line << features["#{featured.id}:#{k}"]
         end
         nfields += 1
+      end
+      tags.each do |tag|
+        header << tag.slug if index == 0
+        conf.tags.include? tag ? t = 1 : t = ""
+        line << t
       end
       rows << line
     end
