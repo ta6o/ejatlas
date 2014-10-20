@@ -13,6 +13,7 @@
     $(document).ready(function(){
       initMap(markerinfo,"#{@maptitle}",2,vectorinfo);
       updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+      initFilter();
     });
 .front
   .tagline

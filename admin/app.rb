@@ -169,6 +169,7 @@ class Admin < Padrino::Application
       rarray << []
       if simple.include? k
         v.each do |va|
+          va -= 1 if k == "population_type"
           rarray[-1] << Conflict.where(approval_status: 'approved').where("#{k} = ?",va)#.select('conflicts.id, name, slug, features, approval_status')
         end
       elsif relation.include? k
@@ -181,11 +182,11 @@ class Admin < Padrino::Application
           end
         end
       elsif comparison.include? k
-        operator = {'g'=>'>=','l'=>'<='}[k.split('-')[-1]]
+        operator = {'g'=>'>','l'=>'<'}[k.split('-')[-1]]
         field = {'invest'=>'investment_sum','start'=>'start_datestamp','end'=>'end_datestamp'}[k.split('-')[0]]
         v = v[0].to_i
-        v = Date.parse("#{v}-01-01") if ['start-g','end-g'].include? k
-        v = Date.parse("#{v}-12-31") if ['start-l','end-l'].include? k
+        v = Date.parse("#{v}-12-31") if ['start-g','end-g'].include? k
+        v = Date.parse("#{v}-01-01") if ['start-l','end-l'].include? k
         p Conflict.where("#{field} #{operator} ?",v).to_sql
         rarray[-1] << Conflict.where("#{field} #{operator} ?",v)#.select('conflicts.id, name, slug, features, approval_status')
       end

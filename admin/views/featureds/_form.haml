@@ -32,19 +32,49 @@
       %textarea.feature{:name=>'data', :class => :text_area, :rows => 2}=@features.join(', ')
 
     .group
-      %label Filter options
-      -if @filter.any?
-        :javascript
-          var filterdata = #{@filterform}
-        -@filter.each do |key,value|
-          .row
-            .col-xs-2
-              -#label = JSON.parse(@filterform)[key]
-              %strong= UnicodeUtils.titlecase key.gsub(/[-_]/,' ')
-            .col-xs-10
-              - if value.class == Array
-                %textarea.conflict{:type=>'text',:name=>"filter[#{key}]"}=value.join(', ')
+      =f.label :filter
+      =f.error_message_on :filter
+      ~f.text_field :filter, :class => :text_field
+      %br/
+      %br/
+      #filter-info
+      %br/
+      %a.btn{:onclick=>"$('#filter-modal').modal('show');"} Edit filter options
 
+
+    -content_for :include do
+      :javascript
+        var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
+        var markerCount = filterinfo.length
+    -content_for :outer do
+      #csv-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+        .modal-dialog
+          .modal-content
+            .modal-header
+              %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+              %h3= "Upload CSV file for #{@featured.name}"
+            .modal-body
+              .row
+                .col-md-6.col-md-offset-3
+                  .hero-unit
+                    %h1.title= @title
+                  .inner
+                    =form_for :featured, url(:featureds, :csv, :id => @featured.id), :class => :form, :enctype => 'multipart/form-data' do |f|
+                      %input#file{:type=>'file',:name=>'featured[file]'}
+                      %br/
+                      .group.navform.wat-cf
+                        =f.submit pat(:upload), :class => 'btn btn-warning', :style=>'width:180px;font-weight:bold'
+      #filter-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+        .modal-dialog
+          .modal-content
+            .modal-header
+              %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+              %h3= "Filter cases for #{@featured.name}"
+            .modal-body
+              .row.whitebox
+                .col-md-12
+                  #filter-row
+                    #filter= render "base/filter", :layout => false
 
     %br/
     .group
@@ -56,44 +86,43 @@
 .row.whitebox
   .col-md-8.col-md-offset-2
     .group
-      -@followed ||= []
-      -@followed.each do |conflict|
-        .row
-          .clearfix
-            .pull-left
-              =conflict.name
-              %small
-                %em=conflict.approval_status
-                -conflict.tags.each do |tag|
-                  &nbsp;
-                  %span.small.badge{:style=>"background-color:##{tag.domain}"}=tag.name
-            .pull-right
-              .small
-                %a{:id=>"oc_#{conflict.id}",:onclick=>"editFeature(#{conflict.id})",:style=>'cursor:pointer;'} Edit features
-          .small{:id=>"feat_#{conflict.id}",:style=>'display:none'}
+      #filter-head
+      #filter-list
+        .clearfix
+          %a.btn.pull-left{:href=>"/featureds/export/#{@featured.id}"} Export CSV
+          %a.btn.pull-left{:onclick=>"$('#csv-modal').modal('show');"} Import CSV
+        %br/
+        -@followed ||= []
+        -@followed.each do |conflict|
+          .row
             .clearfix
+              .pull-left
+                =conflict.name
+                %small
+                  %em=conflict.approval_status
+                  -conflict.tags.each do |tag|
+                    &nbsp;
+                    %span.small.badge{:style=>"background-color:##{tag.domain}"}=tag.name
               .pull-right
-                %a{:target=>'_blank',:href=>"/conflicts/edit/#{conflict.id}"} Edit Original
-                |
-                %a{:target=>'_blank',:href=>"/conflict/#{conflict.slug}"} View Conflict
-            -JSON.parse(conflict.features).each do |feat, value|
-              -if feat.split(":")[0].to_i == @featured.id
-                -fname = feat.split(":")[1]
+                .small
+                  %a{:id=>"oc_#{conflict.id}",:onclick=>"editFeature(#{conflict.id})",:style=>'cursor:pointer;'} Edit features
+            .small{:id=>"feat_#{conflict.id}",:style=>'display:none'}
+              .clearfix
+                .pull-right
+                  %a{:target=>'_blank',:href=>"/conflicts/edit/#{conflict.id}"} Edit Original
+                  |
+                  %a{:target=>'_blank',:href=>"/conflict/#{conflict.slug}"} View Conflict
+              -@features.each do |feat|
+                -next if Conflict.attribute_names.include? feat
+                -cfeats = JSON.parse(conflict.features || "{}")
                 .row
                   .col-xs-2
-                    %strong= UnicodeUtils.titlecase fname.gsub(/[-_]/,' ')
+                    %strong= UnicodeUtils.titlecase feat.gsub(/[-_]/,' ')
                   .col-xs-10
-                    %input.conflict{:type=>'text',:name=>"conflict[#{fname}:#{conflict.id}]",:value=>value}
-            %br/
+                    %input.conflict{:type=>'text',:name=>"conflict[#{feat}:#{conflict.id}]",:value=>cfeats["#{@featured.id}:#{feat}"]}
+              %br/
 
 :javascript
-  $('.feature').on('change',function(e){
-    data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
-    tags = $('textarea[name=tags]').val().replace(/\n/,' ').split(/,\ ?/);
-    hash = {'data':data,'tags':tags};
-    $('#features').val(JSON.stringify(hash));
-  });
-
   $('input.conflict').on('change',function(e){
     $(this).addClass('changed');
   });
@@ -110,7 +139,11 @@
   }
 
   $('form').on('submit',function(){
-    console.log($('form').serialize())
+    data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
+    $('#features').val(JSON.stringify(data));
     $('input.conflict').not('.changed').remove();
   });
 
+  $(document).ready(function(){
+    initFeatured(#{@featured.filter.split('/')});
+  });

@@ -110,69 +110,6 @@ class Conflict < ActiveRecord::Base
     return {:name=>self.name,:lon=>lon,:lat=>lat,:id=>self.id,:cat=>cat,:start=>sta,:clr=>clr,:val=>(self.project_details == "" ? 0 : 1),:slug=>self.slug,:cslg=>cslg}.to_json
   end
 
-  def as_filter
-    clr = self.category ? self.category.id : 0
-    cat = self.category ? self.category.name : ''
-    parea = self.project_area ? self.project_area.to_i : self.project_length.to_i
-    products = []
-    self.products.each {|p| products << {:name=>p.name,:id=>p.id}}
-    companies = []
-    self.companies.each {|p| companies << {:name=>p.name,:id=>p.id}}
-    supporters = []
-    self.supporters.each {|p| supporters << {:name=>p.name,:id=>p.id}}
-    mgrps = []
-    self.mobilizing_groups.each {|p| mgrps << {:name=>p.name,:id=>p.id}}
-    mfrms = []
-    self.mobilizing_forms.each {|p| mfrms << {:name=>p.name,:id=>p.id}}
-    envi = []
-    self.env_impacts.each {|p| envi << {:name=>p.name,:id=>p.id}}
-    hlti = []
-    self.hlt_impacts.each {|p| hlti << {:name=>p.name,:id=>p.id}}
-    seci = []
-    self.env_impacts.each {|p| seci << {:name=>p.name,:id=>p.id}}
-    outcomes = []
-    self.conflict_events.each {|p| outcomes << {:name=>p.name,:id=>p.id}}
-    tags = []
-    self.tags.each {|p| tags << {:name=>p.name,:id=>p.id}}
-    return {
-      :id=>self.id,
-      :name=>self.name,
-      :slug=>self.slug,
-      :cnam=>self.country.name,
-      :cslg=>self.country.slug,
-
-      :parea=>parea,
-      :clr=>clr,
-      :cat=>cat,
-
-      :comm=>products,
-      :cmps=>companies,
-      :fncl=>supporters,
-      :status=>self.status_id,
-      :reaction=>self.reaction_id,
-      :ptype=>self.population_type,
-
-      :isum=>self.investment_sum,
-      :start=>self.start_datestamp.year,
-      :end=>self.end_datestamp.year,
-      :mgrps=>mgrps,
-      :mfrms=>mfrms,
-
-      :envi=>envi,
-      :hlti=>hlti,
-      :seci=>seci,
-
-      :stage=>self.project_status_id,
-      :success=>self.success_level,
-
-      :outcomes=>outcomes,
-      :tags=>tags,
-
-      :lon=>self.lon.to_i,:lat=>self.lat.to_i,
-    }.to_json
-  end
-
-
   def get_start_date
     date = self.start_date
     if date.length == 4
@@ -208,6 +145,7 @@ class Conflict < ActiveRecord::Base
       'env_impacts',
       'hlt_impacts',
       'sec_impacts',
+      'tags',
     ]
     shorthand = {
       'mobilizing_groups'=>'mobgroup',
@@ -217,6 +155,7 @@ class Conflict < ActiveRecord::Base
       'env_impacts' => 'envi',
       'hlt_impacts' => 'hlti',
       'sec_impacts' => 'seci',
+      'tags' => 'tag',
     }
 
     @json['id'] = c.id
@@ -280,13 +219,73 @@ class Conflict < ActiveRecord::Base
 
   def as_button(options={})
     html = "<p><a href='/conflict/#{self.slug}'>#{self.name}</a>"
+    require 'pp'
+    puts
+    pp options
     unless options.empty?
-      features = JSON.parse(self.features)
+      features = JSON.parse(self.features || "{}")
       list = []
       options["data"].each do |data|
         dat = "#{options['id']}:#{data}"
         next unless features[dat]
         list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{features[dat]}</span>"
+      end
+      if options["attrs"]
+        options["attrs"].each do |data|
+          k = data
+          v = eval('self.'+k)
+          next unless v
+          if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
+            begin
+              ass = eval "self."+k.to_s[0...-3]
+            rescue
+              next
+            end
+            header << k.to_s[0...-3].gsub("_"," ").titlecase if index == 0
+            if ass.nil?
+              val = ""
+            elsif ass.name
+              val = ass.name
+            else
+              val = ass.attributes
+            end
+          elsif k == "reaction_id"
+            if v
+              val = Reaction.find(v).name
+            else
+              val = ""
+            end
+          elsif k == "status_id"
+            if v
+              val = Status.find(v).name
+            else
+              val = ""
+            end
+          elsif k == "population_type"
+            if v
+              val = ['Unknown','Urban','Semi-urban','Rural'][v]
+            else
+              val = ""
+            end
+          elsif k == "accuracy_level"
+            if v
+              val = ['','LOW country/state level','MEDIUM regional level','HIGH local level'][v]
+            else
+              val = ""
+            end
+          else
+          end
+          next if val.nil? or val == ""
+          list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{val}</span>"
+        end
+      end
+      if options["mania"]
+        options["mania"].each do |data|
+          val = eval('self.'+data)
+          pp val
+          next if val.empty?
+          list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{val.map(&:name).join(', ')}</span>"
+        end
       end
       tags = []
       ftags = (options['tag'] || []).map do |t| 

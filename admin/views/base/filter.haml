@@ -27,8 +27,8 @@
       .tab-content
         #basic.tab-pane.active{"data-name"=>"Basic Data"}
           .col-md-4
-            %h4 Success
             .col
+              %h4 Success Level
               %table#success{"data-name"=>"Success Level"}
                 -@filterform["success"].each_with_index do |c,i|
                   %tr.rw
@@ -36,10 +36,7 @@
                       %input{:type=>'checkbox', :value=>i, :name=>"success"}
                     %td.lbl
                       %label= c
-
-          .col-md-4
-            %h4 Type of Population
-            .col
+              %h4 Type of Population
               %table#poptype{"data-name"=>"Type of Population"}
                 -@filterform["poptype"].each_with_index do |c,i|
                   %tr.rw
@@ -47,6 +44,20 @@
                       %input{:type=>'checkbox', :value=>i+1, :name=>"poptype"}
                     %td.lbl
                       %label= c
+
+          .col-md-4
+            %h4 Tags
+            .col
+              %table#tag{"data-name"=>"Tags"}
+                -@filterform["tag"].each do |cc|
+                  -c = cc["tag"]
+                  %tbody
+                    %tr.rw
+                      %td
+                        %input{:type=>'checkbox', :value=>c["id"], :name=>"tag"}
+                      %td.lbl
+                        %label= c["name"]
+
 
           .col-md-4
             %h4 Country
@@ -285,13 +296,21 @@
       .col-md-4
         .filt
           %button.btn.clr{:type=>'button'} Clear Filter
-      .col-md-8
-        .filt
-          %button.btn.or{:type=>'submit'} Filter
+      -if @featured
+        .col-md-4
+          .filt
+            %button.btn.or{:type=>'submit'} Filter
+        .col-md-4
+          .filt
+            %button.btn.and{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} Apply
+      -else
+        .col-md-8
+          .filt
+            %button.btn.or{:type=>'submit'} Filter
 
       :javascript
         function filterMarkers(filter,update) {
-          //console.log("init filter:",filter);
+          console.log("init filter:",filter);
           $('#conflict_filter input[type=checkbox]').prop('checked',false)
           if (filter.length == 0 || (filter.length == 1 && filter[0] == "")) {
             markers = [];
@@ -299,7 +318,7 @@
               markers.push(v["id"]);
             });
             infoToUpdate = markerCount+" cases documented."
-            showMarkers(markers,infoToUpdate);
+            map ? showMarkers(markers,infoToUpdate) : "";
           } else {
             filterdesc = "";
             single = [];
@@ -308,6 +327,7 @@
             $.each(filter,function(i,v){
               r = v.split(/(-g=|-l=|=|\~)/)
               elid = v.split(/(=|~)/)[0]
+              console.log(elid)
               title = $("#"+elid).attr("data-name")
               filterdesc += "<strong>"+title+": </strong>"
               if (r[1]=="~") {
@@ -336,8 +356,6 @@
             command = "("+single.join(" && ")+")";
             mingle = grepFields(command);
             mroup = grepSubFields(group)
-            console.log(mingle);
-            console.log(mroup);
             query = $(single).filter($(group))
             if (single != undefined && single.length > 0 && !$.isEmptyObject(group)) {
               //console.log('case ++')
@@ -349,16 +367,29 @@
               //console.log('case +-')
               query = mingle
             }
-            if (!update) {
+            if (map) {
+              if (!update) {
+                queryhash['filter'] = filter
+                search = []
+                $.each(queryhash,function(k,v){ search.push( k+'='+v.join('/'))})
+                location.hash = search.join('&')
+              }
+              infoToUpdate = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases filtered with the following options:</p>"+filterdesc;
+              sideInfo = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases filtered.</p>";
+              $('#filterInfo').html(infoToUpdate);
+              showMarkers(query,sideInfo)
+            } else {
+              if (!update) { listMarkers($.makeArray(query)); }
               queryhash['filter'] = filter
               search = []
               $.each(queryhash,function(k,v){ search.push( k+'='+v.join('/'))})
-              location.hash = search.join('&')
+              $('input#featured_filter').val(filter.join('/'))
+              infoToUpdate = "<br /><p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases included.</p>";
+              sideInfo = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases included.</p>";
+              $('#filterInfo').html(infoToUpdate);
+              $('#filter-info').html(filterdesc);
+              $('#filter-head').html(infoToUpdate);
             }
-            infoToUpdate = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases filtered with the following options:</p>"+filterdesc;
-            sideInfo = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases filtered.</p>";
-            $('#filterInfo').html(infoToUpdate);
-            showMarkers(query,sideInfo);
           }
         }
 
@@ -391,8 +422,21 @@
           return result
         }
 
+        function listMarkers (ids) {
+        console.log(ids)
+          if (ids.length == 0) {return}
+          confs = []
+          $.each(ids,function(i,id) {
+            conf = $.grep(filterinfo,function(n,ind){ return n['id'] == id})[0]
+            confs.push(conf);
+          });
+          console.log(confs)
+          $('#filter-list').html("<p>IDs: "+ids.join(', ')+"</p><p>Save form to edit features.</p>")
+        }
+
         function showMarkers (idso, infoToUpdate) {
           ids = $.makeArray(idso)
+          //console.log(ids)
           updateInfo(1, infoToUpdate)
           classes = ".id_"+ids.join(", .id_");
           $('.leaflet-marker-icon').hide();
@@ -420,7 +464,7 @@
           return Math.pow(base,Math.ceil(roof/2))/div
         }
 
-        var srar, names, search, grpd, query, grup, sing;
+        var srar, names, search, grpd, query, grup, sing, filtre;
         var queryhash = {};
 
         $(document).ready(function(){
@@ -497,7 +541,7 @@
               $('input[name=invest-l]').val(l)
             }
           });
-          $("#start, #end").on('change',function(){
+          $("#start").on('change',function(){
             val = $(this).val()
             g = parseInt(val[0])
             if(g==1880) {
@@ -512,6 +556,30 @@
               $('input[name=start-l]').val(l)
             }
           });
+          $("#end").on('change',function(){
+            val = $(this).val()
+            g = parseInt(val[0])
+            if(g==1880) {
+              $('input[name=end-g]').val(null)
+            } else {
+              $('input[name=end-g]').val(g)
+            }
+            l = parseInt(val[1])
+            if(l==2020) {
+              $('input[name=end-l]').val(null)
+            } else {
+              $('input[name=end-l]').val(l)
+            }
+          });
+        })
+        function initFeatured(f){
+          filtre = f;
+          queryhash['filter'] = filtre;
+          if (queryhash["filter"]!=undefined) {
+            filterMarkers(queryhash['filter'],true)
+          }
+        }
+        function initFilter(){
           $.each(window.location.hash.substr(1).split('&'), function(i,v) {
             q = v.split('=');
             n = q.shift();
@@ -521,4 +589,4 @@
             filterMarkers(queryhash['filter'],true)
             $('#filter-row .dnone').slideDown()
           }
-        })
+        }

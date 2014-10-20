@@ -17,10 +17,16 @@ class Featured < ActiveRecord::Base
 
   def ping conflicts
     json, marker, link = [], [], []
-    data = JSON.parse(self.filter || "{}")
+    data = {}
+    tags = (self.filter || "").split('/').grep(/^tag~/)
+    data["tag"] = tags[0].split('~')[-1].split(',') if tags.any?
     feats = JSON.parse(self.features || "{}")
     data["id"] = self.id
-    data["data"] = feats
+    mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms']
+    imps = ['env_impacts','hlt_impacts','sec_impacts']
+    data["attrs"] = (Conflict.attribute_names & feats)
+    data["mania"] = ((mania | imps) & feats)
+    data["data"] = feats - (mania | imps | Conflict.attribute_names)
     ftags = (data['tag'] || []).map do |t| 
       if t.is_a?(Integer) or t == t.to_i.to_s
         Tag.find(t.to_i)
@@ -30,11 +36,59 @@ class Featured < ActiveRecord::Base
     end
     conflicts.each do |c|
       cmarker = JSON.parse(c.marker)
-      JSON.parse(c.features).each do |k,v|
+      JSON.parse(c.features||"{}").each do |k,v|
         cmarker[k] = v
       end
-      cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain}
+      cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain} || ""
       cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
+      (Conflict.attribute_names & feats).each do |f|
+        v = eval("c.#{f}")
+        k = f
+        if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
+          begin
+            ass = eval "self."+k.to_s[0...-3]
+          rescue
+            next
+          end
+          header << k.to_s[0...-3].gsub("_"," ").titlecase if index == 0
+          if ass.nil?
+            val = ""
+          elsif ass.name
+            val = ass.name
+          else
+            val = ass.attributes
+          end
+        elsif k == "reaction_id"
+          if v
+            val = Reaction.find(v).name
+          else
+            val = ""
+          end
+        elsif k == "status_id"
+          if v
+            val = Status.find(v).name
+          else
+            val = ""
+          end
+        elsif k == "population_type"
+          if v
+            val = ['Unknown','Urban','Semi-urban','Rural'][v]
+          else
+            val = ""
+          end
+        elsif k == "accuracy_level"
+          if v
+            val = ['','LOW country/state level','MEDIUM regional level','HIGH local level'][v]
+          else
+            val = ""
+          end
+        else
+        end
+        cmarker["#{self.id}:#{f}"] = val
+      end
+      ((mania | imps) & feats).each do |f|
+        cmarker["#{self.id}:#{f}"] = eval("c.#{f}").map(&:name).join(', ')
+      end
       json << c.json
       marker << cmarker.to_json
       link << c.as_button(data)

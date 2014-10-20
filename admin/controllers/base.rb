@@ -260,7 +260,7 @@ Admin.controller do
     @feature = true
     @maptitle = con.slogan
     @layertype = 2
-    @domains = JSON.parse(con.filter)['tag']
+    #@domains = JSON.parse(con.filter)['tag']
     @fid = con.id
     render "base/front", :layout => :front
   end

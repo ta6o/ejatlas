@@ -2676,7 +2676,7 @@ function initMap (markers, maptitle, layertype, vector, fid) {
     mark = m;//JSON.parse(m);
     popcontent = "<div class='loading'><img src='/images/loading.gif'></div><h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><div class='clearfix' style='padding:24px 16px;'><div class='map-icon i_"+mark.clr+" s_1 pull-left'></div><div class='pull-left' style='position:relative;top:-20px;left:12px;width:210px;'>";
     if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
-    if (mark.start !== '' ) {popcontent += "<br /><small><strong>Start date:</strong> "+mark.start+"</small>"} else {popcontent += "<br /><small>&nbsp;</small>"};
+    //if (mark.start !== '' ) {popcontent += "<br /><small><strong>Start date:</strong> "+mark.start+"</small>"} else {popcontent += "<br /><small>&nbsp;</small>"};
     popcontent += '</div>';
     if ('dmn' in mark) {
       dmns.push(mark.dmn[0])
