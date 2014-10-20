@@ -22,7 +22,7 @@ class Featured < ActiveRecord::Base
     data["tag"] = tags[0].split('~')[-1].split(',') if tags.any?
     feats = JSON.parse(self.features || "{}")
     data["id"] = self.id
-    mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms']
+    mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies','supporters']
     imps = ['env_impacts','hlt_impacts','sec_impacts']
     data["attrs"] = (Conflict.attribute_names & feats)
     data["mania"] = ((mania | imps) & feats)

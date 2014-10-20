@@ -385,8 +385,8 @@
               $.each(queryhash,function(k,v){ search.push( k+'='+v.join('/'))})
               $('input#featured_filter').val(filter.join('/'))
               infoToUpdate = "<br /><p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases included.</p>";
-              sideInfo = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases included.</p>";
-              $('#filterInfo').html(infoToUpdate);
+              sideInfo = "<p class='large'><strong>"+query.length+"</strong> out of <strong>"+markerCount+"</strong> cases included.</p>"+filterdesc;
+              $('#filterInfo').html(infoToUpdate+'<br />'+filterdesc);
               $('#filter-info').html(filterdesc);
               $('#filter-head').html(infoToUpdate);
             }

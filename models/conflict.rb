@@ -182,7 +182,10 @@ class Conflict < ActiveRecord::Base
     self.attributes.each do |k,v|
       next if v.nil? or v == ""
       if k.to_s[-3..-1] == "_id" and k != "status_id"
-        ass = eval "self."+k.to_s[0...-3]
+        begin
+          ass = eval "self."+k.to_s[0...-3]
+        rescue
+        end
         next unless ass
         if ass.name
           puts (k.to_s[0...-3]+": ")+ass.name
@@ -197,6 +200,7 @@ class Conflict < ActiveRecord::Base
     end
     self.methods.grep(/^validate_associated_records_for_.*$/).each do |m| 
       a = m.to_s.split("validate_associated_records_for_")[1]
+      puts a
       next if a[0..1] == "c_"
       assoc = eval "self."+a
       next unless assoc.any?
@@ -233,13 +237,13 @@ class Conflict < ActiveRecord::Base
           k = data
           v = eval('self.'+k)
           next unless v
-          if k.to_s[-3..-1] == "_id" and !["success_level","reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
+          if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id"].include? k
+            k = k.to_s[0...-3]
             begin
-              ass = eval "self."+k.to_s[0...-3]
+              ass = eval "self."+k
             rescue
               next
             end
-            header << k.to_s[0...-3].gsub("_"," ").titlecase if index == 0
             if ass.nil?
               val = ""
             elsif ass.name

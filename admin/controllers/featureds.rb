@@ -20,7 +20,9 @@ Admin.controllers :featureds do
 
   get :new do
     @featured = Featured.new
-    @filterform = JSON.parse(ca.filterdata)
+    @features = []
+    @filterform = JSON.parse(Cached.last.filterdata)
+    @filterinfo = Cached.last.conflicts_json
     render 'featureds/new'
   end
 
@@ -28,6 +30,7 @@ Admin.controllers :featureds do
     @featured = Featured.new(params[:featured])
     if @featured.save
       flash[:notice] = 'Featured was successfully created.'
+      @featured.ping(Admin.filter(@featured.filter))
       redirect url(:featureds, :edit, :id => @featured.id)
     else
       render 'featureds/new'
@@ -36,22 +39,27 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
-    @features = JSON.parse(@featured.features)
+    @features = JSON.parse(@featured.features) -$attrhash.values  
+    @contained = {}
+    (JSON.parse(@featured.features) & $attrhash.values).each do |val|
+      @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
+    end
+    p @contained
     @followed = Admin.filter(@featured.filter || "")
     @followed.sort! {|a,b| a.slug <=> b.slug}
     @filterform = JSON.parse(Cached.last.filterdata)
     @filterinfo = Cached.last.conflicts_json
+    @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
+    @imps = ['env_impacts','hlt_impacts','sec_impacts']
     render 'featureds/edit'
   end
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
-    puts params
     if @featured.update_attributes(params[:featured])
       flash[:notice] = 'Featured was successfully updated.'
       if params['conflict']
         params["conflict"].each do |k,v|
-          puts "#{k}: #{v}"
           conflict = Conflict.find k.split(':')[-1]
           feats = JSON.parse(conflict.features || "{}")
           feats["#{@featured.id}:#{k.split(':')[0]}"] = v
@@ -74,7 +82,7 @@ Admin.controllers :featureds do
     tags = tags.map {|t| Tag.find(t)}
     rows = []
     header = ['id','name']
-    mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms']
+    mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies','supporters']
     imps = ['env_impacts','hlt_impacts','sec_impacts']
     stack.each_with_index do |conf,index|
       nfields = 0
@@ -188,8 +196,12 @@ Admin.controllers :featureds do
     ftags = []
     itags = []
     tags.each_with_index do |tag,index|
-      domain = tag.split(":")[-1]
-      tag = tag.split(":")[0]
+      if tag.match(/:/)
+        domain = tag.split(":")[-1]
+        tag = tag.split(":")[0]
+      else
+        domain = '0380A5'
+      end
       slug = Admin.slugify(tag)
       ftags << slug
       if ftag = Tag.find_slug(slug)
@@ -202,15 +214,16 @@ Admin.controllers :featureds do
     end
     p tags
     p ftags
+    p itags
 
     name = UnicodeUtils::titlecase(params['featured']['file'][:filename].split('.')[0].gsub(/[-_]/,' '))
 
     csv.each do |row|
       next unless row[0]
       conflict = Conflict.find(row[0].to_i)
-      features = JSON.parse(conflict.features) || {}
+      features = JSON.parse(conflict.features || "{}")
       row.each_with_index do |cell,index|
-        next if header[index] == 'id'
+        next if ['id','name'].include? header[index]
         next if Conflict.attribute_names.include? cell
         if tags.include? header[index]
           next unless cell == '1'
@@ -224,12 +237,18 @@ Admin.controllers :featureds do
       conflict.save
     end
     header.delete 'id'
+    header.delete 'name'
     features = header - tags
     feat.features = features.to_json
     filter = (feat.filter || "").split('/')
     tag = filter.index{|x| x =~ /^tag~/ }
-    tag ? curtags = filter[tag].split('~')[-1].split(',').map{|t| t.to_i} : curtags = []
-    filter[tag] = "tag~#{(itags | curtags).join(',')}"
+    if tag
+      curtags = filter[tag].split('~')[-1].split(',').map{|t| t.to_i}
+      filter[tag] = "tag~#{(itags | curtags).join(',')}"
+    else
+      curtags = []
+      filter << "tag~#{(itags | curtags).join(',')}"
+    end
     feat.filter = filter.join('/')
     feat.save
     redirect to "/featureds/edit/#{feat.id}"

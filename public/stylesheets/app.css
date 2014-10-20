@@ -5159,7 +5159,7 @@ ul.sidelink li.active {
 .map_icon {
   display: block;
   content: '&nbsp;';
-  border: 2px solid rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.8);
   cursor: pointer;
   background-image: -webkit-gradient(linear, left 0%, left 100%, from(#555555), to(#2f2f2f));
   background-image: -webkit-linear-gradient(top, #555555 0%, #2f2f2f 100%);
@@ -5169,7 +5169,7 @@ ul.sidelink li.active {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff555555', endColorstr='#ff2f2f2f', GradientType=0);
 }
 .map_icon:hover {
-  border: 2px solid black;
+  border: 2px solid white;
 }
 .map-icon {
   display: block;
@@ -5229,7 +5229,7 @@ ul.sidelink li.active {
 }
 .s_0.mic {
   border-radius: 1px;
-  border: 1px solid black;
+  border: 1px solid white;
   width: 6px !important;
   height: 6px !important;
   margin: -3px 0 0 -3px !important;
@@ -5250,7 +5250,7 @@ ul.sidelink li.active {
 }
 .s_1.mic {
   border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.4);
+  border: 1px solid white;
   width: 6px !important;
   height: 6px !important;
   margin: -3px 0 0 -3px !important;
