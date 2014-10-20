@@ -58,6 +58,12 @@ class Featured < ActiveRecord::Base
           else
             val = ass.attributes
           end
+        elsif k == "success_level"
+          if v
+            val = ["Success", "Not sure", "Failure"][v]
+          else
+            val = ""
+          end
         elsif k == "reaction_id"
           if v
             val = Reaction.find(v).name
@@ -83,6 +89,7 @@ class Featured < ActiveRecord::Base
             val = ""
           end
         else
+          val = v
         end
         cmarker["#{self.id}:#{f}"] = val
       end

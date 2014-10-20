@@ -95,6 +95,12 @@ Admin.controllers :featureds do
             else
               line << ass.attributes
             end
+          elsif k == "success_level"
+            if v
+              val = ["Success", "Not sure", "Failure"][v]
+            else
+              val = ""
+            end
           elsif k == "reaction_id"
             header << "reaction_id" if index == 0
             if v

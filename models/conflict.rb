@@ -220,8 +220,6 @@ class Conflict < ActiveRecord::Base
   def as_button(options={})
     html = "<p><a href='/conflict/#{self.slug}'>#{self.name}</a>"
     require 'pp'
-    puts
-    pp options
     unless options.empty?
       features = JSON.parse(self.features || "{}")
       list = []
@@ -235,7 +233,7 @@ class Conflict < ActiveRecord::Base
           k = data
           v = eval('self.'+k)
           next unless v
-          if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
+          if k.to_s[-3..-1] == "_id" and !["success_level","reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
             begin
               ass = eval "self."+k.to_s[0...-3]
             rescue
@@ -248,6 +246,12 @@ class Conflict < ActiveRecord::Base
               val = ass.name
             else
               val = ass.attributes
+            end
+          elsif k == "success_level"
+            if v
+              val = ["Success", "Not sure", "Failure"][v]
+            else
+              val = ""
             end
           elsif k == "reaction_id"
             if v
@@ -274,6 +278,7 @@ class Conflict < ActiveRecord::Base
               val = ""
             end
           else
+            val = v
           end
           next if val.nil? or val == ""
           list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{val}</span>"
@@ -282,7 +287,6 @@ class Conflict < ActiveRecord::Base
       if options["mania"]
         options["mania"].each do |data|
           val = eval('self.'+data)
-          pp val
           next if val.empty?
           list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{val.map(&:name).join(', ')}</span>"
         end
