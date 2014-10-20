@@ -97,7 +97,7 @@
                             %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
                           %li
                             -if ['admin','editor'].include? current_account.role
-                              %a{:href=>'/conflicts'} Conflicts
+                              %a{:href=>'/cache'} Cache
                             -else
                               %a{:href=>'/conflicts'} My Cases
                           %li

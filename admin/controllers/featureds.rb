@@ -21,6 +21,7 @@ Admin.controllers :featureds do
   get :new do
     @featured = Featured.new
     @features = []
+    @contained = {}
     @filterform = JSON.parse(Cached.last.filterdata)
     @filterinfo = Cached.last.conflicts_json
     render 'featureds/new'
