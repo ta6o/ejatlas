@@ -8,25 +8,25 @@
   %body{:style=>'background:#fff'}
     %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
       %p
-        Sayın #{@account.name},
+        Dear #{@account.name},
         %br/
         %br/
-        Çevre Direnişi Haritası’na üyelik isteğiniz işleme alınmıştır. Üyeliğinizin onaylanması için lütfen aşağıdaki linke tıklayınız.
+        Thank you for your collaboration.to the EJatlas. As you know, the EJOLT mapping of environmental conflicts is a collaborative project and relies on the contributions of activists on the ground as well as researchers. Please check the FAQ for further details of the data collection process.
+        %br/
+        %br/
+        Please mark your form as draft while you are still working on it. After you mark it as queued we will moderate it as soon as possible and you will receive an email telling you to check the case. After approved it will be visible on the map. Please share the case to increase its visibility. 
         %br/
         %br/
         %a{:href=>$siteurl+'/accounts/confirm?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'}
-          %span= $siteurl+'/accounts/confirm?id='+@account.id.to_s+'&hash='+@account.surname
+          %span Please click here to confirm your account.
         %br/
         %br/
-        Üyeliğinizi onayladıktan sonra şifrenizi belirleyebilirsiniz. Kullanıcı adınız e-posta adresinizle aynıdır.
+        We very much appreciate your contribution and please be in touch at 
+        %a{:href=>'mailto:ejoltmap@gmail.com'} ejoltmap@gmail.com
+        if you encounter any difficulties or problems and thanks again for the hard work you have all put into this Mapping of Environmental Justice struggles.
         %br/
         %br/
-        Teşekkür ederiz.
+        Best wishes,
         %br/
         %br/
-        %hr/
-      %p{:style => "font-size: 10px; padding-top: 20px; text-align: left;"}
-        %strong 
-          Bilgi ve sorularınız için: 
-          %a{:href=>'mailto:direncevre@gmail.com'} direncevre@gmail.com
-        %br/
+        EJatlas editors
