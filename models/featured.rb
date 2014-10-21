@@ -1,6 +1,9 @@
 class Featured < ActiveRecord::Base
   has_many :vector_data, as: :attachable, dependent: :destroy
 
+  has_many :f_tags
+  has_many :tags, :through => :f_tags
+
   def inspect
     self.name
   end
@@ -18,8 +21,7 @@ class Featured < ActiveRecord::Base
   def ping conflicts
     json, marker, link = [], [], []
     data = {}
-    tags = (self.filter || "").split('/').grep(/^tag~/)
-    data["tag"] = tags[0].split('~')[-1].split(',') if tags.any?
+    data["tag"] = self.tags.map(&:id)
     feats = JSON.parse(self.features || "{}")
     data["id"] = self.id
     mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies','supporters']

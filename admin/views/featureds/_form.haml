@@ -20,12 +20,12 @@
       =f.error_message_on :image
       =f.text_field :image, :class => :text_field
 
-  .col-md-4
     .group
       =f.label :description
       =f.error_message_on :description
       ~f.text_area :description, :class => :text_area, :rows=>5
 
+  .col-md-4
     .group
       =f.label :filter
       =f.error_message_on :filter
@@ -35,6 +35,22 @@
       #filter-info
       %br/
       %a.btn{:onclick=>"$('#filter-modal').modal('show');"} Edit filter options
+
+    .group#tfields
+      %label Tags
+      .row
+        .col-md-9
+          %select#tag
+            %option{:disabled=>true} Click to tag featured map
+            -Tag.all.each do |t|
+              %option{:value=>t.id}=t.name
+        .col-md-3
+          #addt.btn Add
+      %ul#tagi{:style=>'padding:12px 0;list-style-type:none'}
+        -@featured.tags.each do |t|
+          %li{:id=>"tag-#{t.id}"}
+            %span=t.name
+            %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
 
   .col-md-4
     .group
@@ -100,6 +116,7 @@
     %br/
     .group
       =f.text_field :features, :type => :hidden, :value=>@featured.features, :id => 'features'
+      %input#tags{:name=>'tags', :type => :hidden, :value=>@featured.tags.map(&:id).join(',')}
 
     .group.navform.wat-cf
       =f.submit pat(:save), :class => 'btn pull-right'
@@ -122,7 +139,7 @@
                   =conflict.name
                   %small
                     %em=conflict.approval_status
-                    -conflict.tags.each do |tag|
+                    -(conflict.tags & @featured.tags).each do |tag|
                       &nbsp;
                       %span.small.badge{:style=>"background-color:##{tag.domain}"}=tag.name
                 .pull-right
@@ -160,7 +177,18 @@
     }
   });
 
-  $('ul#conti').on('click','li .remove',function(){
+  var tag = $('select#tag').find('option:selected');
+  $('#tfields').on('change','select#tag',function(e){
+    tag = $(this).find('option:selected');
+  });
+  $('#addt').on('click',function(e){
+    if($('li#tag-'+tag.val()).length == 0) {
+      html = "<li id='tag-"+tag.val()+"'> <span>"+tag.text()+"</span> <a class='remove small pull-right' style='cursor:pointer'>Remove</a> </li>";
+      $('ul#tagi').append(html);
+    }
+  });
+
+  $('ul').on('click','li .remove',function(){
     $(this).closest('li').remove();
   });
 
@@ -180,7 +208,9 @@
     $.each($.makeArray($('ul#conti li').map(function(){return $(this).attr('id').split('-')[1]})),function(i,v){
       data.push(v)
     });
+    tags = $.makeArray($('ul#tagi li').map(function(){return $(this).attr('id').split('-')[1]})).join(',')
     $('#features').val(JSON.stringify(data));
+    $('#tags').val(tags);
     $('input.conflict').not('.changed').remove();
   });
 

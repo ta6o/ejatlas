@@ -6,6 +6,11 @@ class CTag < ActiveRecord::Base
   belongs_to :tag
   belongs_to :conflict
 end
+class FTag < ActiveRecord::Base
+  belongs_to :tag
+  belongs_to :featured
+  self.primary_key = :id
+end
 class CType < ActiveRecord::Base
   belongs_to :type
   belongs_to :conflict

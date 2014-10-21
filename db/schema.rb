@@ -107,6 +107,11 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer "tag_id"
   end
 
+  create_table "f_tags", :force => true do |t|
+    t.integer "featured_id"
+    t.integer "tag_id"
+  end
+
   create_table "c_types", :force => true do |t|
     t.integer "conflict_id"
     t.integer "type_id"

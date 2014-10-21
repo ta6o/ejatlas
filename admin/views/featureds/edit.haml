@@ -5,6 +5,8 @@
 .row
   .col-md-12
     .hero-unit
+      -if @error
+        .error= @error
       %h1.title
         Editing
         = @featured.name

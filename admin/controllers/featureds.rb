@@ -31,7 +31,12 @@ Admin.controllers :featureds do
     @featured = Featured.new(params[:featured])
     if @featured.save
       flash[:notice] = 'Featured was successfully created.'
-      @featured.ping(Admin.filter(@featured.filter))
+      begin
+        @featured.ping(Admin.filter(@featured.filter))
+      rescue => e
+        @error = e
+        redirect url(:featureds, :edit, :id => @featured.id)
+      end
       redirect url(:featureds, :edit, :id => @featured.id)
     else
       render 'featureds/new'
@@ -68,7 +73,13 @@ Admin.controllers :featureds do
           conflict.save
         end
       end
-      @featured.ping(Admin.filter(@featured.filter))
+      begin
+        @featured.tags = params["tags"].split(',').map{|t| Tag.find(t.to_i)}
+        @featured.ping(Admin.filter(@featured.filter))
+      rescue => e
+        @error = e
+        redirect url(:featureds, :edit, :id => @featured.id)
+      end
       redirect url(:featureds, :edit, :id => @featured.id)
     else
       redirect url(:featureds, :edit, :id => @featured.id)
