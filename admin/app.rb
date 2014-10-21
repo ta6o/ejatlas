@@ -176,7 +176,7 @@ class Admin < Padrino::Application
           rarray[-1] << Conflict.where(approval_status: 'approved').where("#{k} = ?",va)#.select('conflicts.id, name, slug, features, approval_status')
         end
       elsif relation.include? k
-        model = eval(UnicodeUtils.titlecase(k.gsub(/_-/,' ')).gsub(/\s/,''))
+        model = eval(UnicodeUtils.titlecase(k.gsub(/[_-]/,' ')).gsub(/\s/,''))
         v.each do |va|
           if va.is_a?(Integer) or va == va.to_i.to_s
             rarray[-1] << model.find(va.to_i).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')

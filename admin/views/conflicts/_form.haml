@@ -1141,6 +1141,8 @@
     .row
       .col-md-4
         .group
+          %label= "Conflict ID: #{@conflict.id}"
+        .group
           .required=f.error_message_on :approval_status
           =f.label 'Approval status'
           %label.checkbox.inline.apstat

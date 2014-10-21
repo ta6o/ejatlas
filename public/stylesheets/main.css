@@ -5510,6 +5510,16 @@ ul.sidelink li.active {
 }
 #filter-row #conflict_filter #filterInfo {
   margin-top: 36px;
+  height: 315px;
+  overflow-y: hidden;
+}
+#filter-row #conflict_filter .embed {
+  width: 100%;
+  margin-top: 4px;
+}
+#filter-row #conflict_filter .embed:hover {
+  background: #f48e34;
+  color: black;
 }
 #filter-row #conflict_filter .nav-tabs {
   margin-left: 15px;
