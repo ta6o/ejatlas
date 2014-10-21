@@ -43,10 +43,14 @@
 
     .group#cfields
       %label Contained Fields
-      %select#cont
-        %option{:disabled=>true} Click to add a field
-        -$attrhash.each do |k,v|
-          %option{:value=>v}=k
+      .row
+        .col-md-9
+          %select#cont
+            %option{:disabled=>true} Click to add a field
+            -$attrhash.each do |k,v|
+              %option{:value=>v}=k
+        .col-md-3
+          #addc.btn Add
       %ul#conti{:style=>'padding:12px 0;list-style-type:none'}
         -@contained.each do |k,v|
           %li{:id=>"cont-#{v}"}
@@ -145,12 +149,14 @@
     $(this).addClass('changed');
   });
 
+  var sel = $('select#cont').find('option:selected');
   $('#cfields').on('change','select#cont',function(e){
     sel = $(this).find('option:selected');
-    console.log($('li#cont-'+sel.val()).length);
+  });
+  $('#addc').on('click',function(e){
     if($('li#cont-'+sel.val()).length == 0) {
-      html = "<li id='cont-"+sel.val()+"'> <span>"+sel.text()+"</span> <a class='small pull-right' style='cursor:pointer'>Remove</a> </li>";
-      $('ul#conti').append(html)
+      html = "<li id='cont-"+sel.val()+"'> <span>"+sel.text()+"</span> <a class='remove small pull-right' style='cursor:pointer'>Remove</a> </li>";
+      $('ul#conti').append(html);
     }
   });
 

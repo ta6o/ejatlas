@@ -221,6 +221,10 @@ class Conflict < ActiveRecord::Base
     puts
   end
 
+  def get_name(val)
+    return $attrhash.select{|k,v| v == val}.keys[0]
+  end
+
   def as_button(options={})
     html = "<p><a href='/conflict/#{self.slug}'>#{self.name}</a>"
     require 'pp'
@@ -285,14 +289,14 @@ class Conflict < ActiveRecord::Base
             val = v
           end
           next if val.nil? or val == ""
-          list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{val}</span>"
+          list << "<span class='small'><strong>#{get_name k}:</strong> #{val}</span>"
         end
       end
       if options["mania"]
         options["mania"].each do |data|
           val = eval('self.'+data)
           next if val.empty?
-          list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{val.map(&:name).join(', ')}</span>"
+          list << "<span class='small'><strong>#{get_name data}:</strong> #{val.map(&:name).join(', ')}</span>"
         end
       end
       tags = []
