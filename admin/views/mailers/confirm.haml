@@ -11,13 +11,15 @@
         Dear #{@account.name},
         %br/
         %br/
-        Thank you for your collaboration.to the EJatlas. As you know, the EJOLT mapping of environmental conflicts is a collaborative project and relies on the contributions of activists on the ground as well as researchers. Please check the FAQ for further details of the data collection process.
+        Thank you for your collaboration to the EJatlas. As you know, the EJOLT mapping of environmental conflicts is a collaborative project and relies on the contributions of activists on the ground as well as researchers. Please check the 
+        %a{:href=>$siteurl+'/faq',:target=>'_blank'} FAQ
+        for further details of the data collection process.
         %br/
         %br/
         Please mark your form as draft while you are still working on it. After you mark it as queued we will moderate it as soon as possible and you will receive an email telling you to check the case. After approved it will be visible on the map. Please share the case to increase its visibility. 
         %br/
         %br/
-        %a{:href=>$siteurl+'/accounts/confirm?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'}
+        %a{:href=>$consurl+'/accounts/confirm?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'}
           %span Please click here to confirm your account.
         %br/
         %br/

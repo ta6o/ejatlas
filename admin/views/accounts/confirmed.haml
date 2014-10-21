@@ -4,41 +4,19 @@
   %br/
   .span4.offset4
     .well
-      %h3 Tebrikler!
+      %h3 Welcome!
       %p 
-        %strong E-posta adresiniz başarıyla doğrulandı.
-      -if @account.versions.any?
-        %p
-          Girmiş olduğunuz ihtilafı
-          %a{:href=>'/conflicts/edit/'+@account.versions.last.conflict.id.to_s} buradan
-          düzenlemeye devam edebilirsiniz.
+        %strong Your email is confirmed.
       %p 
-        Lütfen şifrenizi belirleyin.
+        Please set your password now.
 
       =form_for :account, url(:accounts, :update, :id => @account.id), :method => :put, :class => :form do |f|
-        -#
-          .group.hide
-            =f.label 'Ad'
-            =f.error_message_on :name
-            =f.text_field :name, :class => :text_field, :value=>@account.name
-          .group.hide
-            =f.label 'Soyad'
-            =f.error_message_on :surname
-            =f.text_field :surname, :class => :text_field, :value=>@account.name
-          .group.hide
-            =f.label 'E-posta'
-            =f.error_message_on :email
-            =f.text_field :email, :class => :text_field, :value=>@account.name
-          .group.hide
-            =f.label :role
-            =f.error_message_on :role
-            =f.select :role, :options => access_control.roles
         .group.pull-right
-          =f.label 'Şifre'
+          =f.label 'Password'
           =f.error_message_on :password
           =f.password_field :password, :class => :password_field
         .group.pull-right
-          =f.label 'Şifre (tekrar)'
+          =f.label 'Password again'
           =f.error_message_on :password_confirmation
           =f.password_field :password_confirmation, :class => :password_field
         .pull-right.btn-group.png
