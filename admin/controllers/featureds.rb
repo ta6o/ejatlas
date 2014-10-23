@@ -302,7 +302,6 @@ Admin.controllers :featureds do
     image.attachable = f
     image.prime = true if f.images.where(prime:1).empty?
     if image.save
-      puts image.prime
       return {:file=>image.file.url,:thumb=>image.file.thumb.url,:n=>f.images.count,:title=>image.title}.to_json
     else
       return 'no'

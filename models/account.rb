@@ -2,6 +2,8 @@ class Account < ActiveRecord::Base
   attr_accessor :password, :password_confirmation
 
   has_many :conflicts
+  has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
+  accepts_nested_attributes_for :images, allow_destroy: true
 
   # Validations
   validates_presence_of     :name, :email, :role

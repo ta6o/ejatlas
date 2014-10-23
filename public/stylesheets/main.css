@@ -5788,6 +5788,9 @@ ul.sidelink li.active {
 .modal-dialog {
   width: 80%;
 }
+.modal-dialog.modal-sm {
+  width: 20%;
+}
 #thank_fb {
   cursor: pointer;
   padding: 8px 0px;

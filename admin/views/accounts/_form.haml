@@ -1,4 +1,30 @@
 -#coding:utf-8
+-content_for :include do
+  =javascript_include_tag 'upload_iframe'
+-content_for :outer do
+  #m_image.modal.fade
+    .modal-dialog
+      .modal-content
+        %form
+          .modal-header
+            %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+            %h3 Upload Image
+          .modal-body
+            %label Title:
+            %input.i_image#image_title{:type=>'text',:name=>'image[title]'}
+            %br/
+            %label File:
+            %br/
+            %input.i_image#image_file{:type=>'file',:name=>'image[file]'}
+            %input#image_file_cache{:type=>'hidden',:name=>'image[file_cache]'}
+            %input#image_featured_id{:type=>'hidden',:name=>'image[account_id]',:value=>"#{@account.id}"}
+            %p
+              #upload
+          .modal-footer
+            .row
+              .col-md-6
+                %input.btn.btn-info#b_image{:type=>'button',:value=>'Send'} 
+
 .row
   .col-md-4.col-md-offset-2
     .group
@@ -35,6 +61,30 @@
         =f.label :role
         =f.error_message_on :role
         =f.select :role, :options => access_control.roles
+
+    -unless @account.new_record?
+      .group
+        %input#n_image.btn.full{'data-toggle'=>'modal','data-target'=>'#m_image',:value=>'Upload Image',:style=>'margin-top:20px;width:100%;'}
+        %br/
+        %br/
+        .images
+          -@account.images.each_with_index do |img,ind|
+            .image
+              .row
+                .col-md-4
+                  %a{:href=>img.file.url,:target=>'_blank'}
+                    %img{:src=>img.file.thumb,:style=>'width:100%'}
+                  %br/
+                .col-md-8
+                  %input{:type=>'text',:name=>"images_attributes[#{ind}][title]",:id=>"images_attributes_#{ind}_title",:value=>(img.title || "")}
+                  %br/
+                  %input.prime{:type=>'checkbox',:name=>"images_attributes[#{ind}][prime]",:id=>"images_attributes_#{ind}_prime",:checked=>img.prime == 1}
+                  %label{:for=>"images_attributes_#{ind}_prime"} Primary image?
+                  %br/
+                  %input{:type=>'hidden',:name=>"images_attributes[#{ind}][_destroy]"}
+                  %input{:type=>'checkbox',:name=>"images_attributes[#{ind}][_destroy]",:id=>"images_attributes_#{ind}__destroy"}
+                  %label{:for=>"images_attributes_#{ind}__destroy"} Delete?
+              %br/
 
   .col-md-4
     .group
@@ -73,3 +123,50 @@
 
     .group.navform.wat-cf.pull-right{:style=>'margin-top:24px;'}
       =f.submit pat(:save), :class => :btn
+
+:javascript
+  var uploading = false;
+  function uploadResponse (resp) {
+    if (uploading){
+      return 
+    }
+    uploading = true;
+    $('iframe#upload_iframe').remove();
+    if (resp === 'no') {
+      alert ('An error occured while sending the file.');
+      return
+    }
+    dat = JSON.parse(resp);
+    if (dat.n == 1) {
+      html = "<div class='images'> <div class='row'> <div class='col-md-4'> <a href='"+dat.file+"' target='_blank'> <img src='"+dat.thumb+"' style='width:100%'> </a> <br> </div> <div class='col-md-8'> <input id='images_attributes_"+dat.n+"_title' name='images_attributes["+dat.n+"][title]' value='"+dat.title+"' type='text'> <br> </div> </div> <br> </div>";
+    } else {
+      html = "<div class='images'> <div class='row'> <div class='col-md-4'> <a href='"+dat.file+"' target='_blank'> <img src='"+dat.thumb+"' style='width:100%'> </a> <br> </div> <div class='col-md-8'> <input id='images_attributes_"+dat.n+"_title' name='images_attributes["+dat.n+"][title]' value='"+dat.title+"' type='text'> <br> <input class='prime' id='images_attributes_"+dat.n+"_prime' name='images_attributes["+dat.n+"][prime]' type='checkbox'> <label for='images_attributes_"+dat.n+"_prime'>Primary image?</label> <br> <input name='images_attributes["+dat.n+"][_destroy]' type='hidden'> <input id='images_attributes_"+dat.n+"__destroy' name='images_attributes["+dat.n+"][_destroy]' type='checkbox'> <label for='images_attributes_"+dat.n+"__destroy'>Delete?</label> </div> </div> <br> </div>";
+    }
+    $('.images').append(html);
+    $('#m_image').modal('hide');
+  }
+  $(document).ready(function(){
+    $('#m_image').on('hidden.bs.modal', function () {
+      $('.i_image').val('');
+      $('#b_image').removeClass('disabled');
+      uploading = false;
+    })
+    $('#m_image').on('shown.bs.modal', function() {
+      $('#image_url').focus();
+    });
+    $('#b_image').click(function(e){
+      if ($('#image_file').val()=='') {
+        $('#image_file').focus();
+        return
+      }
+      $('#b_image').addClass('disabled');
+      e.preventDefault();
+      fileUpload(this.form,'/accounts/getimage','upload');
+    });
+    $('#cn_image').click(function(e){
+      $('#m_image').modal('hide');
+    });
+    //$(".datemask").mask("99/99/9999");
+    //$('.datemask').attr('placeholder','____/__/__');
+  });
+

@@ -87,7 +87,23 @@ Admin.controllers :accounts do
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
-        flash[:notice] = 'Account was successfully updated.'
+        if params['images_attributes'].any?
+          images = {}
+          params['images_attributes'].each{|i,v| images["n#{i}"] = @account.images[i.to_i]}
+          params['images_attributes'].each do |i, v|
+            img = images["n#{i}"]
+            puts i
+            puts img
+            if v['_destroy'] == "on"
+              img.destroy
+              next
+            end
+            img.title = v['title'] if v['title'] != img.title
+            ih = {nil=>nil, "on"=>1}
+            img.prime = ih[v['prime']] if ih[v['prime']] != img.prime
+            img.save
+          end
+        end
         redirect url(:conflicts, :index)
       else
         render 'accounts/edit'
@@ -123,4 +139,19 @@ Admin.controllers :accounts do
     end
     redirect to '/accounts'
   end
+
+  post :getimage do
+    puts params
+    aid = params['image']['account_id']
+    a = Account.find(aid)
+    image = Image.new(params['image'])
+    image.attachable = a
+    image.prime = true if a.images.where(prime:1).empty?
+    if image.save
+      return {:file=>image.file.url,:thumb=>image.file.thumb.url,:n=>a.images.count,:title=>image.title}.to_json
+    else
+      return 'no'
+    end
+  end
+
 end

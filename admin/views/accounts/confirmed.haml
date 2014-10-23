@@ -1,23 +1,115 @@
 -#coding:utf-8
-.row
-  %br/
-  %br/
-  .col-md-4.col-md-offset-2
-    .well
+-content_for :include do
+  =javascript_include_tag 'upload_iframe'
+-content_for :outer do
+  #m_image.modal.fade
+    .modal-dialog.modal-sm
+      .modal-content
+        %form
+          .modal-header
+            %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+            %h3 Upload Your Image
+          .modal-body
+            %input.i_image#image_file{:type=>'file',:name=>'image[file]'}
+            %input#image_file_cache{:type=>'hidden',:name=>'image[file_cache]'}
+            %input#image_featured_id{:type=>'hidden',:name=>'image[account_id]',:value=>"#{@account.id}"}
+            %p
+              #upload
+          .modal-footer
+            .row
+              .col-md-6
+                %input.btn.btn-info#b_image{:type=>'button',:value=>'Send'} 
+
+.well
+  .row
+    %br/
+    %br/
+    .col-md-8.col-md-offset-2
       %h3 Welcome!
       %p 
         %strong Your email is confirmed.
       %p 
-        Please set your password now.
-
+        Please set your password now and optionally upload an image of yourself or your organization.
+      %br/
+    .col-md-4.col-md-offset-2
       =form_for :account, url(:accounts, :update, :id => @account.id), :method => :put, :class => :form do |f|
-        .group.pull-right
+        .group
           =f.label 'Password'
           =f.error_message_on :password
           =f.password_field :password, :class => :password_field
-        .group.pull-right
-          =f.label 'Password again'
+        .group
+          =f.label 'Password (again)'
           =f.error_message_on :password_confirmation
           =f.password_field :password_confirmation, :class => :password_field
-        .pull-right.btn-group.png
+        %br/
+        .png
           =f.submit pat(:save), :class => 'btn btn-inverse pn'
+
+    .col-md-4
+      -unless @account.new_record?
+        .group
+          %input#n_image.btn.full{'data-toggle'=>'modal','data-target'=>'#m_image',:value=>'Upload Image',:style=>'margin-top:20px;width:100%;'}
+          %br/
+          %br/
+          .images
+            -@account.images.each_with_index do |img,ind|
+              .image
+                .row
+                  .col-md-4
+                    %a{:href=>img.file.url,:target=>'_blank'}
+                      %img{:src=>img.file.thumb,:style=>'width:100%'}
+                    %br/
+                  .col-md-8
+                    %input{:type=>'text',:name=>"images_attributes[#{ind}][title]",:id=>"images_attributes_#{ind}_title",:value=>(img.title || "")}
+                    %br/
+                    %input.prime{:type=>'checkbox',:name=>"images_attributes[#{ind}][prime]",:id=>"images_attributes_#{ind}_prime",:checked=>img.prime == 1}
+                    %label{:for=>"images_attributes_#{ind}_prime"} Primary image?
+                    %br/
+                    %input{:type=>'hidden',:name=>"images_attributes[#{ind}][_destroy]"}
+                    %input{:type=>'checkbox',:name=>"images_attributes[#{ind}][_destroy]",:id=>"images_attributes_#{ind}__destroy"}
+                    %label{:for=>"images_attributes_#{ind}__destroy"} Delete?
+                %br/
+
+:javascript
+  var uploading = false;
+  function uploadResponse (resp) {
+    if (uploading){
+      return 
+    }
+    uploading = true;
+    $('iframe#upload_iframe').remove();
+    if (resp === 'no') {
+      alert ('An error occured while sending the file.');
+      return
+    }
+    dat = JSON.parse(resp);
+    html = "<div class='images'> <div class='row'> <div class='col-md-4'> <a href='"+dat.file+"' target='_blank'> <img src='"+dat.thumb+"' style='width:100%'> </a> <br> </div> </div>";
+    $('.images').append(html);
+    $('#m_image').modal('hide');
+    $('#n_image').hide();
+  }
+  $(document).ready(function(){
+    $('#m_image').on('hidden.bs.modal', function () {
+      $('.i_image').val('');
+      $('#b_image').removeClass('disabled');
+      uploading = false;
+    })
+    $('#m_image').on('shown.bs.modal', function() {
+      $('#image_url').focus();
+    });
+    $('#b_image').click(function(e){
+      if ($('#image_file').val()=='') {
+        $('#image_file').focus();
+        return
+      }
+      $('#b_image').addClass('disabled');
+      e.preventDefault();
+      fileUpload(this.form,'/accounts/getimage','upload');
+    });
+    $('#cn_image').click(function(e){
+      $('#m_image').modal('hide');
+    });
+    //$(".datemask").mask("99/99/9999");
+    //$('.datemask').attr('placeholder','____/__/__');
+  });
+

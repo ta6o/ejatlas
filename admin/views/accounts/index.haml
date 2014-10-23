@@ -11,7 +11,8 @@
       %table.table.tablesorter#sortme
         %thead
           %tr
-            %th.first=mat(:account, :name)
+            %th.first=mat(:account, :image)
+            %th=mat(:account, :name)
             %th=mat(:account, :role)
             %th=mat(:account, :email)
             %th.last
@@ -20,7 +21,12 @@
         %tbody
           -@accounts.each do |account|
             %tr
-              %td.first=account.name
+              %td.first
+                -if img = account.images.where(prime:1)[0]
+                  %img{:src=>img.file.thumb.url,:style=>'width:64px;'}
+                -else
+                  &nbsp;
+              %td=account.name
               %td=account.role
               %td=account.email
               %td.last

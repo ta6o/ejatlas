@@ -16,7 +16,8 @@ class ImageUploader < CarrierWave::Uploader::Base
   def store_dir
     at = self.model.attachable 
     return "img/#{at.class}/#{at.old_slug}"if at.has_attribute?('old_slug')
-    "img/#{at.class}/#{at.slug}"
+    return "img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
+    "img/#{at.class}/#{at.id}"
   end
 
   def cache_dir
