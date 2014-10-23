@@ -58,7 +58,7 @@ Admin.controllers :accounts do
     @account = Account.new(params[:account])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.role = "user"
-    if @account.save
+    if @account.save!
       set_current_account(@account)
       Admin.new_account @account
       redirect to "/welcome"

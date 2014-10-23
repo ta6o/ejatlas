@@ -14,7 +14,9 @@ class ImageUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
   storage :fog
   def store_dir
-    "img/#{self.model.attachable.class}/#{self.model.attachable.old_slug}"
+    at = self.model.attachable 
+    return "img/#{at.class}/#{at.old_slug}"if at.has_attribute?('old_slug')
+    "img/#{at.class}/#{at.slug}"
   end
 
   def cache_dir

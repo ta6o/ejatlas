@@ -40,5 +40,6 @@ class Account < ActiveRecord::Base
 
     def password_required
       crypted_password.blank? || password.present?
+      false
     end
 end

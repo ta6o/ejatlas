@@ -24,6 +24,8 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string  "phone",            :limit => 20
     t.boolean "approved"
     t.boolean "public"
+    t.text    "intention"
+    t.text    "comments"
   end
 
   create_table "c_categories", :force => true do |t|
@@ -218,6 +220,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text     "govt_actors"
     t.datetime "modified_at"
     t.text     "features"
+    t.string   "headline"
   end
 
   create_table "contact_people", :force => true do |t|
@@ -303,6 +306,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "updated_at",      :null => false
     t.integer  "attachable_id"
     t.string   "attachable_type"
+    t.imteger  "prime"
   end
 
   create_table "justice_parties", :force => true do |t|

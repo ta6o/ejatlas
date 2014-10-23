@@ -26,8 +26,8 @@
               %td.first=featured.name
               %td=featured.description
               %td
-                -if featured.image
-                  %img{:src=>featured.image,:style=>'max-height:50px;'}
+                -if img = featured.images.where(prime:1)[0]
+                  %img{:src=>img.file.thumb,:style=>'max-height:50px;'}
                 -else
                   =""
               %td.last

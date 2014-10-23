@@ -4,6 +4,9 @@ class Featured < ActiveRecord::Base
   has_many :f_tags
   has_many :tags, :through => :f_tags
 
+  has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
+  accepts_nested_attributes_for :images, allow_destroy: true
+
   def inspect
     self.name
   end

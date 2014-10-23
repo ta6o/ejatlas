@@ -62,6 +62,7 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
+    puts params
     if @featured.update_attributes(params[:featured])
       flash[:notice] = 'Featured was successfully updated.'
       if params['conflict']
@@ -71,6 +72,23 @@ Admin.controllers :featureds do
           feats["#{@featured.id}:#{k.split(':')[0]}"] = v
           conflict.features = feats.to_json
           conflict.save
+        end
+      end
+      if params['images_attributes'].any?
+        images = {}
+        params['images_attributes'].each{|i,v| images["n#{i}"] = @featured.images[i.to_i]}
+        params['images_attributes'].each do |i, v|
+          img = images["n#{i}"]
+          puts i
+          puts img
+          if v['_destroy'] == "on"
+            img.destroy
+            next
+          end
+          img.title = v['title'] if v['title'] != img.title
+          ih = {nil=>nil, "on"=>1}
+          img.prime = ih[v['prime']] if ih[v['prime']] != img.prime
+          img.save
         end
       end
       begin
@@ -275,5 +293,21 @@ Admin.controllers :featureds do
     end
     redirect url(:featureds, :index)
   end
+
+  post :getimage do
+    puts params
+    fid = params['image']['featured_id']
+    f = Featured.find(fid)
+    image = Image.new(params['image'])
+    image.attachable = f
+    image.prime = true if f.images.where(prime:1).empty?
+    if image.save
+      puts image.prime
+      return {:file=>image.file.url,:thumb=>image.file.thumb.url,:n=>f.images.count,:title=>image.title}.to_json
+    else
+      return 'no'
+    end
+  end
+
 end
 

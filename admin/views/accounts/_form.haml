@@ -2,35 +2,24 @@
 .row
   .col-md-4.col-md-offset-2
     .group
-      =f.label 'Name'
+      =f.label 'Name and Surname'
       =f.error_message_on :name
       =f.text_field :name, :class => :text_field
 
-  .col-md-4
-    .group
-      =f.label 'Organization'
-      =f.error_message_on :organization
-      =f.text_field :organization, :class => :text_field
-
-.row
-  .col-md-4.col-md-offset-2
     .group
       =f.label 'E-mail'
       =f.error_message_on :email
       =f.text_field :email, :class => :text_field
 
-  .col-md-4
-    .group
-      =f.label 'Address'
-      =f.error_message_on :address
-      =f.text_field :address, :class => :text_field
-
-.row
-  .col-md-4.col-md-offset-2
     .group
       =f.label 'Phone'
       =f.error_message_on :phone
       =f.text_field :phone, :class => :text_field
+
+    .group
+      =f.label 'Address'
+      =f.error_message_on :address
+      =f.text_field :address, :class => :text_field
 
     .group
       =f.label 'public'
@@ -49,14 +38,38 @@
 
   .col-md-4
     .group
-      =f.label 'Password'
-      =f.error_message_on :password
-      =f.password_field :password, :class => :password_field
+      -if @account.new_record?
+        =f.label 'Please enter here your organization, group, institution you are affiliated with (if any)'
+      -else
+        =f.label 'Organization'
+      =f.error_message_on :organization
+      =f.text_field :organization, :class => :text_field
 
     .group
-      =f.label 'Confirm Password'
-      =f.error_message_on :password_confirmation
-      =f.password_field :password_confirmation, :class => :password_field
+      -if @account.new_record?
+        =f.label 'Please tell us what conflicts you wish to enter and describe briefly your activity related to them'
+      -else
+        =f.label 'Intentions'
+      =f.error_message_on :intention
+      =f.text_area :intention, :class => :text_area
+
+    .group
+      -if @account.new_record?
+        =f.label 'Other comments to the EJatlas editors'
+      -else
+        =f.label 'Comments'
+      =f.error_message_on :comments
+      =f.text_area :comments, :class => :text_area
+
+    -if @account.new_record?
+      %br/
+      %p 
+        %strong Thank you very much for your contribution. We’ll get back to you as soon as possible.
+      %p{:style=>'text-align: right'}
+        Best wishes, 
+        %br/
+        EJatlas editors
+
 
     .group.navform.wat-cf.pull-right{:style=>'margin-top:24px;'}
       =f.submit pat(:save), :class => :btn

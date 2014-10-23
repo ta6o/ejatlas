@@ -33,8 +33,6 @@
       .col-md-12
         -if @image
           %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
-        -elsif @fimage
-          %img.pull-left{:src=>@fimage,:style=>'max-height:50px;width:auto;margin-right:12px;'}
         .pull-left
           %h1{:style=>'margin:0;font-size: 48px'}= @name
     -if @description and @description.length > 0 and not @feature
