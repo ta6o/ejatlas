@@ -141,6 +141,23 @@
       %label Additional Attributes
       %textarea.feature{:name=>'data', :class => :text_area, :rows => 2}=@features.join(', ')
 
+    .group#bfields
+      %label Base map layers
+      .row
+        .col-md-9
+          %select#base
+            %option{:disabled=>true} Click to add a field
+            -["OpenStreetMap.Mapnik", "Thunderforest.Landscape", "Esri.WorldTopoMap", "Hydda.Base", "Stamen.TonerBackground", "Stamen.TonerLite", "Stamen.Watercolor", "Esri.WorldPhysical", "Esri.NatGeoWorldMap"].each_with_index do |l,i|
+              %option{:value=>i}=l
+        .col-md-3
+          #addb.btn Add
+      %ul#basei{:style=>'padding:12px 0;list-style-type:none'}
+        -(@featured.baselayers||'').split(',').each_with_index do |l,i|
+          %li{:id=>"base-#{i}"}
+            %span=l
+            %input.base{:type=>:hidden,:value=>l}
+            %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
+
     .group#cfields
       %label Contained Fields
       .row
@@ -162,6 +179,7 @@
 
     %br/
     .group
+      =f.text_field :baselayers, :type => :hidden, :value=>@featured.baselayers, :id => 'baselayers'
       =f.text_field :features, :type => :hidden, :value=>@featured.features, :id => 'features'
       %input#tags{:name=>'tags', :type => :hidden, :value=>@featured.tags.map(&:id).join(',')}
 
@@ -235,6 +253,17 @@
     }
   });
 
+  var lay = $('select#base').find('option:selected');
+  $('#bfields').on('change','select#base',function(e){
+    lay = $(this).find('option:selected');
+  });
+  $('#addb').on('click',function(e){
+    if($('li#lay-'+lay.val()).length == 0) {
+      html = "<li id='lay-"+lay.val()+"'> <span>"+lay.text()+"</span> <input class='base' type='hidden' value='"+lay.text()+"'> <a class='remove small pull-right' style='cursor:pointer'>Remove</a> </li>";
+      $('ul#basei').append(html);
+    }
+  });
+
   $('ul').on('click','li .remove',function(){
     $(this).closest('li').remove();
   });
@@ -260,7 +289,16 @@
     $.each($.makeArray($('ul#conti li').map(function(){return $(this).attr('id').split('-')[1]})),function(i,v){
       data.push(v)
     });
+    nin = data.indexOf('');
+    if (nin >= 0) {
+      data.splice[nin]
+    }
     tags = $.makeArray($('ul#tagi li').map(function(){return $(this).attr('id').split('-')[1]})).join(',')
+    bases = [];
+    $.each( $('input.base'), function(i,b){
+      bases.push($(b).val());
+    });
+    $('#baselayers').val(bases.join(','));
     $('#features').val(JSON.stringify(data));
     $('#tags').val(tags);
     $('input.conflict').not('.changed').remove();

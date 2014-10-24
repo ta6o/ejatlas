@@ -14,7 +14,7 @@
       }
       console.log(markerinfo)
       console.log(vectorinfo)
-      initMap(markerinfo,"#{@maptitle}",3,vectorinfo);
+      initMap(markerinfo,"#{@maptitle}",#{$baselayers},vectorinfo,null);
       getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom})
     }
 

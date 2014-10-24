@@ -5,7 +5,7 @@ var all = 0;
 var loadQueue = 0;
 var overlayMaps = { };
 var choropleths = { };
-var baseMaps = { };
+var baselayers = { };
 var lControl;
 var homeButton;
 var acme;
@@ -39,31 +39,18 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-function initMap (markers, maptitle, layertype, vector, fid) {
+function initMap (markers, maptitle, layers, vector, fid) {
   info = $("#infopane");
-  var natgeo = L.tileLayer.provider('Esri.NatGeoWorldMap', {minZoom: 2, maxzoom:18, });
-  var gray = L.tileLayer.provider('Esri.WorldPhysical', {minZoom: 2, maxzoom:18, });
-  var terrain = L.tileLayer.provider('Esri.WorldTerrain', {minZoom: 2, maxZoom: 18, });
-  var mapstr = L.tileLayer.provider('Thunderforest.OpenCycleMap', {minZoom: 2, maxzoom:18, });
-  var mapsat = L.tileLayer.provider('Esri.WorldImagery', {minZoom: 2, maxzoom:18, });
-  var satellite = L.tileLayer.provider('Esri.WorldImagery', {minZoom: 2, maxZoom: 18, });
-  var street = L.tileLayer.provider('OpenStreetMap.Mapnik', {minZoom: 2, maxZoom: 18, });
-  var tile = L.tileLayer('http://{s}.tile.cloudmade.com/a9c9a15704c24272a445317dc44a41c2/77922/256/{z}/{x}/{y}.png', {minZoom: 5, maxZoom: 18, });
-
-  layertypes = ["",gray,mapstr,mapsat]
-  rect = new L.marker(new L.LatLng(41.11246878918086, 29.113769531250004), {
-    id:"rect", 
-    icon:L.divIcon({className: 'map_icon rect'}), 
-    draggable:'true'
-  });
+  $.each(layers,function(i,e){
+    f = e.split('.');
+    baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 2, maxzoom:18});
+  })
 
   markerLayer = L.featureGroup();
 
   map = L.map('map',{
-    //scrollWheelZoom:false,
-    //[low:8,<LeftMouse>]
     zoom: 1,
-    layers: [layertypes[layertype], markerLayer]
+    layers: [baselayers[(Object.keys(baselayers)[0])], markerLayer]
   });
 
   /*
@@ -74,18 +61,12 @@ function initMap (markers, maptitle, layertype, vector, fid) {
   });
   */
 
-  baseMaps = {
-    "Basic": gray,
-    "Street": mapstr,
-    "Satellite": mapsat
-  };
-
 
   $.each(vector,function(i,v){
     loadJS(v["vector_datum"]["url"])
   });
 
-  lControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+  lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
 
   //maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
 
@@ -483,7 +464,7 @@ function getObjectSize(obj) {
 function updateControl () {
   console.log("omaps: "+getObjectSize(overlayMaps))
   lControl.removeFrom(map);
-  lControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+  lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
   var choropleth_legend = L.Control.extend({
     options: {
       position: 'top'

@@ -256,7 +256,7 @@ Admin.controller do
     @description = con.description
     @id = con.id
     @desc = con.description
-    @headline = con.headline
+    @headline = con.slogan
     @ogimage = con.images.where(prime:1)[0].file.url if con.images.where(prime:1).any?
     @markercount = JSON.parse(@markerinfo).count
     @defs = []
@@ -270,7 +270,7 @@ Admin.controller do
     @image = con.images.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan
-    @layertype = 2
+    @baselayers = con.baselayers.split(',')
     #@domains = JSON.parse(con.filter)['tag']
     @fid = con.id
     render "base/front", :layout => :front

@@ -50,7 +50,6 @@ Admin.controllers :featureds do
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
-    p @contained
     @followed = Admin.filter(@featured.filter || "")
     @followed.sort! {|a,b| a.slug <=> b.slug}
     @filterform = JSON.parse(Cached.last.filterdata)
@@ -62,7 +61,6 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
-    puts params
     if @featured.update_attributes(params[:featured])
       flash[:notice] = 'Featured was successfully updated.'
       if params['conflict']
@@ -74,7 +72,7 @@ Admin.controllers :featureds do
           conflict.save
         end
       end
-      if params['images_attributes'].any?
+      if params.has_key? :images_attributes and params['images_attributes'].any?
         images = {}
         params['images_attributes'].each{|i,v| images["n#{i}"] = @featured.images[i.to_i]}
         params['images_attributes'].each do |i, v|

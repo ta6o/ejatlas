@@ -33,6 +33,7 @@ class Admin < Padrino::Application
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
+  $baselayers = ["Esri.WorldImagery", "Thunderforest.Landscape", "Esri.WorldTopoMap"]
 
   configure :development do
     $consurl = 'http://0.0.0.0:3000'

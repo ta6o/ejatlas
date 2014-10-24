@@ -120,7 +120,7 @@ Admin.controllers :accounts do
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
         flash[:notice] = 'Account was successfully updated.'
-        redirect url(:conflicts, :index)
+        redirect to 'welcome'
       else
         render 'accounts/edit'
       end

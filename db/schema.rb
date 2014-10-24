@@ -287,6 +287,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text   "conflicts_json"
     t.text   "conflicts_link"
     t.text   "features"
+    t.text   "basemaps"
   end
 
   create_table "government_actors", :force => true do |t|
