@@ -2864,6 +2864,7 @@ function initMap (markers, maptitle, layertype, vector, fid) {
 
   map = L.map('map',{
     //scrollWheelZoom:false,
+    //[low:8,<LeftMouse>]
     zoom: 1,
     layers: [layertypes[layertype], markerLayer]
   });
@@ -3068,13 +3069,13 @@ function updateInfo (type, content) {
   }
 };
 
-function getInfo(id,name,pos) {
+function getInfo(id,name,pos,zoom) {
   marker = markerc[id]
   updateInfo(1,marker.content);
   pos = marker.getLatLng();
   //console.log(pos)
+  map.setZoom(zoom);
   map.panTo(pos);
-  map.setZoom(12);
   $.getJSON('/table/'+id, function(dat){
     //console.log(dat)
     data = dat;//JSON.parse(dat);

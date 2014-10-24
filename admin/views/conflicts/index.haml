@@ -14,7 +14,7 @@
             %th.first=mat(:conflict, :name)
             %th=mat(:conflict, 'type')
             %th=mat(:conflict, :submitted_by)
-            %th=mat(:conflict, 'last&nbsp;modified')
+            %th=mat(:conflict, 'last modified')
             %th=mat(:conflict, 'approval')
             %th.last
               %form#filter-form
@@ -39,6 +39,8 @@
                   %span=conflict.approval_status
                 %td.last
                   =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
+                  |
+                  =link_to pat('View'), url(:conflict, :slug => conflict.slug), :method => :get
                   -if ["admin","editor"].include? current_account.role
                     %br/
                     =link_to pat('Disapprove'), url(:conflicts, :disapprove, :id => conflict.id), :method => :get
@@ -61,6 +63,8 @@
                     %span=conflict.approval_status
                   %td.last
                     =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
+                    |
+                    =link_to pat('View'), url(:conflict, :slug => conflict.slug), :method => :get
                     -if ["admin","editor"].include? current_account.role
                       %br/
                       =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict.id), :method => :get

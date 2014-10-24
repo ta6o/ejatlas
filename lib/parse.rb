@@ -998,4 +998,3 @@ def fixSlugs
     end
   end
 end
-

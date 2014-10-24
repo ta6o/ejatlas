@@ -306,7 +306,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "updated_at",      :null => false
     t.integer  "attachable_id"
     t.string   "attachable_type"
-    t.imteger  "prime"
+    t.integer  "prime"
   end
 
   create_table "justice_parties", :force => true do |t|

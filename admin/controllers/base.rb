@@ -76,10 +76,13 @@ Admin.controller do
     @name = c.name
     @id = c.id
     @desc = c.description
+    @headline = c.headline
+    @ogimage = c.images.first.file.url if c.images.any?
     @cid = c.id 
     @maptitle = c.name
     @pos = [c.lat,c.lon]
     @images = c.images
+    @zoom = [6,8,10,12][c.accuracy_level] || 8
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
         @image = ml.url
@@ -247,6 +250,8 @@ Admin.controller do
     @description = con.description
     @id = con.id
     @desc = con.description
+    @headline = con.headline
+    @ogimage = con.images.where(prime:1)[0].file.url if con.images.where(prime:1).any?
     @markercount = JSON.parse(@markerinfo).count
     @defs = []
     con.vector_data.each do |vd|

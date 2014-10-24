@@ -164,6 +164,7 @@ Admin.controllers :conflicts do
 
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
+    redirect to '/sessions/login' if current_account.nil?
     @countries = Country.all :order => :slug
     @categories = Category.all :order => :id
     @alltypes = Type.where('category_id is not null').order('name asc')
@@ -200,6 +201,8 @@ Admin.controllers :conflicts do
           @conflicts << batch
         end
         @conflicts.flatten!
+        @conflicts.sort_by! {|c| c.modified_at}
+        @conflicts.reverse!
       else
         @conflicts = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id).order('modified_at desc')
       end

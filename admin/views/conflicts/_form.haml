@@ -1142,6 +1142,13 @@
       .col-md-4
         .group
           %label= "Conflict ID: #{@conflict.id}"
+        -if ["admin","editor"].include? current_account.role
+          .group
+            =f.label 'Headline text'
+            .required=f.error_message_on :headline
+            %p.description Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences.
+            ~f.text_area :headline, :class => :text_area, :rows=>4
+
         .group
           .required=f.error_message_on :approval_status
           =f.label 'Approval status'
