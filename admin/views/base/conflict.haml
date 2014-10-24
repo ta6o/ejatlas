@@ -12,8 +12,6 @@
         cmarker = JSON.parse(#{@cmarker});
         markerinfo.push(cmarker);
       }
-      console.log(markerinfo)
-      console.log(vectorinfo)
       initMap(markerinfo,"#{@maptitle}",#{$baselayers},vectorinfo,null);
       getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom})
     }

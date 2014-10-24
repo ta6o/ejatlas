@@ -1,4 +1,4 @@
-var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data;
+var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan;
 var jsons = {};
 var big = 0;
 var all = 0;
@@ -49,7 +49,8 @@ function initMap (markers, maptitle, layers, vector, fid) {
   markerLayer = L.featureGroup();
 
   map = L.map('map',{
-    zoom: 1,
+    //zoom: 1,
+    //center: [0,0],
     layers: [baselayers[(Object.keys(baselayers)[0])], markerLayer]
   });
 
@@ -157,8 +158,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
     all ++;
   });
   
-  markerBounds = markerLayer.getBounds();
-  map.fitBounds(markerBounds);
 
   map.on('zoomend', function() { markerSize(); });
   updateInfo(1,disclaimer);
@@ -200,8 +199,14 @@ function initMap (markers, maptitle, layers, vector, fid) {
     }
   });
 
-
 }
+
+function mapFit(){
+  conflict = false;
+  markerBounds = markerLayer.getBounds();
+  map.fitBounds(markerBounds);
+}
+
 function markerSize() {
   if (markerCount > 100) {
     $('.map_icon').addClass('mic').removeClass('min');
@@ -247,13 +252,13 @@ function updateInfo (type, content) {
   }
 };
 
-function getInfo(id,name,pos,zoom) {
+function getInfo(id,name,p,z) {
+  conflict = true;
+  zoom = z;
   marker = markerc[id]
+  pan = marker.getLatLng();
   updateInfo(1,marker.content);
-  pos = marker.getLatLng();
-  //console.log(pos)
-  map.setZoom(zoom);
-  map.panTo(pos);
+  map.setView(pan,zoom);
   $.getJSON('/table/'+id, function(dat){
     //console.log(dat)
     data = dat;//JSON.parse(dat);
@@ -283,10 +288,14 @@ function getBack() {
   $('#name').html('');
   $('#name').hide();
   $('#disclaimer').show();
-  $('#conflict_summary').hide();
   $('#commands').fadeOut();
   $('.leaflet-marker-icon').show();
-  map.fitBounds(markerBounds);
+  if (conflict) {
+    map.setView(pan,zoom);
+  } else {
+    $('#conflict_summary').hide();
+    map.fitBounds(markerBounds);
+  }
 }
 
 function toggleLegend(id,vis) {

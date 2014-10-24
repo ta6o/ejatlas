@@ -13,6 +13,7 @@
     window.onload = function(){
       initMap(markerinfo,"#{@maptitle}", #{(@baselayers || $baselayers)},vectorinfo, #{@fid || 0});
       updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+      mapFit();
     }
 
 .front

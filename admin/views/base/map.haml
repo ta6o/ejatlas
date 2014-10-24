@@ -14,6 +14,7 @@
       initMap(markerinfo,"#{@maptitle}",#{$baselayers},vectorinfo);
       updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
       initFilter();
+      mapFit();
     });
 .front
   .tagline
