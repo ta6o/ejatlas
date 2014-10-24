@@ -40,6 +40,12 @@ Admin.controller do
     render "base/welcome"
   end
 
+  get :mailsent do
+    @name = "You'll receive an email..."   
+    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
+    render "base/mailsent"
+  end
+
   get :index do
     ca = Cached.first
     ##last_modified ca.updated_at

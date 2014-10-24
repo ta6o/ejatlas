@@ -61,7 +61,7 @@ Admin.controllers :accounts do
     if @account.save!
       set_current_account(@account)
       Admin.new_account @account
-      redirect to "/welcome"
+      redirect to "/mailsent"
     else
       render 'accounts/new'
     end
@@ -87,7 +87,7 @@ Admin.controllers :accounts do
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
-        if params['images_attributes'].any?
+        if params.has_key? :images_attributes and params['images_attributes'].any?
           images = {}
           params['images_attributes'].each{|i,v| images["n#{i}"] = @account.images[i.to_i]}
           params['images_attributes'].each do |i, v|

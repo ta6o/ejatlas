@@ -1,0 +1,15 @@
+-#coding: utf-8
+.tagline
+  .ejolt-logo
+  %p= $pagedesc
+-2.times do
+  %br/
+
+%h2= "Hello,  #{current_account.name.split(/\s/)[0]}!"
+%p 
+  We have sent you the email with the link to confirm your account. Please check your inbox.
+
+-content_for :sidebar do
+  =partial("base/sidebar")
+
+
