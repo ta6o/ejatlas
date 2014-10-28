@@ -270,7 +270,7 @@ Admin.controller do
     @image = con.images.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan
-    @baselayers = con.baselayers.split(',')
+    @baselayers = (con.baselayers||'').split(',')
     #@domains = JSON.parse(con.filter)['tag']
     @fid = con.id
     render "base/front", :layout => :front

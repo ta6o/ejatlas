@@ -147,7 +147,7 @@
         .col-md-9
           %select#base
             %option{:disabled=>true} Click to add a field
-            -["OpenStreetMap.Mapnik", "Thunderforest.Landscape", "Esri.WorldTopoMap", "Hydda.Base", "Stamen.TonerBackground", "Stamen.TonerLite", "Stamen.Watercolor", "Esri.WorldPhysical", "Esri.NatGeoWorldMap"].each_with_index do |l,i|
+            -["OpenStreetMap.Mapnik", "Thunderforest.Landscape", "Esri.WorldTopoMap", "Stamen.TonerBackground", "Stamen.TonerLite", "Stamen.Watercolor", "Esri.WorldPhysical", "Esri.NatGeoWorldMap"].each_with_index do |l,i|
               %option{:value=>i}=l
         .col-md-3
           #addb.btn Add
