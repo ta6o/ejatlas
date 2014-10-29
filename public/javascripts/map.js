@@ -79,7 +79,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
       toggleLegend(id,vis);
     } else {
       setLegend(id);
-    }var HomeButton
+    }
   });
 
   var HomeButton = L.Control.extend({
@@ -112,7 +112,12 @@ function initMap (markers, maptitle, layers, vector, fid) {
         if (isNaN(n[0])) return 0
         id = parseInt(n.split(':')[0]);
         if (id == fid && mark[n]) {
-          popcontent += '<br /><strong>'+attrhash[n.split(':')[1]]+':</strong> ';
+          console.log(n)
+          if (Object.keys(attrhash).indexOf(n.split(':')[1]) >= 0){
+            popcontent += '<br /><strong>'+attrhash[n.split(':')[1]].replace(/\sId$/,'')+':</strong> ';
+          } else {
+            popcontent += '<br /><strong>'+toTitleCase(n.split(':')[1].replace(/_/g,' '))+':</strong> ';
+          }
           popcontent += mark[n];
         }
       })
