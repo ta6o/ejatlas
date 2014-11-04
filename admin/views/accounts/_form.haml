@@ -111,6 +111,17 @@
       =f.error_message_on :comments
       =f.text_area :comments, :class => :text_area
 
+    -if @pass
+      .group
+        =f.label 'Password'
+        =f.error_message_on :password
+        =f.password_field :password, :class => :password_field
+
+      .group
+        =f.label 'Password (again)'
+        =f.error_message_on :password_confirmation
+        =f.password_field :password_confirmation, :class => :password_field
+
     -if @account.new_record?
       %br/
       %p 

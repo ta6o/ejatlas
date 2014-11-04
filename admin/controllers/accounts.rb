@@ -73,6 +73,7 @@ Admin.controllers :accounts do
     @name = "My Profile" if @account == current_account
     if ["admin","editor"].include? current_account.role or @account == current_account
       redirect to '/accounts/edit/'+current_account.id.to_s if @account.role == "admin"
+      @pass = true
       render 'accounts/edit'
     else
       redirect to '/accounts/edit/'+current_account.id.to_s
@@ -80,13 +81,17 @@ Admin.controllers :accounts do
   end
 
   put :update, :with => :id do
+
     redirect to "/sessions/login" unless current_account
     @account = Account.find(params[:id])
+    puts @account.crypted_password
+    p params
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     puts params[:account]
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
+        puts @account.crypted_password
         if params.has_key? :images_attributes and params['images_attributes'].any?
           images = {}
           params['images_attributes'].each{|i,v| images["n#{i}"] = @account.images[i.to_i]}
@@ -104,7 +109,8 @@ Admin.controllers :accounts do
             img.save
           end
         end
-        redirect url(:conflicts, :index)
+        return redirect url(:accounts, :index) if ["admin",'editor'].include? current_account.role
+        return redirect url(:conflicts, :index)
       else
         render 'accounts/edit'
       end
