@@ -55,10 +55,13 @@ Admin.controllers :accounts do
   end
 
   post :create do
+    pwd = (0..8).map{ (('a'..'z').to_a+('A'..'Z').to_a+(0..9).to_a)[rand(62)] }.join
+    params['account']['password'] = pwd
+    params['account']['password_confirmation'] = pwd
     @account = Account.new(params[:account])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.role = "user"
-    if @account.save!
+    if @account.save
       set_current_account(@account)
       Admin.new_account @account
       redirect to "/mailsent"
