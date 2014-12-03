@@ -245,8 +245,8 @@ class AsyncTask
     if params["countries"] == "on"
       countries = []
       puts "Updating countries..."
-      Region.all.each {|c| countries << [c.jsonize,c.conflicts_count] if c.conflicts_count > 1; c.save}
-      Country.where("region_id is null").all(:include=>:conflicts).each {|c| countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count > 1; c.save}
+      #Region.all.each {|c| countries << [c.jsonize,c.conflicts_count] if c.conflicts_count > 1; c.save}
+      Country.all(:include=>:conflicts).each {|c| countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count > 1; c.save}
       countries.sort_by! {|c| c[1]}
       countries.reverse!
       ca.countries = countries.to_json
