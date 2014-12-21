@@ -89,7 +89,7 @@ Admin.controller do
     @pos = [c.lat,c.lon]
     @images = c.images
     @zoom = 8
-    @zoom = [6,8,10,12][c.accuracy_level] if c.acuracy_level
+    @zoom = [6,8,10,12][c.accuracy_level] if c.accuracy_level
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
         @image = ml.url
