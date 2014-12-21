@@ -12,10 +12,10 @@
       %tbody
         -@jobs.each do |j|
           -method_name = j.payload_object.method_name
-          -arguments = j.payload_object.args[0]
+          -arguments = j.payload_object.args
           %tr
             %td
-              %strong= {:csvexport_without_delay=>'Export',:setcache_without_delay=>'Cache',:choropleth_without_delay=>'Choropleth',:backupdb_without_delay=>'DB Backup'}[method_name]
+              %strong= {:csvexport_without_delay=>'Export',:setcache_without_delay=>'Cache',:vectorupload_without_delay=>'Vector Processing'}[method_name]
             %td= j.created_at.strftime("%d/%m/%Y %H:%M")
             -if j.locked_at != nil
               %td= "Started at #{j.locked_at.strftime('%H:%M')}"
@@ -26,15 +26,15 @@
             -else
               %td &nbsp;
             -if method_name == :setcache_without_delay
-              -args = arguments.keys.map{|k|k.titlecase}.join(', ')
+              -args = arguments[0].keys.map{|k|k.titlecase}.join(', ')
               %td
                 %strong Update:
                 =args
             -elsif method_name == :csvexport_without_delay
-              -order = arguments.delete("order")
-              -ascdsc = arguments.delete("ascdsc")
-              -limit = arguments.delete("limit").to_i
-              -args = arguments.keys.map{|k|k.titlecase}.join(', ')
+              -order = arguments[0].delete("order")
+              -ascdsc = arguments[0].delete("ascdsc")
+              -limit = arguments[0].delete("limit").to_i
+              -args = arguments[0].keys.map{|k|k.titlecase}.join(', ')
               %td
                 %strong Select:
                 =args
@@ -43,9 +43,9 @@
                 -if limit > 0
                   %strong Limit:
                   =limit
-            -elsif method_name == :choropleth_without_delay
-              %td &nbsp;
-            -elsif method_name == :backupdb_without_delay
+            -elsif method_name == :vectorupload_without_delay
+              %td= arguments[1].name
+            -else
               %td &nbsp;
     :javascript
       setTimeout(function(){location.reload()}, 12000);

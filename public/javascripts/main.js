@@ -2946,16 +2946,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
       updateInfo(1,disclaimer)
     }
   });
-  map.on('overlayadd', function (el) {
-    if (choropleths[el.name] != undefined) {
-      legend = '<div class="legend"><h5>'+el.name+'</h5><table> <tbody>';
-      $.each(choropleths[el.name],function(k,v){
-        legend += '<tr> <td> <div class="chlegend" style="background-color:#'+v['hex']+'"></div> </td> <td class="chdesc">'+v['text']+'</td> </tr>';
-      });
-      legend += '</tr></tbody></table></div>';
-      updateInfo(1,disclaimer)
-    }
-  });
   $('#conflict_summary').on('click','.seemore',function(e){
       e.preventDefault();
       $(this).hide();
@@ -2971,7 +2961,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
     dmns = dmns.distinct();
     if (dmns.length > 0) {
       $.each(dmns,function(i,n){
-        console.log($(".c_"+n));
         $(".c_"+n).css("border","4px solid #"+n);
       })
     }
@@ -3027,6 +3016,8 @@ function updateInfo (type, content) {
       html += legend;
     }
     info.html(html);
+  } else if (type == 2) {
+    info.html(content);
   }
 };
 
@@ -3103,11 +3094,12 @@ function choropleth(varname) {
 
 function style(feature) {
   chname = feature.properties.pn
-  if (feature.properties['value']) {
-    dense = choropleths[chname][feature.properties['value']]['hex'];
+  if (feature.properties.category) {
+    dense = choropleths[chname][feature.properties['category']]['color'];
   }else {
-    dense = choropleths[chname]['1']['hex'];
+    dense = choropleths[chname]['1']['color'];
   }
+  dense = dense.replace(/^#/,'');
   return {
     fillColor: "#"+dense,
     weight: 1,
@@ -3119,13 +3111,21 @@ function style(feature) {
 
 function highlightFeature(e) {
   var layer = e.target;
-  var pn = layer.feature.pn
-  if (pn == "Borders") return
-  vector = $(vectorinfo).filter(function(i,n){
-    return (n['vector_datum']['name']==pn)
-  });
-  var desc = vector[0]['vector_datum']['description']
-  updateInfo(1,"<h4><strong>"+pn+"</strong></h4><p>"+desc+"</p>");
+  pn = layer.feature.category
+  inf = "<div class='infocontent'><h3><strong>"+pn+"</strong></h3>"
+  if (jsons[pn]['desc']){ inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>" }
+  ia = []
+  if (layer.feature.properties && layer.feature.properties.data) {
+    $.each(layer.feature.properties.data,function(k,v){
+        console.log(k);
+      ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v);
+    });
+  }
+  inf += ia.join("<br />");
+  if (jsons[pn]['source']){ inf += "<p><strong>Source: "+jsons[pn]['source']+"</strong></p>" }
+  inf += "</div>"
+  if (jsons[pn]['legend']){ inf += jsons[pn].legend }
+  updateInfo(2,inf);
   layer.setStyle({
     fillOpacity: 1
   });
@@ -3135,37 +3135,15 @@ function highlightFeature(e) {
   }
 }
 
-
-function highlightChFeature(e) {
-  var layer = e.target;
-  //console.log(e)
-  chname = layer.feature.properties.pn
-  updateInfo(1,"<h4><strong>"+layer.feature.properties.name+"</strong> ("+choropleths[chname][String(layer.feature.properties.value)]['text']+")</h4>");
-  layer.setStyle({
-    fillOpacity: 1
-  });
-
-  if (!L.Browser.ie && !L.Browser.opera) {
-      layer.bringToFront();
-  }
-}
-var lay = null;
 function resetHighlight(e) {
-  //updateInfo(1,disclaimer);
   var layer = e.target;
-  lay = e
-  layer.setStyle(jsons[layer.feature.category]['style']);
-  if (!L.Browser.ie && !L.Browser.opera) {
-      layer.bringToFront();
+  if (Object.keys(choropleths).indexOf(layer.feature.category) >= 0) {
+    layer.setStyle(style(layer.feature));
+  } else {
+    layer.setStyle(jsons[layer.feature.category]['style']);
   }
-}
-
-function resetChHighlight(e) {
-  updateInfo(1,disclaimer);
-  var layer = e.target;
-  layer.setStyle(style(layer.feature));
   if (!L.Browser.ie && !L.Browser.opera) {
-      layer.bringToFront();
+    layer.bringToFront();
   }
 }
 
@@ -3181,66 +3159,68 @@ function onEachFeature(feature, layer) {
   });
 }
 
-function onEachChFeature(feature, layer) {
-  layer.on({
-    mouseover:highlightChFeature,
-    mouseout: resetChHighlight,
-    dblclick: zoomToFeature,
-  });
-}
-
-function showVectors () {
-  $.each(vectorinfo,function(i,v){
-    vect = v["vector_datum"];
-    if(vect['url']==="") return 0
-    console.log(vect["name"]);
-    sr = vect["url"].split('/')
-    vr = sr[sr.length-1].split('.')[0].replace(/\d/g,'').replace(/[-_]+/g,'_');
-    if (vect['choropleth'] == null || vect['choropleth'] === "") {
-      if (vect["style"] && vect["style"].length > 0) {
-        lStyle = JSON.parse(vect["style"])
-      } else {
-        lStyle = vectorStyles[tl];
-        if (!lStyle) {
-          lStyle = {
-            "color": "#06c",
-            "fillcolor": "#06c",
-            "weight": 1,
-            "opacity": 1,
-            "fillOpacity": 0.4
-          }
+function showVector(v) {
+  if (v.features[0].pn) {
+    pn = v.features[0].pn;
+  } else if (v.features[0].properties.pn) {
+    pn = v.features[0].properties.pn;
+  }
+  vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
+  if(vect.length == 0) return 0
+  vect = vect[0].vector_datum;
+  if(vect['url']==="") return 0
+  sr = vect["url"].split('/')
+  vr = sr[sr.length-1].split('.')[0].replace(/\d/g,'').replace(/[-_]+/g,'_');
+  if (vect['choropleth'] == null || vect['choropleth'] === "") {
+    if (vect["style"] && vect["style"].length > 0) {
+      lStyle = JSON.parse(vect["style"])
+    } else {
+      lStyle = vectorStyles[tl];
+      if (!lStyle) {
+        lStyle = {
+          "color": "#06c",
+          "fillcolor": "#06c",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.4
         }
       }
-      //tl = toTitleCase(vr.substr(4).replace('_',' '))
-      tl = vect["name"]
-      ly = eval(vr);
-      console.log(ly)
-      $.each(ly["features"],function(index,feature){
-        feature["category"] = tl;
-        feature["name"] = vr;
-      });
-      jsons[tl] = ly;
-      jsons[tl]['style'] = lStyle;
-      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
-      if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
-    } else {
-      tl = vect['name']
-      vurl = vect['url'].split('/')
-      vurl = vurl[vurl.length-1].split('.')[0]
-      vurl = vurl.toLowerCase();
-      vurl = vurl.replace(/[-_\s\/]+/g,'-');
-      vurl = vurl.replace(/[^\.\w-]+/g,'');
-      vurl = vurl.replace(/\d+/g,'');
-      vurl = vurl.replace(/-+/g,'_');
-      ly = eval(vurl);
-      jsons[tl] = ly;
-      choropleths[tl] = JSON.parse(vect['choropleth'])
-      overlayMaps[tl] = L.geoJson(ly['features'],{style: style, pointToLayer: pToLayer, onEachFeature:onEachChFeature});
-      if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
     }
+    tl = vect["name"]
+    ly = eval(vr);
+    jsons[tl] = ly;
+    jsons[tl]['style'] = lStyle;
+    overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+  } else {
+    tl = vect['name']
+    vurl = vect['url'].split('/')
+    vurl = vurl[vurl.length-1].split('.')[0]
+    vurl = vurl.toLowerCase();
+    vurl = vurl.replace(/[-_\s\/]+/g,'-');
+    vurl = vurl.replace(/[^\.\w-]+/g,'');
+    vurl = vurl.replace(/\d+/g,'');
+    vurl = vurl.replace(/-+/g,'_');
+    ly = eval(vurl);
+    jsons[tl] = ly;
+    choropleths[tl] = JSON.parse(vect['choropleth'])
+    leg = '<div class="legend"><table> <tbody>';
+    $.each(choropleths[tl],function(k,v){
+      leg += '<tr> <td> <div class="chlegend" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+v['legend']+'</td> </tr>';
+    });
+    leg += '</tr></tbody></table></div>';
+    jsons[tl]['legend'] = leg;
+    overlayMaps[tl] = L.geoJson(ly['features'],{style: style, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+  }
+  $.each(ly["features"],function(index,feature){
+    feature["category"] = tl;
+    feature["name"] = vr;
   });
-  window.setTimeout(updateControl,1000)
+  jsons[tl]['desc'] = vect['description']
+  jsons[tl]['source'] = vect['source']
+  if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
+  updateControl();
 }
+
 function getObjectSize(obj) {
   var size = 0, key;
   for (key in obj) {
@@ -3248,11 +3228,11 @@ function getObjectSize(obj) {
   }
   return size; // return the size of the object
 }
+
 function updateControl () {
-  console.log("omaps: "+getObjectSize(overlayMaps))
   lControl.removeFrom(map);
   lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
-  var choropleth_legend = L.Control.extend({
+  /*var choropleth_legend = L.Control.extend({
     options: {
       position: 'top'
     },
@@ -3261,14 +3241,15 @@ function updateControl () {
       var container = L.DomUtil.create('div', 'choropleth-legend');
       return container;
     }
-  });
+  });*/
 }
 
 function vectorPing(varname) {
   loadQueue -= 1;
   console.log(loadQueue+' '+varname['features'][0]['pn'])
+  showVector(varname);
   if (loadQueue == 0) {
-    showVectors();
+    //showVectors();
   }
 }
 
@@ -3291,3 +3272,12 @@ function pausecomp(millis) {
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-49025282-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();

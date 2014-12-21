@@ -398,21 +398,25 @@ Admin.controller do
       if msg.nil? or keys & msg.keys != keys
         nots << msg
       end
+      recipients = [ {:email=> 'yakup.cetinkaya@gmail.com', :name=> 'Yakup' }, {:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'} ]
+      if msg['from_email'] == 'notifications@disqus.net'
+        name = msg['subject'].sub('Re: ','').sub('New comment posted on ','').sub(' | EJAtlas','')
+        if conf = Conflict.find_by_name(name)
+          recipients = [{:email=>conf.account.email,:name=>conf.account.name}]
+        end
+      end
       message = {  
        :subject=> msg['subject'],
        :from_name=> "#{msg['from_name'] || 'no name'} <#{msg['from_email']}>",
        :headers=> {
          "Reply-To"=> msg['from_email']
        },
-       :to=>[
-         {:email=> 'yakup.cetinkaya@gmail.com', :name=> 'Yakup' },
-         {:email=> 'ejoltmap@gmail.com', :name=> 'EJAtlas Team'}
-       ],  
+       :to=>recipients,  
        :html=> msg['html'],
        :from_email=> 'forwards@ejatlas.org'
       }  
-      message['attachments'] = msg['attachments'] if msg['attachments'].any?
-      message['images'] = msg['images'] if msg['images'].any?
+      message['attachments'] = msg['attachments'] if msg.has_key?('attachments') and msg['attachments'].any?
+      message['images'] = msg['images'] if msg.has_key?('images') and msg['images'].any?
       sending = mandrill.messages.send message  
       if sending[0]['status'] == "sent"
         oks << msg
