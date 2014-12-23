@@ -21,7 +21,8 @@
     %a{:href=>'http://www.ejolt.org',:target=>'_blank'}
       .ejolt-logo
     %p= $pagedesc
-  #map.map
+  -if @layout != :full
+    #map.map
   .summary_header
     %br/
     .row

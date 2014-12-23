@@ -13,7 +13,7 @@
     %meta{:content => (@headline || $pagedesc), :name => "description"}/
     %meta{:content => $pageauthor, :name => "author"}/
     %meta{:content => $pagekeyws, :name => "keywords"}/
-    =stylesheet_link_tag 'main'
+    =stylesheet_link_tag 'main-full'
     =javascript_include_tag 'jQl'
     =yield_content :include
 
@@ -28,7 +28,7 @@
     #top.contentwrapper
       .navbar.navbar-fixed-top{:role=>'navigation'}
         .navbar-inner
-          .container
+          .container-full
             .row
               .col-md-12
                 %a.btn.btn-navbar.pull-left{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
@@ -108,17 +108,19 @@
                             %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
 
       %header
-        .container
+        .container-full
+          #map.map
           =yield_content :outer
           .row
-            .col-md-9.relative
-              .inner= yield
-            .col-md-3.relative
-              .logo{:style=>'height:140px;margin-top:24px;'}
-              #side.sidebar=yield_content :sidebar
+            .col-md-6.col-md-offset-1.relative
+              #inner.inner= yield
+            .col-md-2.col-md-offset-2.relative
+              #side.sidebar
+                .logo{:style=>'height:140px;margin-top:24px;'}
+                =yield_content :sidebar
       .push
     %footer.footer
-      .container
+      .container-full
         .row
           #footerbottom
             -#.col-md-1
@@ -149,7 +151,7 @@
               -#.pull-right
                 #totop{:onclick=>'window.location = "#top";'} ^
     :javascript
-      $full = false;
+      $full = true;
       jQl.loadjQ('/javascripts/main.js'); 
 
 

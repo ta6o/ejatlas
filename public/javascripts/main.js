@@ -2771,7 +2771,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
   };
 
 }( window['jQuery'] || window['Zepto'] ));
-var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan;
+var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme;
 var jsons = {};
 var big = 0;
 var all = 0;
@@ -2779,9 +2779,6 @@ var loadQueue = 0;
 var overlayMaps = { };
 var choropleths = { };
 var baselayers = { };
-var lControl;
-var homeButton;
-var acme;
 var dmns = [];
 var hoverStyle = {
   "fillOpacity": 0.5
@@ -2816,33 +2813,27 @@ function initMap (markers, maptitle, layers, vector, fid) {
   info = $("#infopane");
   $.each(layers,function(i,e){
     f = e.split('.');
-    baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 2, maxzoom:18});
+    baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
   markerLayer = L.featureGroup();
 
+  maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
+  bounds = maxBounds;
+
   map = L.map('map',{
-    //zoom: 1,
-    //center: [0,0],
+    scrollWheelZoom: !$full,
+    worldCopyJump: true,
+    maxBounds: maxBounds,
+    bounceAtZoomLimits: false,
     layers: [baselayers[(Object.keys(baselayers)[0])], markerLayer]
   });
-
-  /*
-  sat = L.map('sat',{
-    scrollWheelZoom:false,
-    zoomControl: false,
-    layers: [satellite]
-  });
-  */
-
 
   $.each(vector,function(i,v){
     loadJS(v["vector_datum"]["url"])
   });
 
   lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
-
-  //maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
 
   $(document).on('click','.legend .map-icon',function(e){
     //console.log(e)
@@ -2937,9 +2928,23 @@ function initMap (markers, maptitle, layers, vector, fid) {
   });
   
 
-  map.on('zoomend', function() { markerSize(); });
-  updateInfo(1,disclaimer);
-  markerSize();
+  /*map.on('drag', function(e) { 
+    b = map.getBounds();
+    e = e || window.event;
+    if (maxBounds.contains(b)) {
+      bounds = b;
+    } else {
+      map.fitBounds(bounds);
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      else {
+        e.cancelBubble = true;
+      }
+    }
+  });*/
+
+  map.on('zoomend', function(e) { markerSize(); });
   map.on('overlayremove', function (el) {
     if (choropleths[el.name] != undefined) {
       legend = rtlegend;
@@ -2966,6 +2971,8 @@ function initMap (markers, maptitle, layers, vector, fid) {
     }
   });
 
+  updateInfo(1,disclaimer);
+  markerSize();
 }
 
 function mapFit(){

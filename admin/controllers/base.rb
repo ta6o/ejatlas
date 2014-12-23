@@ -1,49 +1,54 @@
 #coding: utf-8
 Admin.controller do
-  layout :front
 
   before do
+    puts params
+    if params.has_key? 'fullpage'
+      @layout = :full
+    else
+      @layout = :front
+    end
     #cache_control :max_age => 60*60*24*30 
   end
 
   get :about do
     @name = "About"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/about.haml")
-    render "base/about"
+    render "base/about", :layout => @layout
   end
   get :faq do
     @name = "Frequently Asked Questions"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/faq.haml")
-    render "base/faq"
+    render "base/faq", :layout => @layout
   end
   get :disclaimer do
     @name = "Disclaimer"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/disclaimer.haml")
-    render "base/disclaimer"
+    render "base/disclaimer", :layout => @layout
   end
 
   get :contact do
     @name = "Contact"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/contect.haml")
-    render "base/contact"
+    render "base/contact", :layout => @layout
   end
 
   get :credits do
     @name = "Credits & Collaborators"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/credits.haml")
-    render "base/credits"
+    render "base/credits", :layout => @layout
   end
 
   get :welcome do
     @name = "Welcome"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
-    render "base/welcome"
+    render "base/welcome", :layout => @layout
   end
 
   get :mailsent do
     @name = "You'll receive an email..."   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
-    render "base/mailsent"
+    render "base/mailsent", :layout => @layout
   end
 
   get :index do
@@ -62,7 +67,7 @@ Admin.controller do
     @maptitle = "Browse maps"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
-    render "base/map"
+    render "base/map", :layout => @layout
   end
 
   get :conflict, :with => :slug do
@@ -96,7 +101,7 @@ Admin.controller do
         break
       end
     end
-    render "base/conflict"
+    render "base/conflict", :layout => @layout
   end
 
   get :country, :with => :slug do
@@ -127,7 +132,7 @@ Admin.controller do
     @image = nil
     @image = con.flag_images.first if con.flag_images.any?
     @maptitle = "Environmental Conflicts in #{@name}"
-    render "base/front"
+    render "base/front", :layout => @layout
   end
 
   get :company, :with => :slug do
@@ -147,7 +152,7 @@ Admin.controller do
     @image = nil
     @image = con.logo_images.first if con.logo_images.any?
     @maptitle = "Environmental Conflicts of #{@name}"
-    render "base/front"
+    render "base/front", :layout => @layout
   end
 
   get :institution, :with => :slug do
@@ -166,7 +171,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    render "base/front"
+    render "base/front", :layout => @layout
   end
 
   get :commodity, :with => :slug do
@@ -185,7 +190,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts on #{@name}"
-    render "base/front"
+    render "base/front", :layout => @layout
   end
 
   get :type, :with => :slug do
@@ -205,7 +210,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts about #{@name}"
-    render "base/front"
+    render "base/front", :layout => @layout
   end
 
   get 'country-of-company', :with => :slug do
@@ -222,7 +227,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    render "base/front"
+    render "base/front", :layout => @layout
   end
 
   get 'country-of-institution', :with => :slug do
@@ -240,7 +245,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    render "base/front"
+    render "base/front", :layout => @layout
   end
 
   get :featured, :with => :slug do
@@ -274,7 +279,7 @@ Admin.controller do
     @baselayers = ((con.baselayers.nil? or con.baselayers == "") ? $baselayers.join(',') : con.baselayers).split(',')
     #@domains = JSON.parse(con.filter)['tag']
     @fid = con.id
-    render "base/front", :layout => :front
+    render "base/front", :layout => @layout
   end
 
   get :company_list do
