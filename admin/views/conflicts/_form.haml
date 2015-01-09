@@ -796,7 +796,7 @@
         });
         $('.d_'+model).live('click', function(e){
           par = $(this).closest('.'+model);
-          id = par.children('div').children('div').children('textarea').attr('name').split('_')[2];
+          id = par.find('textarea').attr('name').split('_')[2];
           html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
           par.html(html);
         });
@@ -1106,7 +1106,7 @@
               });
               $('.d_document').live('click', function(e){
                 par = $(this).closest('.document');
-                id = par.children('div').children('div').children('input').attr('name').split('_')[2];
+                id = par.find('input').attr('name').split('_')[2];
                 html = '<input name="document_remove_'+id+'" type="hidden"></input>';
                 par.html(html);
               });

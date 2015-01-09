@@ -11,6 +11,12 @@ Admin.controller do
     #cache_control :max_age => 60*60*24*30 
   end
 
+  post "/image" do
+    image = Base64::decode64 params["image"].sub("data:image/png;base64,","")
+    File.open("#{Dir.pwd}/public/t.png","wb"){|f| f << image}
+    return 'ok'
+  end
+
   get :about do
     @name = "About"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/about.haml")
@@ -140,6 +146,7 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Company.find_slug(params[:slug])
+    pass unless con
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json

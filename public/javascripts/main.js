@@ -2926,8 +2926,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
     }
     all ++;
   });
-  
-
   /*map.on('drag', function(e) { 
     b = map.getBounds();
     e = e || window.event;
@@ -2969,6 +2967,13 @@ function initMap (markers, maptitle, layers, vector, fid) {
         $(".c_"+n).css("border","4px solid #"+n);
       })
     }
+
+    $.each(markerc,function(k,v){
+      m = $(".id_"+k);
+      m.attr('src',"/")
+    })
+    
+
   });
 
   updateInfo(1,disclaimer);
@@ -3280,6 +3285,20 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
+function render(){
+  leafletImage(map, function(err, canvas) {
+      console.log(err);
+      console.log(canvas);
+      var dataURL = canvas.toDataURL("image/png");
+      typeof dataURL
+      $.post('/image',{image: dataURL},function(data){
+        console.log(data);
+        if (data != "ok") {
+          console.log('$erif')
+        }
+      });
+  });
+}
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-49025282-1']);
 _gaq.push(['_trackPageview']);
