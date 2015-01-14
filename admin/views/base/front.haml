@@ -56,7 +56,7 @@
         %h2= @maptitle
         -if @description
           %p.description= @description.gsub("\n","<br />").html_safe
-        =@load.html_safe
+        =(@load || "").html_safe
       .clearfix
         %h2.pull-left#name
           
