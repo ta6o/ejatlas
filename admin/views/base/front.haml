@@ -3,8 +3,8 @@
   :javascript
     img = new Image(330,30);
     img.src = 'https://s3.amazonaws.com/ejatlas/static/ikon.png';
-    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
-    var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
+    var markerinfo = eval("["+#{@markerinfo||""}.join(',')+"]");
+    var filterinfo = eval("["+#{@filterinfo||""}.join(',')+"]");
     var vectorinfo = [];
   -if @vectors
     :javascript
