@@ -13,11 +13,11 @@
           %tr
             %th.first Name
             %th Acronym
-            %th #conflicts
+            -#%th #conflicts
             %th Description
             %th URL
-            %th Logo
-            %th Country
+            -#%th Logo
+            -#%th Country
             %th.last
               %form#filter-form
                 %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
@@ -26,19 +26,19 @@
             %tr
               %td.first=company.name
               %td=company.acronym
-              %td=company.conflicts.count
+              -#%td=company.conflicts.count
               %td=company.description
               %td
                 -if company.url
                   %a{:href=>company.url} [link]
                 -else
                   =""
-              %td
+              -#%td
                 -if company.logo_images.any?
                   %img{:src=>company.logo_images.first.file.url,:style=>'max-height:50px;'}
                 -else
                   =""
-              %td
+              -#%td
                 -if company.country_id and company.country_id > 0 and company.country
                   =company.country.name
                 -else
@@ -62,4 +62,31 @@
           $('#filter-form').submit(function(){
             return false;
           }).focus(); 
+          $(window).scroll(function() {
+            if(!scrolling) {return}
+            if ( $(document).scrollTop() + $(window).height() >= $(document).height()) { 
+              $('body').css('cursor','wait');
+              console.log($(document).scrollTop() + $(window).height() , $(document).height());
+              ask(pagenum);
+              pagenum ++;
+            }
+          })
         });
+        var pagenum = 0
+        var scrolling = true
+        function ask(page) {
+          $.getJSON("/companies/more","page="+page,function(data){
+            $('body').css('cursor','auto');
+            $.each(data,function(i,n) {
+              n = n.company
+              n.id < 32 ? scrolling = false : scrolling = true;
+              row = "<tr><td>"
+              row += [n.name,n.acronym,n.description,
+                (n.url ? "<a href='"+n.url+"'> [link] </a>" : ""),
+                "<a href='/companies/edit/"+n.id+"'> Edit </a> | <a href='/companies/destroy/"+n.id+"'> Delete </a>",
+                ].join('</td><td>')
+              row += "</td></tr>"
+              $('#sortme tbody').append(row);
+            });
+          })
+        }

@@ -398,6 +398,7 @@ Admin.controllers :conflicts do
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
+    oldstat = @conflict.approval_status
     updated['conflict'].each do |k,v|
       @conflict.update_attribute k,v
     end
@@ -490,6 +491,15 @@ Admin.controllers :conflicts do
       @conflict.modified_at = Time.now
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
+        puts oldstat
+        puts @conflict.approval_status
+        if oldstat != @conflict.approval_status
+          if ['admin','editor'].include?(current_account.role)
+            Admin.notify_collaborator @conflict
+          elsif ["queued","modified"].include?(@conflict.approval_status)
+            Admin.notify_moderator @conflict
+          end
+        end
         redirect "/conflicts/edit/#{@conflict.id}#{hash}"
       end
     else

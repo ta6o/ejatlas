@@ -271,7 +271,7 @@ Admin.controller do
     @desc = con.description
     @headline = con.slogan
     @ogimage = con.images.where(prime:1)[0].file.url if con.images.where(prime:1).any?
-    @markercount = JSON.parse(@markerinfo).count
+    @markercount = JSON.parse(@markerinfo || "[]").count
     @defs = []
     con.vector_data.each do |vd|
       if vd.vector_style and vd.vector_style.defs

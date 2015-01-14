@@ -32,12 +32,13 @@ Admin.controllers :companies do
   end
 
   get :index do
-    @companies = []
-    Company.select("id, name, slug, acronym, description, url, logo_image, country_id").find_in_batches(batch_size: 64) do |batch|
-      @companies << batch
-    end
-    @companies.flatten!
+    @companies = Company.select("id, name, slug, acronym, description, url, logo_image, country_id").order("id desc").limit(64)
+    puts 
     render 'companies/index'
+  end
+
+  get :more do
+    return Company.select("id, name, slug, acronym, description, url, logo_image, country_id").order("id desc").offset(params[:page].to_i * 64).limit(64).to_json
   end
 
   get :merge do

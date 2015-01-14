@@ -56,10 +56,11 @@ class Admin < Padrino::Application
 
   def self.send_mail account, subject, message
     require 'mandrill'
+    from = "EJOLT Project"  
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
     message = {  
      :subject=> subject,
-     :from_name=> "EJOLT Project",  
+     :from_name=> from,
      :to=>[{  
        :email=> account.email,
        :name=> account.name  
@@ -68,7 +69,11 @@ class Admin < Padrino::Application
      :from_email=>$sitemail
     }  
     puts mandrill
-    sending = mandrill.messages.send message  
+    begin
+      sending = mandrill.messages.send message  
+    rescue => exc
+      sending = exc
+    end
     puts "  MANDRILL #{sending}"
   end
 
@@ -76,6 +81,20 @@ class Admin < Padrino::Application
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/confirm.haml").render(self)
     Admin.send_mail(a, 'Welcome to EJAtlas', html)
+  end
+
+  def self.notify_moderator(c)
+    @account = c.account
+    @conflict = c
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_moderator.haml").render(self)
+    Admin.send_mail(Account.find(245), "Case updated: #{c.name}", html)
+  end
+
+  def self.notify_collaborator(c)
+    @account = c.account
+    @conflict = c
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
+    Admin.send_mail(Account.find(245), (c.approval_status == "approved" ? "#{c.name} approved on EJAtlas" : "Moderation update for #{c.name}"), html)
   end
 
   def self.welcome(c)
@@ -210,4 +229,6 @@ class Admin < Padrino::Application
     result
   end
 
+  $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]
+  $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo", "Ayşe"]
 end

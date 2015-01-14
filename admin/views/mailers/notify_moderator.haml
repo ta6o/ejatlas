@@ -1,0 +1,26 @@
+-# coding: utf-8
+%html
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        Dear Editor,
+        %br/
+        %br/
+        = "The user #{@account.name} has flagged the case <a href='http://console.ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a> as queued."
+        %br/
+        %br/
+        -if @conflict.notes and @conflict.notes.length > 1
+          They left a message for you too:
+          %br/
+          %blockquote
+            %em= @conflict.notes.gsub(/\n/,'<br />')
+          %br/
+        = "#{$goodies.sample},"
+        %br/
+        = "#{$namies.sample} the EJAtlas Bot"
+        %br/

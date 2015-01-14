@@ -1149,29 +1149,30 @@
             %p.description Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences.
             ~f.text_area :headline, :class => :text_area, :rows=>4
 
-        .group
-          .required=f.error_message_on :approval_status
-          =f.label 'Approval status'
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'} &nbsp;Deleted
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'} &nbsp;Draft
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'} &nbsp;Queued
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'} &nbsp;Modified
-          -if ["admin","editor"].include? current_account.role
+        -unless @conflict.new_record?
+          .group
+            .required=f.error_message_on :approval_status
+            =f.label 'Approval status'
             %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'} &nbsp;Approved
-          -if apstat = @conflict.approval_status
-            -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
-            :javascript
-              $('input.apstat[value=#{apstat}]').prop('checked',true);
-          -if ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
-            %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
-              %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-              %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
-        %br/
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'} &nbsp;Deleted
+            %label.checkbox.inline.apstat
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'} &nbsp;Draft
+            %label.checkbox.inline.apstat
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'} &nbsp;Queued
+            %label.checkbox.inline.apstat
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'} &nbsp;Modified
+            -if ["admin","editor"].include? current_account.role
+              %label.checkbox.inline.apstat
+                %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'} &nbsp;Approved
+            -if apstat = @conflict.approval_status
+              -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
+              :javascript
+                $('input.apstat[value=#{apstat}]').prop('checked',true);
+            -if ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
+              %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
+                %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
+          %br/
 
       .col-md-8
         .group

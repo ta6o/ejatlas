@@ -408,17 +408,18 @@ class Conflict < ActiveRecord::Base
                 pl = {'companies'=> 'company', 'supporters'=>'supporter'}
                 joi = eval("v.c_#{va[1]}.where(#{pl[va[1]]}_id: #{m.id}).first")
                 inv = " - <small>#{joi.involvement}</small>" if joi and joi.involvement.length > 0
-              rescue => exc
+              rescue
                 inv = ""
               end
               begin 
+                cda = ""
                 cda = " <a href='/country-of-#{va[2]}/#{m.country.slug}'><small>(#{m.country.name})</small></a>" if m.country
-              rescue => exc
+              rescue
                 cda = ""
               end
               begin 
                 acr = " <small>(#{m.acronym})</small>" if m.acronym.length > 0
-              rescue => exc
+              rescue
                 acr = ""
               end
               begin
