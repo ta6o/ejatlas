@@ -1,43 +1,57 @@
-var marker;
+var marker, map;
+var bases = [ "OpenStreetMap.Mapnik", "OpenStreetMap.BlackAndWhite", "OpenStreetMap.DE", "OpenStreetMap.HOT", "Thunderforest.OpenCycleMap", "Thunderforest.Transport", "Thunderforest.Landscape", "Thunderforest.Outdoors", "OpenMapSurfer.Roads", "OpenMapSurfer.Grayscale", "Hydda.Full", "Hydda.Base", "MapQuestOpen.OSM", "MapQuestOpen.Aerial", "Stamen.Toner", "Stamen.TonerBackground", "Stamen.TonerLite", "Stamen.Terrain", "Stamen.TerrainBackground", "Stamen.Watercolor", "Esri.WorldStreetMap", "Esri.DeLorme", "Esri.WorldTopoMap", "Esri.WorldImagery", "Esri.WorldTerrain", "Esri.WorldShadedRelief", "Esri.WorldPhysical", "Esri.OceanBasemap", "Esri.NatGeoWorldMap", "Esri.WorldGrayCanvas", "HERE.normalDay", "HERE.normalDayCustom", "HERE.normalDayGrey", "HERE.normalDayMobile", "HERE.normalDayGreyMobile", "HERE.normalDayTransit", "HERE.normalDayTransitMobile", "HERE.normalNight", "HERE.normalNightMobile", "HERE.normalNightGrey", "HERE.normalNightGreyMobile", "HERE.carnavDayGrey", "HERE.hybridDay", "HERE.hybridDayMobile", "HERE.pedestrianDay", "HERE.pedestrianNight", "HERE.satelliteDay", "HERE.terrainDay", "HERE.terrainDayMobile", "Acetate.basemap", "Acetate.terrain", "Acetate.all", "Acetate.hillshading", "FreeMapSK", "MtbMap", "OpenMapSurfer.AdminBounds", "Hydda.RoadsAndLabels", "Stamen.TonerHybrid", "Stamen.TonerLines", "Stamen.TonerLabels", "OpenWeatherMap.Clouds", "OpenWeatherMap.CloudsClassic", "OpenWeatherMap.Precipitation", "OpenWeatherMap.PrecipitationClassic", "OpenWeatherMap.Rain", "OpenWeatherMap.RainClassic", "OpenWeatherMap.Pressure", "OpenWeatherMap.PressureContour", "OpenWeatherMap.Wind", "OpenWeatherMap.Temperature", "OpenWeatherMap.Snow", "Acetate.foreground", "Acetate.roads", "Acetate.labels"];
+var blayers = {
+  "Google Satellite": new L.Google(),
+  "Google Street": new L.Google('STREET'),
+  "Google Terrain": new L.Google('TERRAIN'),
+}
+
 function initMap (mltln) {
+
   zoomLevel = 12;
-  if (mltln == [undefined,undefined]) {
-    mltln = [0,0];
-    zoomLevel = 2;
-  }
-  map = L.map('map',{
-    scrollWheelZoom:false,
+  map = L.map('map');
+
+  $.each(bases,function(i,n){
+    if (i > 5) { return 0}
+    blayers[n] = L.tileLayer.provider(n, {minZoom: 1, maxzoom:18});
   })
-  var gray = L.tileLayer.provider('Esri.WorldGrayCanvas', {minZoom: 1, maxZoom: 18, }).addTo(map);
-  //var terrain = L.tileLayer.provider('Esri.WorldTerrain', {minZoom: 1, maxZoom: 18, });
-  var street = L.tileLayer.provider('OpenStreetMap.Mapnik', {minZoom: 1, maxZoom: 18, });
-  var mapsat = L.tileLayer.provider('Esri.WorldImagery', {minZoom: 1, maxZoom: 18, });
+  map.addLayer(blayers["Google Satellite"])
 
-  baseMaps = {
-    "Basic": gray,
-    //"Terrain": terrain,
-    "Street": street,
-    "Satellite": mapsat
-  };
-  var lControl = L.control.layers(baseMaps, {}).addTo(map);
+  var lControl = L.control.layers(blayers,{}).addTo(map);
 
-  marker = L.marker(mltln,{
-    icon: L.divIcon({className: 'map_icon i_ s_0'}),
-    draggable: true,
-  }).addTo(map);
-  map.panTo(mltln);
-  map.setZoom(zoomLevel);
-
-  marker.on('dragend', function(event){
-    var mark = event.target;
-    var position = mark.getLatLng();
-    updateMap(position);
-  });
-
-  return marker.getLatLng();
+  if (mltln[0] == 0 && mltln[1] == 0) {
+    $.getJSON('https://telize.com/geoip/',function(data,error){
+      ll = new L.latLng(data['latitude'],data['longitude']);
+      map.setView(ll,zoomLevel);
+      marker = L.marker(ll,{
+        icon: L.divIcon({className: 'map_icon i_ s_0'}),
+        draggable: true,
+      }).addTo(map);
+      marker.on('dragend', function(event){
+        var mark = event.target;
+        var position = mark.getLatLng();
+        updateMap(position);
+      });
+      return ll;
+    });
+  } else {
+    console.log(mltln)
+    map.setView(mltln,zoomLevel);
+    marker = L.marker(mltln,{
+      icon: L.divIcon({className: 'map_icon i_ s_0'}),
+      draggable: true,
+    }).addTo(map);
+    marker.on('dragend', function(event){
+      var mark = event.target;
+      var position = mark.getLatLng();
+      updateMap(position);
+    });
+    return mltln;
+  }
 }
 
 function updateMap(position) {
+  console.log(position)
   map.panTo(position)
   $('#maplat').html(position.lat);
   $('#imaplat').val(position.lat);

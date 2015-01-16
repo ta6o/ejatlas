@@ -1,7 +1,6 @@
 -# coding: utf-8
 -content_for :include do
   =stylesheet_link_tag 'neutrino/jquery-ui'
-  =javascript_include_tag 'leaflet', 'jquery.validate', 'jquery-ui.min', 'maskedinput', 'modal', 'leaflet-providers', 'map-edit'
   :javascript
     window.onerror = function(message, url, lineNumber) {  
       console.log(message, url, lineNumber);
@@ -1140,8 +1139,9 @@
 
     .row
       .col-md-4
-        .group
-          %label= "Conflict ID: #{@conflict.id}"
+        -unless @conflict.new_record?
+          .group
+            %label= "Conflict ID: #{@conflict.id}"
         -if ["admin","editor"].include? current_account.role
           .group
             =f.label 'Headline text'

@@ -493,11 +493,13 @@ Admin.controllers :conflicts do
         flash[:notice] = 'Conflict was successfully created.'
         puts oldstat
         puts @conflict.approval_status
-        if oldstat != @conflict.approval_status
+        if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
           if ['admin','editor'].include?(current_account.role)
             Admin.notify_collaborator @conflict
+            p "notified collaborator"
           elsif ["queued","modified"].include?(@conflict.approval_status)
             Admin.notify_moderator @conflict
+            p "notified moderator"
           end
         end
         redirect "/conflicts/edit/#{@conflict.id}#{hash}"
