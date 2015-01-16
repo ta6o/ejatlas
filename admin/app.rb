@@ -87,14 +87,15 @@ class Admin < Padrino::Application
     @account = c.account
     @conflict = c
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_moderator.haml").render(self)
-    Admin.send_mail(Account.find(245), "Case updated: #{c.name}", html)
+    Admin.send_mail(Account.find(1), "Case updated: #{c.name}", html)
   end
 
   def self.notify_collaborator(c)
     @account = c.account
+    return unless @account
     @conflict = c
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
-    Admin.send_mail(Account.find(245), (c.approval_status == "approved" ? "#{c.name} approved on EJAtlas" : "Moderation update for #{c.name}"), html)
+    Admin.send_mail(@account, (c.approval_status == "approved" ? "#{c.name} approved on EJAtlas" : "Moderation update for #{c.name}"), html)
   end
 
   def self.welcome(c)
