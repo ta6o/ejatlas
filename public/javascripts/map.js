@@ -1,5 +1,6 @@
 var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme;
 var jsons = {};
+var duplicates = {};
 var big = 0;
 var all = 0;
 var loadQueue = 0;
@@ -36,6 +37,19 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
+function toSlug(url) {
+  arr = url.split('/');
+  return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/\d/,'').replace(/\s+/g,'_'));
+}
+
+function count_element (arr,el) {
+  count = 0
+  for(var i = 0; i < arr.length; i++) {
+    count += arr[i] == el ? 1 : 0;
+  }
+  return count
+}
+
 function initMap (markers, maptitle, layers, vector, fid) {
   info = $("#infopane");
   $.each(layers,function(i,e){
@@ -57,7 +71,15 @@ function initMap (markers, maptitle, layers, vector, fid) {
   });
 
   $.each(vector,function(i,v){
-    loadJS(v["vector_datum"]["url"])
+    url = v["vector_datum"]["url"];
+    id = v["vector_datum"]["id"];
+    varname = toSlug(url);
+    if (Object.keys(duplicates).indexOf(varname) == -1) {
+      loadJS(url)
+      duplicates[varname] = [id]
+    } else {
+      duplicates[varname].push(id);
+    }
   });
 
   lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
@@ -331,23 +353,6 @@ function choropleth(varname) {
   vectorPing(varname)
 }
 
-function style(feature) {
-  chname = feature.properties.pn
-  if (feature.properties.category) {
-    dense = choropleths[chname][feature.properties['category']]['color'];
-  }else {
-    dense = choropleths[chname]['1']['color'];
-  }
-  dense = dense.replace(/^#/,'');
-  return {
-    fillColor: "#"+dense,
-    weight: 1,
-    opacity: 1,
-    color: 'white',
-    fillOpacity: 0.6
-  };
-}
-
 function highlightFeature(e) {
   var layer = e.target;
   pn = layer.feature.category
@@ -356,8 +361,9 @@ function highlightFeature(e) {
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
     $.each(layer.feature.properties.data,function(k,v){
-        console.log(k);
-      ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v);
+      if (v) {
+        ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v);
+      }
     });
   }
   inf += ia.join("<br />");
@@ -398,18 +404,58 @@ function onEachFeature(feature, layer) {
   });
 }
 
-function showVector(v) {
+function style(feature) {
+  if (feature.pn) {
+    chname = feature.pn;
+    category = feature.category;
+  } else if (feature.properties.pn) {
+    chname = feature.properties.pn;
+    category = feature.properties.category;
+  }
+  if (category) {
+    dense = choropleths[chname][category]['color'];
+  } else {
+    cat = Object.keys(choropleths[chname])[0]
+    dense = choropleths[chname][cat]['color'];
+  }
+  dense = dense.replace(/^#/,'');
+  return {
+    fillColor: "#"+dense,
+    weight: 1,
+    opacity: 1,
+    color: 'white',
+    fillOpacity: 0.6
+  };
+}
+
+function showVector(v,id) {
+  console.log('');
+  console.log('show!');
   if (v.features[0].pn) {
     pn = v.features[0].pn;
   } else if (v.features[0].properties.pn) {
     pn = v.features[0].properties.pn;
+  } else {
+    console.log('fail - no pn');
+    return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
-  if(vect.length == 0) return 0
+  if(vect.length == 0) {
+    console.log('fail - no vect');
+    return 0
+  }
   vect = vect[0].vector_datum;
-  if(vect['url']==="") return 0
-  sr = vect["url"].split('/')
-  vr = sr[sr.length-1].split('.')[0].replace(/\d/g,'').replace(/[-_]+/g,'_');
+  if(vect['url']==="") {
+    console.log('fail - no url');
+    return 0
+  }
+  vr = toSlug(vect['url']);
+  if (id > 0) {
+    vn = vr+"_"+id;
+  } else {
+    vn = vr;
+  }
+  ly = eval(vn);
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
       lStyle = JSON.parse(vect["style"])
@@ -426,20 +472,12 @@ function showVector(v) {
       }
     }
     tl = vect["name"]
-    ly = eval(vr);
     jsons[tl] = ly;
     jsons[tl]['style'] = lStyle;
     overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
   } else {
     tl = vect['name']
-    vurl = vect['url'].split('/')
-    vurl = vurl[vurl.length-1].split('.')[0]
-    vurl = vurl.toLowerCase();
-    vurl = vurl.replace(/[-_\s\/]+/g,'-');
-    vurl = vurl.replace(/[^\.\w-]+/g,'');
-    vurl = vurl.replace(/\d+/g,'');
-    vurl = vurl.replace(/-+/g,'_');
-    ly = eval(vurl);
+    console.log(tl);
     jsons[tl] = ly;
     choropleths[tl] = JSON.parse(vect['choropleth'])
     leg = '<div class="legend"><table> <tbody>';
@@ -452,7 +490,7 @@ function showVector(v) {
   }
   $.each(ly["features"],function(index,feature){
     feature["category"] = tl;
-    feature["name"] = vr;
+    feature["name"] = vn;
   });
   jsons[tl]['desc'] = vect['description']
   jsons[tl]['source'] = vect['source']
@@ -484,11 +522,36 @@ function updateControl () {
 }
 
 function vectorPing(varname) {
+  console.log('');
+  console.log('ping!');
+  console.log('');
   loadQueue -= 1;
-  console.log(loadQueue+' '+varname['features'][0]['pn'])
-  showVector(varname);
+  if (varname.features[0].pn) {
+    pn = varname.features[0].pn;
+  } else if (varname.features[0].properties.pn) {
+    pn = varname.features[0].properties.pn;
+  }
+  pnn = pn;
+  console.log(pn);
+  vn = toSlug($.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn})[0].vector_datum.url);
+  if (Object.keys(duplicates).indexOf(vn) >= 0) {
+    $.each(duplicates[vn],function(i,id){
+      name = $.grep(vectorinfo,function(i,n){return i.vector_datum.id == id})[0].vector_datum.name;
+      if (name == pnn) {
+        console.log(loadQueue+' '+name);
+        showVector(varname,0);
+      } else {
+        console.log(loadQueue+' '+name);
+        newvar = JSON.stringify(varname);
+        newvar = newvar.split(pnn).join(name);
+        newvar = JSON.parse(newvar);
+        eval(vn+"_"+id+" = newvar;");
+        eval("showVector("+vn+"_"+id+",id);");
+      }
+    });
+  }
   if (loadQueue == 0) {
-    //showVectors();
+    console.log('all vectors loaded')
   }
 }
 

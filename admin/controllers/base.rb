@@ -260,6 +260,7 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Featured.find_slug(params[:slug])
+    puts con.id
     return redirect to '/' unless con
     @markerinfo = con.conflicts_marker
     contents = File.read('admin/views/base/filter.haml')
@@ -279,7 +280,7 @@ Admin.controller do
       end
     end
     @defs = @defs.to_set.to_a
-    @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown').to_json
+    @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id').to_json
     @image = con.images.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan

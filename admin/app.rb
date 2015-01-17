@@ -156,7 +156,6 @@ class Admin < Padrino::Application
       end
     end
     rarray = []
-    pp options
     options.each do |k,v|
       map.has_key?(k) ? k = map[k] : k = k
       rarray << []
