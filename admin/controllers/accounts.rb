@@ -25,7 +25,7 @@ Admin.controllers :accounts do
     @email = params[:email]
     acc = Account.find_by_email @email
     if acc
-      Admin.resetpwd acc
+      Admin.password_reset acc
     end
     render 'accounts/resetsent'
   end
@@ -42,8 +42,6 @@ Admin.controllers :accounts do
 
   get :confirm do
     @account = Account.find params['id']
-    puts @account.surname
-    puts params[:hash]
     if @account.surname == params['hash']
       @account.approved = true
       @account.save
@@ -61,6 +59,7 @@ Admin.controllers :accounts do
     @account = Account.new(params[:account])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.role = "user"
+    puts @account.id
     if @account.save
       set_current_account(@account)
       Admin.new_account @account

@@ -60,13 +60,13 @@ class Admin < Padrino::Application
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
     message = {  
      :subject=> subject,
-     :from_name=> from,
      :to=>[{  
-       :email=> account.email,
+       :email=> (account.id == 1 ? "ejoltmap@gmail.com" : account.email),
        :name=> account.name  
      }],  
      :html=> message,
-     :from_email=>$sitemail
+     :from_email=>$sitemail,
+     :from_name=> from
     }  
     puts mandrill
     begin
@@ -74,6 +74,7 @@ class Admin < Padrino::Application
     rescue => exc
       sending = exc
     end
+    sending[0][:subject] = subject
     puts "  MANDRILL #{sending}"
   end
 
@@ -81,6 +82,12 @@ class Admin < Padrino::Application
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/confirm.haml").render(self)
     Admin.send_mail(a, 'Welcome to EJAtlas', html)
+  end
+
+  def self.password_reset(a)
+    @account = a
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/reset.haml").render(self)
+    Admin.send_mail(a, 'Password reset request', html)
   end
 
   def self.notify_moderator(c)
@@ -96,44 +103,6 @@ class Admin < Padrino::Application
     @conflict = c
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
     Admin.send_mail(@account, (c.approval_status == "approved" ? "#{c.name} approved on EJAtlas" : "Moderation update for #{c.name}"), html)
-  end
-
-  def self.welcome(c)
-    configure :production do
-      deliver(:welcome, :confirm, c)
-    end
-    configure :development do
-      puts Conflict.find(c).id
-      acc = Conflict.find(c).versions.first.account
-      puts 'Mailing: '+acc.full_name
-      puts acc.name
-      puts acc.id
-      puts acc.surname
-    end
-  end
-
-  def self.resetpwd(a)
-    configure :production do
-      deliver(:password, :reset, a)
-    end
-    configure :development do
-      acc = Account.find a
-      puts 'Mailing: '+acc.full_name
-      puts acc.email
-      puts acc.surname
-    end
-  end
-
-  def self.invite(a)
-    configure :production do
-      deliver(:welcome, :invite, a)
-    end
-    configure :development do
-      acc = Account.find a
-      puts 'Mailing: '+acc.full_name
-      puts acc.email
-      puts acc.surname
-    end
   end
 
   access_control.roles_for :any do |role|

@@ -308,51 +308,6 @@ Admin.controller do
     return hash.to_json
   end
 
-=begin
-  get :vector do
-    parseVectors
-  end
-
-  get :ping do
-    checkdocs
-  end
-
-  get :mergea do
-    mergeAccounts
-    redirect to '/'
-  end
-
-  get :fix do
-    fixissues
-  end
-
-=end
-
-  get :parse do
-    parsePart
-    #redirect to '/'
-  end
-
-  get :invites do
-    redirect to "/sessions/login" unless current_account
-    redirect to "/sessions/login" unless ["admin","editor"].include? current_account.role
-    html = ''
-    Account.where(role: 'user').each do |a|
-      next if a.approved
-      next unless a.conflicts.map(&:approval_status).include?('approved')
-      html += "<p>#{a.email}</p>"
-      html += Haml::Engine.new(File.read("#{PADRINO_ROOT}/admin/views/mailers/invite.haml")).render(Object.new, "@account" => a)
-    end
-    html += "<p>&nbsp;</p><h2>NOT APPROVED</h2>"
-    Account.where(role: 'user').each do |a|
-      next if a.approved
-      next if a.conflicts.map(&:approval_status).include?('approved')
-      html += "<p>#{a.email}</p>"
-      html += Haml::Engine.new(File.read("#{PADRINO_ROOT}/admin/views/mailers/invite.haml")).render(Object.new, "@account" => a)
-    end
-    return html
-  end
-
   get :csv, :with=>:model do
     redirect to "/sessions/login" unless current_account
     redirect to "/sessions/login" unless ["admin","editor"].include? current_account.role
