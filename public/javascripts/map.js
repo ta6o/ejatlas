@@ -342,7 +342,7 @@ function style(feature) {
   if (category) {
     dense = choropleths[chname][category]['color'];
   } else {
-    cat = Object.keys(choropleths[chname])[0]
+    cat = Object.keys(choropleths[chname])[-1]
     dense = choropleths[chname][cat]['color'];
   }
   dense = dense.replace(/^#/,'');
