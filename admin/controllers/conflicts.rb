@@ -298,6 +298,7 @@ Admin.controllers :conflicts do
         @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').to_a.map(&:name)
         @lat = @conflict.lat == "" ? nil : @conflict.lat
         @lon = @conflict.lon == "" ? nil : @conflict.lon
+        puts "#{@lat} #{@lon}"
         render 'conflicts/edit'
       else
         redirect to '/sessions/login'

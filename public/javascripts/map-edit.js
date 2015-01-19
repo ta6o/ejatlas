@@ -53,6 +53,7 @@ function initMap (mltln) {
 }
 
 function updateMap(position) {
+  position = new L.latLng(position);
   map.panTo(position)
   $('#maplat').html(position.lat);
   $('#imaplat').val(position.lat);
