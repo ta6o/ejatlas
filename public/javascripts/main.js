@@ -2804,7 +2804,6 @@ a+=")";break;case 10092:case 10096:case 65308:a+="<";break;case 10093:case 10097
 ",";break;case 65294:a+=".";break;case 8260:case 65295:a+="/";break;case 65306:a+=":";break;case 8271:case 65307:a+=";";break;case 65311:a+="?";break;case 8263:a+="?";a+="?";break;case 8264:a+="?";a+="!";break;case 65312:a+="@";break;case 65340:a+="\\";break;case 8248:case 65342:a+="^";break;case 65343:a+="_";break;case 8275:case 65374:a+="~";break;default:a+="_"}c+=a}}return c};
 var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme;
 var jsons = {};
-var duplicates = {};
 var big = 0;
 var all = 0;
 var loadQueue = 0;
@@ -2841,19 +2840,6 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-function toSlug(url) {
-  arr = url.split('/');
-  return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/\d/,'').replace(/\s+/g,'_'));
-}
-
-function count_element (arr,el) {
-  count = 0
-  for(var i = 0; i < arr.length; i++) {
-    count += arr[i] == el ? 1 : 0;
-  }
-  return count
-}
-
 function initMap (markers, maptitle, layers, vector, fid) {
   info = $("#infopane");
   $.each(layers,function(i,e){
@@ -2875,15 +2861,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
   });
 
   $.each(vector,function(i,v){
-    url = v["vector_datum"]["url"];
-    id = v["vector_datum"]["id"];
-    varname = toSlug(url);
-    if (Object.keys(duplicates).indexOf(varname) == -1) {
-      loadJS(url)
-      duplicates[varname] = [id]
-    } else {
-      duplicates[varname].push(id);
-    }
+    loadJS(v["vector_datum"]["url"])
   });
 
   lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
@@ -3157,6 +3135,30 @@ function choropleth(varname) {
   vectorPing(varname)
 }
 
+function style(feature) {
+  if (feature.pn) {
+    chname = feature.pn;
+    category = feature.category;
+  } else if (feature.properties.pn) {
+    chname = feature.properties.pn;
+    category = feature.properties.category;
+  }
+  if (category) {
+    dense = choropleths[chname][category]['color'];
+  } else {
+    cat = Object.keys(choropleths[chname])[0]
+    dense = choropleths[chname][cat]['color'];
+  }
+  dense = dense.replace(/^#/,'');
+  return {
+    fillColor: "#"+dense,
+    weight: 1,
+    opacity: 1,
+    color: 'white',
+    fillOpacity: 0.6
+  };
+}
+
 function highlightFeature(e) {
   var layer = e.target;
   pn = layer.feature.category
@@ -3208,33 +3210,7 @@ function onEachFeature(feature, layer) {
   });
 }
 
-function style(feature) {
-  if (feature.pn) {
-    chname = feature.pn;
-    category = feature.category;
-  } else if (feature.properties.pn) {
-    chname = feature.properties.pn;
-    category = feature.properties.category;
-  }
-  if (category) {
-    dense = choropleths[chname][category]['color'];
-  } else {
-    cat = Object.keys(choropleths[chname])[0]
-    dense = choropleths[chname][cat]['color'];
-  }
-  dense = dense.replace(/^#/,'');
-  return {
-    fillColor: "#"+dense,
-    weight: 1,
-    opacity: 1,
-    color: 'white',
-    fillOpacity: 0.6
-  };
-}
-
-function showVector(v,id) {
-  console.log('');
-  console.log('show!');
+function showVector(v) {
   if (v.features[0].pn) {
     pn = v.features[0].pn;
   } else if (v.features[0].properties.pn) {
@@ -3254,12 +3230,8 @@ function showVector(v,id) {
     return 0
   }
   vr = toSlug(vect['url']);
-  if (id > 0) {
-    vn = vr+"_"+id;
-  } else {
-    vn = vr;
-  }
-  ly = eval(vn);
+  console.log(vr);
+  ly = eval(vr);
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
       lStyle = JSON.parse(vect["style"])
@@ -3281,7 +3253,6 @@ function showVector(v,id) {
     overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
   } else {
     tl = vect['name']
-    console.log(tl);
     jsons[tl] = ly;
     choropleths[tl] = JSON.parse(vect['choropleth'])
     leg = '<div class="legend"><table> <tbody>';
@@ -3294,7 +3265,7 @@ function showVector(v,id) {
   }
   $.each(ly["features"],function(index,feature){
     feature["category"] = tl;
-    feature["name"] = vn;
+    feature["name"] = vr;
   });
   jsons[tl]['desc'] = vect['description']
   jsons[tl]['source'] = vect['source']
@@ -3326,36 +3297,16 @@ function updateControl () {
 }
 
 function vectorPing(varname) {
-  console.log('');
-  console.log('ping!');
-  console.log('');
   loadQueue -= 1;
   if (varname.features[0].pn) {
     pn = varname.features[0].pn;
   } else if (varname.features[0].properties.pn) {
     pn = varname.features[0].properties.pn;
   }
-  pnn = pn;
-  console.log(pn);
-  vn = toSlug($.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn})[0].vector_datum.url);
-  if (Object.keys(duplicates).indexOf(vn) >= 0) {
-    $.each(duplicates[vn],function(i,id){
-      name = $.grep(vectorinfo,function(i,n){return i.vector_datum.id == id})[0].vector_datum.name;
-      if (name == pnn) {
-        console.log(loadQueue+' '+name);
-        showVector(varname,0);
-      } else {
-        console.log(loadQueue+' '+name);
-        newvar = JSON.stringify(varname);
-        newvar = newvar.split(pnn).join(name);
-        newvar = JSON.parse(newvar);
-        eval(vn+"_"+id+" = newvar;");
-        eval("showVector("+vn+"_"+id+",id);");
-      }
-    });
-  }
+  console.log(loadQueue+' '+varname['features'][0]['pn'])
+  showVector(varname);
   if (loadQueue == 0) {
-    console.log('all vectors loaded')
+    console.log('all vectors loaded');
   }
 }
 
@@ -3393,6 +3344,12 @@ function render(){
       });
   });
 }
+
+function toSlug(url) {
+  arr = url.split('/');
+  return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/\d/,'').replace(/\s+/g,'_'));
+}
+
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-49025282-1']);
 _gaq.push(['_trackPageview']);

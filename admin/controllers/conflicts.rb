@@ -81,12 +81,12 @@ Admin.controllers :conflicts do
             arr = cutString w, tobecut[l]
             v[l] = arr
           elsif l == "project_status"
-            puts (k+': ')+(l+': ')+w.name
+            #puts (k+': ')+(l+': ')+w.name
           else
-            puts (k+': ')+(l+': ')+w.to_s
+            #puts (k+': ')+(l+': ')+w.to_s
           end
         end
-        puts ''
+        #puts ''
       else
         kk = k.to_s.split '_'
         root = kk[0..-2].join('_')
@@ -94,7 +94,7 @@ Admin.controllers :conflicts do
           multies[root].push k.split('_')[-1].to_i
           params.delete k
         elsif refs.has_key? kk[0]
-          p kk
+          #p kk
           type = kk[-2]
           id = kk[-1].to_i
           params.delete k
@@ -105,20 +105,20 @@ Admin.controllers :conflicts do
           impacts[root][v].push k.split('_')[-1].to_i
           params.delete k
         else
-          puts (k.to_s+': ')+v.to_s
+          #puts (k.to_s+': ')+v.to_s
         end
       end
     end
 
     multies.each do |k,v|
-      puts (k.to_s+': ')+v.to_s
+      #puts (k.to_s+': ')+v.to_s
     end
-    puts ''
+    #puts ''
     impacts.each do |k,v|
-      puts (k.to_s+': ')+v.to_s
+      #puts (k.to_s+': ')+v.to_s
     end
     refs.each do |k,v|
-      puts (k.to_s+': ')+v.to_s
+      #puts (k.to_s+': ')+v.to_s
     end
     params['multies'] = multies
     params['impacts'] = impacts
@@ -318,9 +318,10 @@ Admin.controllers :conflicts do
 =end
 
   post :create do
-    params.each {|kk,vv| puts; puts kk; if vv.is_a? Hash then vv.each {|k,v| puts "#{k.to_s}: #{v.to_s}"} else puts vv end }
+    #params.each {|kk,vv| puts; puts kk; if vv.is_a? Hash then vv.each {|k,v| puts "#{k.to_s}: #{v.to_s}"} else puts vv end }
     updated = Admin.correctForm(params)
     @conflict = Conflict.new(updated[:conflict])
+    puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     if @conflict.save :validate => false
       multies = {
         'company'=>{:attr=>@conflict.companies,:class=>Company},
@@ -346,13 +347,13 @@ Admin.controllers :conflicts do
       updated['impacts'].each do |k,v|
         v['g'].each do |l|
           multies[k][:attr] << multies[k][:class].find(l)
-          puts multies[k][:join].to_s
+          #puts multies[k][:join].to_s
           multies[k][:join].last.visible = true
           multies[k][:join].last.save
         end
         v['p'].each do |l|
           multies[k][:attr] << multies[k][:class].find(l)
-          puts multies[k][:join].to_s
+          #puts multies[k][:join].to_s
           multies[k][:join].last.visible = false
           multies[k][:join].last.save
         end
@@ -398,6 +399,7 @@ Admin.controllers :conflicts do
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
+    puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     oldstat = @conflict.approval_status
     updated['conflict'].each do |k,v|
       @conflict.update_attribute k,v
@@ -463,7 +465,7 @@ Admin.controllers :conflicts do
       end
       updated['refs'].each do |k,v|
         v.each do |l,w|
-          puts "#{k}: #{l},#{w}"
+          #puts "#{k}: #{l},#{w}"
           ref = multies[k][:class].find(l)
           if w['remove']
             multies[k][:attr].delete ref
@@ -491,8 +493,6 @@ Admin.controllers :conflicts do
       @conflict.modified_at = Time.now
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
-        puts oldstat
-        puts @conflict.approval_status
         if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
           if ['admin','editor'].include?(current_account.role)
             Admin.notify_collaborator @conflict
@@ -594,7 +594,6 @@ Admin.controllers :conflicts do
     model = params.delete 'model'
     involvement = params.delete 'involvement'
     conflict = Conflict.find cid if cid > 0
-    puts params
     if params['id'] and actor = eval("#{model}.find #{params['id']}")
       actor.update_attributes!(params)
     else
@@ -617,7 +616,6 @@ Admin.controllers :conflicts do
   end
 
   post :supporter do
-    puts params
     cid = params.delete("conflict_id").to_i
     conflict = Conflict.find cid if cid > 0
     supporter = Supporter.new(params)
@@ -661,7 +659,6 @@ Admin.controllers :conflicts do
   end
 
   post :getfile do
-    puts params
     @file = Document.new(params['document'])
     if @file.save
       return @file.to_json

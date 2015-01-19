@@ -2,7 +2,6 @@
 Admin.controller do
 
   before do
-    puts params
     if params.has_key? 'fullpage'
       @layout = :full
     else
