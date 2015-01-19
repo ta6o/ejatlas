@@ -1,7 +1,7 @@
 -# coding: utf-8
 -content_for :include do
   =stylesheet_link_tag 'neutrino/jquery-ui'
-  :javascript
+  -#:javascript
     window.onerror = function(message, url, lineNumber) {  
       console.log(message, url, lineNumber);
       return true;
@@ -121,7 +121,7 @@
         #map
       :javascript
         $(document).ready(function(){
-          updateMap(initMap([#{@lat},#{@lon}]));
+          initMap([#{@lat||0},#{@lon||0}]);
         });
 
 

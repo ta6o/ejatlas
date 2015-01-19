@@ -22,6 +22,7 @@ class Admin < Padrino::Application
   # layout  :my_layout             # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
   #
 
+  require 'pp'
   enable  :sessions
   enable :store_location
 
@@ -68,7 +69,10 @@ class Admin < Padrino::Application
      :from_email=>$sitemail,
      :from_name=> from
     }  
-    puts mandrill
+    if ENV['RACK_ENV'] == "development"
+      puts "MANDRILL omitting mail =>\n#{pp message}"
+      return
+    end
     begin
       sending = mandrill.messages.send message  
     rescue => exc

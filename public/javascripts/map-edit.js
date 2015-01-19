@@ -32,6 +32,7 @@ function initMap (mltln) {
         var position = mark.getLatLng();
         updateMap(position);
       });
+      updateMap(ll);
       return ll;
     });
   } else {
@@ -46,12 +47,12 @@ function initMap (mltln) {
       var position = mark.getLatLng();
       updateMap(position);
     });
+    updateMap(mltln);
     return mltln;
   }
 }
 
 function updateMap(position) {
-  console.log(position)
   map.panTo(position)
   $('#maplat').html(position.lat);
   $('#imaplat').val(position.lat);

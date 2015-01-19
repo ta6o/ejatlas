@@ -296,8 +296,8 @@ Admin.controllers :conflicts do
       @conflict = Conflict.find(params[:id])
       if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id
         @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').to_a.map(&:name)
-        @lat = @conflict.lat
-        @lon = @conflict.lon
+        @lat = @conflict.lat == "" ? nil : @conflict.lat
+        @lon = @conflict.lon == "" ? nil : @conflict.lon
         render 'conflicts/edit'
       else
         redirect to '/sessions/login'
