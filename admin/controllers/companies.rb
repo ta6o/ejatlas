@@ -38,7 +38,17 @@ Admin.controllers :companies do
   end
 
   get :more do
-    return Company.select("id, name, slug, acronym, description, url, logo_image, country_id").order("id desc").offset(params[:page].to_i * 64).limit(64).to_json
+    list = Company.select("id, name, slug, acronym, description, url, logo_image, country_id").order("id desc").offset(params[:page].to_i * 64).limit(64).to_json
+    result = []
+    JSON.parse(list).map do |c| 
+      begin 
+        c["company"]["country_id"] = Country.find(c["company"]["country_id"]).name 
+      rescue 
+        c["company"]["country_id"] = ""
+      end
+      result << c
+    end
+    return result.to_json
   end
 
   get :merge do

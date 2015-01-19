@@ -405,6 +405,7 @@ class Conflict < ActiveRecord::Base
               end
             else
               begin 
+                inv = ""
                 pl = {'companies'=> 'company', 'supporters'=>'supporter'}
                 joi = eval("v.c_#{va[1]}.where(#{pl[va[1]]}_id: #{m.id}).first")
                 inv = " - <small>#{joi.involvement}</small>" if joi and joi.involvement.length > 0
@@ -418,6 +419,7 @@ class Conflict < ActiveRecord::Base
                 cda = ""
               end
               begin 
+                acr = ""
                 acr = " <small>(#{m.acronym})</small>" if m.acronym.length > 0
               rescue
                 acr = ""

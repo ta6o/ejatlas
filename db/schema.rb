@@ -288,6 +288,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text   "conflicts_link"
     t.text   "features"
     t.text   "basemaps"
+    t.string "color", :limit=>6
   end
 
   create_table "government_actors", :force => true do |t|

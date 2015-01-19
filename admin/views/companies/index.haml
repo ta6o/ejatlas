@@ -17,7 +17,7 @@
             %th Description
             %th URL
             -#%th Logo
-            -#%th Country
+            %th Country
             %th.last
               %form#filter-form
                 %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
@@ -38,8 +38,8 @@
                   %img{:src=>company.logo_images.first.file.url,:style=>'max-height:50px;'}
                 -else
                   =""
-              -#%td
-                -if company.country_id and company.country_id > 0 and company.country
+              %td
+                -if company.country_id and company.country_id > 0 and company.country.name
                   =company.country.name
                 -else
                   =""
@@ -83,6 +83,7 @@
               row = "<tr><td>"
               row += [n.name,n.acronym,n.description,
                 (n.url ? "<a href='"+n.url+"'> [link] </a>" : ""),
+                n.country_id,
                 "<a href='/companies/edit/"+n.id+"'> Edit </a> | <a href='/companies/destroy/"+n.id+"'> Delete </a>",
                 ].join('</td><td>')
               row += "</td></tr>"
