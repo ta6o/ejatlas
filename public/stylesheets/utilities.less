@@ -177,9 +177,9 @@ form {
     .box-shadow(0px 5px 10px darken(@grayLight,10%));
   }
   #map {
-    background-color: @white;
+    background-color: transparent;
     height: 320px;
-    .box-shadow(5px 5px 10px darken(@grayLight,10%));
+    //.box-shadow(5px 5px 10px darken(@grayLight,10%));
     border: 2px solid @grayLight;
     img {
       max-width: none;
@@ -458,9 +458,9 @@ ul.sidelink {
   }
   #map {
     margin: 48px -15px 0;
-    background-color: @white;
+    background-color: transparent;
     height: 480px;
-    .box-shadow(5px 5px 10px darken(@grayLight,10%));
+    //.box-shadow(5px 5px 10px darken(@grayLight,10%));
     .border-radius(6px;);
     /*.leaflet-map-pane {
       .border-radius(6px) !important;
@@ -525,6 +525,11 @@ ul.sidelink {
     position: absolute;
     bottom: 0;
     font-size: 13px;
+    &.static {
+      position: static;
+      margin-bottom: 12px;
+      td {padding: 0 8px 0 0;} 
+    }
     table {
       tbody tr {
         height: 18px;

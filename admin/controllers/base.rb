@@ -259,7 +259,6 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Featured.find_slug(params[:slug])
-    puts con.id
     return redirect to '/' unless con
     @markerinfo = con.conflicts_marker
     contents = File.read('admin/views/base/filter.haml')
@@ -283,9 +282,10 @@ Admin.controller do
     @image = con.images.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan
-    @baselayers = ((con.baselayers.nil? or con.baselayers == "") ? $baselayers.join(',') : con.baselayers).split(',')
+    @baselayers = (con.baselayers and con.baselayers != "" ? con.baselayers : "[]")
     #@domains = JSON.parse(con.filter)['tag']
     @fid = con.id
+    @color = "##{con.color}"
     render "base/front", :layout => @layout
   end
 

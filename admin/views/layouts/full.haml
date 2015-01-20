@@ -112,44 +112,35 @@
           #map.map
           =yield_content :outer
           .row
-            .col-md-6.col-md-offset-1.relative
+            .col-md-7.col-md-offset-1.relative
               #inner.inner= yield
-            .col-md-2.col-md-offset-2.relative
+            .col-md-3.relative
               #side.sidebar
                 .logo{:style=>'height:140px;margin-top:24px;'}
                 =yield_content :sidebar
-      .push
-    %footer.footer
-      .container-full
-        .row
-          #footerbottom
-            -#.col-md-1
-              %a{:href=>'http://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>'_blank'}
-                %img#ccbutton{:src=>'/images/by-nc-sa.eu.png',:width=>'100%',:height=>'auto',:title=>'Lisans bilgileri için tıklayınız.',:alt=>'CC BY-NC-SA',:style=>'margin-top:6px'}
-            .col-md-2
-              %br/
-              %a.large{:href=>'http://www.ejolt.org/'}
-                .ejolt-logo{:style=>'margin:0;width:150px;height:56px;'}
-              -#%span.large
-                &copy;
-                = DateTime.now.year
-            .col-md-2
-              %br/
-              .clearfix.logos
-                %a{:href=>'http://cordis.europa.eu/fp7/home_en.html'}
-                  %img{:src=>'/images/fp7_white.gif'}
-                %a{:href=>'http://europa.eu/'}
-                  %img{:src=>'/images/eu.gif'}
-            .col-md-5 &nbsp;
-            .col-md-3
-              .clearfix
-                %a#thank_fb.pull-left.clearfix{:href=>'http://www.facebook.com/sharer.php?u=http://ejatlas.org/',:target=>'_blank'}
-                  #img.pull-left
-                %a#thank_tw.pull-left.clearfix{:href=>'https://twitter.com/intent/tweet?text=http%3A%2F%2Fejatlas.org%20-%20Mapping%20ecological%20conflicts%20and%20spaces%20of%20resistance&source=clicktotweet',:target=>'_blank'}
-                  #img.pull-left
+    %footer.footer.clearfix
+      %a.large.pull-left{:href=>'http://www.ejolt.org/'}
+        .ejolt-logo{:style=>'margin:0;width:150px'}
+      %span.large.pull-left
+        &copy;
+        = DateTime.now.year
+      .clearfix.pull-left
+        %a.pull-left{:href=>'http://cordis.europa.eu/fp7/home_en.html'}
+          %img{:src=>'/images/fp7_white.gif'}
+        %a.pull-left{:href=>'http://europa.eu/'}
+          %img{:src=>'/images/eu.gif'}
+      .clearfix.pull-left
+        %a#thank_fb.pull-left.clearfix{:href=>'http://www.facebook.com/sharer.php?u=http://ejatlas.org/',:target=>'_blank'}
+          #img.pull-left
+        %a#thank_tw.pull-left.clearfix{:href=>'https://twitter.com/intent/tweet?text=http%3A%2F%2Fejatlas.org%20-%20Mapping%20ecological%20conflicts%20and%20spaces%20of%20resistance&source=clicktotweet',:target=>'_blank'}
+          #img.pull-left
 
-              -#.pull-right
-                #totop{:onclick=>'window.location = "#top";'} ^
+    -if @color and @color.length == 6
+      :javascript
+        var $color = "##{@color}";
+    -else
+      :javascript
+        var $color;
     :javascript
       $full = true;
       //L_PREFER_CANVAS= true;

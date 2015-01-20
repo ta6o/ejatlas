@@ -21,7 +21,12 @@ class Featured < ActiveRecord::Base
     return @json.to_json
   end
 
+  def old_slug
+    return self.slug
+  end
+
   def ping conflicts
+    puts conflicts.class
     json, marker, link = [], [], []
     data = {}
     data["tag"] = self.tags.map(&:id)
@@ -109,6 +114,7 @@ class Featured < ActiveRecord::Base
     self.conflicts_marker = marker.to_json
     self.conflicts_link = link.join
     self.save!
+    puts self.conflicts_json.length
   end
 
   def self.find_slug slug

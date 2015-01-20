@@ -4987,11 +4987,8 @@ form .well p {
   line-height: 17px;
 }
 form #map {
-  background-color: #ffffff;
+  background-color: transparent;
   height: 320px;
-  -webkit-box-shadow: 5px 5px 10px #d5d5d5;
-  -moz-box-shadow: 5px 5px 10px #d5d5d5;
-  box-shadow: 5px 5px 10px #d5d5d5;
   border: 2px solid #eeeeee;
 }
 form #map img {
@@ -5049,41 +5046,17 @@ body {
   height: 100%;
   margin: 0 auto -4em;
 }
-footer,
-.push {
+footer {
   height: 4em;
+  position: fixed;
+  bottom: 0px;
 }
 footer {
   font-size: 0.75em;
-  padding: 0.5em 0;
-  margin-top: 10em;
 }
 footer img {
   max-width: 240px;
-}
-footer .row {
-  border-radius: 6px 6px 0 0;
-  padding: 2em 1em;
-  background: #ffffff;
-}
-footer #footerbottom {
-  padding-bottom: 2em;
-  color: #0380a5;
-}
-footer #footerbottom #totop {
-  color: #ffffff;
-  background: #0380a5;
-  line-height: 32px;
-  text-indent: 5px;
-  border-radius: 4px;
-  font-size: 24px;
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-}
-footer #footerbottom #totop:hover {
-  color: #0380a5;
-  background: #ffffff;
+  max-height: 24px;
 }
 .navline {
   width: 700px;
@@ -5292,7 +5265,7 @@ ul.sidelink li.active {
   background-color: #0380a5;
 }
 #map {
-  background-color: #000000;
+  background: url('/images/bg.png');
   position: fixed;
   width: 100%;
   height: 100%;
@@ -5357,6 +5330,13 @@ ul.sidelink li.active {
   position: absolute;
   bottom: 0;
   font-size: 13px;
+}
+#infopane .legend.static {
+  position: static;
+  margin-bottom: 12px;
+}
+#infopane .legend.static td {
+  padding: 0 8px 0 0;
 }
 #infopane .legend table tbody tr {
   height: 18px;

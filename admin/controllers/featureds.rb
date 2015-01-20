@@ -50,8 +50,9 @@ Admin.controllers :featureds do
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
-    @followed = Admin.filter(@featured.filter || "")
-    @followed.sort! {|a,b| a.slug <=> b.slug}
+    if @followed = Admin.filter(@featured.filter || "")
+      @followed.sort! {|a,b| a.slug <=> b.slug}
+    end
     @filterform = JSON.parse(Cached.last.filterdata)
     @filterinfo = Cached.last.conflicts_json
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
@@ -61,6 +62,7 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
+    params[:featured][:color].gsub! /#/, ''
     if @featured.update_attributes(params[:featured])
       flash[:notice] = 'Featured was successfully updated.'
       if params['conflict']

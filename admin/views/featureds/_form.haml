@@ -158,6 +158,51 @@
             %input.base{:type=>:hidden,:value=>l}
             %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
 
+    .group
+      %label.control-label{:for=>"featured_color"} Color
+      .controls
+        .row
+          .col-xs-8
+            %input#featured_color.form-control.input-large.input-with-feedback{:type=>'text',:name=>"featured[color]",:value=>"##{@featured.color||"000000"}"}
+            %input#color{:type=>'hidden',:value=>"##{@featured.color||"000000"}"}
+          .col-xs-4
+            #fill_color{:style=>"cursor:pointer;border-radius:4px;height:34px;width:100%;background-color:##{@featured.color||"000000"};border:1px solid #ccc"} &nbsp;
+        .row
+          .col-xs-12
+            #fill_wheel.pull-right{:style=>'margin:12px 0;height:360px;width:360px;display:none;'} &nbsp;
+            :javascript
+              var fcw;
+              fcw = Raphael.colorwheel($('#fill_wheel'), 360);
+              fcw.input($("#color")[0]);
+              $(document).ready(function(){
+                if ("##{@featured.color}"[0] == "#"){
+                  fcw.color("##{@featured.color}");
+                  $("#fill_color").css('background',fcw.color().hex);
+                }
+              });
+              $('#color').change(function(e){
+                $('#featured_color').val($(this).val());
+                $("#fill_color").css('background',fcw.color().hex);
+              });
+              fcw.onchange(function(e){
+                $("#color").val(fcw.color().hex);
+                $("#featured_color").val(fcw.color().hex);
+              });
+              $('#featured_color').blur(function(e){
+                val = $(this).val().replace(/^#/,'');
+                if (val.length == 3){
+                  val = val.substr(0,1)+val.substr(0,1)+val.substr(1,1)+val.substr(1,1)+val.substr(2,1)+val.substr(2,1);
+                }
+                console.log(val)
+                $('#featured_color').val("#"+val);
+                $('#color').val("#"+val);
+                fcw.color('#'+val);
+                $("#fill_color").css('background',fcw.color().hex);
+              });
+              $('#fill_color').on('click',function(e){
+                $('#fill_wheel').slideDown();
+              });
+
     .group#cfields
       %label Contained Fields
       .row
@@ -186,7 +231,7 @@
     .group.navform.wat-cf
       =f.submit pat(:save), :class => 'btn pull-right'
 
--unless @featured.new_record?
+-unless @featured.new_record? or @followed.nil?
   .row.whitebox
     .col-md-8.col-md-offset-2
       .group

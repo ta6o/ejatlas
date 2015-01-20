@@ -38,22 +38,36 @@ function toTitleCase(str) {
 
 function initMap (markers, maptitle, layers, vector, fid) {
   info = $("#infopane");
-  $.each(layers,function(i,e){
+  $.each(layers.split(','),function(i,e){
     f = e.split('.');
+    console.log(e);
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
+
+  if (maptitle == "") {
+    rtlegend = "";
+    legend = "";
+  }
 
   markerLayer = L.featureGroup();
 
   maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
   bounds = maxBounds;
 
+  if (Object.keys(baselayers).length > 0) {
+    active = baselayers[(Object.keys(baselayers)[0])];
+  } else {
+    active = {};
+    $('#map').css('background','transparent');
+    $('#map').css('box-shadow','none');
+  }
+  console.log(active)
   map = L.map('map',{
-    scrollWheelZoom: !$full,
+    scrollWheelZoom: true,
     worldCopyJump: true,
     maxBounds: maxBounds,
     bounceAtZoomLimits: false,
-    layers: [baselayers[(Object.keys(baselayers)[0])], markerLayer]
+    layers: [active, markerLayer]
   });
 
   $.each(vector,function(i,v){
@@ -210,7 +224,14 @@ function initMap (markers, maptitle, layers, vector, fid) {
 function mapFit(){
   conflict = false;
   markerBounds = markerLayer.getBounds();
-  map.fitBounds(markerBounds);
+  console.log(markerBounds)
+  if (markerBounds.getSouthWest() == undefined) {
+    map.setView([16,26],2);
+  } else {
+    iw = window.innerWidth/1.8;
+    console.log(iw);
+    map.fitBounds(markerBounds,{paddingBottomRight: [iw,0]});
+  }
 }
 
 function markerSize() {
@@ -361,6 +382,7 @@ function highlightFeature(e) {
   pn = layer.feature.category
   inf = "<div class='infocontent'><h3><strong>"+pn+"</strong></h3>"
   if (jsons[pn]['desc']){ inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>" }
+  if (jsons[pn]['legend']){ inf += jsons[pn].legend.replace("class=\"legend\"","class=\"legend static\"") }
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
     $.each(layer.feature.properties.data,function(k,v){
@@ -372,7 +394,6 @@ function highlightFeature(e) {
   inf += ia.join("<br />");
   if (jsons[pn]['source']){ inf += "<p><strong>Source: "+jsons[pn]['source']+"</strong></p>" }
   inf += "</div>"
-  if (jsons[pn]['legend']){ inf += jsons[pn].legend }
   updateInfo(2,inf);
   layer.setStyle({
     fillOpacity: 1
@@ -544,6 +565,6 @@ function render(){
 
 function toSlug(url) {
   arr = url.split('/');
-  return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/\d/,'').replace(/\s+/g,'_'));
+  return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/\d/g,'').replace(/\s+/g,'_'));
 }
 
