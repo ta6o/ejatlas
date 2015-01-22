@@ -204,4 +204,8 @@ class Admin < Padrino::Application
 
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo", "Ayşe"]
+
+  before do
+    puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} #{request.ip} #{request.user_agent.class} #{Time.now} #{params}"
+  end
 end

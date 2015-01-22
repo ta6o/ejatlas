@@ -35,7 +35,7 @@
                   =""
               -#%td
                 -if company.logo_images.any?
-                  %img{:src=>company.logo_images.first.file.url,:style=>'max-height:50px;'}
+                  %img{:src=>company.logo_images.first.file_url,:style=>'max-height:50px;'}
                 -else
                   =""
               %td
@@ -76,6 +76,7 @@
         var scrolling = true
         function ask(page) {
           $.getJSON("/companies/more","page="+page,function(data){
+            consoole.log(data)
             $('body').css('cursor','auto');
             $.each(data,function(i,n) {
               n = n.company

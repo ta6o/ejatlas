@@ -36,7 +36,6 @@ function initMap (mltln) {
       return ll;
     });
   } else {
-    console.log(mltln)
     map.setView(mltln,zoomLevel);
     marker = L.marker(mltln,{
       icon: L.divIcon({className: 'map_icon i_ s_0'}),

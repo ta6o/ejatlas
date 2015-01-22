@@ -26,7 +26,7 @@
         %defs
           -@defs.each do |d|
             %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
-              %image{"xlink:href"=>"https://s3.amazonaws.com/ejatlas/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+              %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
   -if @layout != :full
     #map.map
   .summary_header

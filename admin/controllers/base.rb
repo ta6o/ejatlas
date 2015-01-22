@@ -72,6 +72,7 @@ Admin.controller do
     @maptitle = "Browse maps"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/map", :layout => @layout
   end
 
@@ -100,6 +101,7 @@ Admin.controller do
     @images = c.images
     @zoom = 8
     @zoom = [6,8,10,12][c.accuracy_level] if c.accuracy_level
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
         @image = ml.url
@@ -137,6 +139,7 @@ Admin.controller do
     @image = nil
     @image = con.flag_images.first if con.flag_images.any?
     @maptitle = "Environmental Conflicts in #{@name}"
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
   end
 
@@ -158,6 +161,7 @@ Admin.controller do
     @image = nil
     @image = con.logo_images.first if con.logo_images.any?
     @maptitle = "Environmental Conflicts of #{@name}"
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
   end
 
@@ -177,6 +181,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
   end
 
@@ -196,6 +201,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts on #{@name}"
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
   end
 
@@ -216,6 +222,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts about #{@name}"
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
   end
 
@@ -233,6 +240,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
   end
 
@@ -251,6 +259,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
   end
 

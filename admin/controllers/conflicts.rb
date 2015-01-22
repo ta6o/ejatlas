@@ -298,7 +298,6 @@ Admin.controllers :conflicts do
         @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').to_a.map(&:name)
         @lat = @conflict.lat == "" ? nil : @conflict.lat
         @lon = @conflict.lon == "" ? nil : @conflict.lon
-        puts "#{@lat} #{@lon}"
         render 'conflicts/edit'
       else
         redirect to '/sessions/login'
@@ -322,7 +321,7 @@ Admin.controllers :conflicts do
     #params.each {|kk,vv| puts; puts kk; if vv.is_a? Hash then vv.each {|k,v| puts "#{k.to_s}: #{v.to_s}"} else puts vv end }
     updated = Admin.correctForm(params)
     @conflict = Conflict.new(updated[:conflict])
-    puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
+    #puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     if @conflict.save :validate => false
       multies = {
         'company'=>{:attr=>@conflict.companies,:class=>Company},
@@ -374,7 +373,7 @@ Admin.controllers :conflicts do
           begin
             multies[k][:attr] << ref
           rescue
-            puts "#{k} been taken!"
+            #puts "#{k} been taken!"
           end
           ref.save
         end
@@ -400,7 +399,7 @@ Admin.controllers :conflicts do
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
-    puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
+    #puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     oldstat = @conflict.approval_status
     updated['conflict'].each do |k,v|
       @conflict.update_attribute k,v

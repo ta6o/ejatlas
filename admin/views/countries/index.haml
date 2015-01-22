@@ -30,7 +30,7 @@
                 %td &nbsp;
               %td
                 -if country.flag_images.any?
-                  %img{:src=>country.flag_images.first.file.url,:height=>"24px"}
+                  %img{:src=>country.flag_images.first.file_url,:height=>"24px"}
                 -else
                   =""
               %td

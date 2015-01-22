@@ -228,9 +228,12 @@ function mapFit(){
   if (markerBounds.getSouthWest() == undefined) {
     map.setView([16,26],2);
   } else {
-    iw = window.innerWidth/1.8;
-    console.log(iw);
-    map.fitBounds(markerBounds,{paddingBottomRight: [iw,0]});
+    if ($full) {
+      iw = window.innerWidth/1.8;
+      map.fitBounds(markerBounds,{paddingBottomRight: [0,iw]});
+    } else {
+      map.fitBounds(markerBounds);
+    }
   }
 }
 

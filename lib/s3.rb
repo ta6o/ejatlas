@@ -1,27 +1,28 @@
 require 'carrierwave'
 
 CarrierWave.configure do |config|
-  config.fog_credentials = {
-    :provider               => 'AWS',
-    :aws_access_key_id      => 'AKIAJQV2IS77WH4CVNOQ',
-    :aws_secret_access_key  => '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'
-  }
-  config.fog_directory  = 'ejatlas'
-  config.fog_public     = true
+  config.storage = :file
 end
 
 class ImageUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
-  storage :fog
+  storage :file
   def store_dir
     at = self.model.attachable 
-    return "img/#{at.class}/#{at.old_slug}"if at.has_attribute?('old_slug')
-    return "img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
-    "img/#{at.class}/#{at.id}"
+    return "#{Padrino.root}/../img/#{at.class}/#{at.old_slug}"if at.has_attribute?('old_slug')
+    return "#{Padrino.root}/../img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
+    "#{Padrino.root}/../img/#{at.class}/#{at.id}"
   end
 
   def cache_dir
-    "#{Padrino.root}/tmp/uploads"
+    "/tmp/uploads"
+  end
+
+  def url
+    at = self.model.attachable 
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/#{self.file.filename}"if at.has_attribute?('old_slug')
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/#{self.file.filename}"if at.has_attribute?('slug')
+    "https://file.ejatlas.org/img/#{at.class}/#{at.id}/#{self.file.filename}"
   end
 
   version :thumb do
@@ -30,9 +31,13 @@ class ImageUploader < CarrierWave::Uploader::Base
 end
 
 class DocumentUploader < CarrierWave::Uploader::Base
-  storage :fog
+  storage :file
   def store_dir
-    "docs/"+self.model.conflict.old_slug
+    "#{Padrino.root}/../file/docs/"+self.model.conflict.old_slug
+  end
+
+  def url
+    "https://file.ejatlas.org/docs/#{self.model.conflict.old_slug}/#{self.file.filename}"
   end
 
   def cache_dir
@@ -41,9 +46,9 @@ class DocumentUploader < CarrierWave::Uploader::Base
 end
 
 class Exporter < CarrierWave::Uploader::Base
-  storage :fog
+  storage :file
   def store_dir
-    "exports"
+    "#{Padrino.root}/../exports"
   end
 
   def cache_dir
@@ -52,20 +57,9 @@ class Exporter < CarrierWave::Uploader::Base
 end
 
 class PatternUploader < CarrierWave::Uploader::Base
-  storage :fog
+  storage :file
   def store_dir
-    "patterns"
-  end
-
-  def cache_dir
-    "#{Padrino.root}/tmp/uploads"
-  end
-end
-
-class ChoroUploader < CarrierWave::Uploader::Base
-  storage :fog
-  def store_dir
-    "choropleth"
+    "#{Padrino.root}/../patterns"
   end
 
   def cache_dir
@@ -74,9 +68,9 @@ class ChoroUploader < CarrierWave::Uploader::Base
 end
 
 class GeoUploader < CarrierWave::Uploader::Base
-  storage :fog
+  storage :file
   def store_dir
-    "vector"
+    "#{Padrino.root}/../vector"
   end
 
   def cache_dirchoropleth
@@ -85,24 +79,10 @@ class GeoUploader < CarrierWave::Uploader::Base
 end
 
 class TmpUploader < CarrierWave::Uploader::Base
-  storage :fog
+  storage :file
   #config.fog_authenticated_url_expiration = 600 
   def store_dir
-    "tmp"
-  end
-
-  def cache_dir
-    "#{Padrino.root}/tmp/uploads"
-  end
-end
-
-class BackUploader < CarrierWave::Uploader::Base
-  storage :fog
-  def filename
-    "ejdb#{Time.now.strftime('%y%m%d%H%M%S')}.dump"
-  end
-  def store_dir
-    "backup"
+    "/tmp"
   end
 
   def cache_dir
