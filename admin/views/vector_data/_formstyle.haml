@@ -200,7 +200,7 @@
         -if @style.defs
           %defs
             %pattern{:id=>"#{JSON.parse(@style.defs)['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{JSON.parse(@style.defs)['scale']}",:height=>"#{JSON.parse(@style.defs)['scale']}"}
-              %image{"xlink:href"=>"https://s3.amazonaws.com/ejatlas/patterns/#{JSON.parse(@style.defs)['filename']}.png",:x=>"0",:y=>"0",:width=>"#{JSON.parse(@style.defs)['scale']}",:height=>"#{JSON.parse(@style.defs)['scale']}"}
+              %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{JSON.parse(@style.defs)['filename']}.png",:x=>"0",:y=>"0",:width=>"#{JSON.parse(@style.defs)['scale']}",:height=>"#{JSON.parse(@style.defs)['scale']}"}
         %rect{:x=>20,:y=>20,:width=>140,:height=>140, :rx=>18, :ry=>18}
       :css
         svg#preview {
