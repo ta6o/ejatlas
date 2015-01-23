@@ -10,7 +10,7 @@ namespace :jobs do
  
   desc 'delayed_job worker process'
   task :work => :environment do
-    Delayed::Worker.new(:min_priority => ENV['MIN_PRIORITY'], :max_priority => ENV['MAX_PRIORITY']).start
+    Delayed::Worker.new(:min_priority => 0).start
   end
 
 end

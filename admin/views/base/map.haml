@@ -2,7 +2,7 @@
 -content_for :include do
   :javascript
     img = new Image(330,30);
-    img.src = 'https://s3.amazonaws.com/ejatlas/static/ikon.png';
+    img.src = 'https://file.ejatlas.org/static/ikon.png';
     var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
     var vectorinfo = [];
