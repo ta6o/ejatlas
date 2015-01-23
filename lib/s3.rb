@@ -9,9 +9,9 @@ class ImageUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
     at = self.model.attachable 
-    return "#{Padrino.root}/../img/#{at.class}/#{at.old_slug}"if at.has_attribute?('old_slug')
-    return "#{Padrino.root}/../img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
-    "#{Padrino.root}/../img/#{at.class}/#{at.id}"
+    return "#{Padrino.root}/../file/img/#{at.class}/#{at.old_slug}"if at.has_attribute?('old_slug')
+    return "#{Padrino.root}/../file/img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
+    "#{Padrino.root}/../file/img/#{at.class}/#{at.id}"
   end
 
   def cache_dir
@@ -41,52 +41,34 @@ class DocumentUploader < CarrierWave::Uploader::Base
   end
 
   def cache_dir
-    "#{Padrino.root}/tmp/uploads"
-  end
-end
-
-class Exporter < CarrierWave::Uploader::Base
-  storage :file
-  def store_dir
-    "#{Padrino.root}/../exports"
-  end
-
-  def cache_dir
-    "#{Padrino.root}/tmp/uploads"
+    "/tmp/uploads"
   end
 end
 
 class PatternUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
-    "#{Padrino.root}/../patterns"
+    "#{Padrino.root}/../file/patterns"
+  end
+
+  def url
+    "https://file.ejatlas.org/patterns/#{self.file.filename}"
   end
 
   def cache_dir
-    "#{Padrino.root}/tmp/uploads"
+    "/tmp/uploads"
   end
 end
 
 class GeoUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
-    "#{Padrino.root}/../vector"
+    puts self.model.folder
+    "#{Padrino.root}/../file/vector/#{self.model.folder}"
   end
 
-  def cache_dirchoropleth
-    "#{Padrino.root}/tmp/uploads"
-  end
-end
-
-class TmpUploader < CarrierWave::Uploader::Base
-  storage :file
-  #config.fog_authenticated_url_expiration = 600 
-  def store_dir
-    "/tmp"
-  end
-
-  def cache_dir
-    "#{Padrino.root}/tmp/uploads"
+  def url
+    "https://file.ejatlas.org/vector/#{self.model.folder}/#{self.file.filename}"
   end
 end
 

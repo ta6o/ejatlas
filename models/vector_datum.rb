@@ -12,6 +12,10 @@ class VectorDatum < ActiveRecord::Base
     self.attachable ? "#{self.name} of #{self.attachable.name}" : self.name
   end
 
+  def map
+    self.attachable ? "<a href='/#{self.attachable_type.downcase}/#{self.attachable.old_slug}' target='_blank'>#{self.attachable.name}</a> <small>(#{self.attachable_type})</small>" : ""
+  end
+
   private
   def set_style
     self.vector_style = VectorStyle.first if self.vector_style.nil?

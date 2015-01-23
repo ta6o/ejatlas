@@ -5,7 +5,10 @@
 .row.wide
   .col-md-12
     .hero-unit
-      %h1.title Vector data
+      %h1.title 
+        Vector Data &nbsp;
+        %small
+          %a{:href=>'/vectors/new'} add new
     .inner
       %svg{:style=>'height:0'}
         %defs
@@ -17,6 +20,7 @@
         %thead
           %tr
             %th.first Name
+            %th Map
             %th Description
             %th Style
             %th URL
@@ -26,7 +30,8 @@
         %tbody
           -@vectors.each do |vector|
             %tr
-              %td.first= vector.inspect
+              %td.first= vector.name
+              %td!=vector.map
               %td=vector.description
               %td
                 -if vector.vector_style_id and vector.vector_style

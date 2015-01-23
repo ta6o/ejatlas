@@ -1,34 +1,3 @@
-class BackupDb < Struct.new :appname
-  def args
-    [""]
-  end
-
-  def method_name
-    "backupdb"
-  end
-
-  def perform
-    require 'open-uri'
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/backup" if File.directory? "#{PADRINO_ROOT}/tmp/backup"
-    Dir.mkdir "#{PADRINO_ROOT}/tmp/backup" 
-    puts "[#{Time.now}] heroku:backup started"
-    puts `printf "yakup.cetinkaya@gmail.com\\naXu8aXo0" | heroku login`
-    puts `heroku pgbackups:capture --expire --app ejatlas`
-    ex = Backup.new
-    bu = `heroku pgbackups:url --app ejatlas`
-    File.open("#{PADRINO_ROOT}/tmp/backup/latest.dump","wb") {|f| f << open(bu).read }
-    ex.file = File.open("#{PADRINO_ROOT}/tmp/backup/latest.dump","rb")
-    if ex.save
-      puts 'ja!'
-      ex = nil
-    else
-      puts 'nein!'
-    end
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/backup" if File.directory? "#{PADRINO_ROOT}/tmp/backup"
-    puts "[#{Time.now}] heroku:backup complete"
-  end
-end
-
 class AsyncTask
   def csvexport params
     limit = params.delete("limit").to_i
@@ -232,7 +201,7 @@ class AsyncTask
       puts 'nein!'
     end
   end
-  #handle_asynchronously :csvexport
+  handle_asynchronously :csvexport
 
   def setcache params
     unless ca = Cached.first
@@ -288,9 +257,8 @@ class AsyncTask
       ca.types = types.to_json
     end
 
-=begin
     if params["featureds"] == "on"
-      types = []
+      #types = []
       puts "Updating featureds..."
       fids = Featured.all.map &:id
       Conflict.where('features is not null').each do |c|
@@ -305,14 +273,17 @@ class AsyncTask
         c.features = f.to_json
         c.save
       end
+      puts 'featureds now'
       Featured.all.each do |featured|
-        features = JSON.parse(featured.filter || '{}')
-        confs = Admin.filter featured.filter
-        confs.sort!{|a,b|a.slug<=>b.slug}
-        featured.ping(confs)
+        #features = JSON.parse(featured.features || '{}')
+        if confs = Admin.filter(featured.filter)
+          confs.sort!{|a,b|a.slug<=>b.slug}
+          featured.ping(confs)
+        else
+          featured.ping([])
+        end
       end
     end
-=end
 
     if params["images"] == "on"
       puts "Updating images..."
@@ -410,192 +381,6 @@ class AsyncTask
   end
   handle_asynchronously :setcache
 
-  def parsevectors 
-    require 'fog'
-    s3 = Fog::Storage.new({
-      :provider               => 'AWS',
-      :aws_access_key_id      => 'AKIAJQV2IS77WH4CVNOQ',
-      :aws_secret_access_key  => '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',
-    })
-
-    unless Country.where("iso_numeric is not null").any?
-      require 'csv'
-      iso = CSV.read "#{PADRINO_ROOT}/misc/iso_numeric.csv"
-      missed = []
-      iso.each do |i|
-        if co = Country.find_by_slug(Admin.slugify(i[1]))
-          co.iso_numeric = i[0]
-          co.save
-        end
-      end
-      puts "The following countries were not found: #{missed.join(', ')}"
-    end
-
-    unless VectorStyle.any?
-      vstyles = {
-        "borders"=> {
-          "stroke_color"=> "#000000",
-          "fill_color"=> "#FFFFFF",
-          "stroke_opacity"=> 1,
-          "fill_opacity"=> 0,
-          "weight"=> 2,
-          "dash_array"=> "5,5,1,5"
-        },
-        "pastures"=> {
-          "stroke_color"=> "#000000",
-          "fill_color"=> "#908030",
-          "stroke_opacity"=> 1,
-          "fill_opacity"=> 0.7,
-          "weight"=> 2,
-          "dash_array"=> "5,5"
-        },
-        "biodiversity"=> {
-          "stroke_color"=> "#ffffff",
-          "fill_color"=> "#66cc00",
-          "stroke_opacity"=> 1,
-          "fill_opacity"=> 0.7,
-          "weight"=> 2,
-        },
-        "untouched"=> {
-          "stroke_color"=> "#000000",
-          "fill_color"=> "#106000",
-          "stroke_opacity"=> 0,
-          "fill_opacity"=> 0.7,
-          "weight"=> 2,
-        },
-        "drought"=> {
-          "stroke_color"=> "#000000",
-          "fill_color"=> "#000030",
-          "stroke_opacity"=> 1,
-          "fill_opacity"=> 0.7,
-          "weight"=> 5,
-          "dash_array"=> ""
-        },
-        "indigenous"=> {
-          "stroke_color"=> "#cc3300",
-          "fill_color"=> "#ffcc00",
-          "stroke_opacity"=> 1,
-          "fill_opacity"=> 0.7,
-          "weight"=> 5,
-          "dash_array"=> "5,15"
-        },
-        "exploit"=> {
-          "stroke_color"=> "#000000",
-          "fill_color"=> "#000000",
-          "stroke_opacity"=> 0,
-          "fill_opacity"=> 1,
-          "weight"=> 0,
-        },
-        "mines"=> {
-          "fill_color"=> "#000000",
-          "stroke_color"=> "#FFFFFF",
-          "stroke_opacity"=> "0.4",
-          "fill_opacity"=> "0.9",
-          "weight"=>0
-        },
-        "dams"=> {
-          "fill_color"=> "#006080",
-          "stroke_color"=> "#FFFFFF",
-          "stroke_opacity"=> "0.4",
-          "fill_opacity"=> "0.9",
-          "weight"=>1
-        },
-        "pipelines"=> {
-          "stroke_color"=> "#503000",
-          "stroke_opacity"=> "0.9",
-          "weight"=>5,
-        },
-        "reactors"=> {
-          "stroke_color"=> "#ffff00",
-          "fill_color"=> "#000000",
-          "stroke_opacity"=> "0.9",
-          "fill_opacity"=> "0.9",
-          "weight"=>3
-        }
-      }
-      vstyles.each do |k,v|
-        style = VectorStyle.new
-        style.name = k
-        v.each do |kk,vv|
-          eval "style.#{kk} = '#{vv}'"
-        end
-        style.save
-      end
-    end
-
-    styles = {
-      ["Borders"] => "borders",
-      ["Pasture", "Pasture Lands", "Pasture Lands Concentration", "Pasture Lands Concetration"] => "pastures",
-      ["Biodiversity Hotspots", "Bws"] => "biodiversity",
-      ["Pipelines", "Oil Pipelines"] => "pipelines",
-      ["Reactors", "Nuclear Reactors"] => "reactors",
-      ["Untouched Areas"] => "untouched",
-      ["Dams"] => "dams",
-      ["Mines"] => "mines",
-      ["Afroamerican Communities Lands", "Indigenous Lands", "Municipalities With Indigenous Populations"] => "indigenous",
-      ["High Vulnerability To Water Unavailability", "Water Scarce Areas"] => "drought",
-      ["Land Overutilization", "Oil Exploration And Production Areas"] => "exploit",
-    }
-
-    hash = {}
-    dir = s3.directories.get('eja-cnt')
-    dir.files.each do |f|
-      s = f.key.split('/')
-      k = s[0]
-      v = s[1]
-      hash[k] = [] unless hash.has_key? k
-      hash[k] << v
-    end
-    hash.each do |k,v|
-      c = Country.find_slug(Admin.slugify(k))
-      c = Region.find_slug(Admin.slugify(k)) unless c
-      unless c
-        cnts = k.split('_')
-        cns = []
-        ris = []
-        cnts = ["south-africa","mozambique","zimbabwe"] if k == "South Africa_Mozambique_Zimbawe"
-        cnts = ["united-states-of-america","canada"] if k == "USA_Canada"
-        cnts = ["albania","bosnia-and-herzegovina","croatia","kosovo","macedonia-fyr","montenegro","serbia","slovak-republic"] if k == "Balkans"
-        allfound = true
-        cnts.each do |cnt|
-          if ri = Country.find_slug(Admin.slugify(cnt))
-            ris << ri
-            cns << ri.name
-          else
-            allfound = false
-          end
-        end
-        unless allfound
-          puts "  Error: country #{k} not found"
-          next
-        end
-        nam = cns[0..-2].join(', ')+" & "+cns[-1]
-        nam = "Balkans" if k == "Balkans"
-        c = Region.create :name => nam
-        ris.each {|ri| c.countries << ri}
-      end
-      cn = c.name
-      v.each do |vv|
-        name = vv[4..-1].gsub('.js','').titlecase
-        url = "https://s3.amazonaws.com/eja-cnt/#{cn}/#{vv}"
-        if vd = VectorDatum.find_by_url(url)
-          puts "#{name} datum already present for country #{k}"
-        else
-          vd = VectorDatum.new
-          vd.name = name
-          vd.url = url
-          vd.attachable = c
-          vd.save
-        end
-        styles.each do |s,vs|
-          next unless s.include? name
-          VectorStyle.find_by_name(vs).vector_data << vd
-        end
-        puts "#{name} datum created for country #{k}"
-      end
-    end
-  end
-  #handle_asynchronously :parsevectors
 
   def slugify str
     return str if str.nil?
@@ -603,36 +388,32 @@ class AsyncTask
       .downcase
       .strip
       .gsub(/[-_\s\/]+/, '-')
-      .gsub(/[^\w-]/, '')
+      .gsub(/[^\w-\.]/, '')
       .gsub(/-+/,'-')
     return res
   end
 
-  def vectorupload params, vd
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/vectorupload" if File.directory? "#{PADRINO_ROOT}/tmp/vectorupload"
-    Dir.mkdir "#{PADRINO_ROOT}/tmp/vectorupload" 
-    puts 'init vector upload job'
+  def vectorupload params, vd, precision
+    puts "init vector upload job at #{Time.now}"
     require 'gdal-ruby/ogr'
     require 'csv'
     require 'open-uri'
 
-    remote = params["source"]
-    source = "#{PADRINO_ROOT}/tmp/vectorupload/#{params['filename'].gsub(/\s/,'_')}"
-    File.open(source,"wb") {|f| f << open(remote).read }
-    if ['kmz','shp'].include? params['type']
+    source = params['source']
+    extension = source.gsub(/\?.*$/,"").gsub(/^.+\./,"").downcase
+    if ['kmz','zip'].include? extension
       Zip::ZipFile.open(source) do |zipfile|
-        if params['type'] == 'shp'
+        if extension == 'zip'
           path = "#{source.gsub(/\.zip$/,'/').gsub(/\s/,'_')}"
-          FileUtils.rmtree path if File.directory? path
-          Dir.mkdir path 
+          Dir.mkdir path unless File.directory? path
         end
         zipfile.each do |c|
-          if params['type'] == 'kmz'
+          if extension == 'kmz'
             source = source.sub(/kmz$/,'kml')
-            zipfile.extract c, source
-            source = "#{PADRINO_ROOT}/tmp/vectorupload/#{params['filename'].sub(/kmz$/,'kml').gsub(/\s/,'_')}"
+            zipfile.extract c, source unless File.file? source
+            source = "/tmp/vectorupload/#{params['filename'].sub(/kmz$/,'kml').gsub(/\s/,'_')}"
           else
-            zipfile.extract c, path+c.name.gsub(/\s/,'_')
+            zipfile.extract c, path+c.name.gsub(/\s/,'_') unless File.file? path+c.name.gsub(/\s/,'_')
             if c.name[-4..-1] == '.shp'
               source = path+c.name.gsub(/\s/,'_')
             end
@@ -641,9 +422,7 @@ class AsyncTask
       end
     end
     varname = source.split('/')[-1]
-    puts source
 
-    limit = 1
     begin
       file = Gdal::Ogr.open source
       layer = file.get_layer 0
@@ -651,6 +430,7 @@ class AsyncTask
       puts "VectorUpload Error: #{e}"
       exit 2
     end
+
     slug = slugify varname.force_encoding('utf-8')
     jsvar = slug.split('.')[0].gsub(/\d/,'').gsub(/-+/,'_')
 
@@ -658,20 +438,39 @@ class AsyncTask
 
     feats = []
     total = layer.get_feature_count
+    puts "#{total} features found"
     total.times do |i| 
       begin
         feat = layer.get_feature i
-      rescue
+      rescue Exception => e
+        puts "Error in feature: #{e}"
         next
       end
       next unless feat
-      hash = {'type'=>'Feature', 'pn'=>vd.name}
       geom = feat.get_geometry_ref
       next unless geom
       geom.flatten_to_2d
-      json = geom.export_to_json
-      hash['geometry'] = JSON.parse json
-      feats.push hash
+      begin
+        id = feat.get_field("feature_id").to_i.to_s
+      rescue
+        id = nil
+      end
+      if params['stat_json'] and id
+        cat = params['stat_json'][id].delete("category") if params['stat_json'].has_key? id
+        if precision > 0
+          hash = {'type'=>'Feature', 'properties'=>{'id'=>id,'pn'=>vd.name,'data'=>params['stat_json'][id]},'geometry'=>JSON.parse(geom.export_to_json.gsub(/\d+\.\d+/) {|x|x.match(/\d+\.\d{#{[precision,x.split('.')[1].length].min}}/)}.gsub(/\s/,''))}
+        else
+          hash = {'type'=>'Feature', 'properties'=>{'id'=>id,'pn'=>vd.name,'data'=>params['stat_json'][id]},'geometry'=>JSON.parse(geom.export_to_json)}
+        end
+        hash["properties"]["category"] = cat if cat
+      else
+        if precision > 0
+          hash = {'type'=>'Feature', 'properties'=>{'pn'=>vd.name},'geometry'=>JSON.parse(geom.export_to_json.gsub(/\d+\.\d+/) {|x|x.match(/\d+\.\d{#{[precision,x.split('.')[1].length].min}}/)}.gsub(/\s/,''))}
+        else
+          hash = {'type'=>'Feature', 'properties'=>{'pn'=>vd.name},'geometry'=>JSON.parse(geom.export_to_json)}
+        end
+      end
+      feats << hash
     end
 
     puts 'source data converted to json'
@@ -680,144 +479,37 @@ class AsyncTask
     geojson = output.to_json
     geojson.gsub!(/\\u([0-9a-z]{4})/) {|s| [$1.to_i(16)].pack("U")}
     jstr = 'var '+jsvar+' = '+geojson+"; "+"vectorPing"+"("+jsvar+");"
-    tfile = slug.gsub(/\.(kml|shp)$/,".js")
-    target = "#{PADRINO_ROOT}/tmp/vectorupload/#{tfile}"
+    tfile = slug.gsub(/kml$/,"js").gsub(/shp$/,"js").gsub(/zip$/,"js")
+    puts slug
+    puts tfile
+    target = "/tmp/vectorupload/#{tfile}"
     File.open(target,'w:UTF-8'){ |file| file.write(jstr) }
 
-    puts 'target file created'
+    puts "target file created at #{target}"
 
-    puts target
     pat = GeoData.new
+    pat.folder = "#{vd.attachable_type.downcase}/#{vd.attachable.old_slug}"
     pat.file = File.open(target,"r:UTF-8")
-    if pat.save
-      #puts target+' > '+layer.get_feature_count.to_i+' layers processed with '+tolerance.to_s+' tolerance, '+ ('%.2f' % (FileTest.size(target).to_f / 2**10) + 'K')+' total.'
-      pat = nil
-      puts 'target file uploaded to s3'
-      vector_url = "https://s3.amazonaws.com/ejatlas/vector/#{tfile}"
-      vd.url = vector_url
-      if vd.save
-        puts 'job completed successfully'
+    begin
+      if pat.save
+        puts "#{target}: #{feats.length} of #{total} layers processed, #{('%.2f' % (FileTest.size(target).to_f / 2**10) + 'K')} total."
+        puts 'target file stored at file.ejatlas.org'
+        vector_url = "https://file.ejatlas.org/vector/#{pat.folder}/#{tfile}"
+        pat = nil
+        vd.url = vector_url
+        vd.choropleth = params['legend_json'].to_json if params['legend_json']
+        if vd.save
+          puts "job completed successfully at #{Time.now}"
+        else
+          puts "job failed at #{Time.now}"
+        end
       else
-        puts 'job failed'
+        puts "target file failed to upload at #{Time.now}"
       end
-    else
-      puts 'target file failed to be uploaded'
+    rescue Exception => e
+      puts "File could not be uploaded: #{e}"
     end
-
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/vectorupload" if File.directory? "#{PADRINO_ROOT}/tmp/vectorupload"
   end
   handle_asynchronously :vectorupload
-
-  def choropleth params, vd
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/choropleth" if File.directory? "#{PADRINO_ROOT}/tmp/choropleth"
-    Dir.mkdir "#{PADRINO_ROOT}/tmp/choropleth" 
-    puts 'init choropleth job'
-    require 'gdal-ruby/ogr'
-    require 'csv'
-    require 'open-uri'
-
-    remote = params["source"]
-    source = "#{PADRINO_ROOT}/tmp/choropleth/#{params['geo']['filename'].gsub(/\s/,'_')}"
-    File.open(source,"wb") {|f| f << open(remote).read }
-    if ['kmz','shp'].include? params['geo']['type']
-      Zip::ZipFile.open(source) do |zipfile|
-        if params['geo']['type'] == 'shp'
-          path = "#{source.gsub(/\.zip$/,'/').gsub(/\s/,'_')}"
-          FileUtils.rmtree path if File.directory? path
-          Dir.mkdir path 
-        end
-        zipfile.each do |c|
-          if params['geo']['type'] == 'kmz'
-            source = source.sub(/kmz$/,'kml')
-            zipfile.extract c, source
-            source = "#{PADRINO_ROOT}/tmp/choropleth/#{params['geo']['filename'].sub(/kmz$/,'kml').gsub(/\s/,'_')}"
-          else
-            zipfile.extract c, path+c.name.gsub(/\s/,'_')
-            if c.name[-4..-1] == '.shp'
-              source = path+c.name.gsub(/\s/,'_')
-            end
-          end
-        end
-      end
-    end
-    varname = source.split('/')[-1]
-    if source.split('.')[-1] == "shp"
-      ['shp','dbf','shx'].each do |ext|
-        open("#{PADRINO_ROOT}/tmp/choropleth/source.#{ext}", 'wb') {|file| file << open("#{source.split('.')[0..-2].join('.')}.#{ext}").read}
-      end
-      source = "#{PADRINO_ROOT}/tmp/choropleth/source.shp"
-    else
-      open("#{PADRINO_ROOT}/tmp/choropleth/source.kml", 'wb') {|file| file << open(source).read}
-      source = "#{PADRINO_ROOT}/tmp/choropleth/source.kml"
-    end
-
-    tolerance = params['geo']['tolerance'].to_f
-    tolerance ||= 0.042
-
-    limit = 1
-    begin
-      file = Gdal::Ogr.open source
-      layer = file.get_layer 0
-    rescue Exception => e
-      puts "aman: #{e}"
-      exit 2
-    end
-    slug = slugify varname.force_encoding('utf-8')
-    jsvar = slug.split('.')[0].gsub(/\d/,'').gsub(/-+/,'_')
-
-    puts 'source file parsed with ogr'
-
-    feats = []
-    total = layer.get_feature_count
-    colname = params['headers']['name']
-    colid = params['headers']['id']
-    total.times do |i| 
-      feat = layer.get_feature i
-      next unless feat
-      next unless params['data']['json'].has_key? "id#{feat.get_field(colid)}"
-      hash = {'type'=>'Feature', 'properties'=>{'name'=>feat.get_field(colname).force_encoding('UTF-8'),'id'=>feat.get_field(colid),'value'=>params['data']['json']["id#{feat.get_field(colid)}"],'pn'=>vd.name}}
-      geom = feat.get_geometry_ref
-      geom.flatten_to_2d
-      #geom = geom.simplify(tolerance)
-      json = geom.export_to_json
-      hash['geometry'] = JSON.parse json
-      feats.push hash
-    end
-
-    puts 'source data converted to json'
-
-    output = {'type'=>'FeatureCollection', 'features'=>feats}
-    geojson = output.to_json
-    geojson.gsub!(/\\u([0-9a-z]{4})/) {|s| [$1.to_i(16)].pack("U")}
-    jstr = 'var '+jsvar+' = '+geojson+"; "+"choropleth"+"("+jsvar+");"
-    tfile = slug.gsub(/\.(kml|shp)$/,".js")
-    target = "#{PADRINO_ROOT}/tmp/choropleth/#{tfile}"
-    File.open(target,'w:UTF-8'){ |file| file.write(jstr) }
-
-    puts 'target file created'
-
-    puts target
-    pat = ChoroData.new
-    pat.file = File.open(target,"r:UTF-8")
-    if pat.save
-      #puts target+' > '+layer.get_feature_count.to_i+' layers processed with '+tolerance.to_s+' tolerance, '+ ('%.2f' % (FileTest.size(target).to_f / 2**10) + 'K')+' total.'
-      pat = nil
-      puts 'target file uploaded to s3'
-      vector_url = "https://s3.amazonaws.com/ejatlas/choropleth/#{tfile}"
-      vd.url = vector_url
-      vd.choropleth = params['legend']['json'].to_json
-      if vd.save
-        puts 'job completed successfully'
-      else
-        puts 'job failed'
-      end
-    else
-      puts 'target file failed to be uploaded'
-    end
-
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/choropleth" if File.directory? "#{PADRINO_ROOT}/tmp/choropleth"
-  end
-  handle_asynchronously :choropleth
 end
-
 

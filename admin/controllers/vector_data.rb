@@ -52,21 +52,6 @@ Admin.controllers :vectors do
     redirect to "/vectors/"
   end
 
-  put :update, :with => :id do
-    puts params
-    params['vector_datum']['name'] = UnicodeUtils.titlecase(params['vector_datum']['name'])
-    @vector = VectorDatum.find(params[:id])
-    if @vector.update_attributes(params[:vector_datum])
-      if params['vector']['file'] and params['vector']['type']
-        Admin.vectorupload params['vector'], @vector
-      end
-      flash[:notice] = 'vector was successfully updated.'
-      redirect url(:vectors, :edit, :id => @vector.id)
-    else
-      render 'vector_data/edit'
-    end
-  end
-
   get :newstyle do
     @name = "Vector styles"
     @style = VectorStyle.new
@@ -185,114 +170,137 @@ Admin.controllers :vectors do
     redirect url(:vectors, :index)
   end
 
-  def self.vectorupload params, vd
-    puts params['file'].class
-
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/vectorupload" if File.directory? "#{PADRINO_ROOT}/tmp/vectorupload"
-    Dir.mkdir "#{PADRINO_ROOT}/tmp/vectorupload" 
-    source = "#{PADRINO_ROOT}/tmp/vectorupload/#{params['file'][:filename].gsub(/\s/,'_')}"
-    File.open(source,"wb") {|f| f << params['file'][:tempfile].read }
-    pat = TmpData.new
-    pat.file = File.open(source,'r')
-    puts params['file'][:filename]
-    if pat.save
-      pat = nil
-      puts '  S3 file uploaded'
-      source = "https://s3.amazonaws.com/ejatlas/tmp/#{params['file'][:filename].gsub(/\s/,'_')}"
+  put :update, :with => :id do
+    params['vector_datum']['name'] = UnicodeUtils.titlecase(params['vector_datum']['name'])
+    @vector = VectorDatum.find(params[:id])
+    pp params
+    if @vector.update_attributes(params[:vector_datum])
+      if params['vector'] and params['vector']['file']
+        result = Admin.vectorupload params['vector'], @vector, params['precision']
+        if result == "ok"
+          redirect to '/jobs' 
+        elsif result[:status] == "error"
+          @error = result[:error]
+          puts "erron: #{@error}"
+          return render 'vector_data/edit'
+        end
+      end
+      redirect url(:vectors, :edit, :id => @vector.id)
     else
-      puts '  S3 file upload failed'
-      return 0
+      redirect url(:vectors, :edit, :id => @vector.id)
     end
-    puts source
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/vectorupload" if File.directory? "#{PADRINO_ROOT}/tmp/vectorupload"
+  end
 
+  def self.vectorupload params, vd, precision
+    Dir.mkdir "/tmp/vectorupload" unless File.directory? "/tmp/vectorupload"
+
+    source = "/tmp/vectorupload/#{params['file'][:filename].gsub(/\s/,'_')}"
+    File.open(source,"wb") {|f| f << params['file'][:tempfile].read }
     params["filename"] = params["file"][:filename]
-
-    seps = {"comma"=>",","tab"=>"\t"}
-    puts 'vectorupload info parsing started'
-
     params.delete "file"
     params["source"] = source
 
-    AsyncTask.new.vectorupload params, vd
-    return 'ok'
-  end
+    if params['stat_file']
+      stat_source = "/tmp/vectorupload/#{params['stat_file'][:filename].gsub(/\s/,'_')}"
+      File.open(stat_source,"wb") {|f| f << params['stat_file'][:tempfile].read }
+      params.delete "stat_file"
+      params["stat_source"] = stat_source
 
-  post :choropleth do
-    puts 'choro!'
+      errors = []
+      begin
+        begin
+          stat = CSV.read(stat_source, :row_sep => :auto, :col_sep => ",", encoding: "utf-8")
+        rescue Exception => e
+          puts "CSV file not comma-separated, trying with tabs: #{e}"
+          errors << "#{stat_source.split('/')[-1]} not comma-separated, trying with tabs: &nbsp; <strong>#{e}</strong>"
+          stat = CSV.read(stat_source, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
+        end
+      rescue Exception => e
+        puts "CSV file could not be parsed: #{e}"
+        errors << "#{stat_source.split('/')[-1]} could not be parsed: &nbsp; <strong>#{e}</strong>"
+      end
 
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/choropleth" if File.directory? "#{PADRINO_ROOT}/tmp/choropleth"
-    Dir.mkdir "#{PADRINO_ROOT}/tmp/choropleth" 
-    source = "#{PADRINO_ROOT}/tmp/choropleth/#{params['geo']['file'][:filename].gsub(/\s/,'_')}"
-    File.open(source,"wb") {|f| f << params['geo']['file'][:tempfile].read }
-    pat = TmpData.new
-    pat.file = File.open(source,'r')
-    puts params['geo']['file'][:filename]
-    if pat.save
-      pat = nil
-      puts '  S3 file uploaded'
-      source = "https://s3.amazonaws.com/ejatlas/tmp/#{params['geo']['file'][:filename].gsub(/\s/,'_')}"
-    else
-      puts '  S3 file upload failed'
-      return 0
-    end
-    puts source
-    FileUtils.rmtree "#{PADRINO_ROOT}/tmp/choropleth" if File.directory? "#{PADRINO_ROOT}/tmp/choropleth"
+      return {:status=>"error", :error=>errors.join("<br />")} unless stat
+      stat = CSV.read(stat_source, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8") if stat[0].length == 1
+      statjson = {}
+      begin
+        statheader = stat.shift.map {|h| h.downcase.strip.gsub(/[ _-]+/,'_').gsub(/_id$/,'')}
+      rescue Exception => e
+        puts "CSV file header error: #{e}"
+        errors << "#{stat_source.split('/')[-1]} header error: &nbsp; <strong>#{e}</strong>"
+        return {:status=>"error", :error=>errors.join("<br />")}
+      end
+      statid = statheader.index("feature")
+      return {:status=>"error", :error=>"#{stat_source.split('/')[-1]} does not contain required column <strong>feature_id</strong>."} unless statid
 
-    params["geo"]["filename"] = params["geo"]["file"][:filename]
-
-    seps = {"comma"=>",","tab"=>"\t"}
-    datasep = seps[params['data']['type']]
-    colorsep = seps[params['legend']['type']]
-    puts 'choropleth info parsing started'
-
-    datafile = File.read(params['data']['file'][:tempfile])
-    data = CSV.parse(datafile, :row_sep => :auto, :col_sep => datasep, encoding: "utf-8")
-    dataheader = data.shift
-    puts 'data layer read'
-
-    colorfile = File.read(params['legend']['file'][:tempfile])
-    color = CSV.parse(colorfile, :row_sep => :auto, :col_sep => colorsep, encoding: "utf-8")
-    colorheader = color.shift
-    puts 'color layer read'
-
-    datajson = {}
-    dataval = dataheader.index(params['headers']['value'])
-    dataid = dataheader.index(params['headers']['id'])
-    data.each do |d|
-      datajson["id#{d[dataid]}"] = d[dataval]
-    end
-
-    colorjson = {}
-    colorval = colorheader.index(params['headers']['value'])
-    colornam = colorheader.index(params['headers']['desc'])
-    colorhex = colorheader.index(params['headers']['color'])
-    color.each do |d|
-      colorjson[d[colorval]] = {"hex"=>d[colorhex], "text"=>d[colornam]}
-    end
-
-    params["geo"].delete "file"
-    params["data"].delete "file"
-    params["legend"].delete "file"
-    params["source"] = source
-
-    if false
-      params.each do |k,v|
-        puts k
-        if v.is_a? Hash
-          v.each do |kk,vv|
-            puts "  #{kk}: #{vv}"
-          end
-        else
-          puts "  #{v}"
+      stat.each do |l|
+        unless l[statid]
+          puts "error: id column not found in line: [#{l.join(', ')}]"
+        end
+        statjson[l[statid]] = {}
+        l.each_with_index do |c,i|
+          next if i == statid
+          statjson[l[statid]][statheader[i]] = c
         end
       end
+
+      params['stat_json'] = statjson
+      puts 'Data layer read'
     end
 
-    params['data']['json'] = datajson
-    params['legend']['json'] = colorjson
+    if params['legend_file']
+      legend_source = "/tmp/vectorupload/#{params['legend_file'][:filename].gsub(/\s/,'_')}"
+      File.open(legend_source,"wb") {|f| f << params['legend_file'][:tempfile].read }
+      params["legend_filename"] = params["legend_file"][:filename]
+      params.delete "legend_file"
+      params["legend_source"] = legend_source
 
-    AsyncTask.new.choropleth params, VectorDatum.find(params['choropleth']['vector_data_id'])
+      errors = []
+      begin
+        begin
+          legend = CSV.read(legend_source, :row_sep => :auto, :col_sep => ",", encoding: "utf-8")
+        rescue Exception => e
+          puts "CSV file not comma-separated, trying with tabs: #{e}"
+          errors << "#{legend_source.split('/')[-1]} not comma-separated, trying with tabs: &nbsp; <strong>#{e}</strong>"
+          legend = CSV.read(legend_source, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
+        end
+      rescue Exception => e
+        puts "CSV file could not be parsed: #{e}"
+        errors << "#{legend_source.split('/')[-1]} could not be parsed: &nbsp; <strong>#{e}</strong>"
+      end
+
+      return {:status=>"error", :error=>errors.join("<br />")} unless legend
+      legend = CSV.read(legend_source, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8") if legend[0].length == 1
+      legendjson = {}
+      begin
+        legendheader = legend.shift.map {|h| h.downcase.strip.gsub(/[ _-]+/,'_').gsub(/_id$/,'')}
+      rescue Exception => e
+        puts "CSV file header error: #{e}"
+        errors << "#{legend_source.split('/')[-1]} header error: &nbsp; <strong>#{e}</strong>"
+        return {:status=>"error", :error=>errors.join("<br />")}
+      end
+      legendid = legendheader.index("category")
+      return {:status=>"error", :error=>"#{legend_source.split('/')[-1]} does not contain required column <strong>category</strong>."} unless legendid
+
+      legend.each do |l|
+        unless l[legendid]
+          puts "error: id column not found in line: [#{l.join(', ')}]"
+        end
+        legendjson[l[legendid]] = {}
+        l.each_with_index do |c,i|
+          next if i == legendid
+          legendjson[l[legendid]][legendheader[i]] = c
+        end
+      end
+
+      params['legend_json'] = legendjson
+      pp legendjson
+      puts 'Legend layer read'
+    end
+
+    puts 'Vector parsing started'
+
+    AsyncTask.new.vectorupload params, vd, precision.to_i
     return 'ok'
   end
 
