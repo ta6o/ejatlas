@@ -84,7 +84,7 @@ Admin.controllers :vectors do
       if pat.save
         pat = nil
       else
-        puts 'nein!'
+        #puts 'nein!'
       end
     end
     params['style']['fill_opacity'] = (params['style']['fill_opacity'].to_i / 100.0).to_s
@@ -104,7 +104,7 @@ Admin.controllers :vectors do
   get :editstyle, :with => :id do
     @name = "Vector styles"
     @style = VectorStyle.find(params[:id])
-    puts @style.attributes
+    #puts @style.attributes
     render 'vector_data/editstyle'
   end
 
@@ -115,7 +115,7 @@ Admin.controllers :vectors do
   end
 
   put :updatestyle, :with => :id do
-    puts params
+    #puts params
     @name = "Vector styles"
     @style = VectorStyle.find(params[:id])
     if params["pattern"].length > 0
@@ -143,7 +143,7 @@ Admin.controllers :vectors do
       if pat.save
         pat = nil
       else
-        puts 'nein!'
+        #puts 'nein!'
       end
     end
     params['style']['fill_opacity'] = (params['style']['fill_opacity'].to_i / 100.0).to_s
@@ -181,7 +181,7 @@ Admin.controllers :vectors do
           redirect to '/jobs' 
         elsif result[:status] == "error"
           @error = result[:error]
-          puts "erron: #{@error}"
+          #puts "erron: #{@error}"
           return render 'vector_data/edit'
         end
       end
@@ -211,12 +211,12 @@ Admin.controllers :vectors do
         begin
           stat = CSV.read(stat_source, :row_sep => :auto, :col_sep => ",", encoding: "utf-8")
         rescue Exception => e
-          puts "CSV file not comma-separated, trying with tabs: #{e}"
+          #puts "CSV file not comma-separated, trying with tabs: #{e}"
           errors << "#{stat_source.split('/')[-1]} not comma-separated, trying with tabs: &nbsp; <strong>#{e}</strong>"
           stat = CSV.read(stat_source, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
         end
       rescue Exception => e
-        puts "CSV file could not be parsed: #{e}"
+        #puts "CSV file could not be parsed: #{e}"
         errors << "#{stat_source.split('/')[-1]} could not be parsed: &nbsp; <strong>#{e}</strong>"
       end
 
@@ -226,7 +226,7 @@ Admin.controllers :vectors do
       begin
         statheader = stat.shift.map {|h| h.downcase.strip.gsub(/[ _-]+/,'_').gsub(/_id$/,'')}
       rescue Exception => e
-        puts "CSV file header error: #{e}"
+        #puts "CSV file header error: #{e}"
         errors << "#{stat_source.split('/')[-1]} header error: &nbsp; <strong>#{e}</strong>"
         return {:status=>"error", :error=>errors.join("<br />")}
       end
@@ -235,7 +235,7 @@ Admin.controllers :vectors do
 
       stat.each do |l|
         unless l[statid]
-          puts "error: id column not found in line: [#{l.join(', ')}]"
+          #puts "error: id column not found in line: [#{l.join(', ')}]"
         end
         statjson[l[statid]] = {}
         l.each_with_index do |c,i|
@@ -245,7 +245,7 @@ Admin.controllers :vectors do
       end
 
       params['stat_json'] = statjson
-      puts 'Data layer read'
+      #puts 'Data layer read'
     end
 
     if params['legend_file']
@@ -260,12 +260,12 @@ Admin.controllers :vectors do
         begin
           legend = CSV.read(legend_source, :row_sep => :auto, :col_sep => ",", encoding: "utf-8")
         rescue Exception => e
-          puts "CSV file not comma-separated, trying with tabs: #{e}"
+          #puts "CSV file not comma-separated, trying with tabs: #{e}"
           errors << "#{legend_source.split('/')[-1]} not comma-separated, trying with tabs: &nbsp; <strong>#{e}</strong>"
           legend = CSV.read(legend_source, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
         end
       rescue Exception => e
-        puts "CSV file could not be parsed: #{e}"
+        #puts "CSV file could not be parsed: #{e}"
         errors << "#{legend_source.split('/')[-1]} could not be parsed: &nbsp; <strong>#{e}</strong>"
       end
 
@@ -275,7 +275,7 @@ Admin.controllers :vectors do
       begin
         legendheader = legend.shift.map {|h| h.downcase.strip.gsub(/[ _-]+/,'_').gsub(/_id$/,'')}
       rescue Exception => e
-        puts "CSV file header error: #{e}"
+        #puts "CSV file header error: #{e}"
         errors << "#{legend_source.split('/')[-1]} header error: &nbsp; <strong>#{e}</strong>"
         return {:status=>"error", :error=>errors.join("<br />")}
       end
@@ -284,7 +284,7 @@ Admin.controllers :vectors do
 
       legend.each do |l|
         unless l[legendid]
-          puts "error: id column not found in line: [#{l.join(', ')}]"
+          #puts "error: id column not found in line: [#{l.join(', ')}]"
         end
         legendjson[l[legendid]] = {}
         l.each_with_index do |c,i|
@@ -295,10 +295,10 @@ Admin.controllers :vectors do
 
       params['legend_json'] = legendjson
       pp legendjson
-      puts 'Legend layer read'
+      #puts 'Legend layer read'
     end
 
-    puts 'Vector parsing started'
+    #puts 'Vector parsing started'
 
     AsyncTask.new.vectorupload params, vd, precision.to_i
     return 'ok'

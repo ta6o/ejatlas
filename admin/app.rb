@@ -79,7 +79,7 @@ class Admin < Padrino::Application
       sending = exc
     end
     sending[0][:subject] = subject
-    puts "  MANDRILL #{sending}"
+    puts "MANDRILL #{sending}"
   end
 
   def self.new_account(a)
@@ -206,6 +206,6 @@ class Admin < Padrino::Application
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo", "Ayşe"]
 
   before do
-    puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} #{request.ip} #{request.user_agent.class} #{Time.now} #{params}"
+    puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
   end
 end

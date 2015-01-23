@@ -2,7 +2,7 @@
 Admin.controllers :sessions do
 
   get :login do
-    puts session[:return_to]
+    #puts session[:return_to]
     set_current_account(nil)
     render "/sessions/new"
   end

@@ -192,7 +192,7 @@ Admin.controller do
     con = Product.find_slug(params[:slug])
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
-    puts @markerinfo
+    #puts @markerinfo
     @filterinfo = con.conflicts_json
     @load = con.conflicts_link
     @name = con.name
@@ -212,7 +212,7 @@ Admin.controller do
     con = Type.find_slug(params[:slug])
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
-    puts @markerinfo
+    #puts @markerinfo
     @filterinfo = con.conflicts_json
     @load = con.conflicts_link
     @name = con.name
@@ -401,7 +401,7 @@ Admin.controller do
         nots << msg
       end
     end
-    puts "  MANDRILL \n  SUCCESS: #{oks} \n  FAIL: #{nots}"
+    puts "MANDRILL INBOUND\n  SUCCESS: #{oks}\n  FAIL: #{nots}"
     [200,{},'']
   end
 

@@ -85,7 +85,7 @@ Admin.controllers :ifis do
       end
     end
     slugz = ","
-    puts token
+    #puts token
     Supporter.order('slug').each {|c| slugz += "#{c.slug},"}
     key = []
     modifier = -1

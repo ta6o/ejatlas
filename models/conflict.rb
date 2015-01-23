@@ -178,7 +178,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def print
-    puts
+    #puts
     self.attributes.each do |k,v|
       next if v.nil? or v == ""
       if k.to_s[-3..-1] == "_id" and k != "status_id"
@@ -188,23 +188,23 @@ class Conflict < ActiveRecord::Base
         end
         next unless ass
         if ass.name
-          puts (k.to_s[0...-3]+": ")+ass.name
+          #puts (k.to_s[0...-3]+": ")+ass.name
         else
-          puts (k.to_s[0...-3]+": ")+ass.attributes
+          #puts (k.to_s[0...-3]+": ")+ass.attributes
         end
       elsif k == "status_id"
-        puts (k.to_s[0...-3]+": ")+Status.find(v).name
+        #puts (k.to_s[0...-3]+": ")+Status.find(v).name
       else
-        puts (k.to_s+": ")+v.to_s
+        #puts (k.to_s+": ")+v.to_s
       end
     end
     self.methods.grep(/^validate_associated_records_for_.*$/).each do |m| 
       a = m.to_s.split("validate_associated_records_for_")[1]
-      puts a
+      #puts a
       next if a[0..1] == "c_"
       assoc = eval "self."+a
       next unless assoc.any?
-      puts a
+      #puts a
       assoc.each do |a|
         at = ""
         a.attributes.each do |k,v|
@@ -215,10 +215,10 @@ class Conflict < ActiveRecord::Base
             at += ("  "+k.to_s+": ")+v.to_s 
           end
         end
-        puts at
+        #puts at
       end
     end
-    puts
+    #puts
   end
 
   def get_name(val)

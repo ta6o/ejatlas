@@ -59,7 +59,7 @@ Admin.controllers :accounts do
     @account = Account.new(params[:account])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.role = "user"
-    puts @account.id
+    #puts @account.id
     if @account.save
       set_current_account(@account)
       Admin.new_account @account
@@ -86,21 +86,21 @@ Admin.controllers :accounts do
 
     redirect to "/sessions/login" unless current_account
     @account = Account.find(params[:id])
-    puts @account.crypted_password
+    #puts @account.crypted_password
     p params
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
-    puts params[:account]
+    #puts params[:account]
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
-        puts @account.crypted_password
+        #puts @account.crypted_password
         if params.has_key? :images_attributes and params['images_attributes'].any?
           images = {}
           params['images_attributes'].each{|i,v| images["n#{i}"] = @account.images[i.to_i]}
           params['images_attributes'].each do |i, v|
             img = images["n#{i}"]
-            puts i
-            puts img
+            #puts i
+            #puts img
             if v['_destroy'] == "on"
               img.destroy
               next
@@ -149,7 +149,7 @@ Admin.controllers :accounts do
   end
 
   post :getimage do
-    puts params
+    #puts params
     aid = params['image']['account_id']
     a = Account.find(aid)
     image = Image.new(params['image'])

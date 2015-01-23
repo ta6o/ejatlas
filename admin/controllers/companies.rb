@@ -33,7 +33,7 @@ Admin.controllers :companies do
 
   get :index do
     @companies = Company.select("id, name, slug, acronym, description, url, logo_image, country_id").order("id desc").limit(64)
-    puts 
+    #puts 
     render 'companies/index'
   end
 
@@ -84,7 +84,7 @@ Admin.controllers :companies do
       end
     end
     slugz = ","
-    puts token
+    #puts token
     Company.order('slug').each {|c| slugz += "#{c.slug},"}
     key = []
     modifier = -1

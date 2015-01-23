@@ -14,7 +14,7 @@ Admin.controllers :featureds do
       @featureds << batch
     end
     @featureds.flatten!
-    puts @featureds.count
+    #puts @featureds.count
     render 'featureds/index'
   end
 
@@ -79,8 +79,8 @@ Admin.controllers :featureds do
         params['images_attributes'].each{|i,v| images["n#{i}"] = @featured.images[i.to_i]}
         params['images_attributes'].each do |i, v|
           img = images["n#{i}"]
-          puts i
-          puts img
+          #puts i
+          #puts img
           if v['_destroy'] == "on"
             img.destroy
             next
@@ -295,7 +295,7 @@ Admin.controllers :featureds do
   end
 
   post :getimage do
-    puts params
+    #puts params
     fid = params['image']['featured_id']
     f = Featured.find(fid)
     image = Image.new(params['image'])
