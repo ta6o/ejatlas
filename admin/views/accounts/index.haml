@@ -23,7 +23,7 @@
             %tr
               %td.first
                 -if img = account.images.where(prime:1)[0]
-                  %img{:src=>img.thumb.url,:style=>'width:64px;'}
+                  %img{:src=>img.thumb_url,:style=>'width:64px;'}
                 -else
                   &nbsp;
               %td=account.name

@@ -149,14 +149,13 @@ Admin.controllers :accounts do
   end
 
   post :getimage do
-    #puts params
     aid = params['image']['account_id']
     a = Account.find(aid)
     image = Image.new(params['image'])
     image.attachable = a
     image.prime = true if a.images.where(prime:1).empty?
     if image.save
-      return {:file=>image.file.url,:thumb=>image.file.thumb.url,:n=>a.images.count,:title=>image.title}.to_json
+      return {:file=>image.file.url,:thumb=>image.file.thumb_url,:n=>a.images.count,:title=>image.title}.to_json
     else
       return 'no'
     end

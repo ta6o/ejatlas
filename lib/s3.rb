@@ -25,6 +25,13 @@ class ImageUploader < CarrierWave::Uploader::Base
     "https://file.ejatlas.org/img/#{at.class}/#{at.id}/#{self.file.filename}"
   end
 
+  def thumb_url
+    at = self.model.attachable 
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}"if at.methods.include?(:old_slug)
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}"if at.has_attribute?('slug')
+    "https://file.ejatlas.org/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"
+  end
+
   version :thumb do
     process :resize_to_fit => [2400,240]
   end
