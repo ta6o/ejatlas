@@ -206,6 +206,12 @@ class Admin < Padrino::Application
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo", "Ayşe"]
 
   before do
-    puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
+    puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}" unless request.path_info == "/error"
   end
+
+  post :error do
+    puts "CLIENT ERROR FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
+    return 200
+  end
+
 end

@@ -92,6 +92,7 @@ Admin.controller do
     @vectors = c.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
     @name = c.name
     @id = c.id
+    @slug = c.slug
     @desc = c.description
     @headline = c.headline
     @ogimage = c.images.first.file.url if c.images.any?
@@ -109,6 +110,29 @@ Admin.controller do
       end
     end
     render "base/conflict", :layout => @layout
+  end
+
+  get :print, :with => :slug do
+    c = Conflict.find_slug(params[:slug])
+    @markerinfo = c.country.conflicts_marker
+    @cmarker = c.as_marker.to_json
+    @defs = []
+    c.country.vector_data.each do |vd|
+      if vd.vector_style and vd.vector_style.defs
+        @defs << JSON.parse(vd.vector_style.defs)
+      end
+    end
+    @defs = @defs.to_set.to_a
+    @vectors = c.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
+    @zoom = 8
+    @zoom = [6,8,10,12][c.accuracy_level] if c.accuracy_level
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @name = c.name
+    @pos = [c.lat,c.lon]
+    @cid = c.id
+    @table = c.as_table(:print => true)
+    @images = c.images
+    render 'base/print', :layout => :print
   end
 
   get :country, :with => :slug do
@@ -433,6 +457,7 @@ Admin.controller do
 
   error do
     @name = "Error"
+    puts "ERROR #{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
     render 'base/404', :layout => false
   end
 

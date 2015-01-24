@@ -284,35 +284,37 @@ function updateInfo (type, content) {
   }
 };
 
-function getInfo(id,name,p,z) {
+function getInfo(id,name,p,z,upd) {
   conflict = true;
   zoom = z;
   marker = markerc[id]
   pan = marker.getLatLng();
   updateInfo(1,marker.content);
   map.setView(pan,zoom);
-  $.getJSON('/table/'+id, function(dat){
-    //console.log(dat)
-    data = dat;//JSON.parse(dat);
-    $('#disclaimer').hide();
-    $('#name').html(name);
-    $('#conflict_summary').html(data["table"]);
-    $('#-').attr('href','/conflicts/print/'+id);
-    if (clear) { 
-      $('#edit').attr('href','/conflicts/edit/'+id);
-      $('#new_version').attr('href','/conflicts/new_version/'+id);
-    };
-    if (clearuser) {
-      $('#details').attr('href','/conflicts/details/'+id);
-      $('#new_version').attr('href','/conflicts/new_version/'+id);
-    };
-    $('#commands').show();
-    $('#conflict_summary').show();
-    $('#name').show();
-    //window.history.pushState(name, name, data["slug"]);
-    //document.title = name+" | EJAtlas";
-    $('.loading').hide();
-  });
+  if (upd) {
+    $.getJSON('/table/'+id, function(dat){
+      //console.log(dat)
+      data = dat;//JSON.parse(dat);
+      $('#disclaimer').hide();
+      $('#name').html(name);
+      $('#conflict_summary').html(data["table"]);
+      $('#-').attr('href','/conflicts/print/'+id);
+      if (clear) { 
+        $('#edit').attr('href','/conflicts/edit/'+id);
+        $('#new_version').attr('href','/conflicts/new_version/'+id);
+      };
+      if (clearuser) {
+        $('#details').attr('href','/conflicts/details/'+id);
+        $('#new_version').attr('href','/conflicts/new_version/'+id);
+      };
+      $('#commands').show();
+      $('#conflict_summary').show();
+      $('#name').show();
+      //window.history.pushState(name, name, data["slug"]);
+      //document.title = name+" | EJAtlas";
+      $('.loading').hide();
+    });
+  }
 }
 
 function getBack() {

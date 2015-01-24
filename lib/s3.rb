@@ -9,7 +9,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
     at = self.model.attachable 
-    return "#{Padrino.root}/../file/img/#{at.class}/#{at.old_slug}"if at.has_attribute?('old_slug')
+    return "#{Padrino.root}/../file/img/#{at.class}/#{at.old_slug}"if at.methods.include?(:old_slug)
     return "#{Padrino.root}/../file/img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
     "#{Padrino.root}/../file/img/#{at.class}/#{at.id}"
   end
@@ -20,7 +20,7 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   def url
     at = self.model.attachable 
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/#{self.file.filename}"if at.has_attribute?('old_slug')
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/#{self.file.filename}"if at.methods.include?(:old_slug)
     return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/#{self.file.filename}"if at.has_attribute?('slug')
     "https://file.ejatlas.org/img/#{at.class}/#{at.id}/#{self.file.filename}"
   end
@@ -33,11 +33,11 @@ end
 class DocumentUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
-    "#{Padrino.root}/../file/docs/"+self.model.conflict.old_slug
+    "#{Padrino.root}/../file/docs/"
   end
 
   def url
-    "https://file.ejatlas.org/docs/#{self.model.conflict.old_slug}/#{self.file.filename}"
+    "https://file.ejatlas.org/docs/#{self.file.filename}"
   end
 
   def cache_dir

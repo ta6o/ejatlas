@@ -1,11 +1,6 @@
 -# coding: utf-8
 -content_for :include do
   =stylesheet_link_tag 'neutrino/jquery-ui'
-  -#:javascript
-    window.onerror = function(message, url, lineNumber) {  
-      console.log(message, url, lineNumber);
-      return true;
-    };  
 
 %ul#conflict-tabs.nav.nav-tabs{:style=>'margin-bottom:0'}
   %li.active

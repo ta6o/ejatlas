@@ -3,7 +3,6 @@
 .clearfix.summary_header
   %h2.pull-left#name= @name
 #conflict_summary= @table.html_safe
--if @print
-  :javascript
-    $(document).ready(function(){ window.print(); });
+:javascript
+  $(document).ready(function(){ window.print(); });
 

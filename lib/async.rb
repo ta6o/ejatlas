@@ -305,7 +305,7 @@ class AsyncTask
           next
         end
         img = Image.new
-        img.remote_file_url = doc.file.file.url
+        img.remote_file_url = doc.file.url
         img.title = doc.title
         img.description = doc.description
         doc.conflict.images << img
@@ -315,7 +315,7 @@ class AsyncTask
         rescue => e
           #puts "  problem saving image with url: \n#{doc.file.file.url}\n"
           #p e
-          puts doc.file.file.url
+          puts doc.file.url
         end
       end
     end

@@ -13,7 +13,7 @@
         markerinfo.push(cmarker);
       }
       initMap(markerinfo,"#{@maptitle}","#{@baselayers}",vectorinfo,null);
-      getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom})
+      getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom},true)
     }
 
 .front
@@ -37,7 +37,7 @@
       .pull-right#commands{:style=>'display:none;'}
         %ul.clearfix.list-unstyled
           %li
-            =link_to ('Print'), url(:conflicts, :view, :id => 0), :method => :get, :target => '_blank', :id => '-'
+            =link_to ('Print'), url(:print, :slug => @slug), :method => :get, :target => '_blank'
           :javascript
             var clear = false;
             var clearuser = false;

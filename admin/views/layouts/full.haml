@@ -14,7 +14,6 @@
     %meta{:content => $pageauthor, :name => "author"}/
     %meta{:content => $pagekeyws, :name => "keywords"}/
     =stylesheet_link_tag 'main-full'
-    =javascript_include_tag 'jQl'
     =yield_content :include
 
     /[if lt IE 9]
@@ -141,9 +140,26 @@
     -else
       :javascript
         var $color;
+    =javascript_include_tag 'jQl'
     :javascript
       $full = true;
       //L_PREFER_CANVAS= true;
       jQl.loadjQ('/javascripts/main.js'); 
-
+      window.onerror = function(message, url, lineNumber) {  
+        $.ajax({
+          type: 'POST',
+          url: '/error',
+          data: "message="+message+"&url="+window.location.href+"&file="+url+"&line="+lineNumber,  
+          success: function(data,ts){
+            console.log('error reported:');
+            console.log(message, url, lineNumber);
+          },
+          error: function(data,ts,error){
+            console.log('error report failed:');
+            console.log(error);
+            console.log(message, url, lineNumber);
+          }
+        });
+        return true;
+      };  
 

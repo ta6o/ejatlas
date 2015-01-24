@@ -354,7 +354,7 @@ class Conflict < ActiveRecord::Base
           cna = cnt.split(/\n/)
           if cna.length == 0
             ta += ''
-          elsif cna.length == 1
+          elsif cna.length == 1 or options[:print] == true
             ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
           else
             cn1 = cna[0]
@@ -440,15 +440,20 @@ class Conflict < ActiveRecord::Base
             url = ''
             tit = ''
             dsc = ''
-            url = '<a class="refanch small" href="'+m.url+'" target="_blank">[click to view]</a>' if m.has_attribute? 'url' and m.url and m.url.length > 2
-            url = '<a class="refanch small" href="'+m.file.url+'" target="_blank">[click to view]</a>' if m.has_attribute? 'file' and m.file
+            if options[:print] == true
+              url = m.url if m.has_attribute? 'url' and m.url and m.url.length > 2
+              url = m.file.url if m.has_attribute? 'file' and m.file
+            else
+              url = '<a class="refanch small" href="'+m.url+'" target="_blank">[click to view]</a>' if m.has_attribute? 'url' and m.url and m.url.length > 2
+              url = '<a class="refanch small" href="'+m.file.url+'" target="_blank">[click to view]</a>' if m.has_attribute? 'file' and m.file
+            end
             tit = m.title if m.has_attribute?('title') and m.title and m.title.length > 2
             tit = m.name if m.has_attribute?('name') and m.name and m.name.length > 2
             tit = "<strong>#{tit}</strong>" if tit.length > 0
             dsc = m.description if m.has_attribute?('description') and m.description and m.description.length > 2
             sep = ''
-            sep = '<br/>' if (tit or dsc) and url
-            arr << '<td><p>'+tit.to_s+' '+dsc.to_s+''+sep+''+url.to_s+'</p></td>'
+            sep = '<br/>' if (tit.length > 0 or dsc.length > 0) and url
+            arr << '<td><p>'+tit+' '+dsc+''+sep+''+url+'</p></td>'
           end
           cnt = '<table><tr>'
           cnt += arr.join '</tr><tr>'
@@ -480,7 +485,11 @@ class Conflict < ActiveRecord::Base
           ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt+'</td></tr>' if cnt != '' and cnt != nil
         end
       end
-      tab += '<h4>'+val[0]+'</h4><table class="table"><tbody>'+ta+'</tbody></table>' unless ta === ''
+      if options[:print] == true
+        tab += '<h3>'+val[0]+'</h3><table class="table"><tbody>'+ta+'</tbody></table>' unless ta === ''
+      else
+        tab += '<h4>'+val[0]+'</h4><table class="table"><tbody>'+ta+'</tbody></table>' unless ta === ''
+      end
     end
 
     return tab.gsub(/\r\n/,'<br />').gsub('\n','<br />')+"<br />"
