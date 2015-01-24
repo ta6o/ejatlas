@@ -34,7 +34,7 @@
                   =""
               %td
                 -if supporter.logo_images.any?
-                  %img{:src=>supporter.logo_images.first.thumb_url,:style=>'max-height:50px;'}
+                  %img{:src=>supporter.logo_images.first.file.thumb_url,:style=>'max-height:50px;'}
                 -else
                   =""
               %td

@@ -61,7 +61,7 @@
               -@images.order(:created_at).each do |image|
                 %li
                   %a{:href=>image.file.url,:target=>'_blank'}
-                    %img{:src=>image.thumb_url,:style=>'height:240px;width:auto;display:none;'}
+                    %img{:src=>image.file.thumb_url,:style=>'height:240px;width:auto;display:none;'}
                   -if image.title and image.title != '-'
                     -if image.title.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
                       .title
