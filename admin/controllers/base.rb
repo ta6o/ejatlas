@@ -315,7 +315,7 @@ Admin.controller do
     @image = con.images.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan
-    @baselayers = (con.baselayers and con.baselayers != "" ? con.baselayers : "[]")
+    @baselayers = (con.baselayers != "" ? con.baselayers : "")
     #@domains = JSON.parse(con.filter)['tag']
     @fid = con.id
     @color = "##{con.color}"

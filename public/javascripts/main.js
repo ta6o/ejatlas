@@ -2843,6 +2843,7 @@ function toTitleCase(str) {
 function initMap (markers, maptitle, layers, vector, fid) {
   info = $("#infopane");
   $.each(layers.split(','),function(i,e){
+    if (e == "") return false;
     f = e.split('.');
     console.log(e);
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
@@ -2854,24 +2855,23 @@ function initMap (markers, maptitle, layers, vector, fid) {
   }
 
   markerLayer = L.featureGroup();
+  initLayers = [];
 
   maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
   bounds = maxBounds;
 
   if (Object.keys(baselayers).length > 0) {
-    active = baselayers[(Object.keys(baselayers)[0])];
-  } else {
-    active = {};
-    $('#map').css('background','transparent');
-    $('#map').css('box-shadow','none');
+    initLayers.push( baselayers[(Object.keys(baselayers)[0])]);
   }
-  console.log(active)
+  initLayers.push(markerLayer)
   map = L.map('map',{
     scrollWheelZoom: true,
     worldCopyJump: true,
     maxBounds: maxBounds,
     bounceAtZoomLimits: false,
-    layers: [active, markerLayer]
+    center: new L.latLng([16,26]),
+    zoom: 2,
+    layers: initLayers
   });
 
   $.each(vector,function(i,v){
@@ -3034,7 +3034,7 @@ function mapFit(){
   markerBounds = markerLayer.getBounds();
   console.log(markerBounds)
   if (markerBounds.getSouthWest() == undefined) {
-    map.setView([16,26],2);
+    //map.setView([16,26],2);
   } else {
     if ($full) {
       iw = window.innerWidth/1.8;
