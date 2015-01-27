@@ -442,6 +442,21 @@ Admin.controller do
     redirect to 'jobs'
   end
 
+  get :parse do
+    redirect to "/sessions/login" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
+    render 'base/parse', :layout => :application
+  end
+
+  post :parse do
+    redirect to "/sessions/login" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
+    file = params[:master]
+    puts master = File.read(file[:tempfile])
+    AsyncTask.new.parsedata master
+    redirect to 'jobs'
+  end
+
   get :jobs do
     @name = "Queued Jobs"
     redirect to "/sessions/login" unless current_account

@@ -511,5 +511,590 @@ class AsyncTask
     end
   end
   handle_asynchronously :vectorupload
+
+  def parsedata master
+    masterheader = ["id", "Name of conflict", "Country", "Location of conflict (municipality or city/town)", "State or Province", "Accuracy of location", "Project Area (in hectares)", "Type of Conflict (Please pick one based on the activity most responsible for the environmental disturbance)", "Type of Conflict (select a max. of 3 secondary level conflicts)", "Description (Please describe the project and the point of conflict here in maximum 200 words)", "Specific commodity", "Other commodities", "Project details (Please insert specific details on the relevant quantitative data eg tons of mineral extracted per year, kwh of electricity, etc...)", "Directly Affected people (number of people (may also be a range)", "Companies", "Relevant government actors", "Home country (The country or countries where the company or companies main office is)", "International and financial Institutions (eg WB, IFAD, IUCN, ILO, etc...)", "Environmental justice organisations and other supporters", "Status of Conflict", "When did the mobilization begin", "Is this conflict directly related to any other ecological conflict? (Please enter the name of the conflict)", "Type of population", "Potential affected population (number of people (may also be a range)", "Level of investment (If you know the level of investment of the project please enter in USD)", "Start of the conflict (dd/mm/yyyy or XX/mm/yyyy)", "End of the conflict leave blank if on going (dd/mm/yyyy or XX/mm/yyyy)", "Groups mobilizing (select all that apply)", "Other groups mobilizing", "Forms of mobilization (select all that apply)", "Other forms of mobilization", "Environmental impacts [Air pollution ]", "Environmental impacts [Biodiversity loss (wildlife, agro-diversity) ]", "Environmental impacts [Desertification/Drought]", "Environmental impacts [Fires ]", "Environmental impacts [Floods (river, coastal, mudflow)]", "Environmental impacts [Food insecurity (crop damage)]", "Environmental impacts [Genetic contamination]", "Environmental impacts [Global warming]", "Environmental impacts [Loss of landscape/aesthetic degradation]", "Environmental impacts [Noise pollution]", "Environmental impacts [Soil contamination]", "Environmental impacts [Soil erosion]", "Environmental impacts [Waste overflow]", "Environmental impacts [Oil spills]", "Environmental impacts [Deforestation and loss of vegetation cover]", "Environmental impacts [Surface water pollution / Decreasing water (physico-chemical, biological) quality]", "Environmental impacts [Groundwater pollution or depletion]", "Environmental impacts [Large-scale disturbance of hydro and geological systems ]", "Environmental impacts [Reduced ecological / hydrological connectivity]", "Environmental impacts [Mine tailing spills]", "Other Environmental impacts", "Health impacts [Accidents ]", "Health impacts [Exposure to unknown or uncertain complex risks (radiation, etc…) ]", "Health impacts [Malnutrition]", "Health impacts [Mental problems including stress, depression and suicide]", "Health impacts [Violence related health impacts (homicides, rape, etc..) ]", "Health impacts [Health problems related to alcoholism, prostitution]", "Health impacts [Occupational disease and accidents]", "Health impacts [Infectious diseases]", "Health impacts [Deaths]", "Health impacts [Other environmental related diseases]", "Other Health impacts", "Socio-economic impacts [Increase in Corruption/Co-optation of different actors]", "Socio-economic impacts [Displacement ]", "Socio-economic impacts [Increase in violence and crime]", "Socio-economic impacts [Lack of work security, labour absenteeism, firings, unemployment]", "Socio-economic impacts [Loss of livelihood]", "Socio-economic impacts [Loss of traditional knowledge/practices/cultures]", "Socio-economic impacts [Militarization and increased police presence]", "Socio-economic impacts [Social problems (alcoholism, prostitution, etc..)]", "Socio-economic impacts [Specific impacts on women]", "Socio-economic impacts [Violations of human rights]", "Socio-economic impacts [Land dispossession]", "Socio-economic impacts [Loss of landscape/sense of place]", "Other socio-economic impacts", "Current status of the project development", "Do you consider this an Environmental Justice success. Was environmental justice served (e.g.  Project)", "Briefly explain", "Pathways for conflict outcome / response", "Other pathways for conflict outcome / response", "Development of Alternatives (What are the proposals being brought forward by the mobilizers)", "Relevant legislation", "References (articles, books, video documentaries, etc...)", "Links(to web-pages with information, newspaper articles)", "Links(to photos, video)", "Other comments", "Contributor", "Contact Name ", "Contact Email", "Contact Address", "Video Title", "Video Description", "Video Tags", "Expiry Date", "Approved", "lng", "lat", "geom_loc"]
+    puts 'start'
+    puts CSV.class
+    AsyncTask::CSV.open("#{Dir.pwd}/misc/textconversion.csv") do |csv|
+      csv.each do |c|
+        r = c[2]
+        puts "#{r.to_s} (#{master.count(r.to_s).to_s}) #{c[2]} => #{c[1]}"
+        master.gsub! (r) do |x|
+          c[1]
+        end
+      end
+    end
+    conflicts = AsyncTask::CSV.parse(master, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
+    header = conflicts.shift
+    puts header == masterheader
+    errors = []
+    merrs = {}
+    parsedcount = 0
+    conflicts.each_with_index do |row,index|
+      parsedcount += 1
+      break if parsedcount > 200 and testing
+      break if row[1] == "" or row[1].nil?
+      next if Conflict.find_by_name(row[1])
+      c = Conflict.new
+
+      c.formerid = row[0].to_i
+      c.name = row[1]
+      puts
+      puts "#{index} #{c.name if c.name}"
+      country = Country.find_name(row[2].to_s)
+      unless country
+        country = Country.create(:name=>row[2])
+        c.formerid = row[0].to_i
+      end
+      c.country = country
+      c.site = row[3]
+      c.province = row[4]
+      c.accuracy_level = ["","Low","Medium","High"].index(row[5])
+
+      c.project_area = row[6]
+      project_length = nil
+      if project_area
+        if project_area.match(/\b(hectar|ha)/)
+          project_area.gsub! /\D/, ""
+        elsif project_area.match(/\b(acre)/)
+          project_area.gsub! /\D/, ""
+          project_area = (project_area.to_i * 0.404686).to_i.to_s
+        elsif project_area.match(/\b(sqkm|square km|square kilom)/)
+          project_area.gsub! /\D/, ""
+          project_area = (project_area.to_i * 100).to_i.to_s
+        elsif project_area.match(/\b(sqmi|square mi|square mile)/)
+          project_area.gsub! /\D/, ""
+          project_area = (project_area.to_i * 258.999).to_i.to_s
+        elsif project_area.match(/\b(km|kilometer)/)
+          project_length = project_area.gsub! /\D/, ""
+          project_area = nil
+        elsif project_area.match(/\b(mi|mile)/)
+          project_length = project_area.gsub! /\D/, ""
+          project_length = (project_length.to_i * 1.60934).to_i.to_s
+          project_area = nil
+        end
+        c.project_area = project_area
+        c.project_length = project_length
+      end
+
+      merrs[:category] = []
+      if row[7] and cate = Category.find_by_slug(Admin.slugify row[7])
+        c.category = cate
+      else
+        merrs[:category] << [row[1], row[7]]
+      end
+      c.save
+      merrs[:type] = []
+      row[8].split(':::').each_with_index do |t,i|
+        if tt = Type.find_by_slug(Admin.slugify t)
+          ct = CType.new
+          ct.conflict_id = c.id
+          ct.type_id = tt.id
+          ct.ordering = c.types.count
+          merrs[:type] << [row[1], t] unless ct.save
+        else
+          merrs[:type] << [row[1], t]
+        end
+      end
+
+      c.description = rmlines row[9]
+      puts c.description if c.description
+
+      merrs[:commodity] = []
+      if row[10]
+        row[10].split(':::').each do |t|
+          p = Product.find_by_name(t) unless t.nil?
+          unless p.nil?
+            c.products << p 
+          else
+            merrs[:commodity] << [row[1], row[7]]
+          end
+        end
+      end
+
+      c.other_products = row[11]
+      c.products << Product.find_by_name('Other') if c.other_products.nil? and !c.products.include?(Product.find_by_name('Other'))
+
+      c.project_details = rmlines row[12]
+      puts c.project_details
+
+      c.affected_people = row[13]
+      if row[13] and aps = row[13].gsub('thousand','000').gsub('million','000000').gsub('billion','000000000').gsub(/[\.,\s]+/,'').scan(/\d+/)
+        c.affected_min = aps.min
+        c.affected_max = aps.max
+      end
+
+
+      organ(row[14],Company,c,'companies')
+
+      if row[15]
+        puts "Government Actors"
+        row[15].split(/(\n|,\s*)+/).each do |ch|
+          if ch
+            next if ch.match /:$/ or ch.match(/^\s*$/) or ch.gsub(/\s/,'').length < 2
+            t = ch.sub(/^\s*(-|\)|\d|\.|»|=|>|•)*\s*/,"")
+            t.strip!
+            country = t.scan(/\(([^\)]+)\)\s*$/).last
+            if country.is_a? Array
+              country = country.first
+            end
+            if country
+              t.sub!(/\(([^\)]+)\)\s*$/,'')
+            end
+            com = GovernmentActor.find_by_name(t)
+            unless com
+              com = GovernmentActor.new
+              com.name = t[0..254]
+              com.save
+            end
+            c.government_actors << com
+          end
+        end
+      end
+
+      organ(row[17],Supporter,c,'supporters')
+
+      if row[18]
+        puts "EJOs"
+        row[18].split(/(\n|,\s*)+/).each do |ch|
+          if ch
+            next if ch.match /:$/ or ch.match(/^\s*$/) or ch.gsub(/\s/,'').length < 2
+            t = ch.sub(/^\s*(-|\)|\d|\.|»|=|>|•)*\s*/,"")
+            t.strip!
+            gov = JusticeParty.find_by_name(t)
+            unless gov
+              gov = JusticeParty.new
+              gov.name = t[0..254]
+              gov.save
+            end
+            puts gov.name
+            c.justice_parties << gov
+          end
+        end
+      end
+
+      c.status = Status.find_by_name(row[19])
+      c.reaction = Reaction.find_by_name(row[20])
+      c.related_conflict_string = row[21]
+      merrs[:poptype] = []
+      c.population_type = ['Unknown','Urban','Semi-urban','Rural'].index(row[22])
+      unless c.population_type
+        merrs[:poptype] = [[row[1], row[22]]]
+      end
+      if c.affected_people
+        puts c.affected_people.background(:blue) 
+      else
+        c.affected_people = row[23]
+        puts c.affected_people.background(:blue) if c.affected_people
+      end
+
+
+      isum = row[24]
+      if isum
+        puts isum.background(:green) 
+        c.investment_string = isum
+        nisum = isum.scan(/\(([^\)]+)\)/)[0]
+        isum = isum.gsub(nisum[0],'') if nisum
+        #isum = isum.split('-')[0] if isum.match(/-/)
+        isum = isum.gsub('million','000000').gsub('billion','000000000').gsub(/[\.,\s]+/,'') if isum
+        isum = isum.scan(/\d+/).map{|x| x.to_i} if isum
+        isum = isum.max if isum
+        puts isum.to_s.background(:red) if isum
+        c.investment_sum = isum.to_i
+      end
+
+      puts 'danger'
+
+      sdate = row[25]
+      sdate.to_s.downcase.gsub('x','0').gsub(/[-\/]/,'/')
+      puts sdate
+      sdates = stripDate(sdate)
+      puts sdates
+      olddate = Date.parse('1800-01-01')
+      if sdates and sdates[0] > olddate
+        c.start_datestamp = sdates[0]
+        c.start_date = sdates[1]
+        puts sdates[0]
+      end
+
+      edate = row[26]
+      edate = []
+      edate.to_s.downcase.gsub('x','0').gsub(/[-\/]/,'/')
+      edates = stripDate(edate)
+      if edates and edates[0] > olddate
+        c.end_datestamp = edates[0]
+        c.end_date = edates[1]
+        puts edates[0]
+      end
+
+      merrs[:mobgroup] = []
+      if row[27]
+        row[27].split(':::').each do |t|
+          p = MobilizingGroup.find_by_name(t) unless t.nil?
+          unless p.nil?
+            c.mobilizing_groups << p
+          else
+            merrs[:mobgroup] << [row[1], t]
+          end
+        end
+      end
+
+      c.other_mobilizing_groups = row[28]
+      c.mobilizing_groups << MobilizingGroup.find_by_name('Other') if c.other_mobilizing_groups and !c.mobilizing_groups.include?(MobilizingGroup.find_by_name('Other'))
+
+      merrs[:mobform] = []
+      if row[29]
+        row[29].split(':::').each do |t|
+          p = MobilizingForm.find_by_name(t) unless t.nil?
+          unless p.nil?
+            c.mobilizing_forms << p
+          else
+            merrs[:mobform] << [row[1], t]
+          end
+        end
+      end
+
+      c.other_mobilizing_forms = row[30]
+      c.mobilizing_forms << MobilizingForm.find_by_name('Other') if c.other_mobilizing_forms and !c.mobilizing_forms.include?(MobilizingForm.find_by_name('Other'))
+
+      p = ["Yes","Not sure","No"].index row[77]
+      c.success_level = p unless p.nil?
+
+
+      merrs[:env_impact] = []
+      31.upto(50) do |imp|
+        re = row[imp]
+        im = ['No Data','Latent, Potential or Uncertain','Observed or Documented'].index re
+        next unless im
+        if im > 0
+          impa = EnvImpact.find(imp-30)
+          cimp = CEnvImpact.new
+          cimp.conflict = c
+          cimp.env_impact = impa
+          cimp.visible = (im == 2)
+          cimp.save
+        else
+          merrs[:env_impact] << [row[1],re]
+        end
+      end
+      c.other_env_impacts = row[51]
+
+      merrs[:hlt_impact] = []
+      52.upto(61) do |imp|
+        re = row[imp]
+        im = ['No Data','Latent, Potential or Uncertain','Observed or Documented'].index re
+        next unless im
+        if im > 0
+          impa = HltImpact.find(imp-51)
+          cimp = CHltImpact.new
+          cimp.conflict = c
+          cimp.hlt_impact = impa
+          cimp.visible = (im == 2)
+          cimp.save
+        else
+          merrs[:hlt_impact] << [row[1],re]
+        end
+      end
+      c.other_hlt_impacts = row[62]
+
+      merrs[:sec_impact] = []
+      63.upto(74) do |imp|
+        re = row[imp]
+        im = ['No Data','Latent, Potential or Uncertain','Observed or Documented'].index re
+        next unless im
+        if im > 0
+          impa = SecImpact.find(imp-62)
+          cimp = CSecImpact.new
+          cimp.conflict = c
+          cimp.sec_impact = impa
+          cimp.visible = (im == 2)
+          cimp.save
+        else
+          merrs[:sec_impact] << [row[1],re]
+        end
+      end
+      c.other_sec_impacts = row[75]
+
+      t = row[76]
+      merrs[:status] = []
+      p = ProjectStatus.find_by_name(t) unless t.nil?
+      if p and p.class == ProjectStatus
+        puts p.name
+        c.project_status = p 
+      else
+        merrs[:status] << [row[1],t]
+      end
+
+      c.success_reason = row[78]
+      puts c.success_reason if c.success_reason
+
+      merrs[:outcome] = []
+      if row[79]
+        row[79].split(':::').each do |t|
+          p = ConflictEvent.find_by_name(t) unless t.nil?
+          unless p.nil?
+            c.conflict_events << p 
+          else
+            merrs[:outcome] << [row[1],t]
+          end
+        end
+      end
+
+      c.other_outcomes = row[80]
+      c.conflict_events << ConflictEvent.find_by_name('Other') unless c.other_outcomes.nil?
+
+      c.suggested_alternatives = row[81]
+
+      linking(row[82]).each do |l|
+        ref = Legislation.create :description => l[:desc], :url => l[:url]
+        c.legislations << ref
+      end
+
+      linking(row[83]).each do |l|
+        ref = Reference.create :description => l[:desc], :url => l[:url]
+        c.references << ref
+      end
+
+      linking(row[84]).each do |l|
+        ref = Weblink.create :description => l[:desc], :url => l[:url]
+        c.weblinks << ref
+      end
+
+      linking(row[85]).each do |l|
+        ref = Medialink.create :description => l[:desc], :url => l[:url]
+        c.medialinks << ref
+      end
+
+      c.other_comments = row[86]
+      c.contributor = row[87]
+
+      cem = row[89]
+      unless ac = Account.find_by_email(cem) 
+        ac = Account.new
+        unless cem and cem.match /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+          cem = "ejoltmap@gmail.com"
+        end
+        ac.email = cem
+        if row[88]
+          ac.name = row[88]
+        else
+          ac.name = "No Name"
+        end
+        ac.address = row[90]
+        ac.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
+        ac.password = ac.surname
+        ac.password_confirmation = ac.surname
+        ac.role = "user"
+        ac.save
+      end
+      puts ac.name
+      puts ac.email
+      c.account = ac
+
+      if row[95]
+        aps = row[95].downcase.strip
+        aps = 'queued' if aps == 'pending moderation'
+        aps = 'draft' if aps.nil?
+        aps = 'draft' if aps.match(/.*\d+.*/)
+        c.approval_status = aps
+      end
+      c.lon = row[96].to_f
+      c.lat = row[97].to_f
+
+      begin
+        c.save
+      rescue => exc
+        errors << "#{c.name}: #{exc.inspect}"
+        12.times do
+          puts "                                                           ".background(:red)
+        end
+      end
+
+    end
+    if errors.length > 0
+      12.times do
+        puts "                                                           ".background(:red)
+      end
+      errors.each {|e| puts e+"\n\n"}
+      12.times do
+        puts "                                                           ".background(:red)
+      end
+    end
+    merrs.each do |t, m|
+      if m.any?
+        puts t
+        m.each do |mt|
+          puts "#{mt[0]}: #{mt[1]}"
+        end
+      end
+    end
+    puts
+  end
+  handle_asynchronously :parsedata
+
+  def organ row, cls, c, cnam
+    if row
+      puts cnam
+      gdesc = nil
+      row.split("\n").each do |comp|
+        next if comp.match(/^\s*$/)
+        gd = comp.split(":")
+        if gd[0]== ""
+          gdesc = gd[1..-1].join(":")
+          next
+        end
+        x = comp.gsub(/^\s*(-|\)|\d|\.|»|=|>|•)*\s*/,"")
+        x = x.gsub("CAN","Canada").force_encoding("utf-8")
+        f = {}
+        f[:name] = x.match(/^[\p{L}\d\s\-\,\.\/’&]+(\[|\(|:|$)/).to_s.chomp('[').chomp('(').chomp(':').chomp(' ')
+        f[:name] = f[:name][0..254]
+        puts f[:name]
+        acr = x.scan(/\[([^\]]+)\]/)
+        f[:acronym] = acr[0][0].gsub(/[\[\]]/,'') if acr.length > 0
+
+        cnt = x.scan(/\(([^\)]+)\)/)
+        if cnt.length == 1
+          if cnt[0][0].match(/[,-\/]/)
+            f[:country] = cnt[0][0].gsub(/[\(\)]/,'').split(/\s*[,-\/]\s*/)
+          else
+            f[:country] = [cnt[0][0].gsub(/[\(\)]/,'')] 
+          end
+        elsif cnt.length > 1
+          cns = []
+          cnt.each do |cn|
+            cns << cn[0].gsub(/[\(\)]/,'')
+          end
+          f[:country] = cns
+        end
+        cid = nil
+        if f[:country] and cnt = Country.find_slug(Admin.slugify(f[:country][0]))
+          cid = cnt.id
+        end
+
+        dsc = x.split(":")
+        f[:description] = gdesc.to_s+" "+dsc[1..-1].join(":") if dsc.length > 1
+        url = f[:description].match(/(?:(?:http|https):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/).to_s if f[:description]
+        f[:website] = url.to_s if url
+
+        unless f[:name].nil? or f[:name] == ""
+          company = cls.find_by_slug(Admin.slugify(f[:name]))
+        end
+        unless ! cls.attribute_names.include? 'acronym' or f[:acronym] == "" or f[:acronym].nil?
+          company = cls.find_by_acronym(f[:acronym]) unless company
+        end
+        unless company 
+          if (f[:name].nil? or f[:name] == "") and (f[:acronym].nil? or f[:acronym] == "")
+            next
+          elsif cls.attribute_names.include? 'acronym'
+            company = cls.create( :name => f[:name], :acronym => f[:acronym], :country_id => cid )
+          elsif cls.attribute_names.include? 'country_id'
+            company = cls.create( :name => f[:name], :country_id => cid )
+          else
+            company = cls.create( :name => f[:name] )
+          end
+        end
+        company.name = f[:name] if company.name.nil?
+        company.acronym = f[:acronym] if cls.attribute_names.include? 'acronym' and company.acronym.nil? 
+        company.website = f[:website] if cls.attribute_names.include? 'website' and company.website.nil? 
+        company.country_id = cid if cls.attribute_names.include? 'country_id' and company.country_id.nil? 
+        company.save
+        c_c = eval "c.#{cnam}"
+        c_c << company unless c_c.include? company
+        if cnam == "companies" and cc = c.c_companies.find_by_company_id(company.id)
+          cc.involvement = f[:description]
+          cc.save
+        end
+      end
+      c.companies.each {|cc| puts cc.name}
+    end
+  end
+
+  def first r,i
+    return r.children[i].children.first.text if r.children[i].children.any?
+    return nil
+  end
+
+  def linking field
+    rows = {}
+    urls = {}
+    rsls = []
+    return rsls if field.nil?
+    field.to_s.force_encoding("utf-8").gsub(/\r\n/,"\n").split(/\n/).each_with_index do |f,ind|
+      unless f.match(/^\s*$/)
+        f.gsub!(/^\s*(-|\)|\d|\.|•|)*\s*/,"")
+        url = f.match(/(?:(?:http|https):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+        url = f.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+        if url
+          url = url.to_s
+          if url.length == f.length
+            urls[ind] = url[0..254]
+          else
+            desc = f.gsub(url,"")[0..254]
+            rsls << {:desc=> desc, :url=>url}
+          end
+          f.gsub!(url,"")
+        else
+          rows[ind] = f
+        end
+      end
+    end
+    desc = ""
+    lasturl = 0
+    urls.each do |k,url|
+      if rows[k-1]
+        desc = rows.delete k-1
+        desc = desc[0..254]
+        rsls << {:desc=> desc, :url=>url}
+      else
+        if lasturl == k-1
+          rsls << {:desc=> desc, :url=>url}
+        else
+          rsls << {:desc=> nil, :url=>url}
+        end
+      end
+      lasturl = k
+    end
+    rows.each do |k,v|
+      rsls << {:desc=> v, :url=>nil}
+    end
+    return rsls
+  end
+
+  def rmlines str
+    return nil if str.nil?
+    arr = str.split("\n")
+    res = []
+    arr.each do |a|
+      if a.match(/[.!?]+\s*$/)
+        res << a.strip.sub(/^\s*(-|\)|\d|\.|»|=|>|•)*\s*/,"")
+        res << "\n"
+      else
+        res << a.strip.sub(/^\s*(-|\)|\d|\.|»|=|>|•)*\s*/,"")
+      end
+    end
+    return res.join(" ")
+  end
+
+  def stripDate par
+    return if par.nil? or par.length == 0
+    par.reverse! if par.match /\d{4}.\d{2}.\d{2}/
+    matches = ['','01/','01/01/']
+    subs = [0,par.length-7,par.length-4]
+    n = 0
+    begin
+      s = par[[subs[n],0].max..-1]
+      puts matches[n]+s
+      d = Date.strptime matches[n]+s, '%d/%m/%Y'
+      y = d.year
+    rescue ArgumentError
+      n += 1
+      unless n > 2
+        retry
+      end
+    end
+    return [d,s] if d and s and d.class == Date
+    return
+  end
 end
 
