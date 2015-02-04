@@ -169,14 +169,17 @@ Admin.controllers :conflicts do
     @categories = Category.all :order => :id
     @alltypes = Type.where('category_id is not null').order('name asc')
     @types = [[{:type=>{:id=>'',:name=>'Lütfen bir Ana Başlık seçiniz.'}}]]
-    @alltypeoptions = "<option value='0'>&nbsp;</option>"
+    @alltypeoptions = ""
     @categories.each do |c|
       @types.push c.types.all
-      @alltypeoptions += "<option value='0'>&nbsp;</option><option value='0' disabled='disabled'>#{c.name}</option>"
+      @alltypeoptions += "<option value='0' disabled='disabled'>#{c.name}</option>"
       c.types.each do |ct|
         @alltypeoptions += "<option value='#{ct.id.to_s}'>#{ct.name}</option>"
+
       end
+      @alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
     end
+    @alltypeoptions += "<option value='0'>Delete</option>"
     @products = Admin.setOrder 4, Product.order('name asc')
     @impacts = [EnvImpact.all, HltImpact.all, SecImpact.all]
     @statuses = Status.all
@@ -382,7 +385,7 @@ Admin.controllers :conflicts do
         @conflict.update_attribute k, v
       end
       @conflict.account = current_account
-      clearDups @conflict.id
+      #clearDups @conflict.id
       @conflict.ping
       @conflict.modified_at = Time.now
       if @conflict.save :validate=>false

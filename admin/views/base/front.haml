@@ -17,16 +17,14 @@
     }
 
 .front
-  .tagline
-    %a{:href=>'http://www.ejolt.org',:target=>'_blank'}
-      .ejolt-logo
-    %p= $pagedesc
-    -if @defs
-      %svg{:style=>'height:0'}
-        %defs
-          -@defs.each do |d|
-            %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
-              %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+  #infopane{:style=>'height:340px;'}
+  %p= $pagedesc
+  -if @defs
+    %svg{:style=>'height:0'}
+      %defs
+        -@defs.each do |d|
+          %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+            %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
   -if @layout != :full
     #map.map
   .summary_header
@@ -60,8 +58,3 @@
       .clearfix
         %h2.pull-left#name
           
--content_for :sidebar do
-  #infopane{:style=>'height:340px;'}
-  -unless @feature
-    =partial("base/sidebar")
-

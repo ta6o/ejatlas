@@ -2,11 +2,7 @@
 Admin.controller do
 
   before do
-    if params.has_key? 'fullpage'
-      @layout = :full
-    else
-      @layout = :front
-    end
+    @layout = :full
     #cache_control :max_age => 60*60*24*30 
   end
 

@@ -1,10 +1,4 @@
 -#coding: utf-8
-.tagline
-  .ejolt-logo
-  %p= $pagedesc
--2.times do
-  %br/
-
 %h1 Frequently Asked Questions
 %ul
   %li
@@ -124,37 +118,8 @@
   %li
     Share the website and maps and help be a part of a growing global movement for environmental and social justice.
 
--content_for :sidebar do
-  =partial("base/sidebar")
-  %div{'data-spy'=>"affix"}
-    %h4 Frequently Asked Questions
-    %ul
-      %li
-        %a.faq{:href=>'#what-is-ejolt'} What is the EJOLT project?
-      %li
-        %a.faq{:href=>'#how-we-map'} How we map: a collaborative process
-      %li
-        %a.faq{:href=>'#how-you-define'} How do you define environmental conflicts?
-      %li
-        %a.faq{:href=>'#what-we-map'} What we map. What type of information can you find in the Atlas?
-      %li
-        %a.faq{:href=>'#who-is-it-for'} Who is the Atlas for?
-      %li
-        %a.faq{:href=>'#how-to-use'} How to use the map: Filter, browse, comment and make your own maps
-      %li
-        %a.faq{:href=>'#limitations-of-database'} What are the limitations of the database?
-      %li
-        %a.faq{:href=>'#why-not-everywhere'} Why don’t you have coverage in some regions/areas?
-      %li
-        %a.faq{:href=>'#moderation-process'} What is the moderation process?
-      %li
-        %a.faq{:href=>'#how-you-update'} How do you update the status of the cases, the actors involved, the outcomes produced?
-      %li
-        %a.faq{:href=>'#get-involved'} How can I get involved?
-      %li
-        %a.faq{:href=>'#geographical-info'} What kind of geographical information do you use?
-
-:javascript
-  $(document).on('click', "a.faq", function(e){
-    setTimeout(function(){window.scrollBy(0,-48)},50);
-  });
+-content_for :body_end do
+  :javascript
+    $(document).on('click', "a.faq", function(e){
+      setTimeout(function(){window.scrollBy(0,-48)},50);
+    });

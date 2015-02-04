@@ -1,4 +1,4 @@
-var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme;
+var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging;
 var jsons = {};
 var big = 0;
 var all = 0;
@@ -41,7 +41,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
-    console.log(e);
+    //console.log(e);
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
@@ -63,11 +63,13 @@ function initMap (markers, maptitle, layers, vector, fid) {
   map = L.map('map',{
     scrollWheelZoom: true,
     worldCopyJump: true,
-    maxBounds: maxBounds,
+    //maxBounds: maxBounds,
+    maxBounds: [[-83,-210],[83,210]],
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
     zoom: 2,
-    layers: initLayers
+    layers: initLayers,
+    zoomControl: false
   });
 
   $.each(vector,function(i,v){
@@ -87,8 +89,15 @@ function initMap (markers, maptitle, layers, vector, fid) {
     }
   });
 
+  var zoomControl = L.control.zoom({position:'topright'});
+  map.addControl(zoomControl);
+  var loadingControl = L.Control.loading({
+    position: 'topright',
+    zoomControl: zoomControl
+  });
+  map.addControl(loadingControl);
   var HomeButton = L.Control.extend({
-    options: { position: 'topleft' }, 
+    options: { position: 'topright' }, 
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'home-button');
       L.DomEvent.addListener(container, 'click', getBack);
@@ -100,6 +109,10 @@ function initMap (markers, maptitle, layers, vector, fid) {
   map.addControl(homeButton);
 
   $('.home-button').html('<span class="glyphicon glyphicon-home"></span>')
+
+  oms = new OverlappingMarkerSpiderfier(map,{keepSpiderfied:true,nearbyDistance:4});
+  oms.legColors.usual = "black";
+  oms.legColors.highlighted = "white";
 
   markerCount = markers.length;
   markerc = {};
@@ -165,6 +178,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
       marker.on('click', function(e){window.location="/conflict/"+marker.slug});
     }
     markerc[mark.id] = marker;
+    oms.addMarker(marker);
 
     if (mark.val) {
       big ++;
@@ -200,6 +214,33 @@ function initMap (markers, maptitle, layers, vector, fid) {
       $(this).next('.more').slideDown();
   });
 
+  $('#resize').on('mousedown',function(e){
+    e.preventDefault();
+    console.log($(this).offset())
+    mouseX = e.pageX;
+    innerWidth = window.innerWidth;
+    dragging = true;
+    $('body').bind('mousemove',function(e){
+      perc = parseInt( e.pageX / innerWidth * 100 );
+      $("#map").css('width',perc+'%')
+      $("#inner").css('width',(100-perc)+'%')
+      $("#resize").css('left',(perc)+'%')
+    });
+  });
+  $('body').on('mouseleave',function(e){
+    if (dragging) {
+      $('body').unbind('mousemove');
+      dragging = false;
+      map.invalidateSize();
+    }
+  });
+  $('body').on('mouseup',function(e){
+    if (dragging) {
+      $('body').unbind('mousemove');
+      dragging = false;
+      map.invalidateSize();
+    }
+  });
   $('#conflict_summary').on('click','.seeless',function(e){
       e.preventDefault();
       $(this).parent().prev('.seemore').show();
@@ -226,18 +267,12 @@ function initMap (markers, maptitle, layers, vector, fid) {
 }
 
 function mapFit(){
-  conflict = false;
   markerBounds = markerLayer.getBounds();
-  console.log(markerBounds)
+  //console.log(markerBounds)
   if (markerBounds.getSouthWest() == undefined) {
-    //map.setView([16,26],2);
+    map.setView([16,26],2);
   } else {
-    if ($full) {
-      iw = window.innerWidth/1.8;
-      map.fitBounds(markerBounds,{paddingBottomRight: [0,iw]});
-    } else {
-      map.fitBounds(markerBounds);
-    }
+    map.fitBounds(markerBounds);
   }
 }
 

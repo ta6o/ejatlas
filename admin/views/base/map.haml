@@ -17,13 +17,8 @@
       mapFit();
     });
 .front
-  .tagline
-    %a{:href=>'http://www.ejolt.org',:target=>'_blank'}
-      .ejolt-logo
-    %p= $pagedesc
-  -if @layout != :full
-    #map.map
   .summary_header
+    #infopane{:style=>'height:340px;'}
     %br/
     .row
       .col-md-8

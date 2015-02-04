@@ -14,6 +14,7 @@
     %meta{:content => $pageauthor, :name => "author"}/
     %meta{:content => $pagekeyws, :name => "keywords"}/
     =stylesheet_link_tag 'main-full'
+    =javascript_include_tag 'jQl'
     =yield_content :include
 
     /[if lt IE 9]
@@ -24,115 +25,111 @@
     / %link{:href => "assets/ico/apple-touch-icon-57-precomposed.png", :rel => "apple-touch-icon-precomposed"}/
 
   %body{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
-    #top.contentwrapper
+    #top
       .navbar.navbar-fixed-top{:role=>'navigation'}
         .navbar-inner
-          .container-full
-            .row
-              .col-md-12
-                %a.btn.btn-navbar.pull-left{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
-                  %span.icon-bar
-                  %span.icon-bar
-                  %span.icon-bar
-                .navbar-collapse.collapse
-                  %ul.nav.nav-pills
+          %a.btn.btn-navbar.pull-left{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
+            %span.icon-bar
+            %span.icon-bar
+            %span.icon-bar
+          .navbar-collapse.collapse
+            .tagline
+              %p Environmental Justice Atlas
+            %ul.nav.nav-pills
+              %li.first
+                %a &nbsp;
+              %li
+                %a{:href => "/"}= "Home"
+              %li.dropdown#ejolt
+                %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#ejolt'}
+                  = 'EJ Atlas'
+                  %b.caret
+                %ul.dropdown-menu
+                  %li
+                    %a{:href=>'/about'} About
+                  %li
+                    %a{:href=>'/faq'} FAQ
+                  %li
+                    %a{:href=>'/disclaimer'} Disclaimer
+                  %li
+                    %a{:href=>'/credits'} Credits &amp; Collaborators
+                  %li
+                    %a{:href=>'/contact'} Contact
+              %li
+                %a{:href => "http://ejolt.org/"}= "EJOLT"
+              %li.dropdown#maps
+                %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#maps'}
+                  = 'Maps'
+                  %b.caret
+                %ul.dropdown-menu
+                  %li
+                    %a.disable{:href=>'#'} Featured Maps
+                  %li
+                    %a{:href=>'/country'} Country Maps
+                  %li
+                    %a{:href=>'/company'} Company Maps
+                  %li
+                    %a{:href=>'/commodity'} Commodity Maps
+              -if current_account.nil?
+                %li.dropdown#login
+                  %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#login',:onclick=>"$('.tagline').css('z-index',1000)"}
+                    = 'Login'
+                    %b.right-caret
+                  %ul.dropdown-menu.dropdown-right
+                    =form_tag("#{$consurl}/sessions/create/", :class => 'form login', :style=>'margin:0') do
+                      .clearfix
+                        .pull-left
+                          &nbsp; Email:
+                        .pull-left=text_field_tag :email, :value => params[:email]
+                        .pull-left
+                          Password: 
+                        .pull-left=password_field_tag :password, :value => params[:password]
+                        .pull-left=submit_tag('Enter', :class => :btn)
+                        .pull-left.small
+                          %a{:href=>"#{$consurl}/sessions/login"} Help!
+              -else
+                %li.dropdown#profile
+                  %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#profile'}
+                    = "#{current_account.name.split(/\s+/)[0]}"
+                    %b.caret
+                  %ul.dropdown-menu
                     %li
-                      %a{:href => "/"}= "Home"
-                    %li.dropdown#ejolt
-                      %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#ejolt'}
-                        = 'EJ Atlas'
-                        %b.caret
-                      %ul.dropdown-menu
-                        %li
-                          %a{:href=>'/about'} About
-                        %li
-                          %a{:href=>'/faq'} FAQ
-                        %li
-                          %a{:href=>'/disclaimer'} Disclaimer
-                        %li
-                          %a{:href=>'/credits'} Credits &amp; Collaborators
-                        %li
-                          %a{:href=>'/contact'} Contact
+                      %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
                     %li
-                      %a{:href => "http://ejolt.org/"}= "EJOLT"
-                    %li.dropdown#maps
-                      %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#maps'}
-                        = 'Maps'
-                        %b.caret
-                      %ul.dropdown-menu
-                        %li
-                          %a.disable{:href=>'#'} Featured Maps
-                        %li
-                          %a{:href=>'/country'} Country Maps
-                        %li
-                          %a{:href=>'/company'} Company Maps
-                        %li
-                          %a{:href=>'/commodity'} Commodity Maps
-                    -if current_account.nil?
-                      %li.dropdown#login
-                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#login',:onclick=>"$('.tagline').css('z-index',1000)"}
-                          = 'Login'
-                          %b.right-caret
-                        %ul.dropdown-menu.dropdown-right
-                          =form_tag("#{$consurl}/sessions/create/", :class => 'form login', :style=>'margin:0') do
-                            .clearfix
-                              .pull-left
-                                &nbsp; Email:
-                              .pull-left=text_field_tag :email, :value => params[:email]
-                              .pull-left
-                                Password: 
-                              .pull-left=password_field_tag :password, :value => params[:password]
-                              .pull-left=submit_tag('Enter', :class => :btn)
-                              .pull-left.small
-                                %a{:href=>"#{$consurl}/sessions/login"} Help!
-
-                    -else
-                      %li.dropdown#profile
-                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#profile'}
-                          = "#{current_account.name.split(/\s+/)[0]}"
-                          %b.caret
-                        %ul.dropdown-menu
-                          %li
-                            %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
-                          %li
-                            -if ['admin','editor'].include? current_account.role
-                              %a{:href=>'/cache'} Cache
-                            -else
-                              %a{:href=>'/conflicts'} My Cases
-                          %li
-                            %a{:href=>'/conflicts/new'} New Conflict
-                          %li
-                            %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
-                              %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-                            %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+                      -if ['admin','editor'].include? current_account.role
+                        %a{:href=>'/cache'} Cache
+                      -else
+                        %a{:href=>'/conflicts'} My Cases
+                    %li
+                      %a{:href=>'/conflicts/new'} New Conflict
+                    %li
+                      %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
+                        %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                      %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+            .ejatlas-logo
 
       %header
+        =yield_content :outer
         .container-full
           #map.map
-          =yield_content :outer
-          .row
-            .col-md-7.col-md-offset-1.relative
-              #inner.inner= yield
-            .col-md-3.relative
-              #side.sidebar
-                .logo{:style=>'height:140px;margin-top:24px;'}
-                =yield_content :sidebar
-    %footer.footer.clearfix
-      %a.large.pull-left{:href=>'http://www.ejolt.org/'}
-        .ejolt-logo{:style=>'margin:0;width:150px'}
-      %span.large.pull-left
-        &copy;
-        = DateTime.now.year
-      .clearfix.pull-left
-        %a.pull-left{:href=>'http://cordis.europa.eu/fp7/home_en.html'}
-          %img{:src=>'/images/fp7_white.gif'}
-        %a.pull-left{:href=>'http://europa.eu/'}
-          %img{:src=>'/images/eu.gif'}
-      .clearfix.pull-left
-        %a#thank_fb.pull-left.clearfix{:href=>'http://www.facebook.com/sharer.php?u=http://ejatlas.org/',:target=>'_blank'}
-          #img.pull-left
-        %a#thank_tw.pull-left.clearfix{:href=>'https://twitter.com/intent/tweet?text=http%3A%2F%2Fejatlas.org%20-%20Mapping%20ecological%20conflicts%20and%20spaces%20of%20resistance&source=clicktotweet',:target=>'_blank'}
-          #img.pull-left
+          #inner.inner
+            #resize &nbsp;
+            = yield
+    %footer
+      .clearfix
+        %a.large.pull-left{:href=>'http://www.ejolt.org/'}
+          .ejolt-logo
+        %a.pull-left{:href=>'http://cordis.europa.eu/fp7/home_en.html',:target=>"_blank"}
+          %img{:src=>'/images/fp7_white.gif',:title=>'Seventh Network Programme'}
+        %a.pull-left{:href=>'http://europa.eu/',:target=>"_blank"}
+          %img{:src=>'/images/eu.gif',:title=>'European Union'}
+        %a.pull-left{:href=>'https://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>"_blank"}
+          %img{:src=>'/images/cc.png',:title=>'CC Attribution NonCommercial ShareAlike'}
+        -#
+          %a#thank_fb.pull-left.clearfix{:href=>'http://www.facebook.com/sharer.php?u=http://ejatlas.org/',:target=>'_blank'}
+            #img.pull-left
+          %a#thank_tw.pull-left.clearfix{:href=>'https://twitter.com/intent/tweet?text=http%3A%2F%2Fejatlas.org%20-%20Mapping%20ecological%20conflicts%20and%20spaces%20of%20resistance&source=clicktotweet',:target=>'_blank'}
+            #img.pull-left
 
     -if @color and @color.length == 6
       :javascript
@@ -140,7 +137,6 @@
     -else
       :javascript
         var $color;
-    =javascript_include_tag 'jQl'
     :javascript
       $full = true;
       //L_PREFER_CANVAS= true;

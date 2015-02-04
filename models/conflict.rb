@@ -562,7 +562,7 @@ class Conflict < ActiveRecord::Base
 
       ['', '8', [
         [:flat, 'c', 'contributor', 'Contributor'],
-        [:date, 'c', 'updated_at', 'Last update'],
+        [:date, 'c', 'modified_at', 'Last update'],
       ]]]
   end
 

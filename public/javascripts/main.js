@@ -1351,6 +1351,309 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
   };
 }());
 
+/*
+ * L.Control.Loading is a control that shows a loading indicator when tiles are
+ * loading or when map-related AJAX requests are taking place.
+ */
+
+(function () {
+
+    function defineLeafletLoading(L) {
+        L.Control.Loading = L.Control.extend({
+            options: {
+                position: 'topleft',
+                separate: false,
+                zoomControl: null,
+                spinjs: false,
+                spin: { 
+                  lines: 7, 
+                  length: 3, 
+                  width: 3, 
+                  radius: 5, 
+                  rotate: 13, 
+                  top: "83%"
+                }
+            },
+
+            initialize: function(options) {
+                L.setOptions(this, options);
+                this._dataLoaders = {};
+
+                // Try to set the zoom control this control is attached to from the 
+                // options
+                if (this.options.zoomControl !== null) {
+                    this.zoomControl = this.options.zoomControl;
+                }
+            },
+
+            onAdd: function(map) {
+                if (this.options.spinjs && (typeof Spinner !== 'function')) {
+                    return console.error("Leaflet.loading cannot load because you didn't load spin.js (http://fgnass.github.io/spin.js/), even though you set it in options.");
+                }
+                this._addLayerListeners(map);
+                this._addMapListeners(map);
+
+                // Try to set the zoom control this control is attached to from the map
+                // the control is being added to
+                if (!this.options.separate && !this.zoomControl) {
+                    if (map.zoomControl) {
+                        this.zoomControl = map.zoomControl;
+                    } else if (map.zoomsliderControl) {
+                        this.zoomControl = map.zoomsliderControl;
+                    }
+                }
+
+                // Create the loading indicator
+                var classes = 'leaflet-control-loading';
+                var container;
+                if (this.zoomControl && !this.options.separate) {
+                    // If there is a zoom control, hook into the bottom of it
+                    container = this.zoomControl._container;
+                    // These classes are no longer used as of Leaflet 0.6
+                    classes += ' leaflet-bar-part-bottom leaflet-bar-part last';
+
+                    // Loading control will be added to the zoom control. So the visible last element is not the
+                    // last dom element anymore. So add the part-bottom class.
+                    L.DomUtil.addClass(this._getLastControlButton(), 'leaflet-bar-part-bottom');
+                }
+                else {
+                    // Otherwise, create a container for the indicator
+                    container = L.DomUtil.create('div', 'leaflet-control-zoom leaflet-bar');
+                }
+                this._indicator = L.DomUtil.create('a', classes, container);
+                if (this.options.spinjs) {
+                  this._spinner = new Spinner(this.options.spin).spin();
+                  this._indicator.appendChild(this._spinner.el);
+                }
+                return container;
+            },
+
+            onRemove: function(map) {
+                this._removeLayerListeners(map);
+                this._removeMapListeners(map);
+            },
+
+            removeFrom: function (map) {
+                if (this.zoomControl && !this.options.separate) {
+                    // Override Control.removeFrom() to avoid clobbering the entire
+                    // _container, which is the same as zoomControl's
+                    this._container.removeChild(this._indicator);
+                    this._map = null;
+                    this.onRemove(map);
+                    return this;
+                }
+                else {
+                    // If this control is separate from the zoomControl, call the
+                    // parent method so we don't leave behind an empty container
+                    return L.Control.prototype.removeFrom.call(this, map);
+                }
+            },
+
+            addLoader: function(id) {
+                this._dataLoaders[id] = true;
+                this.updateIndicator();
+            },
+
+            removeLoader: function(id) {
+                delete this._dataLoaders[id];
+                this.updateIndicator();
+            },
+
+            updateIndicator: function() {
+                if (this.isLoading()) {
+                    this._showIndicator();
+                }
+                else {
+                    this._hideIndicator();
+                }
+            },
+
+            isLoading: function() {
+                return this._countLoaders() > 0;
+            },
+
+            _countLoaders: function() {
+                var size = 0, key;
+                for (key in this._dataLoaders) {
+                    if (this._dataLoaders.hasOwnProperty(key)) size++;
+                }
+                return size;
+            },
+
+            _showIndicator: function() {
+                // Show loading indicator
+                L.DomUtil.addClass(this._indicator, 'is-loading');
+
+                // If zoomControl exists, make the zoom-out button not last
+                if (!this.options.separate) {
+                    if (this.zoomControl instanceof L.Control.Zoom) {
+                        L.DomUtil.removeClass(this._getLastControlButton(), 'leaflet-bar-part-bottom');
+                    }
+                    else if (typeof L.Control.Zoomslider === 'function' && this.zoomControl instanceof L.Control.Zoomslider) {
+                        L.DomUtil.removeClass(this.zoomControl._ui.zoomOut, 'leaflet-bar-part-bottom');
+                    }
+                }
+            },
+
+            _hideIndicator: function() {
+                // Hide loading indicator
+                L.DomUtil.removeClass(this._indicator, 'is-loading');
+
+                // If zoomControl exists, make the zoom-out button last
+                if (!this.options.separate) {
+                    if (this.zoomControl instanceof L.Control.Zoom) {
+                        L.DomUtil.addClass(this._getLastControlButton(), 'leaflet-bar-part-bottom');
+                    }
+                    else if (typeof L.Control.Zoomslider === 'function' && this.zoomControl instanceof L.Control.Zoomslider) {
+                        L.DomUtil.addClass(this.zoomControl._ui.zoomOut, 'leaflet-bar-part-bottom');
+                    }
+                }
+            },
+
+            _getLastControlButton: function() {
+                var container = this.zoomControl._container,
+                    index = container.children.length - 1;
+
+                // Find the last visible control button that is not our loading
+                // indicator
+                while (index > 0) {
+                    var button = container.children[index];
+                    if (!(this._indicator === button || button.offsetWidth === 0 || button.offsetHeight === 0)) {
+                        break;
+                    }
+                    index--;
+                }
+
+                return container.children[index];
+            },
+
+            _handleLoading: function(e) {
+                this.addLoader(this.getEventId(e));
+            },
+
+            _handleLoad: function(e) {
+                this.removeLoader(this.getEventId(e));
+            },
+
+            getEventId: function(e) {
+                if (e.id) {
+                    return e.id;
+                }
+                else if (e.layer) {
+                    return e.layer._leaflet_id;
+                }
+                return e.target._leaflet_id;
+            },
+
+            _layerAdd: function(e) {
+                if (!e.layer || !e.layer.on) return
+                try {
+                    e.layer.on({
+                        loading: this._handleLoading,
+                        load: this._handleLoad
+                    }, this);
+                }
+                catch (exception) {
+                    console.warn('L.Control.Loading: Tried and failed to add ' +
+                                 ' event handlers to layer', e.layer);
+                    console.warn('L.Control.Loading: Full details', exception);
+                }
+            },
+
+            _addLayerListeners: function(map) {
+                // Add listeners for begin and end of load to any layers already on the 
+                // map
+                map.eachLayer(function(layer) {
+                    if (!layer.on) return;
+                    layer.on({
+                        loading: this._handleLoading,
+                        load: this._handleLoad
+                    }, this);
+                }, this);
+
+                // When a layer is added to the map, add listeners for begin and end
+                // of load
+                map.on('layeradd', this._layerAdd, this);
+            },
+
+            _removeLayerListeners: function(map) {
+                // Remove listeners for begin and end of load from all layers
+                map.eachLayer(function(layer) {
+                    if (!layer.off) return;
+                    layer.off({
+                        loading: this._handleLoading,
+                        load: this._handleLoad
+                    }, this);
+                }, this);
+
+                // Remove layeradd listener from map
+                map.off('layeradd', this._layerAdd, this);
+            },
+
+            _addMapListeners: function(map) {
+                // Add listeners to the map for (custom) dataloading and dataload
+                // events, eg, for AJAX calls that affect the map but will not be
+                // reflected in the above layer events.
+                map.on({
+                    dataloading: this._handleLoading,
+                    dataload: this._handleLoad,
+                    layerremove: this._handleLoad
+                }, this);
+            },
+
+            _removeMapListeners: function(map) {
+                map.off({
+                    dataloading: this._handleLoading,
+                    dataload: this._handleLoad,
+                    layerremove: this._handleLoad
+                }, this);
+            }
+        });
+
+        L.Map.addInitHook(function () {
+            if (this.options.loadingControl) {
+                this.loadingControl = new L.Control.Loading();
+                this.addControl(this.loadingControl);
+            }
+        });
+
+        L.Control.loading = function(options) {
+            return new L.Control.Loading(options);
+        };
+    }
+
+    if (typeof define === 'function' && define.amd) {
+        // Try to add leaflet.loading to Leaflet using AMD
+        define(['leaflet'], function (L) {
+            defineLeafletLoading(L);
+        });
+    }
+    else {
+        // Else use the global L
+        defineLeafletLoading(L);
+    }
+
+})();
+
+(function(){/*
+ OverlappingMarkerSpiderfier
+https://github.com/jawj/OverlappingMarkerSpiderfier-Leaflet
+Copyright (c) 2011 - 2012 George MacKerron
+Released under the MIT licence: http://opensource.org/licenses/mit-license
+Note: The Leaflet maps API must be included *before* this code
+*/
+(function(){var q={}.hasOwnProperty,r=[].slice;null!=this.L&&(this.OverlappingMarkerSpiderfier=function(){function n(c,b){var a,e,g,f,d=this;this.map=c;null==b&&(b={});for(a in b)q.call(b,a)&&(e=b[a],this[a]=e);this.initMarkerArrays();this.listeners={};f=["click","zoomend"];e=0;for(g=f.length;e<g;e++)a=f[e],this.map.addEventListener(a,function(){return d.unspiderfy()})}var d,k;d=n.prototype;d.VERSION="0.2.6";k=2*Math.PI;d.keepSpiderfied=!1;d.nearbyDistance=20;d.circleSpiralSwitchover=9;d.circleFootSeparation=
+25;d.circleStartAngle=k/12;d.spiralFootSeparation=28;d.spiralLengthStart=11;d.spiralLengthFactor=5;d.legWeight=1.5;d.legColors={usual:"#222",highlighted:"#f00"};d.initMarkerArrays=function(){this.markers=[];return this.markerListeners=[]};d.addMarker=function(c){var b,a=this;if(null!=c._oms)return this;c._oms=!0;b=function(){return a.spiderListener(c)};c.addEventListener("click",b);this.markerListeners.push(b);this.markers.push(c);return this};d.getMarkers=function(){return this.markers.slice(0)};
+d.removeMarker=function(c){var b,a;null!=c._omsData&&this.unspiderfy();b=this.arrIndexOf(this.markers,c);if(0>b)return this;a=this.markerListeners.splice(b,1)[0];c.removeEventListener("click",a);delete c._oms;this.markers.splice(b,1);return this};d.clearMarkers=function(){var c,b,a,e,g;this.unspiderfy();g=this.markers;c=a=0;for(e=g.length;a<e;c=++a)b=g[c],c=this.markerListeners[c],b.removeEventListener("click",c),delete b._oms;this.initMarkerArrays();return this};d.addListener=function(c,b){var a,
+e;(null!=(e=(a=this.listeners)[c])?e:a[c]=[]).push(b);return this};d.removeListener=function(c,b){var a;a=this.arrIndexOf(this.listeners[c],b);0>a||this.listeners[c].splice(a,1);return this};d.clearListeners=function(c){this.listeners[c]=[];return this};d.trigger=function(){var c,b,a,e,g,f;b=arguments[0];c=2<=arguments.length?r.call(arguments,1):[];b=null!=(a=this.listeners[b])?a:[];f=[];e=0;for(g=b.length;e<g;e++)a=b[e],f.push(a.apply(null,c));return f};d.generatePtsCircle=function(c,b){var a,e,
+g,f,d;g=this.circleFootSeparation*(2+c)/k;e=k/c;d=[];for(a=f=0;0<=c?f<c:f>c;a=0<=c?++f:--f)a=this.circleStartAngle+a*e,d.push(new L.Point(b.x+g*Math.cos(a),b.y+g*Math.sin(a)));return d};d.generatePtsSpiral=function(c,b){var a,e,g,f,d;g=this.spiralLengthStart;a=0;d=[];for(e=f=0;0<=c?f<c:f>c;e=0<=c?++f:--f)a+=this.spiralFootSeparation/g+5E-4*e,e=new L.Point(b.x+g*Math.cos(a),b.y+g*Math.sin(a)),g+=k*this.spiralLengthFactor/a,d.push(e);return d};d.spiderListener=function(c){var b,a,e,g,f,d,h,k,l;(b=null!=
+c._omsData)&&this.keepSpiderfied||this.unspiderfy();if(b)return this.trigger("click",c);g=[];f=[];d=this.nearbyDistance*this.nearbyDistance;e=this.map.latLngToLayerPoint(c.getLatLng());l=this.markers;h=0;for(k=l.length;h<k;h++)b=l[h],this.map.hasLayer(b)&&(a=this.map.latLngToLayerPoint(b.getLatLng()),this.ptDistanceSq(a,e)<d?g.push({marker:b,markerPt:a}):f.push(b));return 1===g.length?this.trigger("click",c):this.spiderfy(g,f)};d.makeHighlightListeners=function(c){var b=this;return{highlight:function(){return c._omsData.leg.setStyle({color:b.legColors.highlighted})},
+unhighlight:function(){return c._omsData.leg.setStyle({color:b.legColors.usual})}}};d.spiderfy=function(c,b){var a,e,g,d,p,h,k,l,n,m;this.spiderfying=!0;m=c.length;a=this.ptAverage(function(){var a,b,e;e=[];a=0;for(b=c.length;a<b;a++)k=c[a],e.push(k.markerPt);return e}());d=m>=this.circleSpiralSwitchover?this.generatePtsSpiral(m,a).reverse():this.generatePtsCircle(m,a);a=function(){var a,b,k,m=this;k=[];a=0;for(b=d.length;a<b;a++)g=d[a],e=this.map.layerPointToLatLng(g),n=this.minExtract(c,function(a){return m.ptDistanceSq(a.markerPt,
+g)}),h=n.marker,p=new L.Polyline([h.getLatLng(),e],{color:this.legColors.usual,weight:this.legWeight,clickable:!1}),this.map.addLayer(p),h._omsData={usualPosition:h.getLatLng(),leg:p},this.legColors.highlighted!==this.legColors.usual&&(l=this.makeHighlightListeners(h),h._omsData.highlightListeners=l,h.addEventListener("mouseover",l.highlight),h.addEventListener("mouseout",l.unhighlight)),h.setLatLng(e),h.setZIndexOffset(1E6),k.push(h);return k}.call(this);delete this.spiderfying;this.spiderfied=!0;
+return this.trigger("spiderfy",a,b)};d.unspiderfy=function(c){var b,a,e,d,f,k,h;null==c&&(c=null);if(null==this.spiderfied)return this;this.unspiderfying=!0;d=[];e=[];h=this.markers;f=0;for(k=h.length;f<k;f++)b=h[f],null!=b._omsData?(this.map.removeLayer(b._omsData.leg),b!==c&&b.setLatLng(b._omsData.usualPosition),b.setZIndexOffset(0),a=b._omsData.highlightListeners,null!=a&&(b.removeEventListener("mouseover",a.highlight),b.removeEventListener("mouseout",a.unhighlight)),delete b._omsData,d.push(b)):
+e.push(b);delete this.unspiderfying;delete this.spiderfied;this.trigger("unspiderfy",d,e);return this};d.ptDistanceSq=function(c,b){var a,e;a=c.x-b.x;e=c.y-b.y;return a*a+e*e};d.ptAverage=function(c){var b,a,e,d,f;d=a=e=0;for(f=c.length;d<f;d++)b=c[d],a+=b.x,e+=b.y;c=c.length;return new L.Point(a/c,e/c)};d.minExtract=function(c,b){var a,d,g,f,k,h;g=k=0;for(h=c.length;k<h;g=++k)if(f=c[g],f=b(f),"undefined"===typeof a||null===a||f<d)d=f,a=g;return c.splice(a,1)[0]};d.arrIndexOf=function(c,b){var a,
+d,g,f;if(null!=c.indexOf)return c.indexOf(b);a=g=0;for(f=c.length;g<f;a=++g)if(d=c[a],d===b)return a;return-1};return n}())}).call(this);}).call(this);
+/* Mon 14 Oct 2013 10:54:59 BST */
 /*! $.noUiSlider
  @version 5.0.0
  @author Leon Gersen https://twitter.com/LeonGersen
@@ -2802,7 +3105,7 @@ break;case 9348:a+="(";a+="1";a+="7";a+=")";break;case 9329:case 9458:a+="1";a+=
 '"';break;case 8216:case 8217:case 8218:case 8219:case 8242:case 8245:case 8249:case 8250:case 10075:case 10076:case 65287:a+="'";break;case 8208:case 8209:case 8210:case 8211:case 8212:case 8315:case 8331:case 65293:a+="-";break;case 8261:case 10098:case 65339:a+="[";break;case 8262:case 10099:case 65341:a+="]";break;case 8317:case 8333:case 10088:case 10090:case 65288:a+="(";break;case 11816:a+="(";a+="(";break;case 8318:case 8334:case 10089:case 10091:case 65289:a+=")";break;case 11817:a+=")";
 a+=")";break;case 10092:case 10096:case 65308:a+="<";break;case 10093:case 10097:case 65310:a+=">";break;case 10100:case 65371:a+="{";break;case 10101:case 65373:a+="}";break;case 8314:case 8330:case 65291:a+="+";break;case 8316:case 8332:case 65309:a+="=";break;case 65281:a+="!";break;case 8252:a+="!";a+="!";break;case 8265:a+="!";a+="?";break;case 65283:a+="#";break;case 65284:a+="$";break;case 8274:case 65285:a+="%";break;case 65286:a+="&";break;case 8270:case 65290:a+="*";break;case 65292:a+=
 ",";break;case 65294:a+=".";break;case 8260:case 65295:a+="/";break;case 65306:a+=":";break;case 8271:case 65307:a+=";";break;case 65311:a+="?";break;case 8263:a+="?";a+="?";break;case 8264:a+="?";a+="!";break;case 65312:a+="@";break;case 65340:a+="\\";break;case 8248:case 65342:a+="^";break;case 65343:a+="_";break;case 8275:case 65374:a+="~";break;default:a+="_"}c+=a}}return c};
-var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme;
+var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging;
 var jsons = {};
 var big = 0;
 var all = 0;
@@ -2845,7 +3148,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
-    console.log(e);
+    //console.log(e);
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
@@ -2867,11 +3170,13 @@ function initMap (markers, maptitle, layers, vector, fid) {
   map = L.map('map',{
     scrollWheelZoom: true,
     worldCopyJump: true,
-    maxBounds: maxBounds,
+    //maxBounds: maxBounds,
+    maxBounds: [[-83,-210],[83,210]],
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
     zoom: 2,
-    layers: initLayers
+    layers: initLayers,
+    zoomControl: false
   });
 
   $.each(vector,function(i,v){
@@ -2891,8 +3196,15 @@ function initMap (markers, maptitle, layers, vector, fid) {
     }
   });
 
+  var zoomControl = L.control.zoom({position:'topright'});
+  map.addControl(zoomControl);
+  var loadingControl = L.Control.loading({
+    position: 'topright',
+    zoomControl: zoomControl
+  });
+  map.addControl(loadingControl);
   var HomeButton = L.Control.extend({
-    options: { position: 'topleft' }, 
+    options: { position: 'topright' }, 
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'home-button');
       L.DomEvent.addListener(container, 'click', getBack);
@@ -2904,6 +3216,10 @@ function initMap (markers, maptitle, layers, vector, fid) {
   map.addControl(homeButton);
 
   $('.home-button').html('<span class="glyphicon glyphicon-home"></span>')
+
+  oms = new OverlappingMarkerSpiderfier(map,{keepSpiderfied:true,nearbyDistance:4});
+  oms.legColors.usual = "black";
+  oms.legColors.highlighted = "white";
 
   markerCount = markers.length;
   markerc = {};
@@ -2969,6 +3285,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
       marker.on('click', function(e){window.location="/conflict/"+marker.slug});
     }
     markerc[mark.id] = marker;
+    oms.addMarker(marker);
 
     if (mark.val) {
       big ++;
@@ -3004,6 +3321,33 @@ function initMap (markers, maptitle, layers, vector, fid) {
       $(this).next('.more').slideDown();
   });
 
+  $('#resize').on('mousedown',function(e){
+    e.preventDefault();
+    console.log($(this).offset())
+    mouseX = e.pageX;
+    innerWidth = window.innerWidth;
+    dragging = true;
+    $('body').bind('mousemove',function(e){
+      perc = parseInt( e.pageX / innerWidth * 100 );
+      $("#map").css('width',perc+'%')
+      $("#inner").css('width',(100-perc)+'%')
+      $("#resize").css('left',(perc)+'%')
+    });
+  });
+  $('body').on('mouseleave',function(e){
+    if (dragging) {
+      $('body').unbind('mousemove');
+      dragging = false;
+      map.invalidateSize();
+    }
+  });
+  $('body').on('mouseup',function(e){
+    if (dragging) {
+      $('body').unbind('mousemove');
+      dragging = false;
+      map.invalidateSize();
+    }
+  });
   $('#conflict_summary').on('click','.seeless',function(e){
       e.preventDefault();
       $(this).parent().prev('.seemore').show();
@@ -3030,18 +3374,12 @@ function initMap (markers, maptitle, layers, vector, fid) {
 }
 
 function mapFit(){
-  conflict = false;
   markerBounds = markerLayer.getBounds();
-  console.log(markerBounds)
+  //console.log(markerBounds)
   if (markerBounds.getSouthWest() == undefined) {
-    //map.setView([16,26],2);
+    map.setView([16,26],2);
   } else {
-    if ($full) {
-      iw = window.innerWidth/1.8;
-      map.fitBounds(markerBounds,{paddingBottomRight: [0,iw]});
-    } else {
-      map.fitBounds(markerBounds);
-    }
+    map.fitBounds(markerBounds);
   }
 }
 
