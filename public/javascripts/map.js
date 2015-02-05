@@ -1,4 +1,4 @@
-var markerc, info, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging;
+var markerc, info, legendpane, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging;
 var jsons = {};
 var big = 0;
 var all = 0;
@@ -38,6 +38,7 @@ function toTitleCase(str) {
 
 function initMap (markers, maptitle, layers, vector, fid) {
   info = $("#infopane");
+  legendpane = $("#legendpane");
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
@@ -105,8 +106,8 @@ function initMap (markers, maptitle, layers, vector, fid) {
     }
   });
 
-  homeButton = new HomeButton();
-  map.addControl(homeButton);
+  homeControl = new HomeButton();
+  map.addControl(homeControl);
 
   $('.home-button').html('<span class="glyphicon glyphicon-home"></span>')
 
@@ -134,7 +135,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
         if (isNaN(n[0])) return 0
         id = parseInt(n.split(':')[0]);
         if (id == fid && mark[n]) {
-          console.log(n)
           if (Object.keys(attrhash).indexOf(n.split(':')[1]) >= 0){
             popcontent += '<br /><strong>'+attrhash[n.split(':')[1]].replace(/\sId$/,'')+':</strong> ';
           } else {
@@ -216,22 +216,33 @@ function initMap (markers, maptitle, layers, vector, fid) {
 
   $('#resize').on('mousedown',function(e){
     e.preventDefault();
-    console.log($(this).offset())
     mouseX = e.pageX;
     innerWidth = window.innerWidth;
     dragging = true;
     $('body').bind('mousemove',function(e){
-      perc = parseInt( e.pageX / innerWidth * 100 );
+      pageX = Math.max(e.pageX,500);
+      perc = Math.ceil( pageX / innerWidth * 100 );
       $("#map").css('width',perc+'%')
-      $("#inner").css('width',(100-perc)+'%')
+      $("#rightpane").css('width',(100-perc)+'%')
       $("#resize").css('left',(perc)+'%')
     });
+  });
+  $('#resize span').on('mouseup',function(e){
+    e.preventDefault();
+    $('body').unbind('mousemove');
+    dragging = false;
   });
   $('body').on('mouseleave',function(e){
     if (dragging) {
       $('body').unbind('mousemove');
       dragging = false;
       map.invalidateSize();
+      if (mapWidth.match(/px$/)) {
+        mapWidth = Math.ceil(parseInt(mapWidth.replace(/px$/,'')) / window.innerWidth * 100);
+      } else {
+        mapWidth = parseInt(mapWidth.replace("%",""));
+      }
+      localStorage['mapWidth'] = mapWidth;
     }
   });
   $('body').on('mouseup',function(e){
@@ -239,12 +250,28 @@ function initMap (markers, maptitle, layers, vector, fid) {
       $('body').unbind('mousemove');
       dragging = false;
       map.invalidateSize();
+      mapWidth = document.getElementById('map').style.width
+      if (mapWidth.match(/px$/)) {
+        mapWidth = Math.ceil(parseInt(mapWidth.replace(/px$/,'')) / window.innerWidth * 100);
+      } else {
+        mapWidth = parseInt(mapWidth.replace("%",""));
+      }
+      localStorage['mapWidth'] = mapWidth;
     }
   });
   $('#conflict_summary').on('click','.seeless',function(e){
-      e.preventDefault();
-      $(this).parent().prev('.seemore').show();
-      $(this).parent().slideUp();
+    e.preventDefault();
+    $(this).parent().prev('.seemore').show();
+    $(this).parent().slideUp();
+  });
+  $('#rightpane').on('click','.horipane .title',function(e){
+    if($(this).hasClass('active')){
+      $(this).next('.content').slideUp();
+      $(this).removeClass('active');
+    } else {
+      $(this).next('.content').slideDown();
+      $(this).addClass('active');
+    }
   });
   $(document).ready(function(){
     dmns = dmns.distinct();
@@ -277,6 +304,10 @@ function mapFit(){
 }
 
 function markerSize() {
+  if (conflict) {
+    $('.map_icon').removeClass('mic').removeClass('min');
+    return
+  }
   if (markerCount > 100) {
     $('.map_icon').addClass('mic').removeClass('min');
   } else if (markerCount > 10) {
@@ -311,13 +342,12 @@ function updateInfo (type, content) {
   if (disclaimer == undefined) disclaimer = content;
   info.show();
   if (type == 0 || type == undefined) {
-    info.html(legend);
+    legendpane.html(legend);
   } else if (type == 1) {
-    html = "<div class='infocontent'>"+content+"</div>";
+    info.html(content);
     if (dmns.length == 0){ 
-      html += legend;
+      legendpane.html(legend);
     }
-    info.html(html);
   } else if (type == 2) {
     info.html(content);
   }
@@ -492,7 +522,7 @@ function showVector(v) {
     return 0
   }
   vr = toSlug(vect['url']);
-  console.log(vr);
+  //console.log(vr);
   ly = eval(vr);
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
@@ -532,7 +562,7 @@ function showVector(v) {
   jsons[tl]['desc'] = vect['description']
   jsons[tl]['source'] = vect['source']
   if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
-  updateControl();
+  lControl.addOverlay(overlayMaps[tl],tl)
 }
 
 function getObjectSize(obj) {
@@ -543,21 +573,6 @@ function getObjectSize(obj) {
   return size; // return the size of the object
 }
 
-function updateControl () {
-  lControl.removeFrom(map);
-  lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
-  /*var choropleth_legend = L.Control.extend({
-    options: {
-      position: 'top'
-    },
-
-    onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'choropleth-legend');
-      return container;
-    }
-  });*/
-}
-
 function vectorPing(varname) {
   loadQueue -= 1;
   if (varname.features[0].pn) {
@@ -565,10 +580,11 @@ function vectorPing(varname) {
   } else if (varname.features[0].properties.pn) {
     pn = varname.features[0].properties.pn;
   }
-  console.log(loadQueue+' '+varname['features'][0]['pn'])
+  //console.log(loadQueue+' '+varname['features'][0]['pn'])
   showVector(varname);
   if (loadQueue == 0) {
-    console.log('all vectors loaded');
+    //console.log('all vectors loaded');
+    $('leaflet-control-loading').hide();
   }
 }
 
@@ -579,6 +595,7 @@ function loadJS(filename){
     fileref.setAttribute("type","text/javascript")
     fileref.setAttribute("src", filename)
     document.getElementsByTagName("head")[0].appendChild(fileref)
+    $('leaflet-control-loading').show();
   }
 }
 
@@ -594,15 +611,10 @@ function toTitleCase(str) {
 
 function render(){
   leafletImage(map, function(err, canvas) {
-      console.log(err);
-      console.log(canvas);
       var dataURL = canvas.toDataURL("image/png");
       typeof dataURL
       $.post('/image',{image: dataURL},function(data){
         console.log(data);
-        if (data != "ok") {
-          console.log('$erif')
-        }
       });
   });
 }

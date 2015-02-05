@@ -17,44 +17,64 @@
     }
 
 .front
-  #infopane{:style=>'height:340px;'}
-  %p= $pagedesc
   -if @defs
     %svg{:style=>'height:0'}
       %defs
         -@defs.each do |d|
           %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
             %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
-  -if @layout != :full
-    #map.map
-  .summary_header
-    %br/
-    .row
-      .col-md-12
-        -if @image
-          %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
-        .pull-left
-          %h1{:style=>'margin:0;font-size: 48px'}= @name
-    -if @description and @description.length > 0 and not @feature
-      %br/
-      %br/
-      .row
-        .col-md-7
-          %p.description= @description.gsub("\n","<br />").html_safe
 
-        .col-md-5
+  .summary_header
+    .clearfix
+      -if @image
+        %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
+      .pull-left
+        %h1{:style=>'margin:0;font-size: 48px'}= @name
+    %br/
+
+  .horipane
+    .title.active Info
+    .content
+      %br/
+      #infopane
+      %br/
+
+  -if @load and @load.length > 0
+    .horipane
+      .title{:class=> @feature ? "" : "active"} Legend
+      .content
+        %br/
+        #legendpane
+        %br/
+
+  -if @description and @description.length > 0  
+    .horipane
+      .title.active Description
+      .content
+        %br/
+        -if @feature
+          .clearfix#disclaimer
+            %h2= @maptitle
+            -if @description
+              %p.description= @description.gsub("\n","<br />").html_safe
+        -else
+          %p.description= @description.gsub("\n","<br />").html_safe
+        %br/
+              
+  -if @load and @load.length > 0
+    .horipane
+      .title.active Cases
+      .content
+        %br/
+        -if @feature
+          .clearfix#disclaimer
+            =(@load || "").html_safe
+          .clearfix
+            %h2.pull-left#name
+        -else
           .clearfix#disclaimer
             %h2{:style=>"margin-top:0"}= @maptitle
             =@load.html_safe
-
           .clearfix
             %h2.pull-left#name
-    -else
-      .clearfix#disclaimer
-        %h2= @maptitle
-        -if @description
-          %p.description= @description.gsub("\n","<br />").html_safe
-        =(@load || "").html_safe
-      .clearfix
-        %h2.pull-left#name
-          
+        %br/

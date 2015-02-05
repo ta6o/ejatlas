@@ -112,9 +112,16 @@
         =yield_content :outer
         .container-full
           #map.map
-          #inner.inner
-            #resize &nbsp;
-            = yield
+          #rightpane
+            #resize{:title=>'Drag to resize info pane'}
+              %span.glyphicon.glyphicon-chevron-right{:title=>'Toggle info pane'}
+            :javascript
+              if (localStorage.key('mapWidth')){
+                document.getElementById('map').style.width = localStorage['mapWidth']+"%";
+                document.getElementById('resize').style.left = localStorage['mapWidth']+"%";
+                document.getElementById('rightpane').style.width = (100-localStorage['mapWidth'])+"%";
+              }
+            .inner= yield
     %footer
       .clearfix
         %a.large.pull-left{:href=>'http://www.ejolt.org/'}
@@ -138,6 +145,7 @@
       :javascript
         var $color;
     :javascript
+      conflict = false;
       $full = true;
       //L_PREFER_CANVAS= true;
       jQl.loadjQ('/javascripts/main.js'); 
@@ -158,4 +166,31 @@
         });
         return true;
       };  
-
+      $(document).ready(function(){
+        $('#resize span').on('click',function(e){
+          if ($(this).hasClass('glyphicon-chevron-right')) {
+            $('#map').animate({'width':window.innerWidth - 12});
+            $('#rightpane').animate({'width':'0%'});
+            $('#resize').animate({'left':window.innerWidth - 12},function(){
+              $('#rightpane .inner').hide();
+              $('#resize span').removeClass('glyphicon-chevron-right');
+              $('#resize span').addClass('glyphicon-chevron-left');
+              $('#resize span').css('cursor','w-resize');
+              map.invalidateSize();
+            });
+          } else {
+            if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
+            $('#rightpane .inner').show();
+            console.log(perc)
+            $('#map').animate({'width':perc+"%"});
+            $('#rightpane').animate({'width':(100-perc)+'%'});
+            $('#resize').animate({'left':perc+"%"},function(){
+              $('#resize span').removeClass('glyphicon-chevron-left');
+              $('#resize span').addClass('glyphicon-chevron-right');
+              $('#resize span').css('cursor','e-resize');
+              map.invalidateSize();
+            });
+          }
+        })
+      })  ;
+    =yield_content :body_end

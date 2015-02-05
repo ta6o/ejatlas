@@ -1,6 +1,5 @@
 -# coding: utf-8
--content_for :bodyend do
-  <script type="text/javascript"> var disqus_shortname = 'ejatlas'; (function () { var s = document.createElement('script'); s.async = true; s.type = 'text/javascript'; s.src = '//' + disqus_shortname + '.disqus.com/count.js'; (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s); }()); </script> 
+
 -content_for :include do
   :javascript
     img = new Image(330,30);
@@ -17,23 +16,19 @@
     }
 
 .front
-  .tagline
-    %a{:href=>'http://www.ejolt.org',:target=>'_blank'}
-      .ejolt-logo
-    %p= $pagedesc
-    -if @defs
-      %svg{:style=>'height:0'}
-        %defs
-          -@defs.each do |d|
-            %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
-              %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
-  #map.map
+  -#infopane{:style=>'height:340px;'}
+  -#%p= $pagedesc
+  -if @defs
+    %svg{:style=>'height:0'}
+      %defs
+        -@defs.each do |d|
+          %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+            %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
   .summary_header
     .clearfix#disclaimer
       %h2= @maptitle
 
     .clearfix
-      %h2.pull-left#name
       .pull-right#commands{:style=>'display:none;'}
         %ul.clearfix.list-unstyled
           %li
@@ -50,6 +45,8 @@
             -else
               :javascript
                 var clearuser = true;
+    .clearfix
+      %h2.pull-left#name{:style=>'margin: 18px 0'}
 
     .clearfix.row
       -if @images.any?
@@ -89,7 +86,7 @@
                 })
                 wdiff = $('#carousel_container').width() - crswidth;
                 if (wdiff >= 0){
-                  $('#carousel_ul').css('left','0px')
+                  $('#carousel_ul').css('left','18px')
                   $('#left_scroll').hide();
                   $('#right_scroll').hide();
                 } else {
@@ -141,9 +138,14 @@
 
     #conflict_summary{:style=>'display:none;'}
 
-  <div id="disqus_thread"></div> <script type="text/javascript"> var disqus_shortname = 'ejatlas'; (function() { var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); </script> <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript> <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  #disqus_thread
 
--content_for :sidebar do
-  #sat.map
-  #infopane{:style=>'height:340px;'}
-  =partial("base/sidebar")
+-content_for :body_end do
+  :javascript
+    var disqus_shortname = 'ejatlas'; 
+    (function() { 
+      var dsq = document.createElement('script'); 
+      dsq.type = 'text/javascript'; 
+      dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; 
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); 
+      

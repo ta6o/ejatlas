@@ -97,11 +97,13 @@
             },
 
             addLoader: function(id) {
+                console.log(id)
                 this._dataLoaders[id] = true;
                 this.updateIndicator();
             },
 
             removeLoader: function(id) {
+                console.log(id)
                 delete this._dataLoaders[id];
                 this.updateIndicator();
             },

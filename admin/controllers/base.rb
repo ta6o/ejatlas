@@ -76,7 +76,7 @@ Admin.controller do
     c = Conflict.find_slug(params[:slug])
     #last_modified c.updated_at
     redirect to "/" unless c
-    @markerinfo = c.country.conflicts_marker
+    @markerinfo = "[#{c.as_marker.to_json}]"
     @cmarker = c.as_marker.to_json
     @defs = []
     c.country.vector_data.each do |vd|
@@ -97,7 +97,7 @@ Admin.controller do
     @pos = [c.lat,c.lon]
     @images = c.images
     @zoom = 8
-    @zoom = [6,8,10,12][c.accuracy_level] if c.accuracy_level
+    @zoom = [6,8,12,17][c.accuracy_level] if c.accuracy_level
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)

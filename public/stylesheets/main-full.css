@@ -5267,6 +5267,7 @@ ul.sidelink li.active {
   background: url('/images/bg.png');
   position: fixed;
   width: 70%;
+  min-width: 500px;
   height: 100%;
   top: 0px;
   bottom: 0px;
@@ -5312,48 +5313,50 @@ ul.sidelink li.active {
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
-#infopane {
-  position: relative;
-  height: 340px;
-  color: #333333;
+.horipane .title {
+  background: url('/images/bg.png');
+  font-weight: bold;
+  padding: 4px 15px 4px 27px;
+  margin: 0 -15px 0 -27px;
+  cursor: s-resize;
 }
-#infopane .infocontent {
-  position: absolute;
-  top: 0px;
+.horipane .title.active {
+  cursor: n-resize;
+}
+#infopane {
+  color: #333333;
 }
 #infopane .features {
   font-size: smaller;
   margin: -12px 0 0 -12px;
 }
-#infopane .legend {
-  position: absolute;
-  bottom: 0;
+#legendpane {
   font-size: 13px;
 }
-#infopane .legend.static {
+#legendpane.static {
   position: static;
   margin-bottom: 12px;
 }
-#infopane .legend.static td {
+#legendpane.static td {
   padding: 0 8px 0 0;
 }
-#infopane .legend table tbody tr {
+#legendpane table tbody tr {
   height: 18px;
   overflow: hidden;
 }
-#infopane .legend table tbody tr td {
+#legendpane table tbody tr td {
   padding: 0 0 0 8px;
 }
-#infopane .legend table tbody tr td .map-icon {
+#legendpane table tbody tr td .map-icon {
   margin: 0 0 0 -8px !important;
   cursor: pointer;
   width: 12px !important;
   height: 12px !important;
 }
-#infopane .legend table tbody tr td .vis {
+#legendpane table tbody tr td .vis {
   border: 2px solid black;
 }
-#infopane .legend table tbody tr td .hid {
+#legendpane table tbody tr td .hid {
   border: 2px solid white;
 }
 .summary_header {
@@ -5459,7 +5462,7 @@ ul.sidelink li.active {
   max-width: 120px;
 }
 #commands {
-  line-height: 42px;
+  line-height: 0px;
 }
 #commands ul li {
   padding-left: 12px;
@@ -5630,21 +5633,40 @@ ul.sidelink li.active {
 }
 #resize {
   background-color: #ccc;
+  background-image: -webkit-gradient(linear, 0% top, 100% top, from(#c8c8c8), to(#c0c0c0));
+  background-image: -webkit-linear-gradient(left, color-stop(#c8c8c8 0%), color-stop(#c0c0c0 100%));
+  background-image: -moz-linear-gradient(left, #c8c8c8 0%, #c0c0c0 100%);
+  background-image: linear-gradient(to right, #c8c8c8 0%, #c0c0c0 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffc8c8c8', endColorstr='#ffc0c0c0', GradientType=1);
+  background-image: url('/images/move.png');
+  background-repeat: no-repeat;
+  background-position: center center;
   width: 12px;
   height: 100%;
   position: fixed;
-  left: 70%;
   top: 0px;
-  cursor: pointer;
+  cursor: grab;
+  cursor: col-resize;
+  left: 70%;
 }
-#inner {
+#resize span {
+  line-height: 64px;
+  text-indent: -1px;
+  font-size: 12px;
+  cursor: e-resize;
+}
+#rightpane {
   background: #fff;
-  position: fixed;
+  top: 0px;
   right: 0px;
   height: 100%;
-  width: 30%;
   overflow-x: hidden;
   overflow-y: auto;
+  position: fixed;
+  width: 30%;
+}
+#rightpane .inner {
   padding: 0 15px 0 27px;
 }
 .wide {
@@ -5875,6 +5897,15 @@ ul.sidelink li.active {
 }
 .navbar {
   min-height: 0px !important;
+}
+.navbar-collapse {
+  height: 0px !important;
+}
+#disqus_thread {
+  background: url('/images/bg.png');
+  margin: 0 -20px;
+  padding: 12px 22px;
+  height: 100%;
 }
 /* required styles */
 
