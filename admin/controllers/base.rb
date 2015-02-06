@@ -65,12 +65,11 @@ Admin.controller do
     commodities = JSON.parse(ca.commodities)
     types = JSON.parse(ca.types)
     @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
-    @maptitle = "Environmental Conflicts"
+    @maptitle = "Welcome to EJAtlas"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     @recent = Conflict.select('id, headline, modified_at, name, slug').where("headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(5)
-    @name = "Welcome to EJAtlas!"
     render "base/map", :layout => @layout
   end
 

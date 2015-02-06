@@ -24,14 +24,19 @@
           %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
             %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
-  .summary_header
-    %br/
-    .clearfix
-      -if @image
-        %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
-      .pull-left
-        %h1{:style=>'margin:0;font-size: 30px'}= @name
-    %br/
+  .horipane
+    .title.active Info
+    .content
+      %br/
+      #infopane
+      %br/
+
+  .horipane
+    .title Legend
+    .content{:style=>'display:none'}
+      %br/
+      #legendpane
+      %br/
 
   .horipane
     .title.active Recent
@@ -43,10 +48,12 @@
           %tr
             -if c.images.any?
               %td{:style=>'vertical-align:top;padding:0 0 12px;'}
-                .img{:style=>"background:url('#{c.images.first.file.thumb.url}');width:120px;height:90px;background-size:cover;"}
+                %a{:href=>"/conflict/#{c.slug}"}
+                  .img{:style=>"background:url('#{c.images.first.file.thumb.url}');width:120px;height:90px;background-size:cover;"}
             -else
               %td{:style=>'vertical-align:top;padding:0 0 12px;'}
-                .img{:style=>"background:url('/images/bg.png');width:120px;height:90px;background-size:cover;"}
+                %a{:href=>"/conflict/#{c.slug}"}
+                  .img{:style=>"background:url('/images/bg.png');width:120px;height:90px;background-size:cover;"}
             %td{:style=>'vertical-align:top;padding:0 0 12px 12px;'}
               %h4{:style=>'margin:0px'}
                 %a{:href=>"/conflict/#{c.slug}"}= c.name
@@ -57,22 +64,7 @@
       %br/
 
   .horipane
-    .title.active Info
-    .content
-      %br/
-      #infopane
-      %br/
-
-  .horipane
-    .title.active Legend
-    .content
-      %br/
-      #legendpane
-      %br/
-
-  %h3 Browse maps
-  .horipane
-    .title By Countries
+    .title Browse Countries
     .content{:style=>'display:none;'}
       %br/
       #browsecountry
@@ -84,7 +76,7 @@
       %br/
 
   .horipane
-    .title By Companies
+    .title Browse Companies
     .content{:style=>'display:none;'}
       %br/
       #browsecountry
@@ -96,7 +88,7 @@
       %br/
 
   .horipane
-    .title By Commodities
+    .title Browse Commodities
     .content{:style=>'display:none;'}
       %br/
       #browsecountry
@@ -108,7 +100,7 @@
       %br/
 
   .horipane
-    .title By Types
+    .title Browse Types
     .content{:style=>'display:none;'}
       %br/
       #browsecountry
@@ -130,7 +122,7 @@
     .leftpane
       .featureds
         %div{:style=>"position:relative;"}
-          -Featured.all.each_with_index do |feat,index|
+          -Featured.where(published:true).all.each_with_index do |feat,index|
             %a.feat{:href=>"/featured/#{feat.slug}",:style=>"left:#{index*132}px"}
               -if feat.images.any?
                 .img{:style=>"background:url('#{feat.images.first.file.thumb.url}');background-size:cover;"}
