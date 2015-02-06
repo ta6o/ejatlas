@@ -7,6 +7,9 @@ class Featured < ActiveRecord::Base
   has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
 
+  validates_presence_of :slug
+  validates_uniqueness_of :slug
+
   def inspect
     self.name
   end
@@ -26,7 +29,6 @@ class Featured < ActiveRecord::Base
   end
 
   def ping conflicts
-    #puts conflicts.class
     json, marker, link = [], [], []
     data = {}
     data["tag"] = self.tags.map(&:id)

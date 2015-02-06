@@ -72,7 +72,7 @@
                     %a{:href=>'/commodity'} Commodity Maps
               -if current_account.nil?
                 %li.dropdown#login
-                  %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#login',:onclick=>"$('.tagline').css('z-index',1000)"}
+                  %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#login'}
                     = 'Login'
                     %b.right-caret
                   %ul.dropdown-menu.dropdown-right
@@ -111,17 +111,14 @@
       %header
         =yield_content :outer
         .container-full
-          #map.map
-          #rightpane
-            #resize{:title=>'Drag to resize info pane'}
+          #map.map.leftpane
+          .rightpane
+            .resize#resizetop{:title=>'Drag to resize info pane'}
               %span.glyphicon.glyphicon-chevron-right{:title=>'Toggle info pane'}
-            :javascript
-              if (localStorage.key('mapWidth')){
-                document.getElementById('map').style.width = localStorage['mapWidth']+"%";
-                document.getElementById('resize').style.left = localStorage['mapWidth']+"%";
-                document.getElementById('rightpane').style.width = (100-localStorage['mapWidth'])+"%";
-              }
             .inner= yield
+          #bottompane
+            .inner=yield_content :bottom
+
     %footer
       .clearfix
         %a.large.pull-left{:href=>'http://www.ejolt.org/'}
@@ -144,53 +141,67 @@
     -else
       :javascript
         var $color;
+    -if ENV['RACK_ENV'] == 'development'
+      :javascript
+        conflict = false;
+        $full = true;
+        jQl.loadjQ('/javascripts/main-dev.js'); 
+    -else
+      :javascript
+        conflict = false;
+        $full = true;
+        jQl.loadjQ('/javascripts/main.js'); 
     :javascript
-      conflict = false;
-      $full = true;
-      //L_PREFER_CANVAS= true;
-      jQl.loadjQ('/javascripts/main.js'); 
-      window.onerror = function(message, url, lineNumber) {  
-        $.ajax({
-          type: 'POST',
-          url: '/error',
-          data: "message="+message+"&url="+window.location.href+"&file="+url+"&line="+lineNumber,  
-          success: function(data,ts){
-            console.log('error reported:');
-            console.log(message, url, lineNumber);
-          },
-          error: function(data,ts,error){
-            console.log('error report failed:');
-            console.log(error);
-            console.log(message, url, lineNumber);
-          }
-        });
-        return true;
-      };  
       $(document).ready(function(){
+        window.onerror = function(message, url, lineNumber) {  
+          $.ajax({
+            type: 'POST',
+            url: '/error',
+            data: "message="+message+"&url="+window.location.href+"&file="+url+"&line="+lineNumber,  
+            success: function(data,ts){
+              console.log('error reported:');
+              console.log(message, url, lineNumber);
+            },
+            error: function(data,ts,error){
+              console.log('error report failed:');
+              console.log(error);
+              console.log(message, url, lineNumber);
+            }
+          });
+          return true;
+        };  
         $('#resize span').on('click',function(e){
           if ($(this).hasClass('glyphicon-chevron-right')) {
-            $('#map').animate({'width':window.innerWidth - 12});
-            $('#rightpane').animate({'width':'0%'});
-            $('#resize').animate({'left':window.innerWidth - 12},function(){
-              $('#rightpane .inner').hide();
-              $('#resize span').removeClass('glyphicon-chevron-right');
-              $('#resize span').addClass('glyphicon-chevron-left');
-              $('#resize span').css('cursor','w-resize');
+            $('.leftpane').animate({'width':window.innerWidth - 12});
+            $('.rightpane').animate({'width':'0%'});
+            $('.resize').animate({'left':window.innerWidth - 12},function(){
+              $('.rightpane .inner').hide();
+              $('.resize span').removeClass('glyphicon-chevron-right');
+              $('.resize span').addClass('glyphicon-chevron-left');
+              $('.resize span').css('cursor','w-resize');
               map.invalidateSize();
             });
           } else {
             if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
-            $('#rightpane .inner').show();
+            $('.rightpane .inner').show();
             console.log(perc)
-            $('#map').animate({'width':perc+"%"});
-            $('#rightpane').animate({'width':(100-perc)+'%'});
-            $('#resize').animate({'left':perc+"%"},function(){
-              $('#resize span').removeClass('glyphicon-chevron-left');
-              $('#resize span').addClass('glyphicon-chevron-right');
-              $('#resize span').css('cursor','e-resize');
+            $('.leftpane').animate({'width':perc+"%"});
+            $('.rightpane').animate({'width':(100-perc)+'%'});
+            $('.resize').animate({'left':perc+"%"},function(){
+              $('.resize span').removeClass('glyphicon-chevron-left');
+              $('.resize span').addClass('glyphicon-chevron-right');
+              $('.resize span').css('cursor','e-resize');
               map.invalidateSize();
             });
           }
         })
-      })  ;
+        if (localStorage.key('mapWidth')){
+          $('.rightpane').animate({'width':(100-localStorage['mapWidth'])+"%"})
+          $('.leftpane').animate({'width':(localStorage['mapWidth'])+"%"})
+          $('.resize').animate({'left':localStorage['mapWidth']+"%"})
+        }
+      });
+      function resetColumns() {
+      }
+
     =yield_content :body_end

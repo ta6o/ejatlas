@@ -25,6 +25,7 @@
             %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
   .summary_header
+    %br/
     .clearfix
       -if @image
         %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
@@ -41,7 +42,7 @@
 
   -if @load and @load.length > 0
     .horipane
-      .title{:class=> @feature ? "" : "active"} Legend
+      .title.active{:class=> @feature ? "" : "active"} Legend
       .content
         %br/
         #legendpane

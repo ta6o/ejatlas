@@ -54,21 +54,23 @@ Admin.controller do
 
   get :index do
     ca = Cached.first
-    ##last_modified ca.updated_at
+    #last_modified ca.updated_at
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     @markercount = Conflict.where(approval_status: 'approved').count
     @markerinfo = ca.conflicts_marker
     @filterinfo = ca.conflicts_json
-    countries = JSON.parse(ca.countries)[0..13]
-    companies = JSON.parse(ca.companies)[0..11]
-    commodities = JSON.parse(ca.commodities)[0..13]
-    types = JSON.parse(ca.types)[0..9]
+    countries = JSON.parse(ca.countries)
+    companies = JSON.parse(ca.companies)[0..100]
+    commodities = JSON.parse(ca.commodities)
+    types = JSON.parse(ca.types)
     @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
-    @maptitle = "Browse maps"
+    @maptitle = "Environmental Conflicts"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @recent = Conflict.select('id, headline, modified_at, name, slug').where("headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(5)
+    @name = "Welcome to EJAtlas!"
     render "base/map", :layout => @layout
   end
 

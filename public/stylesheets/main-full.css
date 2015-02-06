@@ -5144,46 +5144,85 @@ ul.sidelink li.active {
 .map_icon:hover {
   border: 2px solid white;
 }
+.map_icon.i_ {
+  background: #ff0000;
+}
+.map_icon.i_0 {
+  background: transparent;
+}
+.map_icon.i_7 {
+  background: #999999 url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;
+}
+.map_icon.i_3 {
+  background: #77721c url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;
+}
+.map_icon.i_9 {
+  background: #00c621 url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;
+}
+.map_icon.i_10 {
+  background: #ed1c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;
+}
+.map_icon.i_5 {
+  background: #111111 url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;
+}
+.map_icon.i_6 {
+  background: #00bdff url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;
+}
+.map_icon.i_2 {
+  background: #ff7f00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;
+}
+.map_icon.i_1 {
+  background: #ffff00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;
+}
+.map_icon.i_4 {
+  background: #754c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;
+}
+.map_icon.i_8 {
+  background: #c685d0 url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;
+}
 .map-icon {
   display: block;
   content: '&nbsp;';
   border: 2px solid transparent;
   cursor: pointer;
+  border-radius: 16px;
+  width: 32px !important;
+  height: 32px !important;
 }
-.i_ {
+.map-icon.i_ {
   background: #ff0000;
 }
-.i_0 {
+.map-icon.i_0 {
   background: transparent;
 }
-.i_7 {
+.map-icon.i_7 {
   background: #999999 url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;
 }
-.i_3 {
+.map-icon.i_3 {
   background: #77721c url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;
 }
-.i_9 {
+.map-icon.i_9 {
   background: #00c621 url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;
 }
-.i_10 {
+.map-icon.i_10 {
   background: #ed1c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;
 }
-.i_5 {
+.map-icon.i_5 {
   background: #111111 url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;
 }
-.i_6 {
+.map-icon.i_6 {
   background: #00bdff url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;
 }
-.i_2 {
+.map-icon.i_2 {
   background: #ff7f00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;
 }
-.i_1 {
+.map-icon.i_1 {
   background: #ffff00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;
 }
-.i_4 {
+.map-icon.i_4 {
   background: #754c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;
 }
-.i_8 {
+.map-icon.i_8 {
   background: #c685d0 url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;
 }
 .s_0 {
@@ -5230,25 +5269,31 @@ ul.sidelink li.active {
   background-image: none !important;
 }
 .feat {
-  position: relative;
-  margin-bottom: 12px;
+  position: absolute;
+  margin: 6px;
   cursor: pointer;
+  width: 120px;
+  height: 90px;
+  background-size: cover;
 }
-.feat img {
+.feat .img {
   width: 100%;
-  height: 120px;
+  height: 100%;
 }
 .feat span {
   padding: 2px 4px;
   color: white;
   width: 100%;
+  height: auto;
   position: absolute;
   bottom: 0;
   left: 0;
   background: #0380a5;
+  font-size: 12px;
+  display: none;
 }
 .feat:hover span {
-  background: #f48e34;
+  display: block;
 }
 .browseinfo tbody tr {
   line-height: 18px;
@@ -5265,14 +5310,6 @@ ul.sidelink li.active {
 }
 #map {
   background: url('/images/bg.png');
-  position: fixed;
-  width: 70%;
-  min-width: 500px;
-  height: 100%;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
   border: none;
 }
 #map img {
@@ -5323,6 +5360,12 @@ ul.sidelink li.active {
 .horipane .title.active {
   cursor: n-resize;
 }
+.horipane ul {
+  padding: 0;
+}
+.horipane ul li {
+  list-style-type: none !important;
+}
 #infopane {
   color: #333333;
 }
@@ -5348,10 +5391,11 @@ ul.sidelink li.active {
   padding: 0 0 0 8px;
 }
 #legendpane table tbody tr td .map-icon {
-  margin: 0 0 0 -8px !important;
-  cursor: pointer;
-  width: 12px !important;
-  height: 12px !important;
+  -moz-transform: scale(0.5);
+  -o-transform: scale(0.5);
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+  margin: -5px -6px -7px -16px;
 }
 #legendpane table tbody tr td .vis {
   border: 2px solid black;
@@ -5631,7 +5675,7 @@ ul.sidelink li.active {
   font-size: 13px;
   margin-bottom: 4px;
 }
-#resize {
+.resize {
   background-color: #ccc;
   background-image: -webkit-gradient(linear, 0% top, 100% top, from(#c8c8c8), to(#c0c0c0));
   background-image: -webkit-linear-gradient(left, color-stop(#c8c8c8 0%), color-stop(#c0c0c0 100%));
@@ -5650,13 +5694,22 @@ ul.sidelink li.active {
   cursor: col-resize;
   left: 70%;
 }
-#resize span {
+.resize span {
   line-height: 64px;
   text-indent: -1px;
   font-size: 12px;
   cursor: e-resize;
 }
-#rightpane {
+.leftpane {
+  position: fixed;
+  width: 70%;
+  min-width: 500px;
+  height: 100%;
+  overflow-y: hidden;
+  overflow-x: auto;
+  left: 0px;
+}
+.rightpane {
   background: #fff;
   top: 0px;
   right: 0px;
@@ -5666,7 +5719,26 @@ ul.sidelink li.active {
   position: fixed;
   width: 30%;
 }
-#rightpane .inner {
+.rightpane .inner {
+  padding: 0 15px 0 27px;
+}
+#bottompane {
+  background: transparent;
+  bottom: 0px;
+  left: 0px;
+  height: 160px;
+  position: fixed;
+  width: 100%;
+}
+#toppane {
+  background: #fff;
+  top: 0px;
+  right: 0px;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+}
+#toppane .inner {
   padding: 0 15px 0 27px;
 }
 .wide {
@@ -5676,12 +5748,12 @@ ul.sidelink li.active {
   cursor: default;
   position: fixed;
   top: 16px;
-  left: 40px;
+  left: 48px;
   background-color: #024357;
   padding: 4px 16px;
 }
 .tagline p {
-  margin: 0 0 0 44px !important;
+  margin: 0 0 0 36px !important;
   font-size: 16px;
   color: #FFF;
   font-weight: bold;
@@ -5906,6 +5978,54 @@ ul.sidelink li.active {
   margin: 0 -20px;
   padding: 12px 22px;
   height: 100%;
+}
+.columns {
+  padding: 0;
+  list-style-type: none;
+  position: relative;
+  column-count: 3;
+  column-gap: 1em;
+  -moz-column-count: 3;
+  -moz-column-gap: 1em;
+  -webkit-column-count: 3;
+  -webkit-column-gap: 1em;
+}
+.dropdown-menu {
+  top: 33px;
+  left: -1px;
+  border: 0;
+  box-shadow: none;
+  min-width: 0px;
+}
+.dropdown-menu li > a {
+  padding: 3px 24px 3px 9px;
+  font-weight: bold;
+}
+.dropdown-right {
+  top: 0px;
+  height: 28px;
+  left: 49px;
+  line-height: 24px;
+}
+.dropdown-right input {
+  border-radius: 0 !important;
+  background-color: #eee;
+}
+.dropdown-right input.btn {
+  font-weight: bold;
+  line-height: 15px;
+  margin-top: -1px;
+}
+.dropdown-right a {
+  line-height: 28px;
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 /* required styles */
 

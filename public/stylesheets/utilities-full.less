@@ -329,6 +329,18 @@ ul.sidelink {
   &:hover {
     border: 2px solid white; 
   }
+  &.i_ {background:red}
+  &.i_0 {background:transparent}
+  &.i_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
+  &.i_3 {background:@waste url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;}
+  &.i_9 {background:@biodiv url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;}
+  &.i_10 {background:@indus url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;}
+  &.i_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
+  &.i_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;}
+  &.i_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
+  &.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;}
+  &.i_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
+  &.i_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
 }
 
 .map-icon {
@@ -336,20 +348,23 @@ ul.sidelink {
   content: '&nbsp;';
   border: 2px solid transparent; 
   cursor: pointer;
+  border-radius: 16px;
+  width: 32px !important;
+  height: 32px !important;
+  &.i_ {background:red}
+  &.i_0 {background:transparent}
+  &.i_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
+  &.i_3 {background:@waste url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;}
+  &.i_9 {background:@biodiv url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;}
+  &.i_10 {background:@indus url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;}
+  &.i_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
+  &.i_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;}
+  &.i_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
+  &.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;}
+  &.i_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
+  &.i_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
 }
 
-.i_ {background:red}
-.i_0 {background:transparent}
-.i_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
-.i_3 {background:@waste url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;}
-.i_9 {background:@biodiv url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;}
-.i_10 {background:@indus url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;}
-.i_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
-.i_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;}
-.i_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
-.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;}
-.i_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
-.i_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
 
 .s_0 {
   border-radius: 8px; 
@@ -397,24 +412,30 @@ ul.sidelink {
 }
 
 .feat {
-  position: relative;
-  margin-bottom:12px;
+  position: absolute;
+  margin: 6px;
   cursor:pointer;
-  img {
+  width: 120px;
+  height: 90px;
+  background-size: cover;
+  .img {
     width: 100%;
-    height: 120px;
+    height: 100%;
   }
   span {
     padding: 2px 4px;
     color: white;
     width: 100%;
+    height: auto;
     position: absolute;
     bottom: 0;
     left: 0;
-    background: @brand-primary;
+    background: @brand-warning;;
+    font-size: 12px;
+    display:none;
   }
   &:hover span {
-    background: @brand-warning;;
+    display: block;
   }
 }
 .browseinfo {
@@ -439,14 +460,6 @@ ul.sidelink {
 }
 #map {
   background: url('/images/bg.png');
-  position: fixed;
-  width: 70%;
-  min-width: 500px;
-  height: 100%;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
   border: none;
   img {
     max-width: none;
@@ -499,7 +512,14 @@ ul.sidelink {
       cursor: n-resize;
     }
   }
+  ul {
+    padding: 0;
+    li { 
+      list-style-type: none !important; 
+    }
+  }
 }
+  
 
 #infopane {
   color: @grayDark;
@@ -520,13 +540,14 @@ ul.sidelink {
       height: 18px;
       overflow: hidden;
       td {
-        padding: 0 0 0 8px;
         .map-icon {
-          margin:0 0 0 -8px !important;
-          cursor: pointer;
-          width: 12px !important;
-          height: 12px !important;
+          -moz-transform:scale(0.5);
+          -o-transform:scale(0.5);
+          -webkit-transform:scale(0.5);
+          transform:scale(0.5);
+          margin: -5px -6px -7px -16px;
         }
+        padding: 0 0 0 8px;
         .vis {border:2px solid black;}
         .hid {border:2px solid white;}
       }
@@ -798,7 +819,8 @@ ul.sidelink {
     }
   }
 }
-#resize {
+
+.resize {
   background-color: #ccc;
   #gradient > .horizontal(#c8c8c8, #c0c0c0);
   background-image: url('/images/move.png');
@@ -818,7 +840,18 @@ ul.sidelink {
     cursor: e-resize;
   }
 }
-#rightpane {
+
+.leftpane {
+  position: fixed;
+  width: 70%;
+  min-width: 500px;
+  height: 100%;
+  overflow-y: hidden;
+  overflow-x: auto;
+  left: 0px;
+}
+
+.rightpane {
   background: #fff;
   top: 0px;
   right: 0px;
@@ -831,6 +864,26 @@ ul.sidelink {
     padding: 0 15px 0 27px;
   }
 }
+
+#bottompane {
+  background: transparent;
+  bottom: 0px;
+  left: 0px;
+  height: 160px;
+  position:fixed;
+  width: 100%;
+}
+#toppane {
+  background: #fff;
+  top: 0px;
+  right: 0px;
+  height: 100%;
+  position:fixed;
+  width: 100%;
+  .inner {
+    padding: 0 15px 0 27px;
+  }
+}
 .wide {
   margin: 0 -15px;
 }
@@ -838,11 +891,11 @@ ul.sidelink {
   cursor: default;
   position:fixed;
   top:16px;
-  left:40px;
+  left:48px;
   background-color: @brand-dark;
   padding: 4px 16px;
   p {
-    margin: 0 0 0 44px !important;
+    margin: 0 0 0 36px !important;
     font-size: 16px;
     color: #FFF;
     font-weight: bold;
@@ -1059,4 +1112,52 @@ position: relative;
   margin: 0 -20px;
   padding: 12px 22px;
   height: 100%;
+}
+.columns {
+  padding: 0;
+  list-style-type: none;
+  position: relative;
+  column-count: 3;
+  column-gap: 1em;
+  -moz-column-count: 3;
+  -moz-column-gap: 1em;
+  -webkit-column-count: 3;
+  -webkit-column-gap: 1em;
+}
+.dropdown-menu {
+  top:33px;
+  left:-1px;
+  border: 0;
+  box-shadow: none;
+  min-width: 0px;
+  li > a {
+    padding: 3px 24px 3px 9px;
+    font-weight: bold;
+  }
+}
+.dropdown-right {
+  top: 0px;
+  height: 28px;
+  left: 49px;
+  line-height: 24px;
+  input {
+    border-radius: 0 !important;
+    background-color: #eee;
+    &.btn {
+      font-weight: bold;
+      line-height:15px;
+      margin-top: -1px;
+    }
+  }
+  a {
+    line-height:28px;
+  }
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
