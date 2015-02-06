@@ -135,7 +135,7 @@
               -if feat.images.any?
                 .img{:style=>"background:url('#{feat.images.first.file.thumb.url}');background-size:cover;"}
               -else
-                .img{:style=>"background:url('/images/bg.png');background-size:cover;"}
+                .img
               %span= feat.name
 
 -content_for :body_end do

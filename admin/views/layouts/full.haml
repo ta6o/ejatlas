@@ -170,7 +170,7 @@
           });
           return true;
         };  
-        $('#resize span').on('click',function(e){
+        $('.resize span').on('click',function(e){
           if ($(this).hasClass('glyphicon-chevron-right')) {
             $('.leftpane').animate({'width':window.innerWidth - 12});
             $('.rightpane').animate({'width':'0%'});
