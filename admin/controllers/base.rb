@@ -99,7 +99,7 @@ Admin.controller do
     @pos = [c.lat,c.lon]
     @images = c.images
     @zoom = 8
-    @zoom = [6,8,12,17][c.accuracy_level] if c.accuracy_level
+    @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
@@ -123,7 +123,7 @@ Admin.controller do
     @defs = @defs.to_set.to_a
     @vectors = c.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
     @zoom = 8
-    @zoom = [6,8,10,12][c.accuracy_level] if c.accuracy_level
+    @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     @name = c.name
     @pos = [c.lat,c.lon]

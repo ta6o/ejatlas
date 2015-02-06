@@ -135,6 +135,9 @@
           %li{:id=>"tag-#{t.id}"}
             %span=t.name
             %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
+    .group
+      %label.control-label{:for=>'featured_published'} Published?
+      %input#featured_published{:type=>"checkbox",:name=>'featured[published]',:checked=> @featured.published }
 
   .col-md-4
     .group

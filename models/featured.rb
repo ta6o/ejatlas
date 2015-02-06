@@ -8,7 +8,7 @@ class Featured < ActiveRecord::Base
   accepts_nested_attributes_for :images, allow_destroy: true
 
   validates_presence_of :slug
-  validates_uniqueness_of :slug
+  #validates_uniqueness_of :slug
 
   def inspect
     self.name

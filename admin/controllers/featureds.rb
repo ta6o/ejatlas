@@ -63,7 +63,10 @@ Admin.controllers :featureds do
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
     params[:featured][:color].gsub! /#/, ''
-    if @featured.update_attributes(params[:featured])
+    unless params[:featured].has_key?('published')
+      @featured.published = false
+    end
+    if @featured.update_attributes!(params[:featured])
       flash[:notice] = 'Featured was successfully updated.'
       if params['conflict']
         params["conflict"].each do |k,v|

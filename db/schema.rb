@@ -289,6 +289,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text   "features"
     t.text   "basemaps"
     t.string "color", :limit=>6
+    t.boolean "published"
   end
 
   create_table "government_actors", :force => true do |t|

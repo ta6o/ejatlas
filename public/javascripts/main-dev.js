@@ -3238,10 +3238,9 @@ function initMap (markers, maptitle, layers, vector, fid) {
       console.log(mark);
       return false
     }
-    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><div class='clearfix' style='padding:24px 16px;'><div class='map-icon i_"+mark.clr+" s_1 pull-left'></div><div class='pull-left' style='position:relative;top:-20px;left:12px;'>";
+    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><table style='padding:24px 16px;'><tr><td style='width:36px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
     if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
-    //if (mark.start !== '' ) {popcontent += "<br /><small><strong>Start date:</strong> "+mark.start+"</small>"} else {popcontent += "<br /><small>&nbsp;</small>"};
-    popcontent += '</div>';
+    popcontent += '</td></tr></table>';
     if ('dmn' in mark) {
       dmns.push(mark.dmn[0])
       popcontent += "<div class='features'>";
