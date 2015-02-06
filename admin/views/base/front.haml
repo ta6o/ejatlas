@@ -29,8 +29,11 @@
     .clearfix
       -if @image
         %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
-      .pull-left
-        %h1{:style=>'margin:0;font-size: 30px'}= @name
+        .pull-left
+          %h1{:style=>'margin:0;font-size: 48px'}= @name
+      -else
+        .pull-left
+          %h1{:style=>'margin:0;font-size: 30px'}= @name
     %br/
 
   .horipane
