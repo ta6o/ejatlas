@@ -5288,7 +5288,7 @@ ul.sidelink li.active {
   position: absolute;
   bottom: 0;
   left: 0;
-  background: #0380a5;
+  background: #f48e34;
   font-size: 12px;
   display: none;
 }
@@ -5718,6 +5718,7 @@ ul.sidelink li.active {
   overflow-y: auto;
   position: fixed;
   width: 30%;
+  z-index: 2;
 }
 .rightpane .inner {
   padding: 0 15px 0 27px;
@@ -5729,17 +5730,7 @@ ul.sidelink li.active {
   height: 160px;
   position: fixed;
   width: 100%;
-}
-#toppane {
-  background: #fff;
-  top: 0px;
-  right: 0px;
-  height: 100%;
-  position: fixed;
-  width: 100%;
-}
-#toppane .inner {
-  padding: 0 15px 0 27px;
+  z-index: 1;
 }
 .wide {
   margin: 0 -15px;
