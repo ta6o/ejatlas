@@ -46,10 +46,10 @@ function initMap (markers, maptitle, layers, vector, fid) {
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
-  if (maptitle == "") {
+  /*if (maptitle == "") {
     rtlegend = "";
     legend = "";
-  }
+  }*/
 
   markerLayer = L.featureGroup();
   initLayers = [];
@@ -159,14 +159,14 @@ function initMap (markers, maptitle, layers, vector, fid) {
     if ('dmn' in mark) {
       var marker = L.marker([mark.lat, mark.lon],{
         icon: L.divIcon({
-            className: 'map_icon mic i_'+mark.clr+' s_1 id_'+mark.id+' c_'+mark.dmn[0],
+            className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+' c_'+mark.dmn[0],
           }),
         riseOnHover: true,
       }).addTo(markerLayer);
     } else {
       var marker = L.marker([mark.lat, mark.lon],{
         icon: L.divIcon({
-            className: 'map_icon mic i_'+mark.clr+' s_1 id_'+mark.id,
+            className: 'map_icon mic i_'+mark.clr+' id_'+mark.id,
           }),
         riseOnHover: true,
       }).addTo(markerLayer);
@@ -210,7 +210,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
   map.on('zoomend', function(e) { markerSize(); });
   map.on('overlayremove', function (el) {
     if (choropleths[el.name] != undefined) {
-      legend = rtlegend;
+      //legend = rtlegend;
       updateInfo(1,disclaimer)
     }
   });
@@ -225,6 +225,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
     mouseX = e.pageX;
     innerWidth = window.innerWidth;
     dragging = true;
+    $(".rightpane .inner").css('display','block');
     $('body').bind('mousemove',function(e){
       pageX = Math.max(e.pageX,500);
       perc = Math.ceil( pageX / innerWidth * 100 );
@@ -343,13 +344,9 @@ function updateInfo (type, content) {
   info.show();
   if (type == 0 || type == undefined) {
     legendpane.html(legend);
-  } else if (type == 1) {
+  } else {
     info.html(content);
-    if (dmns.length == 0){ 
-      legendpane.html(legend);
-    }
-  } else if (type == 2) {
-    info.html(content);
+    legendpane.html(legend);
   }
 };
 

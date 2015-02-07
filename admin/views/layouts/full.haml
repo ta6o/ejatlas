@@ -112,9 +112,15 @@
         =yield_content :outer
         .container-full
           #map.map.leftpane
-          .rightpane
-            .resize#resizetop{:title=>'Drag to resize info pane'}
+          .rightpane#rightpane
+            .resize#resize{:title=>'Drag to resize info pane'}
               %span.glyphicon.glyphicon-chevron-right{:title=>'Toggle info pane'}
+            :javascript
+              if (localStorage.key('mapWidth')){
+                document.getElementById('map').style.width = localStorage['mapWidth']+"%";
+                document.getElementById('resize').style.left = localStorage['mapWidth']+"%";
+                document.getElementById('rightpane').style.width = (100-localStorage['mapWidth'])+"%";
+              }
             .inner= yield
           #bottompane
             .inner=yield_content :bottom
@@ -195,11 +201,6 @@
             });
           }
         })
-        if (localStorage.key('mapWidth')){
-          $('.rightpane').animate({'width':(100-localStorage['mapWidth'])+"%"})
-          $('.leftpane').animate({'width':(localStorage['mapWidth'])+"%"})
-          $('.resize').animate({'left':localStorage['mapWidth']+"%"})
-        }
       });
       function resetColumns() {
       }

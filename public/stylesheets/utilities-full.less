@@ -323,9 +323,28 @@ ul.sidelink {
 .map_icon {
   display: block;
   content: '&nbsp;';
-  border: 2px solid rgba(255,255,255,0.8); 
+  border: 2px solid rgba(255,255,255,0.4); 
   cursor: pointer;
   #gradient > .vertical(@gray, darken(@gray,15%));
+  border-radius: 18px; 
+  width: 32px !important; 
+  height: 32px !important;
+  margin: -16px 0 0 -16px !important;
+  &.min {
+    border-radius: 8px; 
+    width: 14px !important; 
+    height: 14px !important;
+    margin: -7px 0 0 -7px !important;
+    background-image: none !important;
+  }
+  &.mic {
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.4); 
+    width: 6px !important; 
+    height: 6px !important;
+    margin: -3px 0 0 -3px !important;
+    background-image: none !important;
+  }
   &:hover {
     border: 2px solid white; 
   }
@@ -363,52 +382,6 @@ ul.sidelink {
   &.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;}
   &.i_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
   &.i_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
-}
-
-
-.s_0 {
-  border-radius: 8px; 
-  width: 14px !important; 
-  height: 14px !important;
-  margin: -7px 0 0 -7px !important;
-  background-image: none !important;
-  &.min {
-    border-radius: 4px; 
-    width: 8px !important; 
-    height: 8px !important;
-    margin: -4px 0 0 -4px !important;
-    background-image: none !important;
-  }
-  &.mic {
-    border-radius: 1px;
-    border: 1px solid white; 
-    width: 6px !important; 
-    height: 6px !important;
-    margin: -3px 0 0 -3px !important;
-    background-image: none !important;
-  }
-}
-
-.s_1 {
-  border-radius: 18px; 
-  width: 32px !important; 
-  height: 32px !important;
-  margin: -16px 0 0 -16px !important;
-  &.min {
-    border-radius: 8px; 
-    width: 14px !important; 
-    height: 14px !important;
-    margin: -7px 0 0 -7px !important;
-    background-image: none !important;
-  }
-  &.mic {
-    border-radius: 4px;
-    border: 1px solid white;
-    width: 6px !important; 
-    height: 6px !important;
-    margin: -3px 0 0 -3px !important;
-    background-image: none !important;
-  }
 }
 
 .feat {
@@ -826,7 +799,7 @@ ul.sidelink {
   background-image: url('/images/move.png');
   background-repeat: no-repeat;
   background-position: center center;
-  width: 12px;
+  width: 16px;
   height: 100%;
   position:fixed;
   top:0px;
@@ -835,7 +808,7 @@ ul.sidelink {
   left: 70%;
   span {
     line-height: 64px;
-    text-indent: -1px;
+    text-indent: 1px;
     font-size: 12px;
     cursor: e-resize;
   }

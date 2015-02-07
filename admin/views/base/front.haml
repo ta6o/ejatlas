@@ -36,6 +36,20 @@
           %h1{:style=>'margin:0;font-size: 30px'}= @name
     %br/
 
+  -if @description and @description.length > 0 or @maptitle.length > 0 and @feature
+    .horipane
+      .title.active Description
+      .content
+        %br/
+        -if @feature
+          .clearfix#disclaimer
+            -if @maptitle.length > 0
+              %h2= @maptitle
+            %p.description= @description.gsub("\n","<br />").html_safe
+        -else
+          %p.description= @description.gsub("\n","<br />").html_safe
+        %br/
+              
   .horipane
     .title.active Info
     .content
@@ -51,20 +65,6 @@
         #legendpane
         %br/
 
-  -if @description and @description.length > 0  
-    .horipane
-      .title.active Description
-      .content
-        %br/
-        -if @feature
-          .clearfix#disclaimer
-            %h2= @maptitle
-            -if @description
-              %p.description= @description.gsub("\n","<br />").html_safe
-        -else
-          %p.description= @description.gsub("\n","<br />").html_safe
-        %br/
-              
   -if @load and @load.length > 0
     .horipane
       .title.active Cases

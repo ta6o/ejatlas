@@ -6129,7 +6129,7 @@ ul.sidelink li.active {
 
 .leaflet-control-layers {
 	box-shadow: 0 1px 7px rgba(0,0,0,0.4);
-	background: #f8f8f9;
+	background-color: rgba(255, 255, 255, 0.8);
 	-webkit-border-radius: 8px;
 	        border-radius: 8px;
 	}

@@ -64,52 +64,55 @@
       %br/
 
   .horipane
-    .title Browse Countries
+    .title Browse maps
     .content{:style=>'display:none;'}
-      %br/
-      #browsecountry
-        %ul.columns
-          -k = 'country'
-          -@browseinfo[k].each do |c|
-            -j = JSON.parse c[0]
-            %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-      %br/
+      .horipane.browse
+        .title{:style=>'background:transparent'} &nbsp; Countries
+        .content{:style=>'display:none;'}
+          %br/
+          #browsecountry
+            %ul.columns
+              -k = 'country'
+              -@browseinfo[k].each do |c|
+                -j = JSON.parse c[0]
+                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+          %br/
 
-  .horipane
-    .title Browse Companies
-    .content{:style=>'display:none;'}
-      %br/
-      #browsecountry
-        %ul.columns
-          -k = 'company'
-          -@browseinfo[k].each do |c|
-            -j = JSON.parse c[0]
-            %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-      %br/
+      .horipane.browse
+        .title{:style=>'background:transparent'} &nbsp; Companies
+        .content{:style=>'display:none;'}
+          %br/
+          #browsecountry
+            %ul.columns
+              -k = 'company'
+              -@browseinfo[k].each do |c|
+                -j = JSON.parse c[0]
+                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+          %br/
 
-  .horipane
-    .title Browse Commodities
-    .content{:style=>'display:none;'}
-      %br/
-      #browsecountry
-        %ul.columns
-          -k = 'commodity'
-          -@browseinfo[k].each do |c|
-            -j = JSON.parse c[0]
-            %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-      %br/
+      .horipane.browse
+        .title{:style=>'background:transparent'} &nbsp; Commodities
+        .content{:style=>'display:none;'}
+          %br/
+          #browsecountry
+            %ul.columns
+              -k = 'commodity'
+              -@browseinfo[k].each do |c|
+                -j = JSON.parse c[0]
+                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+          %br/
 
-  .horipane
-    .title Browse Types
-    .content{:style=>'display:none;'}
-      %br/
-      #browsecountry
-        %ul.columns
-          -k = 'type'
-          -@browseinfo[k].each do |c|
-            -j = JSON.parse c[0]
-            %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-      %br/
+      .horipane.browse
+        .title{:style=>'background:transparent'} &nbsp; Types
+        .content{:style=>'display:none;'}
+          %br/
+          #browsecountry
+            %ul.columns
+              -k = 'type'
+              -@browseinfo[k].each do |c|
+                -j = JSON.parse c[0]
+                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+          %br/
 
   .horipane
     .title.active Filter
@@ -133,7 +136,7 @@
 -content_for :body_end do
   :javascript
     function resetColumns() {
-      columns = $('.horipane .title.active').next('.content').find('.columns');
+      columns = $('.browse .title.active').next('.content').find('.columns');
       if (columns.length == 0) {
         console.log('no pane found with columns');
         return
