@@ -8,4 +8,4 @@ lessc bootstrap.less > app.css
 lessc bootstrap-full.less > app-full.css
 cat app.css leaflet.css leaflet-loading.css noui.css > main.css
 cat app-full.css leaflet.css leaflet-loading.css noui.css > main-full.css
-
+date

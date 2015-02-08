@@ -56,7 +56,7 @@ class Featured < ActiveRecord::Base
       (Conflict.attribute_names & feats).each do |f|
         v = eval("c.#{f}")
         k = f
-        if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
+        if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","category_id","project_status_id"].include? k
           begin
             ass = eval "self."+k.to_s[0...-3]
           rescue
@@ -76,6 +76,12 @@ class Featured < ActiveRecord::Base
           else
             val = ""
           end
+        elsif k == "category_id"
+          if v
+            val = Category.find(v).name
+          else
+            val = ""
+          end
         elsif k == "reaction_id"
           if v
             val = Reaction.find(v).name
@@ -85,6 +91,12 @@ class Featured < ActiveRecord::Base
         elsif k == "status_id"
           if v
             val = Status.find(v).name
+          else
+            val = ""
+          end
+        elsif k == "project_status_id"
+          if v
+            val = ProjectStatus.find(v).name
           else
             val = ""
           end

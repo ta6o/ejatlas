@@ -3,7 +3,6 @@ Admin.controller do
 
   before do
     @layout = :full
-    #cache_control :max_age => 60*60*24*30 
   end
 
   post "/image" do
@@ -464,13 +463,13 @@ Admin.controller do
 
   not_found do
     @name = "Page not found"
-    render 'base/404', :layout => false
+    render 'base/404', :layout => :full
   end
 
   error do
     @name = "Error"
     puts "ERROR #{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
-    render 'base/404', :layout => false
+    render 'base/404', :layout => :full
   end
 
 end

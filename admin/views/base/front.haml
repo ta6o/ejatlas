@@ -25,7 +25,6 @@
             %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
   .summary_header
-    %br/
     .clearfix
       -if @image
         %img.pull-left{:src=>@image.file.url,:style=>'max-height:50px;width:auto;margin-right:12px;'}
@@ -34,7 +33,6 @@
       -else
         .pull-left
           %h1{:style=>'margin:0;font-size: 30px'}= @name
-    %br/
 
   -if @description and @description.length > 0 or @maptitle.length > 0 and @feature
     .horipane
