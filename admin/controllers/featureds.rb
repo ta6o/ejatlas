@@ -29,6 +29,7 @@ Admin.controllers :featureds do
 
   post :create do
     @featured = Featured.new(params[:featured])
+    params[:featured][:color].gsub! /#/, ''
     if @featured.save
       flash[:notice] = 'Featured was successfully created.'
       begin

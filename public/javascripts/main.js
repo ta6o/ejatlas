@@ -3574,8 +3574,8 @@ function highlightFeature(e) {
   var layer = e.target;
   pn = layer.feature.category
   inf = "<div class='infocontent'><h3><strong>"+pn+"</strong></h3>"
+  if (jsons[pn]['legend']){ inf += jsons[pn].legend.replace("class=\"legend\"","class=\"legend static\""); inf += "<br />" }
   if (jsons[pn]['desc']){ inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>" }
-  if (jsons[pn]['legend']){ inf += jsons[pn].legend.replace("class=\"legend\"","class=\"legend static\"") }
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
     $.each(layer.feature.properties.data,function(k,v){
