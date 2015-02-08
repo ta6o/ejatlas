@@ -432,7 +432,7 @@ class AsyncTask
     end
 
     slug = slugify varname.force_encoding('utf-8')
-    jsvar = slug.split('.')[0].gsub(/\d/,'').gsub(/-+/,'_')
+    jsvar = slug.split('.')[0].sub(/^\d+/,'').gsub(/-+/,'_')
 
     puts 'source file parsed with ogr'
 

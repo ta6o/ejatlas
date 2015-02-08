@@ -3633,7 +3633,9 @@ function showVector(v) {
     return 0
   }
   vr = toSlug(vect['url']);
-  //console.log(vr);
+  console.log(pn);
+  console.log(vect['url']);
+  console.log(vr);
   ly = eval(vr);
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
@@ -3732,7 +3734,7 @@ function render(){
 
 function toSlug(url) {
   arr = url.split('/');
-  return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/\d/g,'').replace(/\s+/g,'_'));
+  return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/^\d+/,'').replace(/\s+/g,'_'));
 }
 
 var _gaq = _gaq || [];
