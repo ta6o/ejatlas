@@ -3191,9 +3191,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
     id = $(e.target).attr('class').match(/i_\d+/)[0].replace('i_','');
     vis = $(this).closest('tr').find('.map-icon').hasClass('vis');
     part = $('.legend .map-icon.vis').length < $('.legend .map-icon').length
-    console.log('')
-    console.log(vis)
-    console.log(part)
     if (e.shiftKey) {
       e.preventDefault();
       toggleLegend(id,vis);
@@ -3315,12 +3312,23 @@ function initMap (markers, maptitle, layers, vector, fid) {
   });*/
 
   map.on('zoomend', function(e) { markerSize(); });
-  map.on('overlayremove', function (el) {
-    if (choropleths[el.name] != undefined) {
-      //legend = rtlegend;
-      updateInfo(1,disclaimer)
+
+  $("#map").on("change","input.leaflet-control-layers-selector[type='checkbox']", function (e) {
+    if ($(this).prop('checked')) {
+      name = $(this).next('span').text().replace(/^\s+/,'')
+      if (choropleths[name] != undefined) {
+        $.each(Object.keys(choropleths),function(i,n){
+          if (name != n && map.hasLayer(overlayMaps[n])) {
+            map.removeLayer(overlayMaps[n]);
+          }
+          if (name == n && !map.hasLayer(overlayMaps[n])) {
+            map.addLayer(overlayMaps[n]);
+          }
+        });
+      }
     }
   });
+
   $('#conflict_summary').on('click','.seemore',function(e){
       e.preventDefault();
       $(this).hide();
@@ -3633,9 +3641,6 @@ function showVector(v) {
     return 0
   }
   vr = toSlug(vect['url']);
-  console.log(pn);
-  console.log(vect['url']);
-  console.log(vr);
   ly = eval(vr);
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
