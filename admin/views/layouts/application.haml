@@ -68,6 +68,18 @@
                             %li
                               %a{:href=>'/conflicts'} All cases
 
+                        %li.dropdown#editor
+                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#editor'}
+                            = 'Moderation'
+                            %b.caret
+                          %ul.dropdown-menu
+                            %li
+                              %a{:href=>'/cache'} Update cache
+                            %li
+                              %a{:href=>'/export'} Export cases
+                            %li
+                              %a{:href=>'/jobs'}= "Jobs"
+
                         %li.dropdown#models
                           %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
                             = 'Models'
@@ -85,26 +97,18 @@
                               %a{:href=>'/featureds'} Featured maps
                             %li
                               %a{:href=>'/accounts'} Collaborators
-
-                        %li.dropdown#editor
-                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#editor'}
-                            = 'Editor Functions'
-                            %b.caret
-                          %ul.dropdown-menu
                             %li
-                              %a{:href=>'/jobs'}= "Jobs"
+                              %a{:href=>'/vectors'} Vectors
                             %li
-                              %a{:href=>'/cache'} Update cache
-                            %li
-                              %a{:href=>'/export'} Export cases
+                              %a{:href=>'/vectorstyles'} Vector Styles
 
                       -else
+                        %li
+                          %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
                         %li
                           %a{:href=>'/conflicts'} My Conflicts
                         %li
                           %a{:href=>'/conflicts/new'} New Conflict
-                        %li
-                          %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
                       %li
                         %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
                           %input{:value=>'delete',:name=>'_method',:type=>'hidden'}

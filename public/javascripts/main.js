@@ -3406,7 +3406,7 @@ function onResize() {
     map.scrollWheelZoom.disable();
     $('#map').css('height',(window.innerHeight-96)+'px');
     if ($('body').css('font-size') =='12px'){
-      $('.ejatlas-logo, .tagline').bind('click',window.location = "/");
+      $('.ejatlas-logo, .tagline').bind('click', function () {window.location = "/"});
     } else {
       $('.ejatlas-logo, .tagline').unbind('click');
     }

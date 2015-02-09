@@ -96,10 +96,10 @@
                       %a{:href=>'/conflicts'} My Cases
                   %li
                     %a{:href=>'/conflicts/new'} New Conflict
-                  %li
-                    %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
-                      %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-                    %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+              %li
+                %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
+                  %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
           .tagline
             %p Environmental Justice Atlas
           .ejatlas-logo
