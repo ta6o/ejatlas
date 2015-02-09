@@ -299,14 +299,14 @@ function initMap (markers, maptitle, layers, vector, fid) {
 
   $('#conflict_summary').on('click','.seemore',function(e){
     e.preventDefault();
-    $(this).fadeOut();
-    $(this).next('.more').slideDown();
+    more = $(this).next('.more');
+    $(this).fadeOut(100,function(){more.slideDown();});
   });
 
   $('#conflict_summary').on('click','.seeless',function(e){
     e.preventDefault();
-    $(this).parent().prev('.seemore').fadeOut();
-    $(this).parent().slideUp();
+    more = $(this).parent().prev('.seemore');
+    $(this).parent().slideUp(function(){more.slideDown();});
   });
   
   window.onresize = onResize; 

@@ -5480,6 +5480,7 @@ ul.sidelink li.active {
 #conflict_summary table tbody tr td.fld {
   width: 30%;
   font-weight: bold;
+  text-indent: -2px;
 }
 #filter-form {
   margin-bottom: 0;
@@ -5708,6 +5709,11 @@ ul.sidelink li.active {
 }
 .rightpane .inner .commands {
   margin-bottom: -30px;
+}
+.rightpane h1,
+.rightpane h2 {
+  font-size: 24px;
+  font-weight: bold;
 }
 .rightpane h1,
 .rightpane h2,
@@ -6048,14 +6054,14 @@ br.small {
   .full {
     margin-left: -30px;
   }
+  .rightpane h2,
+  .rightpane h4 {
+    margin: 0 0 18px !important;
+  }
 }
 @media (max-width: 480px) {
   body {
     font-size: 12px;
-  }
-  .rightpane h1,
-  .rightpane h2 {
-    font-size: 24px;
   }
   .navbar-fixed-top {
     min-height: 37px !important;
@@ -6101,17 +6107,21 @@ br.small {
   .nav.nav-pills * {
     font-size: 12px;
   }
-  .summary_header td {
+  .rightpane h1,
+  .rightpane h2 {
+    font-size: 18px;
+  }
+  .rightpane td {
     width: 100%;
     float: left;
   }
-  .summary_header td.fld {
+  .rightpane td.fld {
     margin-left: -8px;
     width: 100% !important;
   }
-  .summary_header h2,
-  .summary_header h4 {
-    margin: 0 -5px 12px !important;
+  .rightpane h2,
+  .rightpane h4 {
+    margin: 0 -7px 12px !important;
   }
 }
 /* required styles */

@@ -631,6 +631,7 @@ ul.sidelink {
         &.fld {
           width: 30%;
           font-weight: bold;
+          text-indent: -2px;
         }
       }
     }
@@ -848,6 +849,10 @@ ul.sidelink {
   .inner {
     padding: 0 15px 0 27px;
     .commands { margin-bottom: -30px;}
+  }
+  h1,h2 {
+    font-size: 24px;
+    font-weight: bold;
   }
   h1,h2,h3,h4,h5,h6 {
     margin-top:0px;
@@ -1160,15 +1165,17 @@ br.small {
   }
   footer {padding:20px;margin-top:20px;}
   .full { margin-left: -30px; }
+  .rightpane {
+    h2,h4 {
+      margin: 0 0 18px !important;
+    }
+  }
 }
 @media (max-width: @screen-sm) {
 }
 @media (max-width: @screen-xs) {
   body {
     font-size: 12px;
-  }
-  .rightpane {
-    h1,h2 {font-size:24px;}
   }
   .navbar-fixed-top{min-height:37px !important;}
   .ejatlas-logo {
@@ -1198,7 +1205,8 @@ br.small {
     li.home, span.ej {display:none;}
     * {font-size:12px;}
   }
-  .summary_header {
+  .rightpane {
+    h1,h2 {font-size:18px;}
     td {
       width: 100%;
       float: left;
@@ -1208,7 +1216,7 @@ br.small {
       }
     }
     h2,h4 {
-      margin: 0 -5px 12px !important;
+      margin: 0 -7px 12px !important;
     }
   }
 }
