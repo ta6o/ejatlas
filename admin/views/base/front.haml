@@ -10,10 +10,15 @@
     :javascript
       vectorinfo = #{@vectors};
   :javascript
-    window.onload = function(){
-      initMap(markerinfo,"#{@maptitle}", "#{@baselayers}", vectorinfo, #{@fid || 0});
-      updateInfo(1,#{@markercount > 0 ? "'<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>'" : '""'})
-      mapFit();
+    window.onload = onLoad;
+    function onLoad() {
+      if (typeof initMap === 'function' ) {
+        initMap(markerinfo,"#{@maptitle}", "#{@baselayers}", vectorinfo, #{@fid || 0});
+        updateInfo(1,#{@markercount > 0 ? "'<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>'" : '""'})
+        mapFit();
+      } else {
+        setTimeout(onLoad,10);
+      }
     }
 
 .front

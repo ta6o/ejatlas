@@ -5706,6 +5706,9 @@ ul.sidelink li.active {
 .rightpane .inner {
   padding: 0 15px 0 27px;
 }
+.rightpane .inner .commands {
+  margin-bottom: -30px;
+}
 .rightpane h1,
 .rightpane h2,
 .rightpane h3,
@@ -6050,6 +6053,10 @@ br.small {
   body {
     font-size: 12px;
   }
+  .rightpane h1,
+  .rightpane h2 {
+    font-size: 24px;
+  }
   .navbar-fixed-top {
     min-height: 37px !important;
   }
@@ -6104,7 +6111,7 @@ br.small {
   }
   .summary_header h2,
   .summary_header h4 {
-    margin-left: -5px !important;
+    margin: 0 -5px 12px !important;
   }
 }
 /* required styles */

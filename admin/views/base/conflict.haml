@@ -6,9 +6,14 @@
     img.src = 'https://file.ejatlas.org/static/ikon.png';
     var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var vectorinfo = #{@vectors};
-    window.onload = function(){
-      initMap(markerinfo,"#{@maptitle}","#{@baselayers}",vectorinfo,null);
-      getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom},true)
+    window.onload = onLoad;
+    function onLoad() {
+      if (typeof initMap === 'function' ) {
+        initMap(markerinfo,"#{@maptitle}","#{@baselayers}",vectorinfo,null);
+        getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom},true)
+      } else {
+        setTimeout(onLoad,10);
+      }
     }
 
 .front
@@ -25,6 +30,9 @@
       %h2= @maptitle
 
     .clearfix
+      %h2.pull-left#name{:style=>'margin: 18px 0'}
+
+    .clearfix.commands
       .pull-right#commands{:style=>'display:none;'}
         :javascript
           var clear = false;
@@ -41,8 +49,6 @@
             -else
               :javascript
                 var clearuser = true;
-    .clearfix
-      %h2.pull-left#name{:style=>'margin: 18px 0'}
 
     -if @images.any?
       .full.row

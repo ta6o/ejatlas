@@ -3335,6 +3335,20 @@ function initMap (markers, maptitle, layers, vector, fid) {
     mouseX = e.pageX;
     dragging = true;
     $(".rightpane .inner").css('display','block');
+    if ($('.resize span').hasClass('glyphicon-chevron-left')) {
+      if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
+      $('.rightpane .inner').show();
+      $('.leftpane').animate({'width':perc+"%"});
+      $('.rightpane').animate({'width':(100-perc)+'%'});
+      $('.resize').animate({'left':perc+"%"},function(){
+        $('.rightpane').css('overflow-x','hidden');
+        $('.rightpane').css('overflow-y','auto');
+        $('.resize span').removeClass('glyphicon-chevron-left');
+        $('.resize span').addClass('glyphicon-chevron-right');
+        $('.resize span').css('cursor','e-resize');
+        map.invalidateSize();
+      });
+    }
     $('body').bind('mousemove',function(e){
       px = Math.max(Math.min(Math.max(e.pageX,500),window.innerWidth - 480),500);
       $(".leftpane").css('width',px+'px')
@@ -3351,6 +3365,33 @@ function initMap (markers, maptitle, layers, vector, fid) {
   $('body').on('mouseup',function(e){
     if (dragging) { dragEnd(); }
   });
+
+  $('.resize span').on('click',function(e){
+    if ($(this).hasClass('glyphicon-chevron-right')) {
+      $('.leftpane').animate({'width':window.innerWidth - 16});
+      $('.rightpane').animate({'width':'16px'});
+      $('.resize').animate({'left':window.innerWidth - 16},function(){
+        $('.rightpane .inner').hide();
+        $('.resize span').removeClass('glyphicon-chevron-right');
+        $('.resize span').addClass('glyphicon-chevron-left');
+        $('.resize span').css('cursor','w-resize');
+        map.invalidateSize();
+      });
+    } else {
+      if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
+      $('.rightpane .inner').show();
+      $('.leftpane').animate({'width':perc+"%"});
+      $('.rightpane').animate({'width':(100-perc)+'%'});
+      $('.resize').animate({'left':perc+"%"},function(){
+        $('.rightpane').css('overflow-x','hidden');
+        $('.rightpane').css('overflow-y','auto');
+        $('.resize span').removeClass('glyphicon-chevron-left');
+        $('.resize span').addClass('glyphicon-chevron-right');
+        $('.resize span').css('cursor','e-resize');
+        map.invalidateSize();
+      });
+    }
+  })
 
   $('.rightpane').on('click','.horipane .title',function(e){
     if($(this).hasClass('active')){
@@ -3404,9 +3445,6 @@ function onResize() {
     $("#map").css('width',px+'px');
     $("#rightpane").css('width',(window.innerWidth-px)+'px');
     $("#resize").css('left',px+'px');
-    console.log($("#map").css('width'));
-    console.log($("#rightpane").css('width'));
-    console.log($("#resize").css('left'));
   } else {
     map.scrollWheelZoom.disable();
     $('#map').css('height',(window.innerHeight-96)+'px');
