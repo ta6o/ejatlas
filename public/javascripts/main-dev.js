@@ -3336,7 +3336,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
     dragging = true;
     $(".rightpane .inner").css('display','block');
     $('body').bind('mousemove',function(e){
-      pageX = Math.max(e.pageX,500);
+      pageX = Math.min(Math.max(e.pageX,500),innerWidth - 480);
       perc = parseInt( pageX / innerWidth * 100 );
       $(".leftpane").css('width',perc+'%')
       $(".rightpane").css('width',(100-perc)+'%')
@@ -3380,6 +3380,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
   });
   
   window.onresize = onResize; 
+
   $(document).ready(function(){
     dmns = dmns.distinct();
     if (dmns.length > 0) {
@@ -3402,6 +3403,10 @@ function onResize() {
   if ($('#map').css('position')=='fixed'){
     map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
+    px = Math.min(Math.max(parseInt($('#resize').css('left')),500),window.innerWidth - 480);
+    $(".leftpane").css('width',px+'px')
+    $(".rightpane").css('width',(window.innerWidth-px)+'px')
+    $(".resize").css('left',(px)+'px')
   } else {
     map.scrollWheelZoom.disable();
     $('#map').css('height',(window.innerHeight-96)+'px');
@@ -3411,12 +3416,14 @@ function onResize() {
       $('.ejatlas-logo, .tagline').unbind('click');
     }
   }
+  if ($('#carousel_container')){resetCarousel();}
   map.invalidateSize();
 }
 
 function dragEnd() {
   $('body').unbind('mousemove');
   dragging = false;
+  if ($('#carousel_container')){resetCarousel();}
   map.invalidateSize();
   if (parseInt($('#resize').css("left")) > window.innerWidth - 16) $('#resize').css("left", window.innerWidth - 16)
   mapWidth = document.getElementById('map').style.width

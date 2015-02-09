@@ -807,6 +807,7 @@ ul.sidelink {
   cursor: grab;
   cursor: col-resize;
   left: 70%;
+  z-index: 4;
   span {
     line-height: 64px;
     text-indent: 1px;
@@ -940,7 +941,7 @@ position: relative;
 #left_scroll, #right_scroll{
   position:absolute;
   top: 100px;
-  color: #333;
+  color: #000;
   font-size:32px;
   cursor: pointer;
   width: 48px;
@@ -948,13 +949,16 @@ position: relative;
   background: rgba(255,255,255,0.7);
   z-index: 10;
   text-align:center;
-  line-height: 52px;
   .border-radius(32px);
+  span {
+    line-height: 50px;
+  }
   &:hover {
-    background: @blue;
+    background: @brand-warning;
+    color: #FFF;
   }
 }
-#left_scroll {left:12px; span{margin-left:-3px;}}
+#left_scroll {left:12px; span{margin-left:-6px;}}
 #right_scroll {right:12px;}
 .nav a.disable, .nav a.disable:hover {
   color: #999;
@@ -1145,6 +1149,7 @@ br.small {
     max-height: 500px !important;
   }
   footer {padding:20px;margin-top:20px;}
+  .full { margin-left: -30px; }
 }
 @media (max-width: @screen-sm) {
 }

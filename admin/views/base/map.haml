@@ -35,81 +35,83 @@
       #legendpane
       %br/
 
-  .horipane
-    .title.active Recent
-    .content
-      %br/
-      %table
-        %tbody.recent
-        -@recent.each do |c|
-          %tr
-            -if c.images.any?
-              %td{:style=>'vertical-align:top;padding:0 0 12px;'}
-                %a{:href=>"/conflict/#{c.slug}"}
-                  .img{:style=>"background:url('#{c.images.first.file.thumb.url}');width:120px;height:90px;background-size:cover;"}
-            -else
-              %td{:style=>'vertical-align:top;padding:0 0 12px;'}
-                %a{:href=>"/conflict/#{c.slug}"}
-                  .img{:style=>"background:url('/images/bg.png');width:120px;height:90px;background-size:cover;"}
-            %td{:style=>'vertical-align:top;padding:0 0 12px 12px;'}
-              %h4{:style=>'margin:0px'}
-                %a{:href=>"/conflict/#{c.slug}"}= c.name
-                -ago = (Time.now-c.modified_at)/(60*60*24)
-                -if ago < 100
-                  %small= "Updated #{ago.to_i} days ago"
-              %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
-      %br/
+  -if @recent
+    .horipane
+      .title.active Recent
+      .content
+        %br/
+        %table
+          %tbody.recent
+          -@recent.each do |c|
+            %tr
+              -if c.images.any?
+                %td{:style=>'vertical-align:top;padding:0 0 12px;'}
+                  %a{:href=>"/conflict/#{c.slug}"}
+                    .img{:style=>"background:url('#{c.images.first.file.thumb.url}');width:120px;height:90px;background-size:cover;"}
+              -else
+                %td{:style=>'vertical-align:top;padding:0 0 12px;'}
+                  %a{:href=>"/conflict/#{c.slug}"}
+                    .img{:style=>"background:url('/images/bg.png');width:120px;height:90px;background-size:cover;"}
+              %td{:style=>'vertical-align:top;padding:0 0 12px 12px;'}
+                %h4{:style=>'margin:0px'}
+                  %a{:href=>"/conflict/#{c.slug}"}= c.name
+                  -ago = (Time.now-c.modified_at)/(60*60*24)
+                  -if ago < 100
+                    %small= "Updated #{ago.to_i} days ago"
+                %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
+        %br/
 
-  .horipane
-    .title Browse maps
-    .content{:style=>'display:none;'}
-      .horipane.browse
-        .title{:style=>'background:transparent'} &nbsp; Countries
-        .content{:style=>'display:none;'}
-          %br/
-          #browsecountry
-            %ul.columns
-              -k = 'country'
-              -@browseinfo[k].each do |c|
-                -j = JSON.parse c[0]
-                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-          %br/
+  -if @browseinfo
+    .horipane
+      .title Browse maps
+      .content{:style=>'display:none;'}
+        .horipane.browse
+          .title{:style=>'background:transparent'} &nbsp; Countries
+          .content{:style=>'display:none;'}
+            %br/
+            #browsecountry
+              %ul.columns
+                -k = 'country'
+                -@browseinfo[k].each do |c|
+                  -j = JSON.parse c[0]
+                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+            %br/
 
-      .horipane.browse
-        .title{:style=>'background:transparent'} &nbsp; Companies
-        .content{:style=>'display:none;'}
-          %br/
-          #browsecountry
-            %ul.columns
-              -k = 'company'
-              -@browseinfo[k].each do |c|
-                -j = JSON.parse c[0]
-                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-          %br/
+        .horipane.browse
+          .title{:style=>'background:transparent'} &nbsp; Companies
+          .content{:style=>'display:none;'}
+            %br/
+            #browsecountry
+              %ul.columns
+                -k = 'company'
+                -@browseinfo[k].each do |c|
+                  -j = JSON.parse c[0]
+                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+            %br/
 
-      .horipane.browse
-        .title{:style=>'background:transparent'} &nbsp; Commodities
-        .content{:style=>'display:none;'}
-          %br/
-          #browsecountry
-            %ul.columns
-              -k = 'commodity'
-              -@browseinfo[k].each do |c|
-                -j = JSON.parse c[0]
-                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-          %br/
+        .horipane.browse
+          .title{:style=>'background:transparent'} &nbsp; Commodities
+          .content{:style=>'display:none;'}
+            %br/
+            #browsecountry
+              %ul.columns
+                -k = 'commodity'
+                -@browseinfo[k].each do |c|
+                  -j = JSON.parse c[0]
+                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+            %br/
 
-      .horipane.browse
-        .title{:style=>'background:transparent'} &nbsp; Types
-        .content{:style=>'display:none;'}
-          %br/
-          #browsecountry
-            %ul.columns
-              -k = 'type'
-              -@browseinfo[k].each do |c|
-                -j = JSON.parse c[0]
-                %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-          %br/
+        .horipane.browse
+          .title{:style=>'background:transparent'} &nbsp; Types
+          .content{:style=>'display:none;'}
+            %br/
+            #browsecountry
+              %ul.columns
+                -k = 'type'
+                -@browseinfo[k].each do |c|
+                  -j = JSON.parse c[0]
+                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+            %br/
 
   .horipane
     .title.active Filter

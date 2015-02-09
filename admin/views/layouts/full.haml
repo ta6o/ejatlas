@@ -96,10 +96,11 @@
                       %a{:href=>'/conflicts'} My Cases
                   %li
                     %a{:href=>'/conflicts/new'} New Conflict
-              %li
-                %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
-                  %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-                %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+                  %li.divider
+                  %li
+                    %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
+                      %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                    %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
           .tagline
             %p Environmental Justice Atlas
           .ejatlas-logo
@@ -177,9 +178,9 @@
         };  
         $('.resize span').on('click',function(e){
           if ($(this).hasClass('glyphicon-chevron-right')) {
-            $('.leftpane').animate({'width':window.innerWidth - 12});
-            $('.rightpane').animate({'width':'0%'});
-            $('.resize').animate({'left':window.innerWidth - 12},function(){
+            $('.leftpane').animate({'width':window.innerWidth - 16});
+            $('.rightpane').animate({'width':'16px'});
+            $('.resize').animate({'left':window.innerWidth - 16},function(){
               $('.rightpane .inner').hide();
               $('.resize span').removeClass('glyphicon-chevron-right');
               $('.resize span').addClass('glyphicon-chevron-left');
@@ -189,10 +190,11 @@
           } else {
             if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
             $('.rightpane .inner').show();
-            console.log(perc)
             $('.leftpane').animate({'width':perc+"%"});
             $('.rightpane').animate({'width':(100-perc)+'%'});
             $('.resize').animate({'left':perc+"%"},function(){
+              $('.rightpane').css('overflow-x','hidden');
+              $('.rightpane').css('overflow-y','auto');
               $('.resize span').removeClass('glyphicon-chevron-left');
               $('.resize span').addClass('glyphicon-chevron-right');
               $('.resize span').css('cursor','e-resize');

@@ -5668,6 +5668,7 @@ ul.sidelink li.active {
   cursor: grab;
   cursor: col-resize;
   left: 70%;
+  z-index: 4;
 }
 .resize span {
   line-height: 64px;
@@ -5798,7 +5799,7 @@ ul.sidelink li.active {
 #right_scroll {
   position: absolute;
   top: 100px;
-  color: #333;
+  color: #000;
   font-size: 32px;
   cursor: pointer;
   width: 48px;
@@ -5806,20 +5807,24 @@ ul.sidelink li.active {
   background: rgba(255, 255, 255, 0.7);
   z-index: 10;
   text-align: center;
-  line-height: 52px;
   -webkit-border-radius: 32px;
   -moz-border-radius: 32px;
   border-radius: 32px;
 }
+#left_scroll span,
+#right_scroll span {
+  line-height: 50px;
+}
 #left_scroll:hover,
 #right_scroll:hover {
-  background: #049cdb;
+  background: #f48e34;
+  color: #FFF;
 }
 #left_scroll {
   left: 12px;
 }
 #left_scroll span {
-  margin-left: -3px;
+  margin-left: -6px;
 }
 #right_scroll {
   right: 12px;
@@ -6029,6 +6034,9 @@ br.small {
   footer {
     padding: 20px;
     margin-top: 20px;
+  }
+  .full {
+    margin-left: -30px;
   }
 }
 @media (max-width: 480px) {

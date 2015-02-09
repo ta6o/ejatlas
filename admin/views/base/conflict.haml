@@ -44,8 +44,8 @@
     .clearfix
       %h2.pull-left#name{:style=>'margin: 18px 0'}
 
-    .clearfix.row
-      -if @images.any?
+    -if @images.any?
+      .full.row
         #carousel_container{:style=>'display:none'}
           #left_scroll
             %span.glyphicon.glyphicon-chevron-left
@@ -64,61 +64,68 @@
           #right_scroll
             %span.glyphicon.glyphicon-chevron-right
         :javascript
-          $(function() {
-            function imageLoaded() {
-              counter--; 
-              if( counter === 0 ) {
-                if ($('#carousel_ul li img').length == $('#carousel_ul li img.error').length) {
-                  console.log('err');
-                } else {
-                  $('#carousel_ul li img').show();
-                  $('#carousel_container').slideDown('400');
-                }
-                crsgap = 6;
-                crswidth = 0
-                $('#carousel_ul li').each(function(i,v){
-                  crswidth += $(this).width();
-                  crswidth += crsgap;
-                })
-                wdiff = $('#carousel_container').width() - crswidth;
-                if (wdiff >= 0){
-                  $('#carousel_ul').css('left','18px')
-                  $('#left_scroll').hide();
-                  $('#right_scroll').hide();
-                } else {
-                  $('#carousel_ul li:first').before($('#carousel_ul li:last'));
-                  var item_width = $('#carousel_ul li:first').width() + crsgap; 
-                  $('#carousel_ul').css({'left' : String(item_width * -1) + 'px'});
-                }
-                $('#right_scroll').click(function(){
-                  var item_width = $('#carousel_ul li:eq(1)').width() + crsgap;
-                  var left_indent = parseInt($('#carousel_ul').css('left')) - item_width;
-                  $('#carousel_ul').animate({'left' : left_indent},{queue:false, duration:500, complete: function(){
-                    $('#carousel_ul li:last').after($('#carousel_ul li:first'));
-                    var item_width = $('#carousel_ul li:first').width() + crsgap;
-                    $('#carousel_ul').css({'left' : String(item_width * -1) + 'px'});
-                  }});
-                });
-                $('#left_scroll').click(function(){
-                  $('#carousel_ul li:first').before($('#carousel_ul li:last'));
-                  var item_width = $('#carousel_ul li:eq(1)').width() + $('#carousel_ul li:first').width() + crsgap * 2;
-                  $('#carousel_ul').css({'left' : String(item_width * -1) + 'px'});
-                  var item_width = $('#carousel_ul li:eq(1)').width()  + crsgap;
-                  var left_indent = parseInt($('#carousel_ul').css('left')) + item_width;
-                  $('#carousel_ul').animate({'left' : left_indent},{queue:false, duration:500});
-                });
-                $('#carousel_ul li').mouseenter(function(){
-                  $(this).find('.title').show();
-                  $(this).find('.url').show();
-                });
-                $('#carousel_ul li').mouseleave(function(){
-                  $(this).find('.title').hide();
-                  $(this).find('.url').hide();
-                });
-              }
+          function resetCarousel (){
+            wdiff = $('#carousel_container').width() - crswidth;
+            if (wdiff > 0){
+              $('#carousel_ul').css('left','18px')
+              $('#left_scroll').hide();
+              $('#right_scroll').hide();
+            } else {
+              //$('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
+              var item_width = $('#carousel_ul li:first').width() + crsgap; 
+              $('#carousel_ul').css({'left' : (item_width * -1) + 'px'});
+              $('#carousel_ul').css('left','0px')
+              $('#left_scroll').show();
+              $('#right_scroll').show();
             }
-            var images = $('img');
-            var counter = images.length;  // initialize the counter
+          }
+          function imageLoaded() {
+            counter--; 
+            if( counter === 0 ) {
+              if ($('#carousel_ul li img').length == $('#carousel_ul li img.error').length) {
+                console.log('err');
+              } else {
+                $('#carousel_ul li img').show();
+                $('#carousel_container').slideDown('400');
+              }
+              crsgap = 6;
+              crswidth = 0
+              $('#carousel_ul li').each(function(i,v){
+                crswidth += $(this).width();
+                crswidth += crsgap;
+              })
+              crswidth -= crsgap;
+              resetCarousel();
+              $('#right_scroll').click(function(){
+                $('#carousel_ul li:last').after($('#carousel_ul li:first').clone());
+                var item_width = $('#carousel_ul li:first').width() + crsgap;
+                $('#carousel_ul').animate({'left' : -item_width},{queue:false, duration:500, complete: function(){
+                  $('#carousel_ul li:first').remove();
+                  $('#carousel_ul').css('left','0px');
+                }});
+              });
+              $('#left_scroll').click(function(){
+                $('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
+                var item_width = $('#carousel_ul li:first').width() + crsgap;
+                $('#carousel_ul').css({'left' : (item_width * -1) + 'px'});
+                $('#carousel_ul').animate({'left' : 0},{queue:false, duration:500, complete:function(){
+                  $('#carousel_ul li:last').remove();
+                }});
+              });
+              $('#carousel_ul').on('mouseenter','li',function(){
+                $(this).find('.title').show();
+                $(this).find('.url').show();
+              });
+              $('#carousel_ul').on('mouseleave','li',function(){
+                $(this).find('.title').hide();
+                $(this).find('.url').hide();
+              });
+            }
+          }
+          var images, counter, crswidth;
+          $(function() {
+            images = $('#rightpane img');
+            counter = images.length;  // initialize the counter
             images.each(function() {
               if( this.complete ) {
                 imageLoaded.call( this );
