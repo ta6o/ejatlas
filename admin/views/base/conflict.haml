@@ -34,9 +34,6 @@
 
     .clearfix.commands
       .pull-right#commands{:style=>'display:none;'}
-        :javascript
-          var clear = false;
-          var clearuser = false;
         %ul.clearfix.list-unstyled
           %li
             =link_to ('Print'), url(:print, :slug => @slug), :method => :get, :target => '_blank'
@@ -44,11 +41,6 @@
             -if ['admin','editor'].include? current_account.role
               %li
                 =link_to ('Edit'), url(:conflicts, :edit, :id => @cid), :method => :get, :target => '_blank', :id => 'edit'
-              :javascript
-                var clear = true;
-            -else
-              :javascript
-                var clearuser = true;
 
     -if @images.any?
       .full.row
