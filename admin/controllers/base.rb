@@ -360,7 +360,8 @@ Admin.controller do
     @browseinfo = {params[:model] => info}
     @name = browseinfo[params[:model]].titlecase
     @maptitle = "Browse #{@name}"
-    @vectors = VectorDatum.where(name:'Borders').select('name,url').to_json
+    @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json
+    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     render "base/map"
   end

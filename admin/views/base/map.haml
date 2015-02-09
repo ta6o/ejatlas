@@ -61,7 +61,7 @@
                 %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
         %br/
 
-  -if @browseinfo
+  -if @browseinfo.keys.length > 1
     .horipane
       .title Browse maps
       .content{:style=>'display:none;'}
@@ -112,12 +112,23 @@
                   -j = JSON.parse c[0]
                   %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
             %br/
+    .horipane
+      .title.active Filter
+      .content
+        #filter-row
+          #filter= @filter
 
-  .horipane
-    .title.active Filter
-    .content
-      #filter-row
-        #filter= @filter
+  -else
+    .horipane.browse
+      .title.active= "Browse by #{@browseinfo.keys.first.titlecase}"
+      .content
+        %br/
+        %div{:id=>"browse#{@browseinfo.keys.first}"}
+          %ul.columns
+            -@browseinfo[@browseinfo.keys.first].each do |c|
+              -j = JSON.parse c[0]
+              %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+        %br/
 
 -content_for :bottom do
   .inner

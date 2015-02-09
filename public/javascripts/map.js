@@ -112,6 +112,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
 
   homeControl = new HomeButton();
   map.addControl(homeControl);
+  if (L.Browser.touch) { $('home-button').addClass('leaflet-touch'); }
 
   $('.home-button').html('<span class="glyphicon glyphicon-home"></span>')
 
@@ -275,6 +276,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
   window.onresize = onResize; 
 
   $(document).ready(function(){
+    onResize();
     dmns = dmns.distinct();
     if (dmns.length > 0) {
       $.each(dmns,function(i,n){
@@ -303,20 +305,22 @@ function onResize() {
   } else {
     map.scrollWheelZoom.disable();
     $('#map').css('height',(window.innerHeight-96)+'px');
+    $(".rightpane").css('width','auto')
     if ($('body').css('font-size') =='12px'){
       $('.ejatlas-logo, .tagline').bind('click', function () {window.location = "/"});
     } else {
       $('.ejatlas-logo, .tagline').unbind('click');
     }
   }
-  if ($('#carousel_container')){resetCarousel();}
+  if ($('#carousel_container').length > 0){resetCarousel();}
   map.invalidateSize();
+  resetColumns();
 }
 
 function dragEnd() {
   $('body').unbind('mousemove');
   dragging = false;
-  if ($('#carousel_container')){resetCarousel();}
+  if ($('#carousel_container').length > 0){resetCarousel();}
   map.invalidateSize();
   if (parseInt($('#resize').css("left")) > window.innerWidth - 16) $('#resize').css("left", window.innerWidth - 16)
   mapWidth = document.getElementById('map').style.width
