@@ -5490,9 +5490,6 @@ ul.sidelink li.active {
   margin-right: -8px;
   max-width: 120px;
 }
-#commands {
-  line-height: 0px;
-}
 #commands ul li {
   padding-left: 12px;
   float: left;
@@ -6096,6 +6093,18 @@ br.small {
   .nav *,
   .nav.nav-pills * {
     font-size: 12px;
+  }
+  .summary_header td {
+    width: 100%;
+    float: left;
+  }
+  .summary_header td.fld {
+    margin-left: -8px;
+    width: 100% !important;
+  }
+  .summary_header h2,
+  .summary_header h4 {
+    margin-left: -5px !important;
   }
 }
 /* required styles */

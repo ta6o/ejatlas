@@ -3333,22 +3333,17 @@ function initMap (markers, maptitle, layers, vector, fid) {
   $('.resize').on('mousedown',function(e){
     e.preventDefault();
     mouseX = e.pageX;
-    innerWidth = window.innerWidth;
     dragging = true;
     $(".rightpane .inner").css('display','block');
     $('body').bind('mousemove',function(e){
-      pageX = Math.min(Math.max(e.pageX,500),innerWidth - 480);
-      perc = parseInt( pageX / innerWidth * 100 );
-      $(".leftpane").css('width',perc+'%')
-      $(".rightpane").css('width',(100-perc)+'%')
-      $(".resize").css('left',(perc)+'%')
-      map.invalidateSize();
+      px = Math.max(Math.min(Math.max(e.pageX,500),window.innerWidth - 480),500);
+      $(".leftpane").css('width',px+'px')
+      $("#rightpane").css('width',(window.innerWidth-px)+'px')
+      $("#resize").css('left',(px)+'px')
     });
   });
   $('.resize span').on('mouseup',function(e){
-    e.preventDefault();
-    $('body').unbind('mousemove');
-    dragging = false;
+    dragEnd();
   });
   $('body').on('mouseleave',function(e){
     if (dragging) { dragEnd(); }
@@ -3405,23 +3400,26 @@ function onResize() {
   if ($('#map').css('position')=='fixed'){
     map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
-    px = Math.min(Math.max(parseInt($('#resize').css('left')),500),window.innerWidth - 480);
-    $(".leftpane").css('width',px+'px')
-    $(".rightpane").css('width',(window.innerWidth-px)+'px')
-    $(".resize").css('left',(px)+'px')
+    px = Math.max(Math.min(Math.max(parseInt($('#resize').css('left')),500),window.innerWidth - 480),500);
+    $("#map").css('width',px+'px');
+    $("#rightpane").css('width',(window.innerWidth-px)+'px');
+    $("#resize").css('left',px+'px');
+    console.log($("#map").css('width'));
+    console.log($("#rightpane").css('width'));
+    console.log($("#resize").css('left'));
   } else {
     map.scrollWheelZoom.disable();
     $('#map').css('height',(window.innerHeight-96)+'px');
-    $(".rightpane").css('width','auto')
+    $('.leftpane').css('width','auto');
+    $(".rightpane").css('width','auto');
     if ($('body').css('font-size') =='12px'){
-      $('.ejatlas-logo, .tagline').bind('click', function () {window.location = "/"});
-    } else {
-      $('.ejatlas-logo, .tagline').unbind('click');
-    }
+      $('.ejatlas-logo, .tagline').bind('click', function(){window.location = "/"});
+      $('#map').css('height',(window.innerHeight-108)+'px');
+    } else { $('.ejatlas-logo, .tagline').unbind('click'); }
   }
   if ($('#carousel_container').length > 0){resetCarousel();}
-  map.invalidateSize();
   resetColumns();
+  dragEnd();
 }
 
 function dragEnd() {
