@@ -5698,6 +5698,14 @@ ul.sidelink li.active {
 .rightpane .inner {
   padding: 0 15px 0 27px;
 }
+.rightpane h1,
+.rightpane h2,
+.rightpane h3,
+.rightpane h4,
+.rightpane h5,
+.rightpane h6 {
+  margin-top: 0px;
+}
 #bottompane {
   background: transparent;
   bottom: 0px;
@@ -6020,6 +6028,7 @@ br.small {
   }
   footer {
     padding: 20px;
+    margin-top: 20px;
   }
 }
 @media (max-width: 480px) {

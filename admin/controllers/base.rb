@@ -307,7 +307,7 @@ Admin.controller do
       end
     end
     @defs = @defs.to_set.to_a
-    @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id').to_json
+    @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link').to_json
     @image = con.images.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan

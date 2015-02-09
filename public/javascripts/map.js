@@ -498,7 +498,11 @@ function highlightFeature(e) {
     });
   }
   inf += ia.join("<br />");
-  if (jsons[pn]['source']){ inf += "<p><strong>Source: "+jsons[pn]['source']+"</strong></p>" }
+  if (jsons[pn]['source']){ 
+    inf += "<br /><br /><p>Source: &nbsp; <strong>"+jsons[pn]['source']+"</strong>" ;
+    if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
+    inf += "</p>";
+  }
   inf += "</div>"
   updateInfo(2,inf);
   layer.setStyle({
@@ -592,6 +596,7 @@ function showVector(v) {
   });
   jsons[tl]['desc'] = vect['description']
   jsons[tl]['source'] = vect['source']
+  jsons[tl]['link'] = vect['link']
   if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
   lControl.addOverlay(overlayMaps[tl],tl)
 }

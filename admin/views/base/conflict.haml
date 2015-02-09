@@ -7,10 +7,6 @@
     var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var vectorinfo = #{@vectors};
     window.onload = function(){
-      if ($.grep(markerinfo,function(a,b){return (a['id'] == #{@cid})}).length == 0) {
-        cmarker = JSON.parse(#{@cmarker});
-        markerinfo.push(cmarker);
-      }
       initMap(markerinfo,"#{@maptitle}","#{@baselayers}",vectorinfo,null);
       getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom},true)
     }
