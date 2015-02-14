@@ -46,7 +46,7 @@
       .content
         %br/
         %table
-          %tbody.recent
+          %tbody.recent.columns
           -@recent.each do |c|
             %tr
               -if c.images.any?
@@ -70,53 +70,16 @@
     .horipane
       .title Browse maps
       .content{:style=>'display:none;'}
-        .horipane.browse
-          .title{:style=>'background:transparent'} &nbsp; Countries
-          .content{:style=>'display:none;'}
-            %br/
-            #browsecountry
-              %ul.columns
-                -k = 'country'
-                -@browseinfo[k].each do |c|
-                  -j = JSON.parse c[0]
-                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-            %br/
+        -@browseinfo.each do |k,v|
+          .horipane.browse
+            .title{:style=>'background:transparent'}= "by #{k.titlecase}"
+            .content{:style=>'display:none;'}
+              %div{:id=>"browse#{k}"}
+                %ul.columns
+                  -v.each do |c|
+                    -j = JSON.parse c[0]
+                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
-        .horipane.browse
-          .title{:style=>'background:transparent'} &nbsp; Companies
-          .content{:style=>'display:none;'}
-            %br/
-            #browsecountry
-              %ul.columns
-                -k = 'company'
-                -@browseinfo[k].each do |c|
-                  -j = JSON.parse c[0]
-                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-            %br/
-
-        .horipane.browse
-          .title{:style=>'background:transparent'} &nbsp; Commodities
-          .content{:style=>'display:none;'}
-            %br/
-            #browsecountry
-              %ul.columns
-                -k = 'commodity'
-                -@browseinfo[k].each do |c|
-                  -j = JSON.parse c[0]
-                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-            %br/
-
-        .horipane.browse
-          .title{:style=>'background:transparent'} &nbsp; Types
-          .content{:style=>'display:none;'}
-            %br/
-            #browsecountry
-              %ul.columns
-                -k = 'type'
-                -@browseinfo[k].each do |c|
-                  -j = JSON.parse c[0]
-                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-            %br/
     .horipane
       .title.active Filter
       .content
@@ -124,16 +87,15 @@
           #filter= @filter
 
   -else
+    -k = @browseinfo.keys.first
     .horipane.browse
-      .title.active= "Browse by #{@browseinfo.keys.first.titlecase}"
+      .title.active= "Browse by #{k}"
       .content
-        %br/
-        %div{:id=>"browse#{@browseinfo.keys.first}"}
+        %div{:id=>"browse#{k}"}
           %ul.columns
-            -@browseinfo[@browseinfo.keys.first].each do |c|
+            -@browseinfo[k].each do |c|
               -j = JSON.parse c[0]
               %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-        %br/
 
 -content_for :bottom do
   .inner

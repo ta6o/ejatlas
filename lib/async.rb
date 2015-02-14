@@ -313,9 +313,8 @@ class AsyncTask
           img.save!
           puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
         rescue => e
-          #puts "  problem saving image with url: \n#{doc.file.file.url}\n"
-          #p e
-          puts doc.file.url
+          puts "  problem saving image with url: \n#{doc.file.file.url}\n"
+          p e
         end
       end
     end

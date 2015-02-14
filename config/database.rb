@@ -13,6 +13,7 @@
 #     :socket    => '/tmp/mysql.sock'
 #   }
 #
+
 ActiveRecord::Base.configurations[:development] = {
   :adapter  => 'postgresql',
   :encoding => 'utf8',

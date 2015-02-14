@@ -434,7 +434,7 @@ function getInfo(id,name,p,z,upd) {
   map.setView(pan,zoom);
   if (upd) {
     $.getJSON('/table/'+id, function(dat){
-      console.log(dat)
+      //console.log(dat)
       data = dat;//JSON.parse(dat);
       $('#disclaimer').hide();
       $('#name').html(name);

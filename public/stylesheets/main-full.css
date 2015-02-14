@@ -5412,9 +5412,6 @@ ul.sidelink li.active {
 #conflict_summary h2 {
   margin-bottom: 4px;
 }
-#conflict_summary h4 {
-  margin-left: 3px;
-}
 #conflict_summary .place {
   display: block;
   margin: -32px 0 36px 0;
