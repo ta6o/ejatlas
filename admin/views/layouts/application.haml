@@ -35,85 +35,85 @@
         .navbar-inner
           .container
             .row
-              .col-md-12
-                %a.btn.btn-navbar.pull-left{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
-                  %span.icon-bar
-                  %span.icon-bar
-                  %span.icon-bar
-                .navbar-collapse.collapse
-                  %ul.nav.nav-pills
-                    %li
-                      %a{:href => "/"}= "EJAtlas Home"
-                    -if current_account
-                      -if ['admin','editor'].include? current_account.role
-                        %li.dropdown#conflicts
-                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#conflicts'}
-                            = 'Conflicts'
-                            %b.caret
-                          %ul.dropdown-menu
-                            %li
-                              %a{:href=>'/conflicts/new'} Add new
-                            %li.divider
-                            %li
-                              %a{:href=>'/conflicts/approved'} Approved
-                            %li
-                              %a{:href=>'/conflicts/modified'} Modified
-                            %li
-                              %a{:href=>'/conflicts/queued'} Queued
-                            %li
-                              %a{:href=>'/conflicts/draft'} Draft
-                            %li
-                              %a{:href=>'/conflicts/deleted'} Deleted
-                            %li.divider
-                            %li
-                              %a{:href=>'/conflicts'} All cases
+              .col-md-12{:style=>'position:relative'}
+                %ul.nav.nav-pills
+                  %li.first
+                    %a &nbsp;
+                  %li.home
+                    %a{:href => "/"}= "Home"
+                  -if current_account
+                    -if ['admin','editor'].include? current_account.role
+                      %li.dropdown#conflicts
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#conflicts'}
+                          = 'Conflicts'
+                          %b.caret
+                        %ul.dropdown-menu
+                          %li
+                            %a{:href=>'/conflicts/new'} Add new
+                          %li.divider
+                          %li
+                            %a{:href=>'/conflicts/approved'} Approved
+                          %li
+                            %a{:href=>'/conflicts/modified'} Modified
+                          %li
+                            %a{:href=>'/conflicts/queued'} Queued
+                          %li
+                            %a{:href=>'/conflicts/draft'} Draft
+                          %li
+                            %a{:href=>'/conflicts/deleted'} Deleted
+                          %li.divider
+                          %li
+                            %a{:href=>'/conflicts'} All cases
 
-                        %li.dropdown#editor
-                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#editor'}
-                            = 'Moderation'
-                            %b.caret
-                          %ul.dropdown-menu
-                            %li
-                              %a{:href=>'/cache'} Update cache
-                            %li
-                              %a{:href=>'/export'} Export cases
-                            %li
-                              %a{:href=>'/jobs'}= "Jobs"
+                      %li.dropdown#editor
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#editor'}
+                          = 'Moderation'
+                          %b.caret
+                        %ul.dropdown-menu
+                          %li
+                            %a{:href=>'/cache'} Update cache
+                          %li
+                            %a{:href=>'/export'} Export cases
+                          %li
+                            %a{:href=>'/jobs'}= "Jobs"
 
-                        %li.dropdown#models
-                          %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
-                            = 'Models'
-                            %b.caret
-                          %ul.dropdown-menu
-                            %li
-                              %a{:href=>'/types'} Categories
-                            %li
-                              %a{:href=>'/countries'} Countries
-                            %li
-                              %a{:href=>'/companies'} Companies
-                            %li
-                              %a{:href=>'/ifis'} IFI's
-                            %li
-                              %a{:href=>'/featureds'} Featured maps
-                            %li
-                              %a{:href=>'/accounts'} Collaborators
-                            %li
-                              %a{:href=>'/vectors'} Vectors
-                            %li
-                              %a{:href=>'/vectorstyles'} Vector Styles
+                      %li.dropdown#models
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
+                          = 'Models'
+                          %b.caret
+                        %ul.dropdown-menu
+                          %li
+                            %a{:href=>'/types'} Categories
+                          %li
+                            %a{:href=>'/countries'} Countries
+                          %li
+                            %a{:href=>'/companies'} Companies
+                          %li
+                            %a{:href=>'/ifis'} IFI's
+                          %li
+                            %a{:href=>'/featureds'} Featured maps
+                          %li
+                            %a{:href=>'/accounts'} Collaborators
+                          %li
+                            %a{:href=>'/vectors'} Vectors
+                          %li
+                            %a{:href=>'/vectorstyles'} Vector Styles
 
-                      -else
-                        %li
-                          %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
-                        %li
-                          %a{:href=>'/conflicts'} My Conflicts
-                        %li
-                          %a{:href=>'/conflicts/new'} New Conflict
+                    -else
                       %li
-                        %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
-                          %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-                        %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+                        %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
+                      %li
+                        %a{:href=>'/conflicts'} My Conflicts
+                      %li
+                        %a{:href=>'/conflicts/new'} New Conflict
+                    %li
+                      %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
+                        %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                      %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
 
+                .tagline
+                  %p Environmental Justice Atlas
+                .ejatlas-logo
       %header
         .container
           =yield_content :outer

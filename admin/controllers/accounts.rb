@@ -46,6 +46,7 @@ Admin.controllers :accounts do
       @account.approved = true
       @account.save
       set_current_account @account
+      Admin.notify_new_account @account
       render 'accounts/confirmed'
     else
       redirect to '/'
@@ -61,7 +62,6 @@ Admin.controllers :accounts do
     @account.role = "user"
     #puts @account.id
     if @account.save
-      set_current_account(@account)
       Admin.new_account @account
       redirect to "/mailsent"
     else

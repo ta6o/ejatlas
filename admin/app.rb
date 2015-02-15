@@ -88,6 +88,12 @@ class Admin < Padrino::Application
     Admin.send_mail(a, 'Welcome to EJAtlas', html)
   end
 
+  def self.notify_new_account(a)
+    @account = a
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_new_account.haml").render(self)
+    Admin.send_mail(Account.find(1), 'New collaborator', html)
+  end
+
   def self.password_reset(a)
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/reset.haml").render(self)

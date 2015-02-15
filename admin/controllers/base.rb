@@ -100,6 +100,7 @@ Admin.controller do
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     @related = c.related
+    @headline = c.headline and c.headline.length > 0 ? c.headline : nil
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
         @image = ml.url

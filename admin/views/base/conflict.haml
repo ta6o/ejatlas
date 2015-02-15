@@ -36,7 +36,7 @@
       .pull-right#commands{:style=>'display:none;'}
         %ul.clearfix.list-unstyled
           %li
-            =link_to ('Print'), url(:print, :slug => @slug), :method => :get, :target => '_blank'
+            =link_to ('Full page'), url(:print, :slug => @slug), :method => :get, :target => '_blank'
           -unless current_account.nil?
             -if ['admin','editor'].include? current_account.role
               %li
@@ -136,6 +136,11 @@
               $(this).addClass('error');
             });
           });
+
+    -if @headline
+      %p.headline
+        %em= @headline
+      %br/
 
     #conflict_summary{:style=>'display:none;'}
     %br/
