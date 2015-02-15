@@ -75,7 +75,7 @@ Admin.controller do
   get :conflict, :with => :slug do
     c = Conflict.find_slug(params[:slug])
     #last_modified c.updated_at
-    pass unless con
+    pass unless c
     @markerinfo = "[#{c.as_marker.to_json}]"
     @cmarker = c.as_marker.to_json
     @defs = []
