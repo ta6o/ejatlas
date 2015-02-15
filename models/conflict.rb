@@ -61,7 +61,16 @@ class Conflict < ActiveRecord::Base
   has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
   accepts_nested_attributes_for :images
 
+  has_many :relations_to, :foreign_key => 'to_id',  :class_name => 'ConflictRelation', :dependent => :destroy
+  has_many :relations_from, :foreign_key => 'from_id', :class_name => 'ConflictRelation', :dependent => :destroy
+  has_many :related_to, :through => :relations_to,   :source => :from 
+  has_many :related_from, :through => :relations_from, :source => :to 
+
   before_save :set_slug
+
+  def related
+    return (self.related_to | self.related_from)
+  end
 
   def self.find_slug slug
     if c = Conflict.find(:first, :conditions => ["slug = lower(?)", slug])
@@ -567,3 +576,22 @@ class Conflict < ActiveRecord::Base
   end
 
 end
+
+class ConflictRelation < ActiveRecord::Base
+  self.primary_key = :id
+  belongs_to :from, :class_name => 'Conflict', :foreign_key => 'from_id' 
+  belongs_to :to, :class_name => 'Conflict', :foreign_key => 'to_id'
+  validate :must_be_unique, on: :create
+
+  def must_be_unique
+    errors.add(:to_id, "relation not unique") if ConflictRelation.where(to_id: to_id, from_id: from_id).any?
+    errors.add(:from_id, "relation not unique") if ConflictRelation.where(to_id: from_id, from_id: to_id).any?
+  end
+
+  def self.both fid, sid
+    both = ConflictRelation.where(to_id: fid, from_id: sid) | ConflictRelation.where(to_id: sid, from_id: fid)
+    return both.first if both.any?
+    return nil
+  end
+end
+

@@ -3218,25 +3218,31 @@ function initMap (markers, maptitle, layers, vector, fid) {
 
   $('.home-button').html('<span class="glyphicon glyphicon-home"></span>')
 
-  oms = new OverlappingMarkerSpiderfier(map,{keepSpiderfied:true,nearbyDistance:4});
-  oms.legColors.usual = "black";
-  oms.legColors.highlighted = "white";
+  //oms = new OverlappingMarkerSpiderfier(map,{keepSpiderfied:true,nearbyDistance:4});
+  //oms.legColors.usual = "black";
+  //oms.legColors.highlighted = "white";
 
   markerCount = markers.length;
   markerc = {};
+
   var attrhash = {"category_id":"Category","types":"Types","other_types":"Other Types","description":"Description","country_id":"Country","province":"Province","site":"Site","accuracy_level":"Level of Accuracy","project_area":"Project Area","project_length":"Project Length","population_type":"Type of Population","products":"Commodities","other_products":"Other Commodities","companies":"Companies","supporters":"IFI's","other_supporters":"Other IFI's","ejos":"EJO's","govt_actors":"Government Actors","mobilizing_groups":"Mobilizing Groups","other_mobilizing_groups":"Other Mobilizing Groups","mobilizing_forms":"Mobilizing Forms","other_mobilizing_forms":"Other Mobilizing Forms","env_impacts":"Environmental Impacts","other_env_impacts":"Other Environmental Impacts","hlt_impacts":"Health Impacts","other_hlt_impacts":"Other Health Impacts","sec_impacts":"Socio-economic Impacts","other_sec_impacts":"Other Socio-economic Impacts","conflict_events":"Outcomes","other_outcomes":"Other Outcomes","project_details":"Project Details","investment_string":"Level of Investment","affected_people":"Potentially Affected Population","status_id":"Intensity Level","reaction_id":"Reactionary Stage","start_date":"Start Date","end_date":"End Date","project_status_id":"Project Status","suggested_alternatives":"Development of Alternatives","success_level":"Succes Level","success_reason":"Success Reason","other_comments":"Other Comments"};
-  console.log(markers.length)
+  var arrr = []
+
   $.each(markers, function(i,m){
     mark = m;//JSON.parse(m);
     if (!mark.lat || !mark.lon) {
       console.log(mark);
-      return false
+      return 0
     }
     popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><table style='padding:24px 16px;'><tr><td style='width:36px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
     if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
     popcontent += '</td></tr></table>';
-    if ('dmn' in mark) {
+
+    cclass = "";
+    if ('dmn' in mark && mark.dmn.length > 0) {
+      console.log('oharey')
       dmns.push(mark.dmn[0])
+      cclass = " c_"+mark.dmn[0];
       popcontent += "<div class='features'>";
       $.each(Object.keys(mark),function(i,n){
         if (isNaN(n[0])) return 0
@@ -3257,21 +3263,12 @@ function initMap (markers, maptitle, layers, vector, fid) {
       popcontent += "</div>";
     }
     popcontent += '</div>';
-    if ('dmn' in mark) {
-      var marker = L.marker([mark.lat, mark.lon],{
-        icon: L.divIcon({
-            className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+' c_'+mark.dmn[0],
-          }),
-        riseOnHover: true,
-      }).addTo(markerLayer);
-    } else {
-      var marker = L.marker([mark.lat, mark.lon],{
-        icon: L.divIcon({
-            className: 'map_icon mic i_'+mark.clr+' id_'+mark.id,
-          }),
-        riseOnHover: true,
-      }).addTo(markerLayer);
-    }
+
+    var marker = L.marker([mark.lat, mark.lon],{
+      icon: L.divIcon({ className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+''+cclass, }),
+      riseOnHover: true,
+    }).addTo(markerLayer);
+
     marker.id = mark.id;
     marker.name = mark.name;
     marker.slug = mark.slug;
@@ -3285,11 +3282,8 @@ function initMap (markers, maptitle, layers, vector, fid) {
       marker.on('click', function(e){window.location="/conflict/"+marker.slug});
     }
     markerc[mark.id] = marker;
-    oms.addMarker(marker);
-
-    if (mark.val) {
-      big ++;
-    }
+    //oms.addMarker(marker);
+    arrr.push(mark.id);
     all ++;
   });
 

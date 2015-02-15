@@ -138,6 +138,19 @@
           });
 
     #conflict_summary{:style=>'display:none;'}
+    %br/
+
+    -if @related.any?
+      .horipane
+        .title.active Related conflicts
+        .content
+          %br/
+          -@related.each do |rel|
+            -next unless rel.approval_status == 'approved'
+            %p{:style=>'font-size:16px;font-weight:bold'}
+              %a{:href=>"/conflict/#{rel.slug}"}= rel.name
+          %br/
+
 
   #disqus_thread
 

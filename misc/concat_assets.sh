@@ -6,6 +6,6 @@ cat jquery.js collapse.js affix.js dropdown.js tab.js transition.js modal.js lea
 cd ../stylesheets
 lessc bootstrap.less > app.css
 lessc bootstrap-full.less > app-full.css
-cat app.css leaflet.css leaflet-loading.css noui.css > main.css
-cat app-full.css leaflet.css leaflet-loading.css noui.css > main-full.css
+cat app.css leaflet.css leaflet-loading.css noui.css autocomplete.css > main.css
+cat app-full.css leaflet.css leaflet-loading.css noui.css autocomplete.css > main-full.css
 date

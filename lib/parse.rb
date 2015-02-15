@@ -147,3 +147,25 @@ def parsePart
   puts
 end
 
+def migrate_related
+  Conflict.where("related_conflict_id is not null").each do |c|
+    if cc = Conflict.find(c.related_conflict_id)
+      begin
+        c.related_to << cc
+      rescue
+        puts "Already there: #{c.id}, #{cc.id}"
+      end
+    end
+  end
+  Conflict.where("related_conflict_string is not null").each do |c|
+    next if c.related_conflict_string.length == 0
+    if cc = Conflict.find_name(c.related_conflict_string)
+      begin
+        c.related_to << cc
+        puts "Yup: #{c.id}, #{cc.id}"
+      rescue
+      end
+    end
+  end
+  return 'done!'
+end

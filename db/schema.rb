@@ -162,6 +162,12 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string "name"
   end
 
+  create_table "conflict_relations", :id => false, :force => true do |t|
+    t.integer "id", :null => false
+    t.integer "to_id", :null => false
+    t.integer "from_id", :null => false
+  end
+
   create_table "conflicts", :force => true do |t|
     t.string   "name"
     t.string   "slug"

@@ -50,6 +50,7 @@ Admin.controllers :conflicts do
       'weblink'=>{},
       'medialink'=>{},
       'document'=>{},
+      'related'=>{},
     }
     def stripDate prop, params
       par = params['conflict'][prop+'_date']
@@ -298,7 +299,7 @@ Admin.controllers :conflicts do
     if current_account
       @conflict = Conflict.find(params[:id])
       if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id
-        @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').to_a.map(&:name)
+        @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
         @lat = @conflict.lat == "" ? nil : @conflict.lat
         @lon = @conflict.lon == "" ? nil : @conflict.lon
         render 'conflicts/edit'
@@ -467,26 +468,38 @@ Admin.controllers :conflicts do
         end
       end
       updated['refs'].each do |k,v|
-        v.each do |l,w|
-          ##puts "#{k}: #{l},#{w}"
-          ref = multies[k][:class].find(l)
-          if w['remove']
-            multies[k][:attr].delete ref
+        if k == "related"
+          v.each do |l,w|
+            rel = ConflictRelation.both(@conflict.id,l.to_i)
+            if w['remove'] and rel
+              rel.destroy
+              next 
+            elsif w['add'] and !rel
+              @conflict.related_to << Conflict.find(l.to_i)
+            end
+          end
+        else
+          v.each do |l,w|
+            ##puts "#{k}: #{l},#{w}"
+            ref = multies[k][:class].find(l)
+            if w['remove']
+              multies[k][:attr].delete ref
+              ref.save
+              next 
+            end
+            ref.name = w['name'] if w['name']
+            ref.title = w['title'] if w['title']
+            ref.description = w['description'] if w['description']
+            ref.country_id = w['country'] if w['country']
+            ref.url = w['url'] if w['url']
+            #ref.conflict = @conflict
+            begin
+              multies[k][:attr] << ref
+            rescue
+              #puts "#{k} been taken!"
+            end
             ref.save
-            next 
           end
-          ref.name = w['name'] if w['name']
-          ref.title = w['title'] if w['title']
-          ref.description = w['description'] if w['description']
-          ref.country_id = w['country'] if w['country']
-          ref.url = w['url'] if w['url']
-          #ref.conflict = @conflict
-          begin
-            multies[k][:attr] << ref
-          rescue
-            #puts "#{k} been taken!"
-          end
-          ref.save
         end
       end
       updated['conflict'].each do |k,v|

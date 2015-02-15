@@ -425,21 +425,22 @@
           .required=f.error_message_on :reaction_id
           =f.select :reaction_id, :collection => @reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
 
-        .group
-          =f.label 'Is this conflict directly related to any other EJOLT ecological conflict?'
-          .required=f.error_message_on :related_conflict_id
-          %p.description Please enter the name of the conflict as per the Ejolt inventory
-          -if @conflict.related_conflict_string and not @conflict.related_conflict_id
-            %p.description= "<strong>The data we found on the form was:</strong> #{@conflict.related_conflict_string}"
-          =f.text_field :related_conflict_string, :id => 'related_conflict', :class => 'basic_input'
-          :javascript
-            $(document).ready(function(){
-              $('#related_conflict').val("#{@conflict.related_conflict_id ? @conflict.related_conflict_string : ''}");
-              $('#related_conflict').autocomplete({
-                minLength: 1,
-                source: #{@cjson}
-              });
-            });
+        -unless @conflict.new_record?
+          .group
+            %label= 'Is this conflict directly related to any other EJOLT ecological conflict?'
+            .required=f.error_message_on :related_conflict_id
+            %p.description Please enter the name of the conflict as per the Ejolt inventory
+            %input#related.autocomplete{:type=>'text','data-source'=>'relateds'}
+            %br/
+            %ul.autoc
+              -@conflict.related.each do |rel|
+                %li{:id=>"related_#{rel.id}"}
+                  %span= rel.name
+                  %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
+                  &nbsp;
+                  %input{:type=>"hidden",:name=>"related_add_#{rel.id}"}
+            :javascript
+              var relateds = #{@cjson};
 
 
       .col-md-3
