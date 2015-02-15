@@ -347,7 +347,7 @@
           =f.label 'Relevant government actors'
           .required=f.error_message_on :government_actor_id
           %br/
-          =f.text_area :govt_actors, :class => :text_area, :rows=>4
+          %textarea#conflict_govt_actors.text-area{:rows=>4,:name=>'conflict[govt_actors]'}=@conflict.govt_actors
 
       .col-md-5
         .group
@@ -389,7 +389,7 @@
           =f.label 'Environmental Justice Organizations and other supporters'
           .required=f.error_message_on :justice_party_id
           %br/
-          =f.text_area :ejos, :class => :text_area, :rows=>4
+          %textarea#conflict_ejos.text-area{:rows=>4,:name=>'conflict[ejos]'}=@conflict.ejos
 
     .row
       .col-md-9

@@ -48,7 +48,7 @@ class Country < ActiveRecord::Base
     json, marker, link = [], [], []
     self.conflicts.order("name asc").where(approval_status: 'approved').each do |c|
       marker << c.marker
-      json << c.json
+      #json << c.json
       link << c.as_button
     end
     self.conflicts_marker = marker.to_json

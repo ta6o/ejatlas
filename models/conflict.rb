@@ -27,14 +27,8 @@ class Conflict < ActiveRecord::Base
   has_many :c_companies
   has_many :companies, :through => :c_companies
 
-  has_many :c_government_actors
-  has_many :government_actors, :through => :c_government_actors
-
   has_many :c_supporters
   has_many :supporters, :through => :c_supporters
-
-  has_many :c_justice_parties
-  has_many :justice_parties, :through => :c_justice_parties
 
   has_many :c_mobilizing_groups
   has_many :mobilizing_groups, :through => :c_mobilizing_groups

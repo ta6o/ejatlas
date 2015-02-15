@@ -8,7 +8,7 @@ Admin.controllers :conflicts do
   require "unicode_utils/titlecase"
 
   def self.cutString string, classname
-    array = string.split(/[\s]*[,;][\s]*/)
+    array = string.split(/[\s]*[,;\n][\s]*/)
     items = []
     array.each do |k|
       key = classname.find(:first, :conditions => [ "name = ?", k ])
@@ -37,8 +37,8 @@ Admin.controllers :conflicts do
       'sec_radio'=>{'p'=>[],'g'=>[]},
     }
     tobecut = {
-      'justice_parties'=>JusticeParty,
-      'government_actors'=>GovernmentActor,
+      #'justice_parties'=>JusticeParty,
+      #'government_actors'=>GovernmentActor,
       'companies'=>Company,
       'supporters'=>Supporter
     }

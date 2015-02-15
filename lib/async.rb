@@ -204,18 +204,13 @@ class AsyncTask
   handle_asynchronously :csvexport
 
   def setcache params
-    unless ca = Cached.first
-      ca = Cached.new
-      #cachestamp = ca.created_at
-      #else
-      #cachestamp = ca.updated_at
-    end
+    ca = Cached.new unless ca = Cached.first
 
     if params["countries"] == "on"
       countries = []
       puts "Updating countries..."
       #Region.all.each {|c| countries << [c.jsonize,c.conflicts_count] if c.conflicts_count > 1; c.save}
-      Country.all(:include=>:conflicts).each {|c| countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count > 1; c.save}
+      Country.all(:include=>:conflicts).each {|c| countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1; c.save}
       countries.sort_by! {|c| c[1]}
       countries.reverse!
       ca.countries = countries.to_json
@@ -233,7 +228,7 @@ class AsyncTask
     if params["ifis"] == "on"
       supporters = []
       puts "Updating IFI's..."
-      Supporter.all(:include=>:conflicts).each {|c| supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1; c.save}
+      Supporter.all(:include=>:conflicts).each {|c| supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1; c.save}
       supporters.sort_by! {|c| c[1]}
       supporters.reverse!
       ca.supporters = supporters.to_json
@@ -242,7 +237,7 @@ class AsyncTask
     if params["commodities"] == "on"
       commodities = []
       puts "Updating commodities..."
-      Product.all(:include=>:conflicts).each {|c| commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1 and c.name != "Other"; c.save}
+      Product.all(:include=>:conflicts).each {|c| commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"; c.save}
       commodities.sort_by! {|c| c[1]}
       commodities.reverse!
       ca.commodities = commodities.to_json
@@ -251,7 +246,7 @@ class AsyncTask
     if params["categories"] == "on"
       types = []
       puts "Updating categories..."
-      Type.all(:include=>:conflicts).each {|c| types << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1 and c.name != "Other"; c.save}
+      Type.all(:include=>:conflicts).each {|c| types << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"; c.save}
       types.sort_by! {|c| c[1]}
       types.reverse!
       ca.types = types.to_json
@@ -273,7 +268,6 @@ class AsyncTask
         c.features = f.to_json
         c.save
       end
-      puts 'featureds now'
       Featured.all.each do |featured|
         #features = JSON.parse(featured.features || '{}')
         if confs = Admin.filter(featured.filter)
@@ -374,8 +368,8 @@ class AsyncTask
     end
 
     ca.save
-    puts "Cache updated."
     GC.start
+    puts "Cache updated."
 
   end
   handle_asynchronously :setcache
