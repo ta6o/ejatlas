@@ -120,7 +120,7 @@ class Featured < ActiveRecord::Base
       ((mania | imps) & feats).each do |f|
         cmarker["#{self.id}:#{f}"] = eval("c.#{f}").map(&:name).join(', ')
       end
-      json << c.json
+      #json << c.json
       marker << cmarker.to_json
       link << c.as_button(data)
     end

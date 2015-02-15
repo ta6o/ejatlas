@@ -101,7 +101,7 @@ class Conflict < ActiveRecord::Base
     lon = self.lon if self.lon.to_f.abs <= 180
     cslg = ''
     cslg = self.country.slug if self.country
-    return {:name=>self.name,:lon=>lon,:lat=>lat,:id=>self.id,:cat=>cat,:start=>sta,:clr=>clr,:val=>(self.project_details == "" ? 0 : 1),:slug=>self.slug,:cslg=>cslg}.to_json
+    return {:name=>self.name,:lon=>lon,:lat=>lat,:id=>self.id,:cat=>cat,:start=>sta,:clr=>clr,:slug=>self.slug,:cslg=>cslg}.to_json
   end
 
   def get_start_date

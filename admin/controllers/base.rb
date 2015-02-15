@@ -75,7 +75,7 @@ Admin.controller do
   get :conflict, :with => :slug do
     c = Conflict.find_slug(params[:slug])
     #last_modified c.updated_at
-    redirect to "/" unless c
+    pass unless con
     @markerinfo = "[#{c.as_marker.to_json}]"
     @cmarker = c.as_marker.to_json
     @defs = []
@@ -138,7 +138,7 @@ Admin.controller do
     con = Country.find_slug(params[:slug])
     con = Region.find_slug(params[:slug]) unless con
     ##last_modified con.updated_at
-    return redirect to '/' unless con
+    pass unless con
     @markerinfo = con.conflicts_marker
     contents = File.read('admin/views/base/filter.haml')
     @filterinfo = con.conflicts_json
@@ -266,12 +266,9 @@ Admin.controller do
 
   get 'country-of-institution', :with => :slug do
     ca = Cached.select(:filterdata).first
-    @filterform = JSON.parse(ca.filterdata)
-    @filter = render "base/filter", :layout => false
     con = Country.find_slug(params[:slug])
     ##last_modified con.updated_at
     @markerinfo = con.supporters_marker
-    @filterinfo = con.supporters_json
     @load = con.supporters_link
     @name = "Financial Institutions from #{con.name}"
     @id = con.id
@@ -285,14 +282,10 @@ Admin.controller do
 
   get :featured, :with => :slug do
     ca = Cached.select(:filterdata).first
-    @filterform = JSON.parse(ca.filterdata)
-    @filter = render "base/filter", :layout => false
     con = Featured.find_slug(params[:slug])
-    return redirect to '/' unless con
+    pass unless con
     @markerinfo = con.conflicts_marker
-    contents = File.read('admin/views/base/filter.haml')
-    @filterinfo = con.conflicts_json
-    @load = con.conflicts_link
+    @load = @markerinfo.length > 60000 ? nil : con.conflicts_link
     @name = con.name
     @description = con.description
     @id = con.id

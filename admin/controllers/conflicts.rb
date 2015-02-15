@@ -490,6 +490,14 @@ Admin.controllers :conflicts do
         end
       end
       updated['conflict'].each do |k,v|
+        if k == 'name' and v.match(/"/)
+          quotes = ["“","","”"]
+          fi = -1
+          while v.match(/"/)
+            v = v.sub(/"/,quotes[fi+1])
+            fi *= -1
+          end
+        end
         @conflict.update_attribute k, v
       end
       @conflict.ping

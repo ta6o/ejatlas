@@ -59,13 +59,12 @@
       #infopane
       %br/
 
-  -if @load and @load.length > 0
-    .horipane
-      .title.active{:class=> @feature ? "" : "active"} Legend
-      .content
-        %br/
-        #legendpane
-        %br/
+  .horipane
+    .title.active{:class=> @feature ? "" : "active"} Legend
+    .content
+      %br/
+      #legendpane
+      %br/
 
   -if @load and @load.length > 0
     .horipane

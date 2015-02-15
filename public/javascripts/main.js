@@ -3153,11 +3153,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
-  /*if (maptitle == "") {
-    rtlegend = "";
-    legend = "";
-  }*/
-
   markerLayer = L.featureGroup();
   initLayers = [];
 
@@ -3230,6 +3225,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
   markerCount = markers.length;
   markerc = {};
   var attrhash = {"category_id":"Category","types":"Types","other_types":"Other Types","description":"Description","country_id":"Country","province":"Province","site":"Site","accuracy_level":"Level of Accuracy","project_area":"Project Area","project_length":"Project Length","population_type":"Type of Population","products":"Commodities","other_products":"Other Commodities","companies":"Companies","supporters":"IFI's","other_supporters":"Other IFI's","ejos":"EJO's","govt_actors":"Government Actors","mobilizing_groups":"Mobilizing Groups","other_mobilizing_groups":"Other Mobilizing Groups","mobilizing_forms":"Mobilizing Forms","other_mobilizing_forms":"Other Mobilizing Forms","env_impacts":"Environmental Impacts","other_env_impacts":"Other Environmental Impacts","hlt_impacts":"Health Impacts","other_hlt_impacts":"Other Health Impacts","sec_impacts":"Socio-economic Impacts","other_sec_impacts":"Other Socio-economic Impacts","conflict_events":"Outcomes","other_outcomes":"Other Outcomes","project_details":"Project Details","investment_string":"Level of Investment","affected_people":"Potentially Affected Population","status_id":"Intensity Level","reaction_id":"Reactionary Stage","start_date":"Start Date","end_date":"End Date","project_status_id":"Project Status","suggested_alternatives":"Development of Alternatives","success_level":"Succes Level","success_reason":"Success Reason","other_comments":"Other Comments"};
+  console.log(markers.length)
   $.each(markers, function(i,m){
     mark = m;//JSON.parse(m);
     if (!mark.lat || !mark.lon) {
@@ -3296,21 +3292,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
     }
     all ++;
   });
-  /*map.on('drag', function(e) { 
-    b = map.getBounds();
-    e = e || window.event;
-    if (maxBounds.contains(b)) {
-      bounds = b;
-    } else {
-      map.fitBounds(bounds);
-      if (e.stopPropagation) {
-        e.stopPropagation();
-      }
-      else {
-        e.cancelBubble = true;
-      }
-    }
-  });*/
 
   map.on('zoomend', function(e) { markerSize(); });
 
