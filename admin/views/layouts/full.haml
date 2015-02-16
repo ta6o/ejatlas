@@ -139,12 +139,6 @@
           %a#thank_tw.pull-left.clearfix{:href=>'https://twitter.com/intent/tweet?text=http%3A%2F%2Fejatlas.org%20-%20Mapping%20ecological%20conflicts%20and%20spaces%20of%20resistance&source=clicktotweet',:target=>'_blank'}
             #img.pull-left
 
-    -if @color and @color.length == 6
-      :javascript
-        var $color = "##{@color}";
-    -else
-      :javascript
-        var $color;
     -if ENV['RACK_ENV'] == 'development'
       :javascript
         conflict = false;
@@ -155,6 +149,11 @@
         conflict = false;
         $full = true;
         jQl.loadjQ('/javascripts/main.js'); 
+    -if @color and @color.length > 1
+      :javascript
+        $(document).ready(function(){
+          $('#map').css('background','#{@color}')
+        });
     :javascript
       $(document).ready(function(){
         window.onerror = function(message, url, lineNumber) {  

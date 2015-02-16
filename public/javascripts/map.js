@@ -42,7 +42,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
-    //console.log(e);
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
@@ -72,7 +71,9 @@ function initMap (markers, maptitle, layers, vector, fid) {
     loadJS(v["vector_datum"]["url"])
   });
 
-  lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
+  if (Object.keys(baselayers).length > 0){ 
+    lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
+  }
 
   $(document).on('click','.legend .map-icon, .legend .desc',function(e){
     //console.log(e)

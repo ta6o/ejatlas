@@ -135,9 +135,6 @@
           %li{:id=>"tag-#{t.id}"}
             %span=t.name
             %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
-    .group
-      %label.control-label{:for=>'featured_published'} Published?
-      %input#featured_published{:type=>"checkbox",:name=>'featured[published]',:checked=> @featured.published }
 
   .col-md-4
     .group
@@ -231,8 +228,12 @@
       =f.text_field :features, :type => :hidden, :value=>@featured.features, :id => 'features'
       %input#tags{:name=>'tags', :type => :hidden, :value=>@featured.tags.map(&:id).join(',')}
 
-    .group.navform.wat-cf
-      =f.submit pat(:save), :class => 'btn pull-right'
+    .group.navform.wat-cf.clearfix
+      .pull-right
+        =f.submit pat(:save), :class => 'btn btn-primary pull-right'
+      .pull-right{:style=>"margin:-6px 18px 0 0"}
+        %label.control-label{:for=>'featured_published'} Published?
+        %input#featured_published{:type=>"checkbox",:name=>'featured[published]',:checked=> @featured.published }
 
 -unless @featured.new_record? or @followed.nil?
   .row.whitebox
