@@ -65,7 +65,7 @@ class Country < ActiveRecord::Base
         json << cc.json
         culprits = []
         cc.companies.where(country_id: self.id).each {|cu| culprits << "<a href='/company/#{cu.slug}'>#{cu.name}</a>"}
-        link << "<p><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+        link << "<p class='conflict-button' data-id='#{cc.id}'><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
       end
     end
     self.companies_marker = marker.to_json
@@ -82,7 +82,7 @@ class Country < ActiveRecord::Base
         json << cc.json
         culprits = []
         cc.supporters.where(country_id: self.id).each {|cu| culprits << "<a href='/institution/#{cu.slug}'>#{cu.name}</a>"}
-        link << "<p><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+        link << "<p class='conflict-button' data-id='#{cc.id}'><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
       end
     end
     self.supporters_marker = marker.to_json

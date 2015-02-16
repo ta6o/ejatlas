@@ -1,7 +1,11 @@
 Admin.controllers :types do
 
   before do
-    @name = "Types"
+    if current_account and ["admin","editor"].include?(current_account.role)
+      @name = "Types"
+    else
+      redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
+    end
   end
 
   get :index do

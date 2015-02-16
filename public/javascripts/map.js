@@ -127,7 +127,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
       console.log(mark);
       return 0
     }
-    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><table style='padding:24px 16px;'><tr><td style='width:36px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
+    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
     if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
     popcontent += '</td></tr></table>';
 
@@ -161,14 +161,26 @@ function initMap (markers, maptitle, layers, vector, fid) {
       icon: L.divIcon({ className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+''+cclass, }),
       riseOnHover: true,
     }).addTo(markerLayer);
+    
+    $('.map_icon.id_'+mark.id).attr('data-id',mark.id);
 
     marker.id = mark.id;
     marker.name = mark.name;
     marker.slug = mark.slug;
     marker.cslg = mark.cslg;
     marker.content = popcontent;
-    marker.on('mouseover', function(e){updateInfo(1,marker.content)});
-    //marker.on('mouseout', function(e){updateInfo(1,disclaimer)});
+    marker.on('mouseover', function(e){
+      selector = '#map .map_icon.id_'+marker.id;
+      $(selector).addClass('selected')
+      transformItem(selector, 'scale', 1.25);
+      $(selector).removeClass('mic').removeClass('min');
+      updateInfo(1,marker.content);
+    });
+    marker.on('mouseout', function(e){
+      selector = '#map .map_icon.id_'+marker.id;
+      transformItem(selector, 'scale', 0.8);
+      singleSize(selector);
+    });
     if (window.location.pathname === "/embed") {
       marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
     } else {
@@ -284,6 +296,20 @@ function initMap (markers, maptitle, layers, vector, fid) {
     $(this).parent().slideUp(function(){more.slideDown();});
   });
   
+  $('.conflict-button').on('mouseenter',function(e){
+    id = $(this).attr('data-id');
+    selector = '#map .map_icon.id_'+id;
+    $(selector).addClass('selected')
+    transformItem(selector, 'scale', 1.25);
+    $(selector).removeClass('mic').removeClass('min');
+    updateInfo(1,markerc[id].content)
+  })
+  $('.conflict-button').on('mouseleave',function(e){
+    selector = '#map .map_icon.id_'+$(this).attr('data-id');
+    transformItem(selector, 'scale', 0.8);
+    singleSize(selector);
+  })
+  
   window.onresize = onResize; 
 
   $(document).ready(function(){
@@ -303,6 +329,18 @@ function initMap (markers, maptitle, layers, vector, fid) {
 
   updateInfo(1,disclaimer);
   markerSize();
+}
+
+function transformItem(selector, property, value) {
+  matrix = $(selector).css('transform');
+  console.log(matrix)
+  $(selector).css({
+    '-webkit-transform' : matrix + property + '(' + value + ')',
+    '-moz-transform'    : matrix + property + '(' + value + ')',
+    '-ms-transform'     : matrix + property + '(' + value + ')',
+    '-o-transform'      : matrix + property + '(' + value + ')',
+    'transform'         : matrix + property + '(' + value + ')'
+  });
 }
 
 function onResize() {
@@ -375,6 +413,26 @@ function markerSize() {
     $('.map_icon').removeClass('min');
   } else {
     $('.map_icon').addClass('min');
+  }
+}
+
+function singleSize(selector) {
+  if (markerCount > 100) {
+    $(selector).addClass('mic').removeClass('min');
+  } else if (markerCount > 10) {
+    $(selector).removeClass('mic').addClass('min');
+  } else {
+    $(selector).removeClass('mic').removeClass('min');
+  }
+  if (map.getZoom() > 3) {
+    $(selector).removeClass('mic').addClass('min');
+  } else {
+    $(selector).addClass('mic').removeClass('min');
+  }
+  if (map.getZoom() > 9) {
+    $(selector).removeClass('min');
+  } else {
+    $(selector).addClass('min');
   }
 }
 

@@ -229,7 +229,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def as_button(options={})
-    html = "<p><a href='/conflict/#{self.slug}'>#{self.name}</a>"
+    html = "<p class='conflict-button' data-id='#{self.id}'><a href='/conflict/#{self.slug}'>#{self.name}</a>"
     require 'pp'
     unless options.empty?
       features = JSON.parse(self.features || "{}")

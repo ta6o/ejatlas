@@ -258,7 +258,7 @@ Admin.controller do
     @filterinfo = con.companies_json
     @load = con.companies_link
     @name = "Companies from #{con.name}"
-    @markercount = @load.split("</p><p>").length
+    @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
@@ -274,7 +274,7 @@ Admin.controller do
     @load = con.supporters_link
     @name = "Financial Institutions from #{con.name}"
     @id = con.id
-    @markercount = @load.split("</p><p>").length
+    @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
@@ -333,9 +333,7 @@ Admin.controller do
   end
 
   get :csv, :with=>:model do
-    redirect to "/sessions/login" unless current_account
-    redirect to "/sessions/login" unless ["admin","editor"].include? current_account.role
-    redirect to "/" unless current_account
+    redirect to "/sessions/login?return=csv/#{params[:model]}" unless current_account
     redirect to "/" unless ["admin","editor"].include? current_account.role
     filename = to_csv params[:model]
     send_file filename[0], :type=> :csv, :filename => filename[1]
@@ -362,13 +360,13 @@ Admin.controller do
   end
 
   get :cache do
-    redirect to "/sessions/login" unless current_account
+    redirect to "/sessions/login?return=cache" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     render 'base/cache', :layout => :application
   end
 
   post :cache do
-    redirect to "/sessions/login" unless current_account
+    redirect to "/sessions/login?return=cache" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     AsyncTask.new.setcache params
     redirect to 'jobs'
@@ -422,26 +420,26 @@ Admin.controller do
   end
 
   get :export do
-    redirect to "/sessions/login" unless current_account
+    redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     render 'base/export', :layout => :application
   end
 
   post :export do
-    redirect to "/sessions/login" unless current_account
+    redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     AsyncTask.new.csvexport params
     redirect to 'jobs'
   end
 
   get :parse do
-    redirect to "/sessions/login" unless current_account
+    redirect to "/sessions/login?return=parse" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     render 'base/parse', :layout => :application
   end
 
   post :parse do
-    redirect to "/sessions/login" unless current_account
+    redirect to "/sessions/login?return=parse" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     file = params[:master]
     puts master = File.read(file[:tempfile])
@@ -451,7 +449,7 @@ Admin.controller do
 
   get :jobs do
     @name = "Queued Jobs"
-    redirect to "/sessions/login" unless current_account
+    redirect to "/sessions/login?return=jobs" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     @jobs = Delayed::Job.all
     render 'base/jobs', :layout => :application

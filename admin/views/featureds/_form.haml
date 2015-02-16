@@ -100,9 +100,9 @@
                   %br/
                 .col-md-8
                   %input{:type=>'text',:name=>"images_attributes[#{ind}][title]",:id=>"images_attributes_#{ind}_title",:value=>(img.title || "")}
-                  %br/
-                  %input.prime{:type=>'checkbox',:name=>"images_attributes[#{ind}][prime]",:id=>"images_attributes_#{ind}_prime",:checked=>img.prime == 1}
-                  %label{:for=>"images_attributes_#{ind}_prime"} Primary image?
+                  -#%br/
+                    %input.prime{:type=>'checkbox',:name=>"images_attributes[#{ind}][prime]",:id=>"images_attributes_#{ind}_prime",:checked=>img.prime == 1}
+                    %label{:for=>"images_attributes_#{ind}_prime"} Primary image?
                   %br/
                   %input{:type=>'hidden',:name=>"images_attributes[#{ind}][_destroy]"}
                   %input{:type=>'checkbox',:name=>"images_attributes[#{ind}][_destroy]",:id=>"images_attributes_#{ind}__destroy"}

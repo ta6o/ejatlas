@@ -165,7 +165,7 @@ Admin.controllers :conflicts do
 
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
-    redirect to '/sessions/login' if current_account.nil?
+    redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
     @countries = Country.all :order => :slug
     @categories = Category.all :order => :id
     @alltypes = Type.where('category_id is not null').order('name asc')
@@ -502,6 +502,7 @@ Admin.controllers :conflicts do
           end
         end
       end
+      general = false
       updated['conflict'].each do |k,v|
         if k == 'name' and v.match(/"/)
           quotes = ["“","","”"]
@@ -510,8 +511,20 @@ Admin.controllers :conflicts do
             v = v.sub(/"/,quotes[fi+1])
             fi *= -1
           end
+        elsif k == "general"
+          if v == "on"
+            general = true
+            @conflict.update_attribute k, true
+          else
+            @conflict.update_attribute k, false
+          end
         end
         @conflict.update_attribute k, v
+      end
+      if general
+        capital = Country.find(updated['conflict']['country_id']).capital.split('|')
+        @conflict.update_attribute :lat, capital[1].sub(",",".").to_f
+        @conflict.update_attribute :lon, capital[2].sub(",",".").to_f
       end
       @conflict.ping
       @conflict.modified_at = Time.now

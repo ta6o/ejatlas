@@ -227,6 +227,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "modified_at"
     t.text     "features"
     t.string   "headline"
+    t.boolean  "general"
   end
 
   create_table "contact_people", :force => true do |t|
@@ -253,6 +254,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text    "supporters_json"
     t.text    "supporters_link"
     t.integer "iso_numeric"
+    t.string  "capital"
   end
 
   create_table "delayed_jobs", :force => true do |t|

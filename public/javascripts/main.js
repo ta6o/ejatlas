@@ -3391,6 +3391,13 @@ function initMap (markers, maptitle, layers, vector, fid) {
     $(this).parent().slideUp(function(){more.slideDown();});
   });
   
+  $('.rightpane').on('.conflict-button','hover',function(e){
+      target = $('#map .map_icon.id_'+$(this).attr('data-id'));
+      console.log(target)
+      target.remove();
+    },function(e){
+  })
+  
   window.onresize = onResize; 
 
   $(document).ready(function(){

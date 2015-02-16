@@ -2,30 +2,18 @@
 Admin.controllers :sessions do
 
   get :login do
-    #puts session[:return_to]
     pp request.referer
     set_current_account(nil)
     render "/sessions/new"
   end
 
-  get :create do
-    configure :development do
-      @account = Account.find params['id']
-      if @account.surname == params['hash']
-        set_current_account @account
-      end
-    end
-    redirect to '/'
-  end
-
   post :create do
+    return_to = "/"
+    return_to = "/#{params['return_to']}" if params.has_key? 'return_to'
+    puts params
     if account = Account.authenticate(params[:email], params[:password])
       set_current_account(account)
-      redirect url(:index)
-    elsif Padrino.env == :development && params[:bypass]
-      account = Account.first
-      set_current_account(account)
-      redirect url(:index)
+      redirect url(return_to)
     else
       params[:email], params[:password] = h(params[:email]), h(params[:password])
       flash[:warning] = "E-posta veya şifre hatalı."

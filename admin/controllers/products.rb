@@ -1,5 +1,13 @@
 Admin.controllers :products do
 
+  before do
+    if current_account and ["admin","editor"].include?(current_account.role)
+      @name = "Commodities"
+    else
+      redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
+    end
+  end
+
   get :index do
     @products = Product.order('slug').select('name,id,slug,description')
     render 'products/index'

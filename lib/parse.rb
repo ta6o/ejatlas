@@ -169,3 +169,14 @@ def migrate_related
   end
   return 'done!'
 end
+
+def define_capitals
+  csv = CSV.read "#{Dir.pwd}/misc/country_capitals.csv"
+  csv.each do |row|
+    if co = Country.find_name(row[0])
+      co.capital = row[1..-1].join('|')
+      co.save
+    end
+  end
+end
+

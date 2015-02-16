@@ -913,6 +913,7 @@ position: relative;
   min-width: 283px;
   font-weight: bold;
   background: @brand-primary;
+  height:24px;
   li.first {
     width: 44px;
     a:hover{
@@ -1016,61 +1017,30 @@ position: relative;
   top: 2px;
   left: 12px;
 }
-@media (max-width: @screen-md) {
-  .navbar-fixed-top{position:relative;min-height:12px !important;}
-  .ejatlas-logo {
-    position: absolute;
-    top:6px;
-    left:18px;
-    width: 51px;
-    height: 74px;
-  }
-  .tagline {
-    position: absolute;
-    top:0px;
-    left:0px;
-    padding: 4px 40px;
-    width:100%;
-  }
-  .nav, .nav.nav-pills {
-    position: absolute;
-    top:24px;
-    left:44px;
-    li.first{width:24px;}
+.navbar {
+  margin-left: -164px;
+  .nav.nav-pills {
+    left: 48px;
+    top: 48px;
+    min-width: 283px;
+    font-weight: bold;
+    background: @brand-primary;
+    li {
+      a {
+        margin-top: 0px;
+      }
+      &.first {
+        width: 44px;
+        a:hover{
+          background: @brand-primary;
+        }
+      }
+    }
   }
 }
 @media (max-width: @screen-sm) {
+  .navbar {margin-left:-83px;}
 }
 @media (max-width: @screen-xs) {
-  body {
-    font-size: 12px;
-  }
-  .navbar-fixed-top{min-height:37px !important;}
-  .ejatlas-logo {
-    position: absolute;
-    top:-22px;
-    left:-12px;
-    width: 51px;
-    height: 74px;
-    cursor:pointer;
-  }
-  .tagline {
-    position: absolute;
-    top:0px;
-    left:0px;
-    padding: 4px 20px;
-    width:100%;
-    cursor:pointer;
-    p {font-size:14px;}
-  }
-  .nav, .nav.nav-pills {
-    position: absolute;
-    top:24px;
-    left:0px;
-    width:100%;
-    background-color:@brand-primary;
-    li.first{width:48px;}
-    li.home, span.ej {display:none;}
-    * {font-size:12px;}
-  }
+  .navbar * {font-size:11px;}
 }

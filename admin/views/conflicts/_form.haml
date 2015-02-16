@@ -44,19 +44,33 @@
           .required=f.error_message_on :name
           =f.text_field :name, :class => 'text_field basic_input'
             
-        .group.local_fade
+        .group
           =f.label 'Country'
           %span.required.large *
           .required=f.error_message_on :country_id
           =f.select :country_id, :collection => @countries, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
 
         .group
+          %input#general{:type=>'checkbox',:name=>"conflict[general]", :checked=>(@conflict.general ? true : false)} &nbsp; This is a country-wide conflict
+          :javascript
+            $('#general').on('change',function(){
+              if ($(this).prop('checked')) {
+                $('.local_fade').fadeOut();
+                $('.local_fade input[type=text]').val('');
+                $('.local_fade input[type=radio]:checked').prop('checked',false)
+                $('#map').animate({opacity:0});
+              } else {
+                $('.local_fade').fadeIn();
+                $('#map').animate({opacity:1});
+              }
+            })
+        .group.local_fade
           =f.label 'Location of conflict'
           %p.description (municipality or city/town)
           .required=f.error_message_on :site
           =f.text_field :site, :class => 'text_field'
 
-        .group
+        .group.local_fade
           =f.label 'State or Province'
           .required=f.error_message_on :province
           =f.text_field :province, :class => 'text_field'
@@ -86,7 +100,7 @@
 
         .row
           .col-md-4
-            .group
+            .group.local_fade
               .required=f.error_message_on :population_type
               =f.label 'Type of Population'
               %label.checkbox.inline.pop_type
@@ -103,7 +117,7 @@
             %br/
 
       .col-md-6
-        .group
+        .group.local_fade
           %span Latitude:
           %span#maplat.large.hide
           =f.text_field :lat, :class => 'text_field', :id => :imaplat
@@ -111,13 +125,18 @@
           %span#maplon.large.hide
           =f.text_field :lon, :class => 'text_field', :id => :imaplon
           %br/
+          %p.description Please point to the location of conflict with the red marker.
+        .group
+          #map
+          :javascript
+            $(document).ready(function(){
+              initMap([#{@lat||0},#{@lon||0}]);
+            });
 
-        %p.description Please point to the location of conflict with the red marker.
-        #map
+    -if @conflict.general
       :javascript
-        $(document).ready(function(){
-          initMap([#{@lat||0},#{@lon||0}]);
-        });
+        $('.local_fade').hide();
+        $('#map').css('opacity',0);
 
 
     .row

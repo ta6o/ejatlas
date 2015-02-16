@@ -4,7 +4,7 @@ Admin.controllers :countries do
     if current_account and ["admin","editor"].include?(current_account.role)
       @name = "Countries"
     else
-      redirect to "/sessions/login"
+      redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
     end
   end
 

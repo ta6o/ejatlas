@@ -4,7 +4,7 @@ Admin.controllers :featureds do
     if current_account and ["admin","editor"].include?(current_account.role)
       @name = "Featured Maps"
     else
-      redirect to "/sessions/login"
+      redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
     end
   end
 
