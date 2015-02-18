@@ -1,5 +1,6 @@
 class AsyncTask
   def csvexport params
+    require 'csv'
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
@@ -307,7 +308,7 @@ class AsyncTask
           img.save!
           puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
         rescue => e
-          puts "  problem saving image with url: \n#{doc.file.file.url}\n"
+          puts "  problem saving image: \n#{doc.file.file.filename}\n"
           p e
         end
       end

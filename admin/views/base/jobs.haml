@@ -16,9 +16,9 @@
           %tr
             %td
               %strong= {:csvexport_without_delay=>'Export',:setcache_without_delay=>'Cache',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
-            %td= j.created_at.strftime("%d/%m/%Y %H:%M")
+            %td= (j.created_at.utc+1.hours).strftime("%d/%m/%Y %H:%M CET")
             -if j.locked_at != nil
-              %td= "Started at #{j.locked_at.strftime('%H:%M')}"
+              %td= "Started at #{(j.locked_at.utc+1.hours).strftime('%b %d, %H:%M CET')}"
             -elsif j.last_error != nil
               %td Failed
             -elsif j.locked_at.nil? and j.attempts == 0 
