@@ -977,7 +977,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
   //jshint maxlen:220
   L.TileLayer.Provider.providers = {
     OpenStreetMap: {
-      url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       options: {
         attribution:
           '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -985,13 +985,13 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       variants: {
         Mapnik: {},
         BlackAndWhite: {
-          url: 'http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
+          url: 'https://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
         },
         DE: {
-          url: 'http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png'
+          url: 'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png'
         },
         HOT: {
-          url: 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+          url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
           options: {
             attribution: '{attribution.OpenStreetMap}, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
           }
@@ -999,13 +999,13 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     OpenSeaMap: {
-      url: 'http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+      url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
       options: {
         attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
       }
     },
     Thunderforest: {
-      url: 'http://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png',
+      url: 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png',
       options: {
         attribution:
           '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, {attribution.OpenStreetMap}',
@@ -1019,7 +1019,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     OpenMapSurfer: {
-      url: 'http://openmapsurfer.uni-hd.de/tiles/{variant}/x={x}&y={y}&z={z}',
+      url: 'https://openmapsurfer.uni-hd.de/tiles/{variant}/x={x}&y={y}&z={z}',
       options: {
         minZoom: 0,
         maxZoom: 20,
@@ -1043,7 +1043,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     Hydda: {
-      url: 'http://{s}.tile.openstreetmap.se/hydda/{variant}/{z}/{x}/{y}.png',
+      url: 'https://{s}.tile.openstreetmap.se/hydda/{variant}/{z}/{x}/{y}.png',
       options: {
         minZoom: 0,
         maxZoom: 18,
@@ -1057,7 +1057,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     MapQuestOpen: {
-      url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg',
+      url: 'https://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg',
       options: {
         attribution:
           'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; ' +
@@ -1067,7 +1067,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       variants: {
         OSM: {},
         Aerial: {
-          url: 'http://oatile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg',
+          url: 'https://oatile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg',
           options: {
             attribution:
               'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; ' +
@@ -1088,7 +1088,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     Stamen: {
-      url: 'http://{s}.tile.stamen.com/{variant}/{z}/{x}/{y}.png',
+      url: 'https://{s}.tile.stamen.com/{variant}/{z}/{x}/{y}.png',
       options: {
         attribution:
           'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
@@ -1130,7 +1130,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     Esri: {
-      url: 'http://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
       options: {
         variant: 'World_Street_Map',
         attribution: 'Tiles &copy; Esri'
@@ -1214,7 +1214,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     OpenWeatherMap: {
-      url: 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png',
+      url: 'https://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png',
       options: {
         attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
         opacity: 0.5
@@ -1308,7 +1308,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     Acetate: {
-      url: 'http://a{s}.acetate.geoiq.com/tiles/{variant}/{z}/{x}/{y}.png',
+      url: 'https://a{s}.acetate.geoiq.com/tiles/{variant}/{z}/{x}/{y}.png',
       options: {
         attribution:
           '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
@@ -1328,7 +1328,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     FreeMapSK: {
-      url: 'http://{s}.freemap.sk/T/{z}/{x}/{y}.jpeg',
+      url: 'https://{s}.freemap.sk/T/{z}/{x}/{y}.jpeg',
       options: {
         minZoom: 8,
         maxZoom: 16,
@@ -1338,7 +1338,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     MtbMap: {
-      url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
+      url: 'https://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
       options: {
         attribution:
           '{attribution.OpenStreetMap} &amp; USGS'
@@ -3149,7 +3149,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
-    //console.log(e);
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
@@ -3179,7 +3178,9 @@ function initMap (markers, maptitle, layers, vector, fid) {
     loadJS(v["vector_datum"]["url"])
   });
 
-  lControl = L.control.layers(baselayers, overlayMaps).addTo(map);
+  if (Object.keys(baselayers).length > 0){ 
+    lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
+  }
 
   $(document).on('click','.legend .map-icon, .legend .desc',function(e){
     //console.log(e)

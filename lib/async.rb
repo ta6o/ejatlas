@@ -1,10 +1,12 @@
 class AsyncTask
   def csvexport params
-    require 'csv'
+    puts require 'csv'
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
     stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
+    puts "#{stack.length} cases to be exported."
+    puts ::CSV
     if limit > 0
       stack = stack[0..(limit-1)]
     end
@@ -17,7 +19,8 @@ class AsyncTask
     stack.each_with_index do |conf,index|
       nfields = 0
       line = []
-      puts "#{conf.id} #{conf.name}"
+      #puts "#{conf.id} #{conf.name}"
+      print "\r #{(index/stack.length.to_f*100).to_i}% done."
       conf.attributes.each do |k,v|
         next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
         if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
@@ -157,8 +160,7 @@ class AsyncTask
       lines << line
       #puts
     end
-    p numfields
-    CSV.open('tmp/cases.csv',"w") do |output|
+    ::CSV.open('/tmp/cases.csv',"w") do |output|
       output << header
       lines.each do |line|
         output << line
@@ -169,43 +171,62 @@ class AsyncTask
     mania.each do |many,lines|
       header = ["id"]
       many.order(:id).each {|h| header << h.name}
-      CSV.open("tmp/#{many.to_s.downcase}.csv","w") do |output|
+      ::CSV.open("/tmp/#{many.to_s.downcase}.csv","w") do |output|
         output << header
         lines.each do |line|
           output << line
         end
       end
-      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}.csv"
+      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
     imps.each do |many,lines|
       header = ["id"]
       many.order(:id).each {|h| header << h.name}
-      CSV.open("tmp/#{many.to_s.downcase}.csv","w") do |output|
+      ::CSV.open("/tmp/#{many.to_s.downcase}.csv","w") do |output|
         output << header
         lines.each do |line|
           output << line
         end
       end
-      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}.csv"
+      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
-    Zip::ZipOutputStream.open("tmp/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
+    Zip::ZipOutputStream.open("#{Dir.pwd}/../file/export/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
       csvs.each do |c|
         zio.put_next_entry(c)
-        zio.write File.read("tmp/#{c.split('/')[-1]}")
+        zio.write File.read("/tmp/#{c.split('/')[-1]}")
       end
     end
-    ex = Export.new
-    ex.file = File.open("tmp/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip","rb")
-    if ex.save
-      ex = nil
-    else
-      puts 'nein!'
-    end
+    GC.start
   end
   handle_asynchronously :csvexport
 
   def setcache params
     ca = Cached.new unless ca = Cached.first
+
+    if params["conflicts"] == "on"
+      puts "Updating conflicts..."
+      Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
+      FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
+      Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
+      total = Conflict.count / 64.0
+      counter = 0
+      Conflict.find_in_batches(batch_size: 64) do |batch|
+        print "\r #{(counter/total*100).to_i}% done."
+        counter += 1
+        batch.each do |c|
+          c.ping
+          c.save
+          if c.approval_status == "approved"
+            open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
+            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
+          end
+        end
+      end
+      print "\rDone.         "
+      puts
+      ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
+      ca.conflicts_json = "["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
+    end
 
     if params["countries"] == "on"
       countries = []
@@ -308,41 +329,10 @@ class AsyncTask
           img.save!
           puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
         rescue => e
-          puts "  problem saving image: \n#{doc.file.file.filename}\n"
+          puts "  problem saving image at: \n#{doc.file.url}\n"
           p e
         end
       end
-    end
-
-    if params["conflicts"] == "on"
-      puts "Updating conflicts..."
-      Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
-      FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
-      Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
-      total = Conflict.count / 64.0
-      counter = 0
-      Conflict.find_in_batches(batch_size: 64) do |batch|
-        print "\r #{(counter/total*100).to_i}% done."
-        counter += 1
-        batch.each do |c|
-          if c.related_conflict_id.nil? and rc = Conflict.find_by_slug(Admin.slugify(c.related_conflict_string))
-            c.related_conflict_id = rc.id
-            c.ping
-            c.save
-          else
-            c.ping
-            c.save
-          end
-          if c.approval_status == "approved"
-            open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
-            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
-          end
-        end
-      end
-      print "\rDone.         "
-      puts
-      ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
-      ca.conflicts_json = "["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
     end
 
     if params["filter"] == "on"

@@ -68,6 +68,12 @@ class Conflict < ActiveRecord::Base
 
   before_save :set_slug
 
+  def title
+    return self.headline if self.headline and self.headline.length > 0
+    return self.description.split(".")[0]+"." if self.description and self.description.split(".").any?
+    return nil
+  end
+
   def related
     return (self.related_to | self.related_from)
   end
@@ -110,7 +116,7 @@ class Conflict < ActiveRecord::Base
     lon = self.lon if self.lon.to_f.abs <= 180
     cslg = ''
     cslg = self.country.slug if self.country
-    return {:name=>self.name,:lon=>lon,:lat=>lat,:id=>self.id,:cat=>cat,:start=>sta,:clr=>clr,:slug=>self.slug,:cslg=>cslg}.to_json
+    return {:name=>self.name,:lon=>lon,:lat=>lat,:id=>self.id,:cat=>cat,:start=>sta,:clr=>clr,:slug=>self.slug,:cslg=>cslg,:title=>self.title}.to_json
   end
 
   def get_start_date

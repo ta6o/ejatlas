@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:400,700);
 /*! normalize.css v2.1.3 | MIT License | git.io/normalize */
 article,
 aside,
@@ -5857,6 +5857,7 @@ ul.sidelink li.active {
 .navbar .nav.nav-pills {
   left: 48px;
   top: 48px;
+  height: 28px;
   min-width: 283px;
   font-weight: bold;
   background: #0380a5;

@@ -63,6 +63,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
     zoom: 2,
+    minZoom: 2,
     layers: initLayers,
     zoomControl: false
   });
