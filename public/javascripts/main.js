@@ -3170,6 +3170,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
     zoom: 2,
+    minZoom: 2,
     layers: initLayers,
     zoomControl: false
   });
@@ -3235,7 +3236,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
       console.log(mark);
       return 0
     }
-    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
+    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
     if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
     popcontent += '</td></tr></table>';
 
