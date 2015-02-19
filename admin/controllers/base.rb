@@ -101,6 +101,7 @@ Admin.controller do
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     @related = c.related
     @headline = c.headline and c.headline.length > 0 ? c.headline : nil
+    @summary = c.table
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
         @image = ml.url

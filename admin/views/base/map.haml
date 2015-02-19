@@ -60,9 +60,9 @@
               %td{:style=>'vertical-align:top;padding:0 0 12px 12px;'}
                 %h4{:style=>'margin:0px'}
                   %a{:href=>"/conflict/#{c.slug}"}= c.name
-                  -ago = (Time.now-c.modified_at)/(60*60*24)
+                  -ago = ((Time.now-c.modified_at)/(60*60*24)).to_i
                   -if ago < 100
-                    %small= "Updated #{ago.to_i} days ago"
+                    %small.blocked= "Updated #{ago < 1 ? "today" : (ago == 1 ? "#{ago} day ago" : "#{ago} days ago")}."
                 %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
         %br/
 
@@ -80,10 +80,10 @@
                     -j = JSON.parse c[0]
                     %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
-    .horipane
+    .horipane#filter-container
       .title.active Filter
       .content
-        #filter-row
+        #filter-row.block{'data-width'=>600}
           #filter= @filter
 
   -else
@@ -114,13 +114,8 @@
   :javascript
     function resetColumns() {
       columns = $('.browse .title.active').next('.content').find('.columns');
-      if (columns.length == 0) {
-        console.log('no pane found with columns');
-        return
-      } else {
-        console.log(columns.width())
+      if (columns.length > 0) {
         iColumns = String(Math.max(1,Math.floor(columns.width()/210)));
-        console.log(iColumns)
         $('.columns').css('column-count', iColumns);
         $('.columns').css('-moz-column-count', iColumns);
         $('.columns').css('-webkit-column-count', iColumns);

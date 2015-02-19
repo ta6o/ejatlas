@@ -108,12 +108,12 @@
       %header
         =yield_content :outer
         .container-full
-          #map.map.leftpane
+          #map.map.leftpane.noselect
           #bottompane.bottompane
             .inner=yield_content :bottom
-          #rightpane.rightpane
+          #rightpane.rightpane.graybg
             .resize#resize{:title=>'Drag to resize info pane'}
-              %span.glyphicon.glyphicon-chevron-right{:title=>'Toggle info pane'}
+              %span.glyphicon.glyphicon-forward{:title=>'Toggle info pane'}
             :javascript
               function getStyle(eId, strCssRule){ var oElm = document.getElementById(eId); var strValue = ""; if(document.defaultView && document.defaultView.getComputedStyle){ strValue = document.defaultView.getComputedStyle(oElm, "").getPropertyValue(strCssRule); } else if(oElm.currentStyle){ strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); }); strValue = oElm.currentStyle[strCssRule]; } return strValue; }
               if (localStorage.key('mapWidth') && getStyle('map','position') == 'fixed'){
@@ -121,7 +121,7 @@
                 document.getElementById('resize').style.left = localStorage['mapWidth']+"%";
                 document.getElementById('rightpane').style.width = (100-localStorage['mapWidth'])+"%";
               }
-            .inner= yield
+            .inner.whitebg= yield
 
     %footer
       .clearfix
@@ -149,32 +149,31 @@
         conflict = false;
         $full = true;
         jQl.loadjQ('/javascripts/main.js'); 
+        $(document).ready(function(){
+          window.onerror = function(message, url, lineNumber) {  
+            $.ajax({
+              type: 'POST',
+              url: '/error',
+              data: "message="+message+"&url="+window.location.href+"&file="+url+"&line="+lineNumber,  
+              success: function(data,ts){
+                console.log('error reported:');
+                console.log(message, url, lineNumber);
+              },
+              error: function(data,ts,error){
+                console.log('error report failed:');
+                console.log(error);
+                console.log(message, url, lineNumber);
+              }
+            });
+            return true;
+          };  
+        });
     -if @color and @color.length > 1
       :javascript
         $(document).ready(function(){
           $('#map').css('background','#{@color}')
         });
     :javascript
-      $(document).ready(function(){
-        window.onerror = function(message, url, lineNumber) {  
-          $.ajax({
-            type: 'POST',
-            url: '/error',
-            data: "message="+message+"&url="+window.location.href+"&file="+url+"&line="+lineNumber,  
-            success: function(data,ts){
-              console.log('error reported:');
-              console.log(message, url, lineNumber);
-            },
-            error: function(data,ts,error){
-              console.log('error report failed:');
-              console.log(error);
-              console.log(message, url, lineNumber);
-            }
-          });
-          return true;
-        };  
-      });
-      function resetColumns() {
-      }
+      function resetColumns() { }
 
     =yield_content :body_end

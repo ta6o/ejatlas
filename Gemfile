@@ -23,5 +23,5 @@ gem 'delayed_job_active_record'
 gem 'gdal'
 gem 'unidecoder'
 
-gem 'padrino', '0.12.1'
+gem 'padrino', '0.12.2'
 

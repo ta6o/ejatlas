@@ -75,7 +75,9 @@ class Conflict < ActiveRecord::Base
   end
 
   def related
-    return (self.related_to | self.related_from)
+    rel = (self.related_to | self.related_from).map{|c| c.approval_status == "approved" ? c : nil}.delete(nil)
+    return [] unless rel
+    return rel
   end
 
   def self.find_slug slug
@@ -348,13 +350,13 @@ class Conflict < ActiveRecord::Base
           ta += '<tr class="sect"><td><p class="lead" style="margin-bottom:0;font-size:14px;line-height:16px">'+va[-1]+'</p></td><td>'
         when :date
           cnt = eval va[1]+'.'+va[2]
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt.strftime("%d/%m/%Y")+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.strftime("%d/%m/%Y")+'</td></tr>' unless cnt.nil? or cnt == ''
         when :flat
           cnt = eval va[1]+'.'+va[2]
           cnt = cnt.to_s
           cnt.gsub!(/\r/,"\n")
           cnt.gsub!(/\n\n/,"\n")
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
         when :mini
           cnt = eval va[1]+'.'+va[2]
           cnt = cnt.to_s
@@ -364,24 +366,24 @@ class Conflict < ActiveRecord::Base
           if cna.length == 0
             ta += ''
           elsif cna.length == 1 or options[:print] == true
-            ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns">'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
           else
             cn1 = cna[0]
             cn2 = cna[1..-1].join("<br/><br/>")
-            ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cn1+'<br/><br/><a class="seemore" href="#">See more...</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">See more...</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
           end
         when :name
           cnt = eval va[1]+'.'+va[2]
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt.name+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.name+'</td></tr>' unless cnt.nil? or cnt == ''
         when :link
           cnt = eval va[1]+'.'+va[2]
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+cnt.name.to_s+'</a></td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+cnt.name.to_s+'</a></td></tr>' unless cnt.nil? or cnt == ''
         when :self
           cnt = va[1]
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :arra
           cnt = eval va[1]+'.'+va[2]
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+va[3][cnt]+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+va[3][cnt]+'</td></tr>' unless cnt.nil? or cnt == ''
         when :many
           man = eval 'v.'+va[1]
           arr = []
@@ -397,7 +399,7 @@ class Conflict < ActiveRecord::Base
             end
           end
           cnt = arr.join '<br /> '
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :mlnk
           man = eval 'v.'+va[1]
           arr = []
@@ -423,7 +425,7 @@ class Conflict < ActiveRecord::Base
               end
               begin 
                 cda = ""
-                cda = " <a href='/country-of-#{va[2]}/#{m.country.slug}'><small>(#{m.country.name})</small></a>" if m.country
+                cda = " from <a href='/country-of-#{va[2]}/#{m.country.slug}'><small>#{m.country.name}</small></a>" if m.country
               rescue
                 cda = ""
               end
@@ -441,7 +443,7 @@ class Conflict < ActiveRecord::Base
             end
           end
           cnt = arr.join "<br />"
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :refs
           man = eval 'v.'+va[1]
           arr = []
@@ -467,7 +469,7 @@ class Conflict < ActiveRecord::Base
           cnt = '<table><tr>'
           cnt += arr.join '</tr><tr>'
           cnt += '</tr></table>'
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt+'</td></tr>' unless arr.length == 0
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless arr.length == 0
         when :impc
           man = eval 'v.c_'+va[1]+'_impacts'
           avis = []
@@ -482,26 +484,26 @@ class Conflict < ActiveRecord::Base
             end
           end
           if avis.length+apot.length > 0
-            ta += '<tr><td class="fld">'+va[-1]+':</td><td>'
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td>'
             ta += "<strong>Visible: </strong>"+avis.join(', ') unless avis.length == 0
-            ta += "<br /><br />" if avis.length > 0 and apot.length > 0
+            ta += "<br />" if avis.length > 0 and apot.length > 0
             ta += "<strong>Potential: </strong>"+apot.join(', ') unless apot.length == 0
             ta += '</td></tr>'
           end
         when :subm
           next if v.account.nil? or !v.account.public
           cnt = eval 'v.account.'+va[1]
-          ta += '<tr><td class="fld">'+va[-1]+':</td><td>'+cnt+'</td></tr>' if cnt != '' and cnt != nil
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' if cnt != '' and cnt != nil
         end
       end
       if options[:print] == true
         tab += '<h3>'+val[0]+'</h3><table class="table"><tbody>'+ta+'</tbody></table>' unless ta === ''
       else
-        tab += '<h4>'+val[0]+'</h4><table class="table"><tbody>'+ta+'</tbody></table>' unless ta === ''
+        tab += '<div class="horipane"><div class="title active">'+val[0]+'</div><div class="content"><table class="table"><tbody>'+ta+'</tbody></table></div></div>' unless ta === ''
       end
     end
 
-    return tab.gsub(/\r\n/,'<br />').gsub('\n','<br />')+"<br />"
+    return tab.gsub(/\r\n/,'<br />').gsub('\n','<br />')
   end
 
   def structure
@@ -569,7 +571,7 @@ class Conflict < ActiveRecord::Base
         [:flat, 'v' ,'other_comments', 'Other Comments'],
       ]],
 
-      ['', '8', [
+      ['Meta Information', '8', [
         [:flat, 'c', 'contributor', 'Contributor'],
         [:date, 'c', 'modified_at', 'Last update'],
       ]]]

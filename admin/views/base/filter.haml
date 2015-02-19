@@ -1,13 +1,13 @@
 -# coding: utf-8
 %form#conflict_filter
-  .col-md-3
+  .col-sm-3
     #filterInfo{:style=>'margin-top:8px;'}
       %p.large
         Please pick the
         %strong filter options 
         from the panel on the left.
     %button.btn.embed{:type=>'button'} Embed
-  .col-md-9
+  .col-sm-9
     .row
       .nav.nav-tabs
         %li.active
@@ -27,7 +27,7 @@
 
       .tab-content
         #basic.tab-pane.active{"data-name"=>"Basic Data"}
-          .col-md-4
+          .col-sm-4
             .col
               %h4 Success Level
               %table#success{"data-name"=>"Success Level"}
@@ -46,7 +46,7 @@
                     %td.lbl
                       %label= c
 
-          .col-md-4
+          .col-sm-4
             %h4 Tags
             .col
               %table#tag{"data-name"=>"Tags"}
@@ -60,7 +60,7 @@
                         %label= c["name"]
 
 
-          .col-md-4
+          .col-sm-4
             %h4 Country
             .col
               %table#cntry{"data-name"=>"Country"}
@@ -74,7 +74,7 @@
                         %label= c["name"]
 
         #categories.tab-pane
-          .col-md-6
+          .col-sm-6
             %h4 Category
             .col
               %table#category{"data-name"=>"Category"}
@@ -87,7 +87,7 @@
                       %td.lbl
                         %label= c['name']
 
-          .col-md-6
+          .col-sm-6
             %h4 Type (2nd level)
             .col
               %table#types{"data-name"=>"Type"}
@@ -102,7 +102,7 @@
 
 
         #project.tab-pane
-          .col-md-4
+          .col-sm-4
             %h4 Specific Commodities
             .col
               %table#product{"data-name"=>"Specific Commodities"}
@@ -115,18 +115,18 @@
                       %td.lbl
                         %label= c["name"]
 
-          .col-md-8
+          .col-sm-8
             %h4 Financial Data
             .col
               %h5 Investment Sum ($)
               #invest
               %br/
               .row
-                .col-md-5
+                .col-sm-5
                   %input#invest-g{:type=>"number",:name=>'invest-g',"data-name"=>"Investment sum more than"}
-                .col-md-2
+                .col-sm-2
                   .large ~
-                .col-md-5
+                .col-sm-5
                   %input#invest-l{:type=>"number",:name=>'invest-l',"data-name"=>"Investment sum less than"}
               %br/
 
@@ -140,18 +140,18 @@
               %p (coming soon)
 
         #conflict.tab-pane
-          .col-md-4
+          .col-sm-4
             %h4 Dates
             .col
               %h5 Start Date
               #start
               %br/
               .row
-                .col-md-5
+                .col-sm-5
                   %input#start-g{:type=>"number",:name=>'start-g',"data-name"=>"Start date after"}
-                .col-md-2
+                .col-sm-2
                   .large ~
-                .col-md-5
+                .col-sm-5
                   %input#start-l{:type=>"number",:name=>'start-l',"data-name"=>"Start date before"}
               %br/
 
@@ -159,15 +159,15 @@
               #end
               %br/
               .row
-                .col-md-5
+                .col-sm-5
                   %input#end-g{:type=>"number",:name=>'end-g',"data-name"=>"End date after"}
-                .col-md-2
+                .col-sm-2
                   .large ~
-                .col-md-5
+                .col-sm-5
                   %input#end-l{:type=>"number",:name=>'end-l',"data-name"=>"End date before"}
               %br/
 
-          .col-md-4
+          .col-sm-4
             %h4 Intensity
             .col
               %table#intensity{"data-name"=>"Intensity"}
@@ -180,7 +180,7 @@
                       %td.lbl
                         %label= c["name"]
 
-          .col-md-4
+          .col-sm-4
             %h4 Reaction Stage
             .col
               %table#stage{"data-name"=>"Reaction Stage"}
@@ -195,7 +195,7 @@
 
 
         #resistance.tab-pane
-          .col-md-6
+          .col-sm-6
             %h4 Mobilizing Groups
             .col
               %table#mobgroup{"data-name"=>"Mobilizing groups"}
@@ -209,7 +209,7 @@
                         %label= c["name"]
 
 
-          .col-md-6
+          .col-sm-6
             %h4 Mobilizing Forms
             .col
               %table#mobform{"data-name"=>"Mobilizing forms"}
@@ -224,7 +224,7 @@
 
 
         #impacts.tab-pane
-          .col-md-4
+          .col-sm-4
             %h4 Environmental Impacts
             .col
               %table#envi{"data-name"=>"Environmental Impacts"}
@@ -237,7 +237,7 @@
                       %td.lbl
                         %label= c["name"]
 
-          .col-md-4
+          .col-sm-4
             %h4 Health Impacts
             .col
               %table#hlti{"data-name"=>"Health Impacts"}
@@ -251,7 +251,7 @@
                         %label= c["name"]
 
 
-          .col-md-4
+          .col-sm-4
             %h4 Socio-economical Impacts
             .col
               %table#seci{"data-name"=>"Socio-economical Impacts"}
@@ -265,7 +265,7 @@
                         %label= c["name"]
 
         #outcomes.tab-pane
-          .col-md-6
+          .col-sm-6
             %h4 Current Status
             .col
               %table#pstatus{"data-name"=>"Current Status"}
@@ -278,7 +278,7 @@
                       %td.lbl
                         %label= c["name"]
 
-          .col-md-6
+          .col-sm-6
             %h4 Outcomes
             .col
               %table#outcome{"data-name"=>"Outcomes"}
@@ -294,18 +294,18 @@
 
 
     .row
-      .col-md-4
+      .col-sm-4
         .filt
           %button.btn.clr{:type=>'button'} Clear Filter
       -if @featured
-        .col-md-4
+        .col-sm-4
           .filt
             %button.btn.or{:type=>'submit'} Filter
-        .col-md-4
+        .col-sm-4
           .filt
             %button.btn.and{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} Apply
       -else
-        .col-md-8
+        .col-sm-8
           .filt
             %button.btn.or{:type=>'submit'} Filter
 

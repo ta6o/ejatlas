@@ -3324,7 +3324,7 @@ function initMap (markers, maptitle, layers, vector, fid) {
     mouseX = e.pageX;
     dragging = true;
     $(".rightpane .inner").css('display','block');
-    if ($('.resize span').hasClass('glyphicon-chevron-left')) {
+    if ($('.resize span').hasClass('glyphicon-backward')) {
       if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
       $('.rightpane .inner').show();
       $('.leftpane').animate({'width':perc+"%"});
@@ -3332,8 +3332,8 @@ function initMap (markers, maptitle, layers, vector, fid) {
       $('.resize').animate({'left':perc+"%"},function(){
         $('.rightpane').css('overflow-x','hidden');
         $('.rightpane').css('overflow-y','auto');
-        $('.resize span').removeClass('glyphicon-chevron-left');
-        $('.resize span').addClass('glyphicon-chevron-right');
+        $('.resize span').removeClass('glyphicon-backward');
+        $('.resize span').addClass('glyphicon-forward');
         $('.resize span').css('cursor','e-resize');
         map.invalidateSize();
       });
@@ -3356,13 +3356,12 @@ function initMap (markers, maptitle, layers, vector, fid) {
   });
 
   $('.resize span').on('click',function(e){
-    if ($(this).hasClass('glyphicon-chevron-right')) {
+    if ($(this).hasClass('glyphicon-forward')) {
       $('.leftpane').animate({'width':window.innerWidth - 16});
       $('.rightpane').animate({'width':'16px'});
       $('.resize').animate({'left':window.innerWidth - 16},function(){
         $('.rightpane .inner').hide();
-        $('.resize span').removeClass('glyphicon-chevron-right');
-        $('.resize span').addClass('glyphicon-chevron-left');
+        $('.resize span').removeClass('glyphicon-forward').addClass('glyphicon-backward');
         $('.resize span').css('cursor','w-resize');
         map.invalidateSize();
       });
@@ -3374,10 +3373,9 @@ function initMap (markers, maptitle, layers, vector, fid) {
       $('.resize').animate({'left':perc+"%"},function(){
         $('.rightpane').css('overflow-x','hidden');
         $('.rightpane').css('overflow-y','auto');
-        $('.resize span').removeClass('glyphicon-chevron-left');
-        $('.resize span').addClass('glyphicon-chevron-right');
+        $('.resize span').removeClass('glyphicon-backward').addClass('glyphicon-forward');
         $('.resize span').css('cursor','e-resize');
-        map.invalidateSize();
+        onResize();
       });
     }
   })
@@ -3442,7 +3440,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
 
 function transformItem(selector, property, value) {
   matrix = $(selector).css('transform');
-  console.log(matrix)
   $(selector).css({
     '-webkit-transform' : matrix + property + '(' + value + ')',
     '-moz-transform'    : matrix + property + '(' + value + ')',
@@ -3487,7 +3484,11 @@ function dragEnd() {
   } else {
     mapWidth = parseInt(mapWidth.replace("%",""));
   }
-  localStorage['mapWidth'] = mapWidth;
+  if (mapWidth * window.innerWidth / 100 <= window.innerWidth - 475 ) {
+    localStorage['mapWidth'] = mapWidth;
+  } else {
+    console.log(mapWidth)
+  }
   resetColumns();
 }
 
@@ -3574,7 +3575,7 @@ function getInfo(id,name,p,z,upd) {
   pan = marker.getLatLng();
   updateInfo(1,marker.content);
   map.setView(pan,zoom);
-  if (upd) {
+  if (upd && false) {
     $.getJSON('/table/'+id, function(dat){
       //console.log(dat)
       data = dat;//JSON.parse(dat);

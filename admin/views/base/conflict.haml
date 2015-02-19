@@ -26,135 +26,133 @@
           %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
             %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
   .summary_header
+    .clearfix.commands
+      .pull-right#commands
+        %ul.clearfix.list-unstyled
+          %li
+            %a{:href=>"/print/#{@slug}",:target=>"_blank"}
+              %span.glyphicon.glyphicon-print
+          -if current_account and ['admin','editor'].include? current_account.role
+            %li
+              %a{:href=>"/conflicts/edit/#{@id}",:target=>"_blank"}
+                %span.glyphicon.glyphicon-edit
+
     .clearfix#disclaimer
       %h2= @maptitle
 
-    .clearfix
-      %h2.pull-left#name{:style=>'margin: 18px 0'}
-
-    .clearfix.commands
-      .pull-right#commands{:style=>'display:none;'}
-        %ul.clearfix.list-unstyled
-          %li
-            =link_to ('Full page'), url(:print, :slug => @slug), :method => :get, :target => '_blank'
-          -unless current_account.nil?
-            -if ['admin','editor'].include? current_account.role
+  -if @images.any?
+    .full.row
+      #carousel_container{:style=>'display:none'}
+        #left_scroll
+          %span.glyphicon.glyphicon-chevron-left
+        #carousel_inner
+          %ul#carousel_ul
+            -@images.order(:created_at).each do |image|
               %li
-                =link_to ('Edit'), url(:conflicts, :edit, :id => @cid), :method => :get, :target => '_blank', :id => 'edit'
+                %a{:href=>image.file.url,:target=>'_blank'}
+                  %img{:src=>image.file.thumb_url,:style=>'height:240px;width:auto;display:none;'}
+                -if image.title and image.title != '-'
+                  -if image.title.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+                    .title
+                      %a{:href=>image.title,:target=>'_blank'} Click to go to the source
 
-    -if @images.any?
-      .full.row
-        #carousel_container{:style=>'display:none'}
-          #left_scroll
-            %span.glyphicon.glyphicon-chevron-left
-          #carousel_inner
-            %ul#carousel_ul
-              -@images.order(:created_at).each do |image|
-                %li
-                  %a{:href=>image.file.url,:target=>'_blank'}
-                    %img{:src=>image.file.thumb_url,:style=>'height:240px;width:auto;display:none;'}
-                  -if image.title and image.title != '-'
-                    -if image.title.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
-                      .title
-                        %a{:href=>image.title,:target=>'_blank'} Click to go to the source
-                    -else
-                      .url= image.title
-          #right_scroll
-            %span.glyphicon.glyphicon-chevron-right
-        :javascript
-          function resetCarousel (){
-            wdiff = $('#carousel_container').width() - crswidth;
-            if (wdiff > 0){
-              $('#carousel_ul').css('left','18px')
-              $('#left_scroll').hide();
-              $('#right_scroll').hide();
+                  -else
+                    .url
+                      %strong= image.title
+                      -if image.description.length > 0
+                        ="- #{image.description}"
+        #right_scroll
+          %span.glyphicon.glyphicon-chevron-right
+      :javascript
+        function resetCarousel (){
+          wdiff = $('#carousel_container').width() - crswidth;
+          if (wdiff > 0){
+            $('#carousel_ul').css('left','18px')
+            $('#left_scroll').hide();
+            $('#right_scroll').hide();
+          } else {
+            //$('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
+            var item_width = $('#carousel_ul li:first').width() + crsgap; 
+            $('#carousel_ul').css({'left' : (item_width * -1) + 'px'});
+            $('#carousel_ul').css('left','0px')
+            $('#left_scroll').show();
+            $('#right_scroll').show();
+          }
+        }
+        function imageLoaded() {
+          counter--; 
+          if( counter === 0 ) {
+            if ($('#carousel_ul li img').length == $('#carousel_ul li img.error').length) {
+              console.log('err');
             } else {
-              //$('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
-              var item_width = $('#carousel_ul li:first').width() + crsgap; 
+              $('#carousel_ul li img').show();
+              $('#carousel_container').slideDown('400');
+            }
+            crsgap = 6;
+            crswidth = 0
+            $('#carousel_ul li').each(function(i,v){
+              crswidth += $(this).width();
+              crswidth += crsgap;
+            })
+            crswidth -= crsgap;
+            resetCarousel();
+            $('#right_scroll').click(function(){
+              $('#carousel_ul li:last').after($('#carousel_ul li:first').clone());
+              var item_width = $('#carousel_ul li:first').width() + crsgap;
+              $('#carousel_ul').animate({'left' : -item_width},{queue:false, duration:500, complete: function(){
+                $('#carousel_ul li:first').remove();
+                $('#carousel_ul').css('left','0px');
+              }});
+            });
+            $('#left_scroll').click(function(){
+              $('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
+              var item_width = $('#carousel_ul li:first').width() + crsgap;
               $('#carousel_ul').css({'left' : (item_width * -1) + 'px'});
-              $('#carousel_ul').css('left','0px')
-              $('#left_scroll').show();
-              $('#right_scroll').show();
-            }
-          }
-          function imageLoaded() {
-            counter--; 
-            if( counter === 0 ) {
-              if ($('#carousel_ul li img').length == $('#carousel_ul li img.error').length) {
-                console.log('err');
-              } else {
-                $('#carousel_ul li img').show();
-                $('#carousel_container').slideDown('400');
-              }
-              crsgap = 6;
-              crswidth = 0
-              $('#carousel_ul li').each(function(i,v){
-                crswidth += $(this).width();
-                crswidth += crsgap;
-              })
-              crswidth -= crsgap;
-              resetCarousel();
-              $('#right_scroll').click(function(){
-                $('#carousel_ul li:last').after($('#carousel_ul li:first').clone());
-                var item_width = $('#carousel_ul li:first').width() + crsgap;
-                $('#carousel_ul').animate({'left' : -item_width},{queue:false, duration:500, complete: function(){
-                  $('#carousel_ul li:first').remove();
-                  $('#carousel_ul').css('left','0px');
-                }});
-              });
-              $('#left_scroll').click(function(){
-                $('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
-                var item_width = $('#carousel_ul li:first').width() + crsgap;
-                $('#carousel_ul').css({'left' : (item_width * -1) + 'px'});
-                $('#carousel_ul').animate({'left' : 0},{queue:false, duration:500, complete:function(){
-                  $('#carousel_ul li:last').remove();
-                }});
-              });
-              $('#carousel_ul').on('mouseenter','li',function(){
-                $(this).find('.title').show();
-                $(this).find('.url').show();
-              });
-              $('#carousel_ul').on('mouseleave','li',function(){
-                $(this).find('.title').hide();
-                $(this).find('.url').hide();
-              });
-            }
-          }
-          var images, counter, crswidth;
-          $(function() {
-            images = $('#rightpane img');
-            counter = images.length;  // initialize the counter
-            images.each(function() {
-              if( this.complete ) {
-                imageLoaded.call( this );
-              } else {
-                $(this).one('load', imageLoaded);
-              }
+              $('#carousel_ul').animate({'left' : 0},{queue:false, duration:500, complete:function(){
+                $('#carousel_ul li:last').remove();
+              }});
             });
-            images.error(function(){
-              imageLoaded();
-              $(this).addClass('error');
+            $('#carousel_ul').on('mouseenter','li',function(){
+              $(this).find('.title').show();
+              $(this).find('.url').show();
             });
+            $('#carousel_ul').on('mouseleave','li',function(){
+              $(this).find('.title').hide();
+              $(this).find('.url').hide();
+            });
+          }
+        }
+        var images, counter, crswidth;
+        $(function() {
+          images = $('#rightpane img');
+          counter = images.length;  // initialize the counter
+          images.each(function() {
+            if( this.complete ) {
+              imageLoaded.call( this );
+            } else {
+              $(this).one('load', imageLoaded);
+            }
           });
+          images.error(function(){
+            imageLoaded();
+            $(this).addClass('error');
+          });
+        });
 
-    -if @headline
-      %p.headline
-        %em= @headline
-      %br/
-
-    #conflict_summary{:style=>'display:none;'}
+  -if @headline
+    %p.headline
+      %em= @headline
     %br/
 
-    -if @related.any?
-      .horipane
-        .title.active Related conflicts
-        .content
-          %br/
-          -@related.each do |rel|
-            -next unless rel.approval_status == 'approved'
-            %p{:style=>'font-size:16px;font-weight:bold'}
-              %a{:href=>"/conflict/#{rel.slug}"}= rel.name
-          %br/
+  #conflict_summary=@summary.html_safe
+
+  -if @related.any?
+    .horipane
+      .title.active Related conflicts
+      .content
+        -@related.each do |rel|
+          %p{:style=>'font-size:16px;font-weight:bold'}
+            %a{:href=>"/conflict/#{rel.slug}"}= rel.name
 
 
   #disqus_thread
@@ -167,4 +165,14 @@
       dsq.type = 'text/javascript'; 
       dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; 
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); 
-      
+
+    function resetColumns() {
+      columns = $('#conflict_summary table tbody tr td.columns');
+      if (columns.length > 0) {
+        iColumns = String(Math.max(1,Math.floor(columns.width()/360)));
+        $('.columns').css('column-count', iColumns);
+        $('.columns').css('-moz-column-count', iColumns);
+        $('.columns').css('-webkit-column-count', iColumns);
+      }
+    }
+

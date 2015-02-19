@@ -39,7 +39,7 @@ a {
   background: transparent;
 }
 a:focus {
-  outline: thin dotted;
+  outline: 0;
 }
 a:active,
 a:hover {
@@ -277,8 +277,8 @@ a {
 }
 a:hover,
 a:focus {
-  color: #0380a5;
-  text-decoration: underline;
+  color: #024357;
+  text-decoration: none;
 }
 a:focus {
   outline: thin dotted #333;
@@ -2122,7 +2122,7 @@ fieldset[disabled] .btn-link {
 }
 .btn-link:hover,
 .btn-link:focus {
-  color: #0380a5;
+  color: #024357;
   text-decoration: underline;
   background-color: transparent;
 }
