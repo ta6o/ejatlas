@@ -190,7 +190,7 @@ class AsyncTask
       end
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
-    Zip::ZipOutputStream.open("#{Dir.pwd}/../file/export/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
+    Zip::ZipOutputStream.open("#{Dir.pwd}/../file/exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
       csvs.each do |c|
         zio.put_next_entry(c)
         zio.write File.read("/tmp/#{c.split('/')[-1]}")
