@@ -160,7 +160,7 @@ class AsyncTask
       lines << line
       #puts
     end
-    ::CSV.open('/tmp/cases.csv',"w") do |output|
+    ::CSV.open('/tmp/export/cases.csv',"w") do |output|
       output << header
       lines.each do |line|
         output << line
@@ -171,7 +171,7 @@ class AsyncTask
     mania.each do |many,lines|
       header = ["id"]
       many.order(:id).each {|h| header << h.name}
-      ::CSV.open("/tmp/#{many.to_s.downcase}.csv","w") do |output|
+      ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
         lines.each do |line|
           output << line
@@ -182,7 +182,7 @@ class AsyncTask
     imps.each do |many,lines|
       header = ["id"]
       many.order(:id).each {|h| header << h.name}
-      ::CSV.open("/tmp/#{many.to_s.downcase}.csv","w") do |output|
+      ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
         lines.each do |line|
           output << line
@@ -193,7 +193,7 @@ class AsyncTask
     Zip::ZipOutputStream.open("#{Dir.pwd}/../file/exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
       csvs.each do |c|
         zio.put_next_entry(c)
-        zio.write File.read("/tmp/#{c.split('/')[-1]}")
+        zio.write File.read("/tmp/export/#{c.split('/')[-1]}")
       end
     end
     GC.start
