@@ -498,28 +498,32 @@ class AsyncTask
 
   def parsedata master
     masterheader = ["id", "Name of conflict", "Country", "Location of conflict (municipality or city/town)", "State or Province", "Accuracy of location", "Project Area (in hectares)", "Type of Conflict (Please pick one based on the activity most responsible for the environmental disturbance)", "Type of Conflict (select a max. of 3 secondary level conflicts)", "Description (Please describe the project and the point of conflict here in maximum 200 words)", "Specific commodity", "Other commodities", "Project details (Please insert specific details on the relevant quantitative data eg tons of mineral extracted per year, kwh of electricity, etc...)", "Directly Affected people (number of people (may also be a range)", "Companies", "Relevant government actors", "Home country (The country or countries where the company or companies main office is)", "International and financial Institutions (eg WB, IFAD, IUCN, ILO, etc...)", "Environmental justice organisations and other supporters", "Status of Conflict", "When did the mobilization begin", "Is this conflict directly related to any other ecological conflict? (Please enter the name of the conflict)", "Type of population", "Potential affected population (number of people (may also be a range)", "Level of investment (If you know the level of investment of the project please enter in USD)", "Start of the conflict (dd/mm/yyyy or XX/mm/yyyy)", "End of the conflict leave blank if on going (dd/mm/yyyy or XX/mm/yyyy)", "Groups mobilizing (select all that apply)", "Other groups mobilizing", "Forms of mobilization (select all that apply)", "Other forms of mobilization", "Environmental impacts [Air pollution ]", "Environmental impacts [Biodiversity loss (wildlife, agro-diversity) ]", "Environmental impacts [Desertification/Drought]", "Environmental impacts [Fires ]", "Environmental impacts [Floods (river, coastal, mudflow)]", "Environmental impacts [Food insecurity (crop damage)]", "Environmental impacts [Genetic contamination]", "Environmental impacts [Global warming]", "Environmental impacts [Loss of landscape/aesthetic degradation]", "Environmental impacts [Noise pollution]", "Environmental impacts [Soil contamination]", "Environmental impacts [Soil erosion]", "Environmental impacts [Waste overflow]", "Environmental impacts [Oil spills]", "Environmental impacts [Deforestation and loss of vegetation cover]", "Environmental impacts [Surface water pollution / Decreasing water (physico-chemical, biological) quality]", "Environmental impacts [Groundwater pollution or depletion]", "Environmental impacts [Large-scale disturbance of hydro and geological systems ]", "Environmental impacts [Reduced ecological / hydrological connectivity]", "Environmental impacts [Mine tailing spills]", "Other Environmental impacts", "Health impacts [Accidents ]", "Health impacts [Exposure to unknown or uncertain complex risks (radiation, etc…) ]", "Health impacts [Malnutrition]", "Health impacts [Mental problems including stress, depression and suicide]", "Health impacts [Violence related health impacts (homicides, rape, etc..) ]", "Health impacts [Health problems related to alcoholism, prostitution]", "Health impacts [Occupational disease and accidents]", "Health impacts [Infectious diseases]", "Health impacts [Deaths]", "Health impacts [Other environmental related diseases]", "Other Health impacts", "Socio-economic impacts [Increase in Corruption/Co-optation of different actors]", "Socio-economic impacts [Displacement ]", "Socio-economic impacts [Increase in violence and crime]", "Socio-economic impacts [Lack of work security, labour absenteeism, firings, unemployment]", "Socio-economic impacts [Loss of livelihood]", "Socio-economic impacts [Loss of traditional knowledge/practices/cultures]", "Socio-economic impacts [Militarization and increased police presence]", "Socio-economic impacts [Social problems (alcoholism, prostitution, etc..)]", "Socio-economic impacts [Specific impacts on women]", "Socio-economic impacts [Violations of human rights]", "Socio-economic impacts [Land dispossession]", "Socio-economic impacts [Loss of landscape/sense of place]", "Other socio-economic impacts", "Current status of the project development", "Do you consider this an Environmental Justice success. Was environmental justice served (e.g.  Project)", "Briefly explain", "Pathways for conflict outcome / response", "Other pathways for conflict outcome / response", "Development of Alternatives (What are the proposals being brought forward by the mobilizers)", "Relevant legislation", "References (articles, books, video documentaries, etc...)", "Links(to web-pages with information, newspaper articles)", "Links(to photos, video)", "Other comments", "Contributor", "Contact Name ", "Contact Email", "Contact Address", "Video Title", "Video Description", "Video Tags", "Expiry Date", "Approved", "lng", "lat", "geom_loc"]
-    puts 'start'
-    puts CSV.class
-    AsyncTask::CSV.open("#{Dir.pwd}/misc/textconversion.csv") do |csv|
+    puts 'Parsing started'
+    ::CSV.open("#{Dir.pwd}/misc/textconversion.csv") do |csv|
       csv.each do |c|
         r = c[2]
-        puts "#{r.to_s} (#{master.count(r.to_s).to_s}) #{c[2]} => #{c[1]}"
-        master.gsub! (r) do |x|
-          c[1]
-        end
+        #puts "#{r.to_s} (#{master.count(r.to_s).to_s}) #{c[2]} => #{c[1]}"
+        master.gsub! (r) { |x| c[1] }
       end
     end
-    conflicts = AsyncTask::CSV.parse(master, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
+    begin
+      conflicts = ::CSV.parse(master, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
+    rescue
+      conflicts = ::CSV.parse(master, :row_sep => :auto, :col_sep => ",", encoding: "utf-8")
+    end
     header = conflicts.shift
-    puts header == masterheader
+    #puts header == masterheader
     errors = []
     merrs = {}
+    testing = false
     parsedcount = 0
     conflicts.each_with_index do |row,index|
       parsedcount += 1
       break if parsedcount > 200 and testing
       break if row[1] == "" or row[1].nil?
-      next if Conflict.find_by_name(row[1])
+      if c = Conflict.find_by_name(row[1])
+        c.destroy
+      end
       c = Conflict.new
 
       c.formerid = row[0].to_i
@@ -536,7 +540,7 @@ class AsyncTask
       c.province = row[4]
       c.accuracy_level = ["","Low","Medium","High"].index(row[5])
 
-      c.project_area = row[6]
+      project_area = row[6]
       project_length = nil
       if project_area
         if project_area.match(/\b(hectar|ha)/)
@@ -568,7 +572,7 @@ class AsyncTask
       else
         merrs[:category] << [row[1], row[7]]
       end
-      c.save
+      c.save!
       merrs[:type] = []
       row[8].split(':::').each_with_index do |t,i|
         if tt = Type.find_by_slug(Admin.slugify t)
@@ -576,7 +580,7 @@ class AsyncTask
           ct.conflict_id = c.id
           ct.type_id = tt.id
           ct.ordering = c.types.count
-          merrs[:type] << [row[1], t] unless ct.save
+          merrs[:type] << [row[1], t] unless ct.save!
         else
           merrs[:type] << [row[1], t]
         end
@@ -612,51 +616,10 @@ class AsyncTask
 
       organ(row[14],Company,c,'companies')
 
-      if row[15]
-        puts "Government Actors"
-        row[15].split(/(\n|,\s*)+/).each do |ch|
-          if ch
-            next if ch.match /:$/ or ch.match(/^\s*$/) or ch.gsub(/\s/,'').length < 2
-            t = ch.sub(/^\s*(-|\)|\d|\.|»|=|>|•)*\s*/,"")
-            t.strip!
-            country = t.scan(/\(([^\)]+)\)\s*$/).last
-            if country.is_a? Array
-              country = country.first
-            end
-            if country
-              t.sub!(/\(([^\)]+)\)\s*$/,'')
-            end
-            com = GovernmentActor.find_by_name(t)
-            unless com
-              com = GovernmentActor.new
-              com.name = t[0..254]
-              com.save
-            end
-            c.government_actors << com
-          end
-        end
-      end
-
+      c.govt_actors = row[15]
       organ(row[17],Supporter,c,'supporters')
 
-      if row[18]
-        puts "EJOs"
-        row[18].split(/(\n|,\s*)+/).each do |ch|
-          if ch
-            next if ch.match /:$/ or ch.match(/^\s*$/) or ch.gsub(/\s/,'').length < 2
-            t = ch.sub(/^\s*(-|\)|\d|\.|»|=|>|•)*\s*/,"")
-            t.strip!
-            gov = JusticeParty.find_by_name(t)
-            unless gov
-              gov = JusticeParty.new
-              gov.name = t[0..254]
-              gov.save
-            end
-            puts gov.name
-            c.justice_parties << gov
-          end
-        end
-      end
+      c.ejos = row[18]
 
       c.status = Status.find_by_name(row[19])
       c.reaction = Reaction.find_by_name(row[20])
@@ -667,16 +630,16 @@ class AsyncTask
         merrs[:poptype] = [[row[1], row[22]]]
       end
       if c.affected_people
-        puts c.affected_people.background(:blue) 
+        puts c.affected_people 
       else
         c.affected_people = row[23]
-        puts c.affected_people.background(:blue) if c.affected_people
+        puts c.affected_people if c.affected_people
       end
 
 
       isum = row[24]
       if isum
-        puts isum.background(:green) 
+        puts isum
         c.investment_string = isum
         nisum = isum.scan(/\(([^\)]+)\)/)[0]
         isum = isum.gsub(nisum[0],'') if nisum
@@ -684,7 +647,7 @@ class AsyncTask
         isum = isum.gsub('million','000000').gsub('billion','000000000').gsub(/[\.,\s]+/,'') if isum
         isum = isum.scan(/\d+/).map{|x| x.to_i} if isum
         isum = isum.max if isum
-        puts isum.to_s.background(:red) if isum
+        puts isum.to_s if isum
         c.investment_sum = isum.to_i
       end
 
@@ -757,7 +720,7 @@ class AsyncTask
           cimp.conflict = c
           cimp.env_impact = impa
           cimp.visible = (im == 2)
-          cimp.save
+          cimp.save!
         else
           merrs[:env_impact] << [row[1],re]
         end
@@ -775,7 +738,7 @@ class AsyncTask
           cimp.conflict = c
           cimp.hlt_impact = impa
           cimp.visible = (im == 2)
-          cimp.save
+          cimp.save!
         else
           merrs[:hlt_impact] << [row[1],re]
         end
@@ -793,7 +756,7 @@ class AsyncTask
           cimp.conflict = c
           cimp.sec_impact = impa
           cimp.visible = (im == 2)
-          cimp.save
+          cimp.save!
         else
           merrs[:sec_impact] << [row[1],re]
         end
@@ -870,7 +833,7 @@ class AsyncTask
         ac.password = ac.surname
         ac.password_confirmation = ac.surname
         ac.role = "user"
-        ac.save
+        ac.save!
       end
       puts ac.name
       puts ac.email
@@ -887,22 +850,22 @@ class AsyncTask
       c.lat = row[97].to_f
 
       begin
-        c.save
+        c.save!
       rescue => exc
         errors << "#{c.name}: #{exc.inspect}"
         12.times do
-          puts "                                                           ".background(:red)
+          puts
         end
       end
 
     end
     if errors.length > 0
       12.times do
-        puts "                                                           ".background(:red)
+        puts
       end
       errors.each {|e| puts e+"\n\n"}
       12.times do
-        puts "                                                           ".background(:red)
+        puts
       end
     end
     merrs.each do |t, m|
@@ -914,6 +877,7 @@ class AsyncTask
       end
     end
     puts
+    GC.start
   end
   handle_asynchronously :parsedata
 
@@ -982,12 +946,12 @@ class AsyncTask
         company.acronym = f[:acronym] if cls.attribute_names.include? 'acronym' and company.acronym.nil? 
         company.website = f[:website] if cls.attribute_names.include? 'website' and company.website.nil? 
         company.country_id = cid if cls.attribute_names.include? 'country_id' and company.country_id.nil? 
-        company.save
+        company.save!
         c_c = eval "c.#{cnam}"
         c_c << company unless c_c.include? company
         if cnam == "companies" and cc = c.c_companies.find_by_company_id(company.id)
           cc.involvement = f[:description]
-          cc.save
+          cc.save!
         end
       end
       c.companies.each {|cc| puts cc.name}

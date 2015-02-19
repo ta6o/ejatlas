@@ -6,6 +6,8 @@ bin/*
 vendor/gems/*
 !vendor/gems/cache/
 .sass-cache/*
+config/database.rb
+config/puma.rb
 db/*.db
 *.swp
 *.swo
