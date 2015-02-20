@@ -13,6 +13,7 @@
           %tr
             %th.first=mat(:account, :image)
             %th=mat(:account, :name)
+            %th=mat(:account, "Int & Com")
             %th=mat(:account, :role)
             %th=mat(:account, :email)
             %th.last
@@ -27,6 +28,20 @@
                 -else
                   &nbsp;
               %td=account.name
+              %td
+                -if account.intention and account.intention.length > 0
+                  %span.glyphicon.glyphicon-ok
+                  %span.hide 0
+                -else
+                  %span.glyphicon.glyphicon-remove
+                  %span.hide 1
+                &nbsp;
+                -if account.comments and account.comments.length > 0
+                  %span.glyphicon.glyphicon-ok
+                  %span.hide 0
+                -else
+                  %span.glyphicon.glyphicon-remove
+                  %span.hide 1
               %td=account.role
               %td=account.email
               %td.last

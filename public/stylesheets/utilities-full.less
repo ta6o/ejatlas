@@ -489,6 +489,12 @@ ul.sidelink {
 
 .horipane {
   .title {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     .box-shadow(0px 12px 12px 0px rgba(255, 255, 255, 0.3) inset);
     background: url('/images/bg.png');
     font-weight: bold;
@@ -519,6 +525,9 @@ ul.sidelink {
     li { 
       list-style-type: none !important; 
     }
+  }
+  .content table {
+    width:100%;
   }
 }
   
@@ -685,18 +694,17 @@ ul.sidelink {
 }
 
 #filter-row {
+  background-color: white;
   margin-top:0px;
   #conflict_filter {
     #filterInfo {
       margin-top:36px;
-      height: 315px;
       overflow-y: hidden;
     }
     .embed {
       width:100%;
-      margin-top:4px;
       &:hover {
-        background: @brand-warning;
+        background: @brand-danger;
         color: black;
       }
     }
@@ -747,12 +755,19 @@ ul.sidelink {
         &>* {
           margin-right:12px;
         }
+        h4 {
+          line-height:22px;
+          margin: 12px 12px 6px 0;
+        }
       }
       table tbody {
         tr {
           border: none;
+          td.chk {
+            width:16px !important;
+          }
           td.lbl {
-            border-left: 4px solid transparent
+            //border-left: 4px solid transparent
           }
         }
       }
@@ -761,15 +776,11 @@ ul.sidelink {
       width:100%;
       margin-top:4px;
       &.clr:hover {
-        background: @brand-danger;
+        background: @brand-primary;
         color: white;
       }
       &.or:hover {
         background: @brand-success;
-        color: white;
-      }
-      &.and:hover {
-        background: @brand-primary;
         color: white;
       }
     }

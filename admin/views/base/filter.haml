@@ -1,12 +1,11 @@
 -# coding: utf-8
-%form#conflict_filter
+%form#conflict_filter.noselect
   .col-sm-3
     #filterInfo{:style=>'margin-top:8px;'}
       %p.large
         Please pick the
         %strong filter options 
         from the panel on the left.
-    %button.btn.embed{:type=>'button'} Embed
   .col-sm-9
     .row
       .nav.nav-tabs
@@ -33,7 +32,7 @@
               %table#success{"data-name"=>"Success Level"}
                 -@filterform["success"].each_with_index do |c,i|
                   %tr.rw
-                    %td
+                    %td.chk
                       %input{:type=>'checkbox', :value=>i, :name=>"success"}
                     %td.lbl
                       %label= c
@@ -41,7 +40,7 @@
               %table#poptype{"data-name"=>"Type of Population"}
                 -@filterform["poptype"].each_with_index do |c,i|
                   %tr.rw
-                    %td
+                    %td.chk
                       %input{:type=>'checkbox', :value=>i+1, :name=>"poptype"}
                     %td.lbl
                       %label= c
@@ -54,7 +53,7 @@
                   -c = cc["tag"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"tag"}
                       %td.lbl
                         %label= c["name"]
@@ -68,7 +67,7 @@
                   -@filterform["cntry"].each do |cc|
                     -c = cc["country"]
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"cntry"}
                       %td.lbl
                         %label= c["name"]
@@ -82,7 +81,7 @@
                   -@filterform["category"].each do |cc|
                     -c = cc["category"]
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c['id'], :name=>"category"}
                       %td.lbl
                         %label= c['name']
@@ -95,7 +94,7 @@
                   -@filterform["type"].each do |cc|
                     -c = cc["type"]
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c['id'], :name=>"types"}
                       %td.lbl
                         %label= c['name']
@@ -110,7 +109,7 @@
                   -c = cc["product"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"product"}
                       %td.lbl
                         %label= c["name"]
@@ -175,7 +174,7 @@
                   -c = cc["status"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"intensity"}
                       %td.lbl
                         %label= c["name"]
@@ -188,7 +187,7 @@
                   -c = cc["reaction"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"stage"}
                       %td.lbl
                         %label= c["name"]
@@ -203,7 +202,7 @@
                   -c = cc["mobilizing_group"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"mobgroup"}
                       %td.lbl
                         %label= c["name"]
@@ -217,7 +216,7 @@
                   -c = cc["mobilizing_form"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"mobform"}
                       %td.lbl
                         %label= c["name"]
@@ -232,7 +231,7 @@
                   -c = cc["env_impact"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"envi"}
                       %td.lbl
                         %label= c["name"]
@@ -245,7 +244,7 @@
                   -c = cc["hlt_impact"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"hlti"}
                       %td.lbl
                         %label= c["name"]
@@ -259,7 +258,7 @@
                   -c = cc["sec_impact"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"seci"}
                       %td.lbl
                         %label= c["name"]
@@ -273,7 +272,7 @@
                   -c = cc["project_status"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"pstatus"}
                       %td.lbl
                         %label= c["name"]
@@ -286,7 +285,7 @@
                   -c = cc["conflict_event"]
                   %tbody
                     %tr.rw
-                      %td
+                      %td.chk
                         %input{:type=>'checkbox', :value=>c["id"], :name=>"outcome"}
                       %td.lbl
                         %label= c["name"]
@@ -296,18 +295,13 @@
     .row
       .col-sm-4
         .filt
+          %button.btn.embed{:type=>'button'} Embed
+      .col-sm-4
+        .filt
           %button.btn.clr{:type=>'button'} Clear Filter
-      -if @featured
-        .col-sm-4
-          .filt
-            %button.btn.or{:type=>'submit'} Filter
-        .col-sm-4
-          .filt
-            %button.btn.and{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} Apply
-      -else
-        .col-sm-8
-          .filt
-            %button.btn.or{:type=>'submit'} Filter
+      .col-sm-4
+        .filt
+          %button.btn.or{:type=>'submit'} Filter
 
       :javascript
         function filterMarkers(filter,update) {
@@ -469,6 +463,14 @@
         var queryhash = {};
 
         $(document).ready(function(){
+          $('#conflict_filter td.lbl').on('click',function(){
+            chk = $(this).parent().find('td.chk input')
+            if (chk.prop('checked') == true) {
+              chk.prop('checked',false);
+            } else {
+              chk.prop('checked',true);
+            }
+          })
           $('.desrad').on('click', function() { 
             var previousValue = $(this).attr('previousValue');
             if(previousValue == 'true'){

@@ -1159,7 +1159,7 @@
         -unless @conflict.new_record?
           .group
             %label= "Conflict ID: #{@conflict.id}"
-        -if ["admin","editor"].include? current_account.role
+
           .group
             =f.label 'Headline text'
             .required=f.error_message_on :headline

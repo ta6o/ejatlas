@@ -68,7 +68,8 @@ Admin.controller do
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
-    @recent = Conflict.select('id, headline, modified_at, name, slug').where("headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(5)
+    @recent = Conflict.select('id, headline, modified_at, name, slug').where("headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
+    @feats = Featured.select('id, description, name, slug, image').where(published:true).order("slug").limit(6)
     render "base/map", :layout => @layout
   end
 
@@ -458,13 +459,13 @@ Admin.controller do
 
   not_found do
     @name = "Page not found"
-    render 'base/404', :layout => :full
+    render 'base/404'
   end
 
   error do
     @name = "Error"
     puts "ERROR #{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
-    render 'base/404', :layout => :full
+    render 'base/404'
   end
 
 end

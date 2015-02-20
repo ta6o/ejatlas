@@ -135,7 +135,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
 
     cclass = "";
     if ('dmn' in mark && mark.dmn.length > 0) {
-      console.log('oharey')
       dmns.push(mark.dmn[0])
       cclass = " c_"+mark.dmn[0];
       popcontent += "<div class='features'>";
@@ -274,6 +273,20 @@ function initMap (markers, maptitle, layers, vector, fid) {
   })
 
   $('.rightpane').on('click','.horipane .title',function(e){
+    if ($(this).parent().find('.content .block')) {
+      elWidth = parseInt($(this).parent().find('.content .block').attr('data-width'));
+      if ($('#rightpane .inner').width() < elWidth) {
+        perc = 100 - ((elWidth+82) / window.innerWidth * 100);
+        $('.rightpane .inner').show();
+        $('.leftpane').animate({'width':perc+"%"});
+        $('.rightpane').animate({'width':(100-perc)+'%'});
+        $('.resize').animate({'left':perc+"%"},function(){
+          $('.rightpane').css('overflow-x','hidden');
+          $('.rightpane').css('overflow-y','auto');
+          onResize();
+        });
+      }
+    }
     if($(this).hasClass('active')){
       $(this).next('.content').slideUp();
       $(this).removeClass('active');
@@ -281,6 +294,9 @@ function initMap (markers, maptitle, layers, vector, fid) {
       $(this).next('.content').slideDown();
       $(this).addClass('active');
       if ($(this).next('.content').find('.columns').length > 0) resetColumns();
+      /*$('#rightpane').animate({
+        scrollTop: $(this).offset().top
+      }, 200);*/
     }
   });
 
@@ -317,7 +333,8 @@ function initMap (markers, maptitle, layers, vector, fid) {
     dmns = dmns.distinct();
     if (dmns.length > 0) {
       $.each(dmns,function(i,n){
-        $(".c_"+n).css("border","4px solid #"+n);
+        $(".c_"+n).css("border","2px solid #"+n);
+        $(".c_"+n).css("background-color","#"+n);
       })
     }
 
@@ -383,6 +400,29 @@ function dragEnd() {
     console.log(mapWidth)
   }
   resetColumns();
+  rightWidth = $('#rightpane .inner').width();
+  $.each($('.horipane .block'),function(i,e){
+    elWidth = parseInt($(e).attr('data-width'));
+    cols = Math.floor(rightWidth / elWidth);
+    siblings = $(e).closest('.horipane').find('.block').length;
+    if (cols == 0) {
+      hori = $(e).closest('.horipane');
+      hori.find('.title').removeClass('active')
+      hori.find('.content').slideUp();
+    } else if (cols == 1) {
+      $(e).css('width','100%');
+      $(e).css('min-width','0');
+      $(e).css('float','none');
+      $(e).find('.blocked').show();
+    } else if (siblings > 1){
+      perc = Math.floor(100/Math.min(cols,siblings))
+      $(e).css('width',(perc-2)+'%');
+      $(e).css('min-width',(perc-2)+'%');
+      $(e).css('margin-right','2%');
+      $(e).css('float','left');
+      $(e).find('.blocked').hide();
+    }
+  });
 }
 
 function mapFit(){

@@ -5341,6 +5341,12 @@ ul.sidelink li.active {
   border-radius: 4px;
 }
 .horipane .title {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   -webkit-box-shadow: 0px 12px 12px 0px rgba(255, 255, 255, 0.3) inset;
   -moz-box-shadow: 0px 12px 12px 0px rgba(255, 255, 255, 0.3) inset;
   box-shadow: 0px 12px 12px 0px rgba(255, 255, 255, 0.3) inset;
@@ -5373,6 +5379,9 @@ ul.sidelink li.active {
 }
 .horipane ul li {
   list-style-type: none !important;
+}
+.horipane .content table {
+  width: 100%;
 }
 #infopane {
   color: #333333;
@@ -5534,6 +5543,7 @@ ul.sidelink li.active {
   padding: 0;
 }
 #filter-row {
+  background-color: white;
   margin-top: 0px;
 }
 #filter-row #conflict_filter {
@@ -5542,15 +5552,13 @@ ul.sidelink li.active {
 }
 #filter-row #conflict_filter #filterInfo {
   margin-top: 36px;
-  height: 315px;
   overflow-y: hidden;
 }
 #filter-row #conflict_filter .embed {
   width: 100%;
-  margin-top: 4px;
 }
 #filter-row #conflict_filter .embed:hover {
-  background: #f48e34;
+  background: #d9534f;
   color: black;
 }
 #filter-row #conflict_filter .nav-tabs {
@@ -5609,26 +5617,26 @@ ul.sidelink li.active {
 #filter-row #conflict_filter .tab-pane .col > * {
   margin-right: 12px;
 }
+#filter-row #conflict_filter .tab-pane .col h4 {
+  line-height: 22px;
+  margin: 12px 12px 6px 0;
+}
 #filter-row #conflict_filter .tab-pane table tbody tr {
   border: none;
 }
-#filter-row #conflict_filter .tab-pane table tbody tr td.lbl {
-  border-left: 4px solid transparent;
+#filter-row #conflict_filter .tab-pane table tbody tr td.chk {
+  width: 16px !important;
 }
 #filter-row #conflict_filter .filt button {
   width: 100%;
   margin-top: 4px;
 }
 #filter-row #conflict_filter .filt button.clr:hover {
-  background: #d9534f;
+  background: #0380a5;
   color: white;
 }
 #filter-row #conflict_filter .filt button.or:hover {
   background: #84be64;
-  color: white;
-}
-#filter-row #conflict_filter .filt button.and:hover {
-  background: #0380a5;
   color: white;
 }
 #filter-row #conflict_filter table {

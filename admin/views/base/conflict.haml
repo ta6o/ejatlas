@@ -59,8 +59,8 @@
                   -else
                     .url
                       %strong= image.title
-                      -if image.description.length > 0
-                        ="- #{image.description}"
+                      -if image.description and image.description.length > 0
+                        ="#{image.title and image.title != '-' ? "- " : ""}#{image.description}"
         #right_scroll
           %span.glyphicon.glyphicon-chevron-right
       :javascript
