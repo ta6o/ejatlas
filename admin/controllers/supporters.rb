@@ -46,7 +46,7 @@ Admin.controllers :ifis do
     @supporter = Supporter.new(params[:supporter])
     if @supporter.save
       flash[:notice] = 'supporter was successfully created.'
-      redirect url(:supporters, :edit, :id => @supporter.id)
+      redirect url(:ifis, :edit, :id => @supporter.id)
     else
       render 'supporters/new'
     end
@@ -133,7 +133,7 @@ Admin.controllers :ifis do
     @supporter = Supporter.find(params[:id])
     if @supporter.update_attributes(params[:supporter])
       flash[:notice] = 'supporter was successfully updated.'
-      redirect url(:supporters, :edit, :id => @supporter.id)
+      redirect url(:ifis, :edit, :id => @supporter.id)
     else
       render 'supporters/edit'
     end
@@ -150,6 +150,6 @@ Admin.controllers :ifis do
     else
       flash[:error] = 'Unable to destroy supporter!'
     end
-    redirect url(:supporters, :index)
+    redirect url(:ifis, :index)
   end
 end

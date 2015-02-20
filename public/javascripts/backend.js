@@ -1088,7 +1088,7 @@ break}e||r.push(t),t.touches=r.slice(),t.changedTouches=[t],n(t)};if(t[a+"touchs
       }
     },
     Stamen: {
-      url: 'https://{s}.tile.stamen.com/{variant}/{z}/{x}/{y}.png',
+      url: 'http://{s}.tile.stamen.com/{variant}/{z}/{x}/{y}.png',
       options: {
         attribution:
           'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
