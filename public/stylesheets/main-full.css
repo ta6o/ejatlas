@@ -5421,6 +5421,19 @@ ul.sidelink li.active {
 #infopane {
   color: #333333;
 }
+#infopane .chlegend {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+#infopane .chdesc {
+  font-weight: bold;
+  font-size: 14px;
+}
+#infopane .chicon {
+  width: 20px;
+}
 #infopane .features {
   font-size: smaller;
   margin: -12px 0 0;
@@ -5433,7 +5446,7 @@ ul.sidelink li.active {
   position: static;
   margin-bottom: 12px;
 }
-#legendpane.static td {
+#legendpane.static tr td {
   padding: 0 8px 0 0;
 }
 #legendpane table tbody tr {
@@ -6013,16 +6026,6 @@ ul.sidelink li.active {
   min-width: 200px !important;
   max-width: 200px !important;
   margin-right: 12px;
-}
-.chlegend {
-  width: 32px;
-  height: 16px;
-  border-radius: 4px;
-  margin-bottom: 4px;
-}
-.chdesc {
-  font-weight: bold;
-  font-size: 14px;
 }
 .seemore,
 .seeless {

@@ -569,6 +569,17 @@ ul.sidelink {
 
 #infopane {
   color: @grayDark;
+  .chlegend {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .chdesc {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .chicon { width: 20px; }
   .features {
     font-size: smaller;
     margin: -12px 0 0;
@@ -580,9 +591,11 @@ ul.sidelink {
   &.static {
     position: static;
     margin-bottom: 12px;
-    td {
-      padding: 0 8px 0 0;
-    } 
+    tr {
+      td {
+        padding: 0 8px 0 0;
+      } 
+    }
   }
   table {
     tbody tr {
@@ -1158,17 +1171,6 @@ position: relative;
   min-width: 200px !important;
   max-width: 200px !important;
   margin-right:12px;
-}
-
-.chlegend {
-  width: 32px;
-  height: 16px;
-  border-radius: 4px;
-  margin-bottom: 4px;
-}
-.chdesc {
-  font-weight: bold;
-  font-size: 14px;
 }
 
 .seemore, .seeless {

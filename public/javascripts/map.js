@@ -757,7 +757,7 @@ function showVector(v) {
     choropleths[tl] = JSON.parse(vect['choropleth'])
     leg = '<div class="legend"><table> <tbody>';
     $.each(choropleths[tl],function(k,v){
-      leg += '<tr> <td> <div class="chlegend" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+v['legend']+'</td> </tr>';
+      leg += '<tr> <td class="chicon"> <div class="chlegend" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+v['legend']+'</td> </tr>';
     });
     leg += '</tr></tbody></table></div>';
     jsons[tl]['legend'] = leg;
