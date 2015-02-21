@@ -1,6 +1,6 @@
 var markerc, info, legendpane, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging;
 var jsons = {};
-var big = 0;
+var checkingTile = false;
 var all = 0;
 var loadQueue = 0;
 var overlayMaps = { };
@@ -17,7 +17,7 @@ function pToLayer(obj, latlng, color) {
   });
 }
 
-var rtlegend = '<div class="legend noselect"><table> <tbody><tr> <td> <div class="vis map-icon i_1"></div> </td> <td class="desc i_1">Nuclear</td> </tr> <tr> <td> <div class="vis map-icon i_2"></div> </td> <td class="desc i_2">Mineral Ores and Building Extractions</td> </tr> <tr> <td> <div class="vis map-icon i_3"></div> </td> <td class="desc i_3">Waste Management</td> </tr> <tr> <td> <div class="vis map-icon i_4"></div> </td> <td class="desc i_4">Biomass and Land Conflicts</td> </tr> <tr> <td> <div class="vis map-icon i_5"></div> </td> <td class="desc i_5">Fossil Fuels and Climate Justice</td> </tr> <tr> <td> <div class="vis map-icon i_6"></div> </td> <td class="desc i_6">Water Management</td> </tr> <tr> <td> <div class="vis map-icon i_7"></div> </td> <td class="desc i_7">Infrastructure and Built Environment</td> </tr> <tr> <td> <div class="vis map-icon i_8"></div> </td> <td class="desc i_8">Tourism Recreation</td> </tr> <tr> <td> <div class="vis map-icon i_9"></div> </td> <td class="desc i_9">Biodiversity Conservation Conflicts</td> </tr> <tr> <td> <div class="vis map-icon i_10"></div> </td> <td class="desc i_10">Industrial and Utilities Conflicts</td> </tr></tbody></table></div>';
+var rtlegend = '<table> <tbody><tr> <td class="icon"> <div class="vis map-icon i_1"></div> </td> <td class="desc i_1">Nuclear</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_2"></div> </td> <td class="desc i_2">Mineral Ores and Building Extractions</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_3"></div> </td> <td class="desc i_3">Waste Management</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_4"></div> </td> <td class="desc i_4">Biomass and Land Conflicts</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_5"></div> </td> <td class="desc i_5">Fossil Fuels and Climate Justice</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_6"></div> </td> <td class="desc i_6">Water Management</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_7"></div> </td> <td class="desc i_7">Infrastructure and Built Environment</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_8"></div> </td> <td class="desc i_8">Tourism Recreation</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_9"></div> </td> <td class="desc i_9">Biodiversity Conservation Conflicts</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_10"></div> </td> <td class="desc i_10">Industrial and Utilities Conflicts</td> </tr></tbody></table>';
 legend = rtlegend;
 
 Array.prototype.distinct = function(){
@@ -36,9 +36,9 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-function initMap (markers, maptitle, layers, vector, fid) {
+function initMap () {
   info = $("#infopane");
-  legendpane = $("#legendpane");
+  legendpane = $("#legendpane .legend");
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
@@ -68,12 +68,32 @@ function initMap (markers, maptitle, layers, vector, fid) {
     zoomControl: false
   });
 
-  $.each(vector,function(i,v){
+  $.each(vectorinfo,function(i,v){
     loadJS(v["vector_datum"]["url"])
   });
 
   if (Object.keys(baselayers).length > 0){ 
     lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
+  }
+
+  if (Object.keys(baselayers).indexOf('World Imagery') >= 0){ 
+    baselayers['World Imagery'].on('tileload',function(tile,url){
+      if (!checkingTile) {
+        checkingTile = true;
+        /*
+        var req;
+        req = $.ajax({
+          type: "HEAD",
+          url: tile.url,
+          success: function() {
+            console.log(req);
+            console.log(req.getAllResponseHeaders());
+            setTimeout(function(){checkingTile = false},1000);
+          }
+        });
+        */
+      } 
+    });
   }
 
   $(document).on('click','.legend .map-icon, .legend .desc',function(e){
@@ -88,6 +108,43 @@ function initMap (markers, maptitle, layers, vector, fid) {
       setLegend("0");
     } else {
       setLegend(id);
+    }
+  });
+
+  $(document).on('click','.vectorlegend .overlays tr',function(e){
+    e.preventDefault();
+    box = $(this).find('input');
+    name = $(this).find('td:last').text();
+    if (box.prop('checked') == true) {
+      box.prop('checked',false);
+      map.removeLayer(overlayMaps[name]);
+    } else {
+      box.prop('checked',true);
+      map.addLayer(overlayMaps[name]);
+    }
+  });
+
+  $(document).on('click','.vectorlegend .choropleths tr',function(e){
+    box = $(this).find('input');
+    name = $(this).find('td:last').text();
+    hit = e.target == box[0];
+    chk = box.prop('checked');
+    if ((chk && !hit) || (!chk && hit)) {
+      box.prop('checked',false);
+      map.removeLayer(overlayMaps[name]);
+    } else if ((chk && hit) || (!chk && !hit)){
+      $('.vectorlegend .choropleths .input').prop('checked',false)
+      box.prop('checked',true);
+      if (map.hasLayer(overlayMaps['Country Data'])) {
+        map.removeLayer(overlayMaps['Country Data']);
+        $('.vectorlegend .overlays input#checkbox_country_data').prop('checked',false);
+      }
+      $.each(Object.keys(choropleths),function(i,n){
+        if (map.hasLayer(overlayMaps[n])) {
+          map.removeLayer(overlayMaps[n]);
+        }
+      });
+      map.addLayer(overlayMaps[name]);
     }
   });
 
@@ -116,82 +173,6 @@ function initMap (markers, maptitle, layers, vector, fid) {
   //oms = new OverlappingMarkerSpiderfier(map,{keepSpiderfied:true,nearbyDistance:4});
   //oms.legColors.usual = "black";
   //oms.legColors.highlighted = "white";
-
-  markerCount = markers.length;
-  markerc = {};
-
-  var attrhash = {"category_id":"Category","types":"Types","other_types":"Other Types","description":"Description","country_id":"Country","province":"Province","site":"Site","accuracy_level":"Level of Accuracy","project_area":"Project Area","project_length":"Project Length","population_type":"Type of Population","products":"Commodities","other_products":"Other Commodities","companies":"Companies","supporters":"IFI's","other_supporters":"Other IFI's","ejos":"EJO's","govt_actors":"Government Actors","mobilizing_groups":"Mobilizing Groups","other_mobilizing_groups":"Other Mobilizing Groups","mobilizing_forms":"Mobilizing Forms","other_mobilizing_forms":"Other Mobilizing Forms","env_impacts":"Environmental Impacts","other_env_impacts":"Other Environmental Impacts","hlt_impacts":"Health Impacts","other_hlt_impacts":"Other Health Impacts","sec_impacts":"Socio-economic Impacts","other_sec_impacts":"Other Socio-economic Impacts","conflict_events":"Outcomes","other_outcomes":"Other Outcomes","project_details":"Project Details","investment_string":"Level of Investment","affected_people":"Potentially Affected Population","status_id":"Intensity Level","reaction_id":"Reactionary Stage","start_date":"Start Date","end_date":"End Date","project_status_id":"Project Status","suggested_alternatives":"Development of Alternatives","success_level":"Succes Level","success_reason":"Success Reason","other_comments":"Other Comments"};
-  var arrr = []
-
-  $.each(markers, function(i,m){
-    mark = m;//JSON.parse(m);
-    if (!mark.lat || !mark.lon) {
-      console.log(mark);
-      return 0
-    }
-    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
-    if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
-    popcontent += '</td></tr></table>';
-
-    cclass = "";
-    if ('dmn' in mark && mark.dmn.length > 0) {
-      dmns.push(mark.dmn[0])
-      cclass = " c_"+mark.dmn[0];
-      popcontent += "<div class='features'>";
-      $.each(Object.keys(mark),function(i,n){
-        if (isNaN(n[0])) return 0
-        id = parseInt(n.split(':')[0]);
-        if (id == fid && mark[n]) {
-          if (Object.keys(attrhash).indexOf(n.split(':')[1]) >= 0){
-            popcontent += '<br /><strong>'+attrhash[n.split(':')[1]].replace(/\sId$/,'')+':</strong> ';
-          } else {
-            popcontent += '<br /><strong>'+toTitleCase(n.split(':')[1].replace(/_/g,' '))+':</strong> ';
-          }
-          popcontent += mark[n];
-        }
-      })
-      popcontent += "<br /><br />"
-      $.each(mark.tags,function(i,n){
-        popcontent += "<span class='badge' style='background-color:#"+mark.dmn[i]+"'>"+n+"</span> &nbsp; "
-      })
-      popcontent += "</div>";
-    }
-    popcontent += '</div>';
-
-    var marker = L.marker([mark.lat, mark.lon],{
-      icon: L.divIcon({ className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+''+cclass, }),
-      riseOnHover: true,
-    }).addTo(markerLayer);
-    
-    $('.map_icon.id_'+mark.id).attr('data-id',mark.id);
-
-    marker.id = mark.id;
-    marker.name = mark.name;
-    marker.slug = mark.slug;
-    marker.cslg = mark.cslg;
-    marker.content = popcontent;
-    marker.on('mouseover', function(e){
-      selector = '#map .map_icon.id_'+marker.id;
-      $(selector).addClass('selected')
-      transformItem(selector, 'scale', 1.25);
-      $(selector).removeClass('mic').removeClass('min');
-      updateInfo(1,marker.content);
-    });
-    marker.on('mouseout', function(e){
-      selector = '#map .map_icon.id_'+marker.id;
-      transformItem(selector, 'scale', 0.8);
-      singleSize(selector);
-    });
-    if (window.location.pathname === "/embed") {
-      marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
-    } else {
-      marker.on('click', function(e){window.location="/conflict/"+marker.slug});
-    }
-    markerc[mark.id] = marker;
-    //oms.addMarker(marker);
-    arrr.push(mark.id);
-    all ++;
-  });
 
   map.on('zoomend', function(e) { markerSize(); });
 
@@ -347,6 +328,85 @@ function initMap (markers, maptitle, layers, vector, fid) {
   updateInfo(1,disclaimer);
   markerSize();
 }
+
+function showMarkers(markers) {
+  markerCount = markers.length;
+  markerc = {};
+
+  var attrhash = {"category_id":"Category","types":"Types","other_types":"Other Types","description":"Description","country_id":"Country","province":"Province","site":"Site","accuracy_level":"Level of Accuracy","project_area":"Project Area","project_length":"Project Length","population_type":"Type of Population","products":"Commodities","other_products":"Other Commodities","companies":"Companies","supporters":"IFI's","other_supporters":"Other IFI's","ejos":"EJO's","govt_actors":"Government Actors","mobilizing_groups":"Mobilizing Groups","other_mobilizing_groups":"Other Mobilizing Groups","mobilizing_forms":"Mobilizing Forms","other_mobilizing_forms":"Other Mobilizing Forms","env_impacts":"Environmental Impacts","other_env_impacts":"Other Environmental Impacts","hlt_impacts":"Health Impacts","other_hlt_impacts":"Other Health Impacts","sec_impacts":"Socio-economic Impacts","other_sec_impacts":"Other Socio-economic Impacts","conflict_events":"Outcomes","other_outcomes":"Other Outcomes","project_details":"Project Details","investment_string":"Level of Investment","affected_people":"Potentially Affected Population","status_id":"Intensity Level","reaction_id":"Reactionary Stage","start_date":"Start Date","end_date":"End Date","project_status_id":"Project Status","suggested_alternatives":"Development of Alternatives","success_level":"Succes Level","success_reason":"Success Reason","other_comments":"Other Comments"};
+  var arrr = []
+
+  $.each(markers, function(i,m){
+    mark = m;//JSON.parse(m);
+    if (!mark.lat || !mark.lon) {
+      console.log(mark);
+      return 0
+    }
+    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
+    if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
+    popcontent += '</td></tr></table>';
+
+    cclass = "";
+    if ('dmn' in mark && mark.dmn.length > 0) {
+      dmns.push(mark.dmn[0])
+      cclass = " c_"+mark.dmn[0];
+      popcontent += "<div class='features'>";
+      $.each(Object.keys(mark),function(i,n){
+        if (isNaN(n[0])) return 0
+        id = parseInt(n.split(':')[0]);
+        if (id == fid && mark[n]) {
+          if (Object.keys(attrhash).indexOf(n.split(':')[1]) >= 0){
+            popcontent += '<br /><strong>'+attrhash[n.split(':')[1]].replace(/\sId$/,'')+':</strong> ';
+          } else {
+            popcontent += '<br /><strong>'+toTitleCase(n.split(':')[1].replace(/_/g,' '))+':</strong> ';
+          }
+          popcontent += mark[n];
+        }
+      })
+      popcontent += "<br /><br />"
+      $.each(mark.tags,function(i,n){
+        popcontent += "<span class='badge' style='background-color:#"+mark.dmn[i]+"'>"+n+"</span> &nbsp; "
+      })
+      popcontent += "</div>";
+    }
+    popcontent += '</div>';
+
+    var marker = L.marker([mark.lat, mark.lon],{
+      icon: L.divIcon({ className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+''+cclass, }),
+      riseOnHover: true,
+    }).addTo(markerLayer);
+    
+    $('.map_icon.id_'+mark.id).attr('data-id',mark.id);
+
+    marker.id = mark.id;
+    marker.name = mark.name;
+    marker.slug = mark.slug;
+    marker.cslg = mark.cslg;
+    marker.content = popcontent;
+    marker.on('mouseover', function(e){
+      selector = '#map .map_icon.id_'+marker.id;
+      $(selector).addClass('selected')
+      transformItem(selector, 'scale', 1.25);
+      $(selector).removeClass('mic').removeClass('min');
+      updateInfo(1,marker.content);
+    });
+    marker.on('mouseout', function(e){
+      selector = '#map .map_icon.id_'+marker.id;
+      transformItem(selector, 'scale', 0.8);
+      singleSize(selector);
+    });
+    if (window.location.pathname === "/embed") {
+      marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
+    } else {
+      marker.on('click', function(e){window.location="/conflict/"+marker.slug});
+    }
+    markerc[mark.id] = marker;
+    //oms.addMarker(marker);
+    arrr.push(mark.id);
+    all ++;
+  });
+}
+
 
 function transformItem(selector, property, value) {
   matrix = $(selector).css('transform');
@@ -691,6 +751,7 @@ function showVector(v) {
     jsons[tl]['style'] = lStyle;
     overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
   } else {
+    lStyle = {};
     tl = vect['name']
     jsons[tl] = ly;
     choropleths[tl] = JSON.parse(vect['choropleth'])
@@ -710,7 +771,44 @@ function showVector(v) {
   jsons[tl]['source'] = vect['source']
   jsons[tl]['link'] = vect['link']
   if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
-  lControl.addOverlay(overlayMaps[tl],tl)
+  addOverlay(tl,lStyle,vect['shown'])
+}
+
+function addOverlay(name,lstyle,shown){
+  if ($('#legendpane .vectorlegend').length == 0) {
+    $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=480><table class="overlays"><tbody></tbody></table></div>');
+  }
+  if (Object.keys(choropleths).indexOf(name) >= 0) {
+    if ($('#legendpane .vectorlegend .choropleths').length == 0) {
+      $('#legendpane .vectorlegend').append('<table class="choropleths"><tbody></tbody></table>');
+    }
+    html = "<tr><td class='input'><input type='radio' id='radio_"+toSlug(name)+"' name='choropleth'"
+    if (shown == '1') { html += " checked='checked'" }
+    html += "></input></td><td class='icon'><div class='chorostyle clearfix'>"
+    clength = Object.keys(choropleths[name]).length;
+    $.each(choropleths[name],function(k,v){
+      html += "<div style='width:"+(16/clength)+"px;background-color:"+v.color+"'>&nbsp;</div>"
+    });
+    html += "</div></td><td>"+name+"</td></tr>"
+    $('#legendpane .vectorlegend table.choropleths tbody').append(html);
+  } else {
+    stylestr = "{\n"
+    $.each(lstyle,function(k,v){
+      k = k.replace('color','stroke');
+      k = k.replace('fillColor','fill');
+      k = k.replace('opacity','stroke-opacity');
+      k = k.replace('fillOpacity','fill-opacity');
+      k = k.replace('dashArray','stroke-dasharray');
+      k = k.replace('weight','stroke-width');
+      stylestr += k+":"+v+";\n";
+    });
+    stylestr += "}"
+    html = "<tr><td class='input'><input type='checkbox' id='checkbox_"+toSlug(name)+"'"
+    if (shown == '1') { html += " checked='checked'" }
+    html += "></input></td><td class='icon'><svg id='icon_"+toSlug(name)+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+toSlug(name)+" > rect "+stylestr+"</style></td>"
+    html += "<td>"+name+"</td></tr>"
+    $('#legendpane .vectorlegend table.overlays tbody').append(html);
+  }
 }
 
 function getObjectSize(obj) {
@@ -772,3 +870,5 @@ function toSlug(url) {
   return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/^\d+/,'').replace(/\s+/g,'_'));
 }
 
+initMap();
+showMarkers(markerinfo);

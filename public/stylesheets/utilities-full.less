@@ -487,6 +487,16 @@ ul.sidelink {
   }
 }
 
+.horipane:before,
+.horipane:after {
+  content: " ";
+  /* 1 */
+  display: table;
+  /* 2 */
+}
+.horipane:after {
+  clear: both;
+}
 .horipane {
   .title {
     -webkit-touch-callout: none;
@@ -528,6 +538,31 @@ ul.sidelink {
   }
   .content table {
     width:100%;
+    td.image {
+      vertical-align: top;
+      padding: 0 0 12px;
+      width: 120px;
+      a .img {
+        width:120px;
+        height:90px;
+        background-size:cover;
+        background: url('/images/bg.png');
+      }
+    }
+    td.exp {
+      vertical-align:top;
+      padding:0 0 0 12px;
+      h4 {
+        margin:0px;
+        font-size:18px;
+      }
+      p {
+        margin:0;
+        padding:0;
+        font-size:12px;
+        line-height:16px;
+      }
+    }
   }
 }
   
@@ -541,10 +576,13 @@ ul.sidelink {
 }
 #legendpane {
   font-size: 13px;
+  cursor: default;
   &.static {
     position: static;
     margin-bottom: 12px;
-    td {padding: 0 8px 0 0;} 
+    td {
+      padding: 0 8px 0 0;
+    } 
   }
   table {
     tbody tr {
@@ -561,6 +599,27 @@ ul.sidelink {
         padding: 0 0 0 8px;
         .vis {border:2px solid black;}
         .hid {border:2px solid white;}
+        &.input { width:20px; }
+        &.icon { width:20px; }
+      }
+    }
+  }
+  .vectorlegend table tbody tr {
+    td.input {
+      padding:0 4px 0 2px;
+    }
+    td.icon {
+      padding:4px 0 0 0;
+      div.chorostyle {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: -4px 0 0 2px;
+        div {
+          height: 16px;
+          float:left;
+        }
       }
     }
   }
@@ -694,7 +753,6 @@ ul.sidelink {
 }
 
 #filter-row {
-  background-color: white;
   margin-top:0px;
   #conflict_filter {
     #filterInfo {

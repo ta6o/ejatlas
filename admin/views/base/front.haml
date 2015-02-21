@@ -3,8 +3,11 @@
   :javascript
     img = new Image(330,30);
     img.src = 'https://file.ejatlas.org/static/ikon.png';
-    var markerinfo = eval("["+#{@markerinfo||"[]"}.join(',')+"]");
+    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var vectorinfo = [];
+    var maptitle = "#{@maptitle}";
+    var layers = "#{@baselayers}";
+    var fid = #{@fid || 0};
   -if @vectors
     :javascript
       vectorinfo = #{@vectors};
@@ -12,8 +15,7 @@
     window.onload = onLoad;
     function onLoad() {
       if (typeof initMap === 'function' ) {
-        initMap(markerinfo,"#{@maptitle}", "#{@baselayers}", vectorinfo, #{@fid || 0});
-        updateInfo(1,#{@markercount > 0 ? "'<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>'" : '""'})
+        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
         mapFit();
       } else {
         setTimeout(onLoad,10);
@@ -64,6 +66,7 @@
     .content
       %br/
       #legendpane
+        .legend.noselect.block{'data-width'=>220}
       %br/
 
   -if @load and @load.length > 0

@@ -1,15 +1,20 @@
 -# coding: utf-8
-
 -content_for :include do
   :javascript
     img = new Image(330,30);
     img.src = 'https://file.ejatlas.org/static/ikon.png';
     var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
-    var vectorinfo = #{@vectors};
+    var vectorinfo = [];
+    var maptitle = "#{@maptitle}";
+    var layers = "#{@baselayers}";
+    var fid = 0;
+  -if @vectors
+    :javascript
+      vectorinfo = #{@vectors};
+  :javascript
     window.onload = onLoad;
     function onLoad() {
       if (typeof initMap === 'function' ) {
-        initMap(markerinfo,"#{@maptitle}","#{@baselayers}",vectorinfo,null);
         getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom},true)
       } else {
         setTimeout(onLoad,10);

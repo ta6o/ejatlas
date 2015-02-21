@@ -5340,6 +5340,16 @@ ul.sidelink li.active {
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
+.horipane:before,
+.horipane:after {
+  content: " ";
+  /* 1 */
+  display: table;
+  /* 2 */
+}
+.horipane:after {
+  clear: both;
+}
 .horipane .title {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -5383,6 +5393,31 @@ ul.sidelink li.active {
 .horipane .content table {
   width: 100%;
 }
+.horipane .content table td.image {
+  vertical-align: top;
+  padding: 0 0 12px;
+  width: 120px;
+}
+.horipane .content table td.image a .img {
+  width: 120px;
+  height: 90px;
+  background-size: cover;
+  background: url('/images/bg.png');
+}
+.horipane .content table td.exp {
+  vertical-align: top;
+  padding: 0 0 0 12px;
+}
+.horipane .content table td.exp h4 {
+  margin: 0px;
+  font-size: 18px;
+}
+.horipane .content table td.exp p {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 16px;
+}
 #infopane {
   color: #333333;
 }
@@ -5392,6 +5427,7 @@ ul.sidelink li.active {
 }
 #legendpane {
   font-size: 13px;
+  cursor: default;
 }
 #legendpane.static {
   position: static;
@@ -5419,6 +5455,29 @@ ul.sidelink li.active {
 }
 #legendpane table tbody tr td .hid {
   border: 2px solid white;
+}
+#legendpane table tbody tr td.input {
+  width: 20px;
+}
+#legendpane table tbody tr td.icon {
+  width: 20px;
+}
+#legendpane .vectorlegend table tbody tr td.input {
+  padding: 0 4px 0 2px;
+}
+#legendpane .vectorlegend table tbody tr td.icon {
+  padding: 4px 0 0 0;
+}
+#legendpane .vectorlegend table tbody tr td.icon div.chorostyle {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: -4px 0 0 2px;
+}
+#legendpane .vectorlegend table tbody tr td.icon div.chorostyle div {
+  height: 16px;
+  float: left;
 }
 .summary_header {
   padding: 24px;
@@ -5543,7 +5602,6 @@ ul.sidelink li.active {
   padding: 0;
 }
 #filter-row {
-  background-color: white;
   margin-top: 0px;
 }
 #filter-row #conflict_filter {

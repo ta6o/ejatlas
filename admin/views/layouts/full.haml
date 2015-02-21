@@ -103,7 +103,7 @@
                     %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
           .tagline
             %p Environmental Justice Atlas
-          .ejatlas-logo
+          .ejatlas-logo#eja-logo
 
       %header
         =yield_content :outer
@@ -139,6 +139,45 @@
           %a#thank_tw.pull-left.clearfix{:href=>'https://twitter.com/intent/tweet?text=http%3A%2F%2Fejatlas.org%20-%20Mapping%20ecological%20conflicts%20and%20spaces%20of%20resistance&source=clicktotweet',:target=>'_blank'}
             #img.pull-left
 
+    :javascript
+      function resetColumns() { }
+      blocks = document.getElementsByClassName('block');
+      rightWidth = parseInt(getStyle('rightpane','width').replace(/px$/,''));
+      for (var i=0;i<blocks.length;i++) {
+        el = blocks[i];
+        elWidth = parseInt(el.getAttribute('data-width'));
+        cols = Math.floor(rightWidth / elWidth);
+        hori = el.parentNode.parentNode;
+        siblings = hori.getElementsByClassName('block').length;
+        if (cols == 0) {
+          titles = hori.getElementsByClassName('title')
+          for (var j=0;j<titles.length;j++) {
+            titles[j].className = "title";
+          }
+          contents = hori.getElementsByClassName('content')
+          for (var j=0;j<contents.length;j++) {
+            contents[j].style.display = 'block';
+          }
+        } else if (cols == 1) {
+          el.style.width = '100%';
+          el.style.float = 'none';
+          blockeds = el.getElementsByClassName('blocked');
+          for (var j=0;j<blockeds.length;j++) {
+            blockeds[j].style.display = 'inline-block';
+          }
+        } else if (siblings > 1){
+          console.log(cols)
+          perc = Math.floor(100/Math.min(cols,siblings))
+          el.style.width = (perc-2)+'%';
+          el.style.margin = '0 2% 0 0';
+          el.style.float = 'left';
+          blockeds = el.getElementsByClassName('blocked');
+          for (var j=0;j<blockeds.length;j++) {
+            blockeds[j].style.display = 'none';
+          }
+        }
+      };
+
     -if ENV['RACK_ENV'] == 'development'
       :javascript
         conflict = false;
@@ -173,7 +212,4 @@
         $(document).ready(function(){
           $('#map').css('background','#{@color}')
         });
-    :javascript
-      function resetColumns() { }
-
     =yield_content :body_end

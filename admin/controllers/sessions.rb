@@ -2,7 +2,7 @@
 Admin.controllers :sessions do
 
   get :login do
-    pp request.referer
+    #pp request.referer
     set_current_account(nil)
     render "/sessions/new"
   end

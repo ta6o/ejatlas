@@ -6,6 +6,9 @@
     var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
     var vectorinfo = [];
+    var maptitle = "#{@maptitle}";
+    var layers = "#{@baselayers}";
+    var fid = 0;
   -if @vectors
     :javascript
       vectorinfo = #{@vectors};
@@ -13,7 +16,6 @@
     window.onload = onLoad;
     function onLoad() {
       if (typeof initMap === 'function' ) {
-        initMap(markerinfo,"#{@maptitle}","#{@baselayers}",vectorinfo);
         updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
         mapFit();
       } else {
@@ -31,6 +33,8 @@
 
   %br/
   #infopane
+    %h3=@maptitle
+    %p="#{@markercount} cases reported"
   -#%br/
     %input#conf.autocomplete{:type=>'text','data-source'=>'markerinfo'}
     :javascript
@@ -85,6 +89,7 @@
     .content{:style=>'display:none'}
       %br/
       #legendpane
+        .legend.noselect
       %br/
 
 
@@ -97,18 +102,13 @@
           %tbody.feats
             -@feats.each do |c|
               %tr.block{"data-width"=>360}
-                -if c.image
-                  %td{:style=>'vertical-align:top;padding:0 0 12px;width:120px;'}
-                    %a{:href=>"/conflict/#{c.slug}"}
-                      .img{:style=>"background:url('#{c.image.file.thumb.url}');width:120px;height:90px;background-size:cover;"}
-                -else
-                  %td{:style=>'vertical-align:top;padding:0 0 12px;width:120px;'}
-                    %a{:href=>"/conflict/#{c.slug}"}
-                      .img{:style=>"background:url('/images/bg.png');width:120px;height:90px;background-size:cover;"}
-                %td{:style=>'vertical-align:top;padding:0 0 0 12px;'}
-                  %h4{:style=>'margin:0px;font-size:18px;'}
+                %td.image
+                  %a{:href=>"/featured/#{c.slug}"}
+                    .img{:style=>(c.image ? "background:url('#{c.image.file.thumb.url}');" : "")}
+                %td.exp
+                  %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
-                  %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}="#{c.description.split("\n")[0]}"
+                  %p="#{c.description.split("\n")[0]}"
         %br/
 
   -if @recent
@@ -120,16 +120,11 @@
           %tbody.recent
             -@recent.each do |c|
               %tr.block{"data-width"=>360}
-                -if c.images.any?
-                  %td{:style=>'vertical-align:top;padding:0 0 12px;'}
-                    %a{:href=>"/conflict/#{c.slug}"}
-                      .img{:style=>"background:url('#{c.images.first.file.thumb.url}');width:120px;height:90px;background-size:cover;"}
-                -else
-                  %td{:style=>'vertical-align:top;padding:0 0 12px;'}
-                    %a{:href=>"/conflict/#{c.slug}"}
-                      .img{:style=>"background:url('/images/bg.png');width:120px;height:90px;background-size:cover;"}
-                %td{:style=>'vertical-align:top;padding:0 0 0 12px;'}
-                  %h4{:style=>'margin:0px;font-size:18px;'}
+                %td.image
+                  %a{:href=>"/conflict/#{c.slug}"}
+                    .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.thumb.url}');" : "")}
+                %td.exp
+                  %h4
                     %a{:href=>"/conflict/#{c.slug}"}= c.name
                     -ago = ((Time.now-c.modified_at)/(60*60*24)).to_i
                     -if ago < 100
@@ -154,7 +149,7 @@
     .horipane#filter-container
       .title Filter
       .content{:style=>'display:none;'}
-        #filter-row.block{'data-width'=>600}
+        #filter-row.block.graybg{'data-width'=>600}
           #filter= @filter
 
   -else
