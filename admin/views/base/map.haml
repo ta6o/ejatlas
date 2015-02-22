@@ -81,23 +81,19 @@
           }
         });
       }
-  %br/
 
 
   .horipane
     .title Legend
     .content{:style=>'display:none'}
-      %br/
       #legendpane
         .legend.noselect
-      %br/
 
 
   -if @feats
     .horipane
       .title.active Featured Maps
       .content
-        %br/
         %table
           %tbody.feats
             -@feats.each do |c|
@@ -109,13 +105,11 @@
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
                   %p="#{c.description.split("\n")[0]}"
-        %br/
 
   -if @recent
     .horipane
       .title.active Recently Updated Conflicts
       .content
-        %br/
         %table
           %tbody.recent
             -@recent.each do |c|
@@ -130,7 +124,6 @@
                     -if ago < 100
                       %small.blocked= "Updated #{ago < 1 ? "today" : (ago == 1 ? "#{ago} day ago" : "#{ago} days ago")}."
                   %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
-        %br/
 
   -if @browseinfo.keys.length > 1
     .horipane

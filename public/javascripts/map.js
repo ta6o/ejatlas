@@ -1,4 +1,4 @@
-var markerc, info, legendpane, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging;
+var markerc, info, legendpane, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide;
 var jsons = {};
 var checkingTile = false;
 var all = 0;
@@ -112,13 +112,14 @@ function initMap () {
   });
 
   $(document).on('click','.vectorlegend .overlays tr',function(e){
-    e.preventDefault();
     box = $(this).find('input');
     name = $(this).find('td:last').text();
-    if (box.prop('checked') == true) {
+    hit = e.target == box[0];
+    chk = box.prop('checked');
+    if ((chk && !hit) || (!chk && hit)) {
       box.prop('checked',false);
       map.removeLayer(overlayMaps[name]);
-    } else {
+    } else if ((chk && hit) || (!chk && !hit)){
       box.prop('checked',true);
       map.addLayer(overlayMaps[name]);
     }
@@ -129,23 +130,29 @@ function initMap () {
     name = $(this).find('td:last').text();
     hit = e.target == box[0];
     chk = box.prop('checked');
-    if ((chk && !hit) || (!chk && hit)) {
+    if (chk && !hit) {
       box.prop('checked',false);
       map.removeLayer(overlayMaps[name]);
     } else if ((chk && hit) || (!chk && !hit)){
-      $('.vectorlegend .choropleths .input').prop('checked',false)
-      box.prop('checked',true);
-      if (map.hasLayer(overlayMaps['Country Data'])) {
-        map.removeLayer(overlayMaps['Country Data']);
-        $('.vectorlegend .overlays input#checkbox_country_data').prop('checked',false);
-      }
-      $.each(Object.keys(choropleths),function(i,n){
-        if (map.hasLayer(overlayMaps[n])) {
-          map.removeLayer(overlayMaps[n]);
+      if (box.attr('id') == choro_last && hit) {
+        box.prop('checked',false);
+        map.removeLayer(overlayMaps[name]);
+      } else {
+        $('.vectorlegend .choropleths .input').prop('checked',false)
+        box.prop('checked',true);
+        if (map.hasLayer(overlayMaps['Country Data'])) {
+          map.removeLayer(overlayMaps['Country Data']);
+          $('.vectorlegend .overlays input#checkbox_country_data').prop('checked',false);
         }
-      });
-      map.addLayer(overlayMaps[name]);
+        $.each(Object.keys(choropleths),function(i,n){
+          if (map.hasLayer(overlayMaps[n])) {
+            map.removeLayer(overlayMaps[n]);
+          }
+        });
+        map.addLayer(overlayMaps[name]);
+      }
     }
+    choro_last = box.attr('id');
   });
 
   var zoomControl = L.control.zoom({position:'topright'});
@@ -223,6 +230,7 @@ function initMap () {
   });
   $('body').on('mouseleave',function(e){
     if (dragging) { dragEnd(); }
+    $attrSlide = false;
   });
   $('body').on('mouseup',function(e){
     if (dragging) { dragEnd(); }
@@ -307,26 +315,32 @@ function initMap () {
     singleSize(selector);
   })
   
+  $('.leaflet-control-attribution').on('mouseenter',function(e){
+    $attrSlide = true;
+    slideAttribution();
+  })
+  $('.leaflet-control-attribution').on('mouseleave',function(e){
+    $attrSlide = false;
+    $(this).css('text-indent',0);
+  })
+  
   window.onresize = onResize; 
-
-  $(document).ready(function(){
-    onResize();
-    dmns = dmns.distinct();
-    if (dmns.length > 0) {
-      $.each(dmns,function(i,n){
-        $(".c_"+n).css("border","2px solid #"+n);
-        $(".c_"+n).css("background-color","#"+n);
-      })
-    }
-
-    $.each(markerc,function(k,v){
-      m = $(".id_"+k);
-      m.attr('src',"/")
-    })
-  });
 
   updateInfo(1,disclaimer);
   markerSize();
+}
+
+function slideAttribution () {
+  return
+  c = $('.leaflet-control-attribution');
+  console.log(c.innerWidth()+" "+c.width());
+  if (c.innerWidth() > c.width() && $attrSlide ) {
+    c.css('width',(c.width()+11)+'px');
+    setTimeout(125,slideAttribution());
+  } else {
+    $attrSlide = false;
+    c.css('width','100%');
+  }
 }
 
 function showMarkers(markers) {
@@ -404,6 +418,21 @@ function showMarkers(markers) {
     //oms.addMarker(marker);
     arrr.push(mark.id);
     all ++;
+  });
+  $(document).ready(function(){
+    onResize();
+    dmns = dmns.distinct();
+    if (dmns.length > 0) {
+      $.each(dmns,function(i,n){
+        $(".c_"+n).css("border","2px solid #"+n);
+        $(".c_"+n).css("background-color","#"+n);
+      })
+    }
+
+    $.each(markerc,function(k,v){
+      m = $(".id_"+k);
+      m.attr('src',"/")
+    })
   });
 }
 
@@ -787,7 +816,7 @@ function addOverlay(name,lstyle,shown){
     html += "></input></td><td class='icon'><div class='chorostyle clearfix'>"
     clength = Object.keys(choropleths[name]).length;
     $.each(choropleths[name],function(k,v){
-      html += "<div style='width:"+(16/clength)+"px;background-color:"+v.color+"'>&nbsp;</div>"
+      html += "<div style='width:"+(16/clength)+"px;background-color:#"+v.color.replace(/^#/,'')+"'>&nbsp;</div>";
     });
     html += "</div></td><td>"+name+"</td></tr>"
     $('#legendpane .vectorlegend table.choropleths tbody').append(html);

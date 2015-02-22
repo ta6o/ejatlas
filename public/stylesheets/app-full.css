@@ -5858,10 +5858,10 @@ ul.sidelink li.active {
 #bottompane {
   background: transparent;
   bottom: 0px;
-  left: 0px;
+  right: 0px;
   height: 160px;
-  position: fixed;
-  width: 100%;
+  position: absolute;
+  width: 40%;
   z-index: 1;
 }
 .wide {
@@ -6065,6 +6065,14 @@ ul.sidelink li.active {
 }
 .leaflet-control-attribution {
   margin: 0 -12px 0 0 !important;
+  max-height: 16px;
+  cursor: default;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .navbar {
   min-height: 0px !important;

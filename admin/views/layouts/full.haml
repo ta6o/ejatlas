@@ -109,8 +109,8 @@
         =yield_content :outer
         .container-full
           #map.map.leftpane.noselect
-          #bottompane.bottompane
-            .inner=yield_content :bottom
+            #bottompane.bottompane
+              .inner=yield_content :bottom
           .resize#resize.noselect{:title=>'Drag to resize info pane'}
             %span.glyphicon.glyphicon-forward{:title=>'Toggle info pane'}
           #rightpane.rightpane.graybg

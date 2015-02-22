@@ -44,7 +44,6 @@
     .horipane
       .title.active Description
       .content
-        %br/
         -if @feature
           .clearfix#disclaimer
             -if @maptitle.length > 0
@@ -52,28 +51,22 @@
             %p.description= @description.gsub("\n","<br />").html_safe
         -else
           %p.description= @description.gsub("\n","<br />").html_safe
-        %br/
               
   .horipane
     .title.active Info
     .content
-      %br/
       #infopane
-      %br/
 
   .horipane
     .title.active{:class=> @feature ? "" : "active"} Legend
     .content
-      %br/
       #legendpane
         .legend.noselect.block{'data-width'=>220}
-      %br/
 
   -if @load and @load.length > 0
     .horipane
       .title.active Cases
       .content
-        %br/
         -if @feature
           .clearfix#disclaimer
             =(@load || "").html_safe
@@ -85,4 +78,3 @@
             =@load.html_safe
           .clearfix
             %h2.pull-left#name
-        %br/
