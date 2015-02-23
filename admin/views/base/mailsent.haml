@@ -1,11 +1,5 @@
 -#coding: utf-8
-.tagline
-  .ejolt-logo
-  %p= $pagedesc
--2.times do
-  %br/
-
-%h2= "Hello,  #{current_account.name.split(/\s/)[0]}!"
+%h2= "Hello,  #{@account ? @account.name.split(/\s/)[0 : "friend"]}!"
 %p 
   We have sent you the email with the link to confirm your account. Please check your inbox.
 

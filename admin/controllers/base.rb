@@ -47,6 +47,7 @@ Admin.controller do
 
   get :mailsent do
     @name = "You'll receive an email..."   
+    @account = current_account || nil
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
     render "base/mailsent", :layout => @layout
   end

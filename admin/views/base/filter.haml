@@ -313,7 +313,7 @@
               markers.push(v["id"]);
             });
             infoToUpdate = markerCount+" cases documented."
-            map ? showMarkers(markers,infoToUpdate) : "";
+            typeof map != 'undefined' ? showMarkers(markers,infoToUpdate) : "";
           } else {
             filterdesc = "";
             single = [];
@@ -362,7 +362,7 @@
               //console.log('case +-')
               query = mingle
             }
-            if (map) {
+            if (typeof map != "undefined") {
               if (!update) {
                 queryhash['filter'] = filter
                 search = []
