@@ -46,7 +46,7 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
-    @features = JSON.parse(@featured.features).delete("") - $attrhash.values  
+    @features = JSON.parse(@featured.features) - $attrhash.values  
     @contained = {}
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
