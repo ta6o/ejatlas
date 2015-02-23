@@ -110,6 +110,7 @@ Admin.controllers :featureds do
 
   get :export, :with => :id do
     featured = Featured.find(params['id'])
+    redirect to '/featureds' unless featured
     stack = Admin.filter(featured.filter || "")
     tags = (featured.filter || "").split('/').grep(/^tag~/)
     tags = tags[0].split('~')[-1].split(',') if tags.any?
@@ -190,7 +191,6 @@ Admin.controllers :featureds do
         end
         nfields += 1
       end
-      p tags
       tags.each do |tag|
         header << tag.slug if index == 0
         conf.tags.include?(tag) ? t = 1 : t = ""

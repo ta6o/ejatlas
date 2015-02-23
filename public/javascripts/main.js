@@ -3438,37 +3438,20 @@ function initMap () {
   
   window.onresize = onResize; 
 
-  $(document).ready(function(){
-    onResize();
-    dmns = dmns.distinct();
-    if (dmns.length > 0) {
-      $.each(dmns,function(i,n){
-        $(".c_"+n).css("border","2px solid #"+n);
-        $(".c_"+n).css("background-color","#"+n);
-      })
-    }
-
-    $.each(markerc,function(k,v){
-      m = $(".id_"+k);
-      m.attr('src',"/")
-    })
-  });
-
   updateInfo(1,disclaimer);
   markerSize();
 }
 
 function slideAttribution () {
-  c = $('.leaflet-control-attribution *');
-  console.log(parseInt(c.css('margin-left')));
-  console.log(c.innerWidth());
-  console.log(c.innerWidth() > c.width && $attrSlide && parseInt(c.css('margin-left')) > c.innerWidth() * -2);
-  if (c.innerWidth > c.width && $attrSlide && parseInt(c.css('margin-left')) > c.innerWidth() * -2) {
-    c.css('margin-left',parseInt(c.css('margin-left'))-1);
-    setTimeout(125,slideAttribution())
+  return
+  c = $('.leaflet-control-attribution');
+  console.log(c.innerWidth()+" "+c.width());
+  if (c.innerWidth() > c.width() && $attrSlide ) {
+    c.css('width',(c.width()+11)+'px');
+    setTimeout(125,slideAttribution());
   } else {
     $attrSlide = false;
-    c.css('margin-left',0);
+    c.css('width','100%');
   }
 }
 
@@ -3547,6 +3530,21 @@ function showMarkers(markers) {
     //oms.addMarker(marker);
     arrr.push(mark.id);
     all ++;
+  });
+  $(document).ready(function(){
+    onResize();
+    dmns = dmns.distinct();
+    if (dmns.length > 0) {
+      $.each(dmns,function(i,n){
+        $(".c_"+n).css("border","2px solid #"+n);
+        $(".c_"+n).css("background-color","#"+n);
+      })
+    }
+
+    $.each(markerc,function(k,v){
+      m = $(".id_"+k);
+      m.attr('src',"/")
+    })
   });
 }
 
@@ -3794,7 +3792,7 @@ function style(feature) {
     weight: 1,
     opacity: 1,
     color: 'white',
-    fillOpacity: 0.6
+    fillOpacity: 0.8
   };
 }
 
@@ -3930,7 +3928,7 @@ function addOverlay(name,lstyle,shown){
     html += "></input></td><td class='icon'><div class='chorostyle clearfix'>"
     clength = Object.keys(choropleths[name]).length;
     $.each(choropleths[name],function(k,v){
-      html += "<div style='width:"+(16/clength)+"px;background-color:"+v.color+"'>&nbsp;</div>"
+      html += "<div style='width:"+(16/clength)+"px;background-color:#"+v.color.replace(/^#/,'')+"'>&nbsp;</div>";
     });
     html += "</div></td><td>"+name+"</td></tr>"
     $('#legendpane .vectorlegend table.choropleths tbody').append(html);

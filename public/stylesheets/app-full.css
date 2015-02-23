@@ -5050,7 +5050,7 @@ footer {
   z-index: 3;
   font-size: 0.75em;
   position: fixed;
-  bottom: 12px;
+  bottom: 24px;
 }
 footer img {
   max-height: 21px;
@@ -5389,6 +5389,9 @@ ul.sidelink li.active {
 }
 .horipane ul li {
   list-style-type: none !important;
+}
+.horipane .content {
+  padding: 8px 0;
 }
 .horipane .content table {
   width: 100%;

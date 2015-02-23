@@ -72,7 +72,7 @@ function initMap () {
     loadJS(v["vector_datum"]["url"])
   });
 
-  if (Object.keys(baselayers).length > 0){ 
+  if (Object.keys(baselayers).length > 1){ 
     lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
   }
 
@@ -680,7 +680,7 @@ function style(feature) {
     weight: 1,
     opacity: 1,
     color: 'white',
-    fillOpacity: 0.6
+    fillOpacity: 0.8
   };
 }
 
