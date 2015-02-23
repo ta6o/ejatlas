@@ -267,6 +267,7 @@
                     %a{:target=>'_blank',:href=>"/conflict/#{conflict.slug}"} View Conflict
                 -@features.each do |feat|
                   -next if ($attrhash.values).include? feat
+                  -next unless feat
                   -cfeats = JSON.parse(conflict.features || "{}")
                   .row
                     .col-xs-2

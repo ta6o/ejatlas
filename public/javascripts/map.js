@@ -667,6 +667,7 @@ function style(feature) {
     chname = feature.properties.pn;
     category = feature.properties.category;
   }
+  console.log(category)
   if (category) {
     dense = choropleths[chname][category]['color'];
   } else {
