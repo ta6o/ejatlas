@@ -3184,7 +3184,7 @@ function initMap () {
     loadJS(v["vector_datum"]["url"])
   });
 
-  if (Object.keys(baselayers).length > 0){ 
+  if (Object.keys(baselayers).length > 1){ 
     lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
   }
 
@@ -3779,6 +3779,7 @@ function style(feature) {
     chname = feature.properties.pn;
     category = feature.properties.category;
   }
+  console.log(category)
   if (category) {
     dense = choropleths[chname][category]['color'];
   } else {
