@@ -202,6 +202,7 @@ class AsyncTask
 
   def setcache params
     ca = Cached.new unless ca = Cached.first
+    client = Elasticsearch::Client.new log: false
 
     if params["conflicts"] == "on"
       puts "Updating conflicts..."
@@ -218,14 +219,15 @@ class AsyncTask
           c.save
           if c.approval_status == "approved"
             open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
-            open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
+            #open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
+            client.index index: 'atlas', type: 'conflict', id: c.id, body: c.elastic
           end
         end
       end
       print "\rDone.         "
       puts
       ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
-      ca.conflicts_json = "["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
+      ca.conflicts_json = ""#"["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
     end
 
     if params["countries"] == "on"
@@ -338,23 +340,42 @@ class AsyncTask
     if params["filter"] == "on"
       puts "Updating filter..."
       filterdata = {}
-      filterdata[:cntry] = Country.order(:name).select('name, id')
-      filterdata[:comp] = Company.order(:name).select('name, id')
-      filterdata[:success] = ['Success', 'Not sure', 'Failure']
-      filterdata[:poptype] = ['Unknown','Urban','Semi-urban','Rural']
-      filterdata[:category] = Category.order(:name).select('name, id')
-      filterdata[:type] = Type.order(:name).select('name, id')
-      filterdata[:intensity] = Status.order(:name).select('name, id')
-      filterdata[:envi] = EnvImpact.order(:name).select('name, id')
-      filterdata[:hlti] = HltImpact.order(:name).select('name, id')
-      filterdata[:seci] = SecImpact.order(:name).select('name, id')
-      filterdata[:mobgroup] =  MobilizingGroup.order(:name).select('name, id')
-      filterdata[:mobform] =  MobilizingForm.order(:name).select('name, id')
-      filterdata[:product] =  Product.order(:name).select('name, id')
-      filterdata[:pstatus] =  ProjectStatus.order(:name).select('name, id')
-      filterdata[:stage] =  Reaction.order(:name).select('name, id')
-      filterdata[:outcome] =  ConflictEvent.order(:name).select('name, id')
-      filterdata[:tag] =  Tag.order(:name).select('name, id')
+
+      filterdata["basic_data"] = {}
+      filterdata["basic_data"]["success_level"] = {:content=>[{0=>'Success'},{1=>'Not sure'},{2=>'Failure'}]}
+      filterdata["basic_data"]["population_type"] = {:content=>[{0=>'Unknown'},{1=>'Urban'},{2=>'Semi-urban'},{3=>'Rural'}]}
+      filterdata["basic_data"]["country"] = {:content=>1,:name=>"country_id"}
+
+      filterdata["category"] = {}
+      filterdata["category"]["category"] = {:content=>Category.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"category_id"}
+      filterdata["category"]["type"] = {:content=>Type.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"types"}
+      
+      filterdata["project"] = {}
+      filterdata["project"]["commodity"] = {:content=>Product.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"products"}
+      filterdata["project"]["level_of_investment"] = {:content=>"0:1000000000",:name=>"investment_sum"}
+      filterdata["project"]["company"] = {:content=>1,:name=>"companies"}
+      filterdata["project"]["country_of_company"] = {:content=>1,:name=>"country"}
+      filterdata["project"]["financial_institution"] = {:content=>1,:name=>"supporters"}
+      
+      filterdata["conflict"] = {}
+      filterdata["conflict"]["start_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"start_datestamp"}
+      filterdata["conflict"]["end_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"end_datestamp"}
+      filterdata["conflict"]["intensity"] = {:content=>Status.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"status_id"}
+      filterdata["conflict"]["reaction_stage"] =  {:content=>Reaction.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"reaction_id"}
+
+      filterdata["resistance"] = {}
+      filterdata["resistance"]["mobilizing_groups"] =  {:content=>MobilizingGroup.order(:name).select('name, id').map{|c|{c.id=>c.name}}}
+      filterdata["resistance"]["mobilizing_forms"] =  {:content=>MobilizingForm.order(:name).select('name, id').map{|c|{c.id=>c.name}}}
+
+      filterdata["impacts"] = {}
+      filterdata["impacts"]["environmental_impacts"] = {:content=>EnvImpact.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"env_impacts"}
+      filterdata["impacts"]["health_impacts"] = {:content=>HltImpact.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"hlt_impacts"}
+      filterdata["impacts"]["socio-economical_impacts"] = {:content=>SecImpact.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"sec_impacts"}
+
+      filterdata["outcomes"] = {}
+      filterdata["outcomes"]["project_status"] =  {:content=>ProjectStatus.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"project_status_id"}
+      filterdata["outcomes"]["outcome"] =  {:content=>ConflictEvent.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"conflict_events"}
+
       ca.filterdata = filterdata.to_json
     end
 

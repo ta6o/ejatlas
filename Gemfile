@@ -22,6 +22,7 @@ gem 'delayed_job'
 gem 'delayed_job_active_record'
 gem 'gdal'
 gem 'unidecoder'
+gem 'elasticsearch'
 
 gem 'padrino', '0.12.2'
 

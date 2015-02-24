@@ -188,10 +188,29 @@ class Conflict < ActiveRecord::Base
     return @json.to_json
   end
 
-  def print
-    #puts
+  def elastic
+    result = {}
     self.attributes.each do |k,v|
-      next if v.nil? or v == ""
+      next if v.nil? or v == "" or ['marker','table','json','notes'].include? k
+      result[k] = v
+    end
+    self.methods.grep(/^validate_associated_records_for_.*$/).each do |m| 
+      a = m.to_s.split("validate_associated_records_for_")[1]
+      next if a[0..1] == "c_" or ['legislations','weblinks','medialinks','references','documents','images'].include? a
+      assoc = eval "self."+a
+      next unless assoc.any?
+      result[a] = []
+      assoc.each do |ass|
+        result[a] << ass.id
+      end
+    end
+    result
+  end
+
+  def print
+    self.attributes.each do |k,v|
+      next if v.nil? or v == "" or ['marker','table','json'].include? k
+      puts
       if k.to_s[-3..-1] == "_id" and k != "status_id"
         begin
           ass = eval "self."+k.to_s[0...-3]
@@ -199,37 +218,37 @@ class Conflict < ActiveRecord::Base
         end
         next unless ass
         if ass.name
-          #puts (k.to_s[0...-3]+": ")+ass.name
+          puts (k.to_s[0...-3]+": ")+ass.name
         else
-          #puts (k.to_s[0...-3]+": ")+ass.attributes
+          puts (k.to_s[0...-3]+": ")+ass.attributes
         end
       elsif k == "status_id"
-        #puts (k.to_s[0...-3]+": ")+Status.find(v).name
+        puts (k.to_s[0...-3]+": ")+Status.find(v).name
       else
-        #puts (k.to_s+": ")+v.to_s
+        puts (k.to_s+": ")+v.to_s
       end
     end
     self.methods.grep(/^validate_associated_records_for_.*$/).each do |m| 
       a = m.to_s.split("validate_associated_records_for_")[1]
-      #puts a
       next if a[0..1] == "c_"
       assoc = eval "self."+a
       next unless assoc.any?
-      #puts a
+      puts
+      puts a
       assoc.each do |a|
         at = ""
         a.attributes.each do |k,v|
-          next if v.nil? or v == "" or k.to_s == "version_id"
+          next if v.nil? or v == "" or k.to_s == "version_id" or k.match /^conflicts_/
           if k.to_s == "id"
             at += ("  "+k.to_s+": ")+v.to_s 
           else
             at += ("  "+k.to_s+": ")+v.to_s 
           end
         end
-        #puts at
+        puts at
       end
     end
-    #puts
+    nil
   end
 
   def get_name(val)

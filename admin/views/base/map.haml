@@ -3,8 +3,8 @@
   :javascript
     img = new Image(330,30);
     img.src = 'https://file.ejatlas.org/static/ikon.png';
-    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
-    var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
+    //var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
+    //var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
     var vectorinfo = [];
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";
@@ -16,8 +16,8 @@
     window.onload = onLoad;
     function onLoad() {
       if (typeof initMap === 'function' ) {
-        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
-        mapFit();
+        //updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+        //mapFit();
       } else {
         setTimeout(onLoad,10);
       }
@@ -140,9 +140,9 @@
                     %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
     .horipane#filter-container
-      .title Filter
-      .content{:style=>'display:none;'}
-        #filter-row.block.graybg{'data-width'=>600}
+      .title.active Filter
+      .content
+        #filter-row.block{'data-width'=>600}
           #filter= @filter
 
   -else

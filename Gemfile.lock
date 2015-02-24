@@ -25,7 +25,17 @@ GEM
     delayed_job_active_record (4.0.1)
       activerecord (>= 3.0, < 4.2)
       delayed_job (>= 3.0, < 4.1)
+    elasticsearch (1.0.6)
+      elasticsearch-api (= 1.0.6)
+      elasticsearch-transport (= 1.0.6)
+    elasticsearch-api (1.0.6)
+      multi_json
+    elasticsearch-transport (1.0.6)
+      faraday
+      multi_json
     excon (0.33.0)
+    faraday (0.9.1)
+      multipart-post (>= 1.2, < 3)
     gdal (0.0.5)
     haml (4.0.5)
       tilt
@@ -43,6 +53,7 @@ GEM
     mime-types (1.25.1)
     moneta (0.7.20)
     multi_json (1.9.3)
+    multipart-post (2.0.0)
     padrino (0.12.2)
       padrino-admin (= 0.12.2)
       padrino-cache (= 0.12.2)
@@ -119,6 +130,7 @@ DEPENDENCIES
   carrierwave
   delayed_job
   delayed_job_active_record
+  elasticsearch
   gdal
   haml
   mandrill-api

@@ -900,5 +900,7 @@ function toSlug(url) {
   return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/^\d+/,'').replace(/\s+/g,'_'));
 }
 
-initMap();
-showMarkers(markerinfo);
+if (typeof markerinfo != 'undefined') {
+  initMap();
+  showMarkers(markerinfo);
+}
