@@ -7,7 +7,7 @@
           .ready
             %strong Drag the items from the left side below.
         .body
-          .root.dropbox.and{"data-section"=>"box","data-value"=>'or'}
+          .root.dropbox.and{"data-section"=>"box","data-value"=>'and'}
             %icon.glyphicon.glyphicon-chevron-down.op
 
       .col-sm-4
@@ -45,9 +45,9 @@
       %ul
         %li{:style=>'color:white;font-weight:bold;text-align:center;'}
           %div.idrag
-            .dropbox.or{"data-section"=>"box","data-value"=>'or'} OR
+            .dropbox.and{"data-section"=>"box","data-value"=>'and'} OR
           %div.idrag
-            .dropbox.and{"data-section"=>"box","data-value"=>'and'} AND
+            .dropbox.or{"data-section"=>"box","data-value"=>'or'} AND
           %div.idrag
             .dropbox.not{"data-section"=>"box","data-value"=>'not'} NOT
     %form#filterform{:method=>'POST',:action=>"/filter"}
@@ -64,6 +64,12 @@
         placeholder: "placeholder",
         containment: ".root.dropbox",
         forceHelperSize: true,
+        cursorAt: { left: 0 },
+        start: function (e, t) {
+          if (t.item.prop('tagName') == "DIV") { helper = t.helper.find('div'); } 
+          else if (t.item.prop('tagName') == "SPAN") { helper = t.item.clone()}
+          $(t.placeholder).css('background',helper.css('background'));
+        },
         stop: function (e, t) {
           $(t.item).replaceWith(createContainer(t.item));
           $(".dropbox").sortable(sortHash).disableSelection();
@@ -102,10 +108,10 @@
         $(this).append(div);
       });
       $(".root.dropbox").on("mouseleave", "icon.glyphicon.op", function(e) { $(this).find('div').detach(); });
-      $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().detach() });
-      $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and') });
-      $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or') });
-      $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not') });
+      $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().parent().detach() });
+      $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and'); p.attr('data-value','and'); });
+      $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or'); p.attr('data-value','or'); });
+      $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
       $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
 
     } else {
@@ -117,7 +123,7 @@
     if (that.prop('tagName')=='SPAN') {
       $(that).find('strong').detach()
       text = $(that).text();
-      return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="field" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong>'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text.length > 18 ? text.substr(0,16)+"..." : text)+'</span>');
+      return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="field" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text)+'</span>');
     } else if ($(that).prop('tagName')=='DIV') {
       if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
         that = $(that).find('div')
@@ -146,8 +152,9 @@
         }
       });
     }
-    var root = $('<query><filtered><filter><bool></bool></filter></filtered></query>')
-    dive($('.root.dropbox'),$('<must></must>').appendTo($(root).find('bool')));
+    var root = $('<query><filtered><filter><bool><must><bool></bool><term><approval_status>"approved"</approval_status></term></must></bool></filter></filtered></query>')
+    log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
+    dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find('bool must bool')));
     $('form#filterform textarea').val(root.html());
     console.log(root.html())
     $('form#filterform').submit();

@@ -451,7 +451,6 @@ Admin.controller do
     puts JSON.pretty_generate filter
     filter = Admin.elasticify filter
     filter = Admin.cleanup filter
-    filter["filtered"]["filter"]["bool"]["must"] << {"term" => {"approval_status" => "approved"}}
     puts JSON.pretty_generate filter
     print resp = client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[:id,:name,:slug],query:filter})['hits']['hits'].map{|i|i['_id'].to_i}
   end
