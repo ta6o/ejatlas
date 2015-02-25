@@ -375,6 +375,87 @@ Admin.controller do
     redirect to 'jobs'
   end
 
+  def self.elasticify obj
+    if obj.respond_to? :to_i
+      obj.to_i
+    elsif obj.is_a? Array
+      obj.map{|item| Admin.elasticify item}
+    elsif obj.is_a? Hash
+      terms = {}
+      obj.each do |key,val|
+        if val.is_a? Array
+          if key == 'bool'
+            bool = {'should'=>[],'must'=>[],'must_not'=>[]}
+            obj['bool'].each do |arr|
+              arr.each do |k,v| bool[k] << v end
+            end
+            bool.delete_if {|k,v| v == []}
+            obj['bool'] = bool
+          elsif key == 'term'
+            val.each do |it|
+              terms[it.keys.first] = [] unless terms.has_key? it.keys.first
+              terms[it.keys.first] << it.values.first
+            end
+            obj.delete('term')
+          end
+        end
+        if val.is_a? Hash and val.has_key?('bool') and key != 'filter'
+          arr = []
+          val.each do |k,v|
+            arr << {k => v}
+          end
+          obj[key] = arr
+        end
+      end
+      if terms == {}
+        obj.merge(obj){|k,v| Admin.elasticify v}
+      else
+        val = []
+        obj.each do |k,v|
+          val << {k=>v}
+        end
+        terms.each do |k,v| 
+          v = v[0] if v.length == 1
+          val << {'term'=>{k=>v}}
+        end
+        val.map{|item| Admin.elasticify item}
+      end
+    else
+      obj
+    end
+  end
+
+  def self.cleanup obj
+    if obj.respond_to? :to_i
+      obj.to_i
+    elsif obj.is_a? Array
+      arr = []
+      obj.each do |item|
+        if item.is_a? Array
+          item.each {|i| arr << i}
+        else
+          arr << item
+        end
+      end
+      arr.map {|item| Admin.cleanup item }
+    elsif obj.is_a? Hash
+      obj.merge( obj ) {|k, val| Admin.cleanup val }
+    else
+      obj
+    end
+  end
+
+  post :filter do
+    client = Elasticsearch::Client.new log:false
+    filter = (Hash.from_xml(params[:filter]))
+    puts JSON.pretty_generate filter
+    filter = Admin.elasticify filter
+    filter = Admin.cleanup filter
+    filter["filtered"]["filter"]["bool"]["must"] << {"term" => {"approval_status" => "approved"}}
+    puts JSON.pretty_generate filter
+    print resp = client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[:id,:name,:slug],query:filter})['hits']['hits'].map{|i|i['_id'].to_i}
+  end
+
   post :forward do
     require 'mandrill'
     require 'pp'

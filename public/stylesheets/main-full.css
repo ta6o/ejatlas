@@ -5667,9 +5667,9 @@ ul.sidelink li.active {
 #conflict_filter .dropbox {
   border-radius: 0 16px 16px 16px;
   border: 1px solid gray;
-  margin: 0 0 8px;
-  padding: 8px 8px 0 9px;
-  width: 100%;
+  margin: 8px 2% 8px 2%;
+  padding-left: 12px;
+  width: 96%;
   min-height: 40px;
   overflow: visible;
   position: relative;
@@ -5693,29 +5693,82 @@ ul.sidelink li.active {
 #conflict_filter .dropbox.root {
   min-height: 144px !important;
   margin-right: 12px;
+  padding: 8px 2%;
+  cursor: default;
+}
+#conflict_filter .dropbox.root > div > .dropbox {
+  margin: 8px 0;
+  width: 100%;
 }
 #conflict_filter .dropbox icon.glyphicon.op {
   font-size: 13px;
-  position: relative;
-  top: -9px;
-  left: -8px;
+  position: absolute;
+  top: 2px;
+  left: 4px;
   cursor: pointer;
   color: #ddd;
   margin-right: -4px;
+  width: 13px;
+  z-index: 10;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop {
+  z-index: 12;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div {
+  height: 6px;
+  width: 14px;
+  margin-bottom: 2px;
+  border-radius: 3px;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div.or {
+  background: #84be64;
+  border: 2px solid #84be64;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div.and {
+  background: #0380a5;
+  border: 2px solid #0380a5;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div.not {
+  background: #d9534f;
+  border: 2px solid #d9534f;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div:hover {
+  border: 2px solid #DDD;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > icon {
+  color: #000;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > icon:hover {
+  color: #DDD;
+}
+#conflict_filter .dropbox > span {
+  margin-left: 8px;
 }
 #conflict_filter .options .data {
   display: none;
 }
 #conflict_filter .options .data h4 {
   font-weight: bold;
+  text-align: right;
+}
+#conflict_filter .options .data ul li:before,
+#conflict_filter .options .data ul li:after {
+  content: " ";
+  display: table;
+}
+#conflict_filter .options .data ul li:after {
+  clear: both;
+}
+#conflict_filter .options .data ul li span {
+  float: right;
 }
 #conflict_filter .place-op {
   background: #DDD;
   border-radius: 0 16px 16px 16px;
   border: 1px solid black;
-  margin: 0 0 8px;
-  padding: 8px 8px 0 9px;
-  width: 100%;
+  margin: 8px 2% 8px 2%;
+  padding: 0;
+  width: 96%;
   height: 40px;
   display: inline-block;
   zoom: 1;
@@ -5727,7 +5780,7 @@ ul.sidelink li.active {
   border: 1px solid gray;
   padding: 3px 8px 5px;
   line-height: 18px;
-  margin: 0 8px 8px 0;
+  margin: 4px 8px 0 0;
   display: inline-block;
   cursor: move;
   -webkit-box-shadow: -2px -7px 8px -4px rgba(0, 0, 0, 0.3) inset;

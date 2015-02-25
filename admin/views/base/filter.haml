@@ -7,7 +7,8 @@
           .ready
             %strong Drag the items from the left side below.
         .body
-          .root.dropbox.or{"data-section"=>"box","data-value"=>'or'}
+          .root.dropbox.and{"data-section"=>"box","data-value"=>'or'}
+            %icon.glyphicon.glyphicon-chevron-down.op
 
       .col-sm-4
         .relative.options
@@ -49,12 +50,29 @@
             .dropbox.and{"data-section"=>"box","data-value"=>'and'} AND
           %div.idrag
             .dropbox.not{"data-section"=>"box","data-value"=>'not'} NOT
+    %form#filterform{:method=>'POST',:action=>"/filter"}
+      %textarea{:name=>'filter'}
 
 
 :javascript
   window.onload = onFilterLoad;
   function onFilterLoad() {
-    if (typeof createContainer === 'function' ) {
+    if (typeof createContainer === 'function' && typeof $().sortable() === 'object') {
+      var sortHash = {
+        hoverClass: 'drop-hover',
+        connectWith: ".dropbox",
+        placeholder: "placeholder",
+        containment: ".root.dropbox",
+        forceHelperSize: true,
+        stop: function (e, t) {
+          $(t.item).replaceWith(createContainer(t.item));
+          $(".dropbox").sortable(sortHash).disableSelection();
+          $.each($('.canvas .dropbox'), function(i,it) {
+            $(it).prepend($(it).children('icon.glyphicon.op'));
+          });
+        }
+      }
+
       $('.show-filter-content').on('click',function (e) {
         $('.show-filter-content').css('font-weight','normal');
         $(this).css('font-weight','bold');
@@ -64,70 +82,31 @@
       })
 
       $('.drag, .idrag').draggable({
-        connectToSortable: ".dropbox",
-        placeholder: 'place-ag',
-        revert: 'invalid',
-        helper: 'clone',
+        connectToSortable: ".root.dropbox",
+        placeholder: "placeholder",
+        revert: "invalid",
+        helper: "clone",
         containment: ".canvas",
-        hoverClass: 'drag-hover',
-        cursorAt: { left: 0 }
+        cursorAt: { left: 0 },
       }).disableSelection();
 
-      $('.canvas .dropbox').sortable({
-        hoverClass: 'drop-hover',
-        connectWith: ".dropbox",
-        placeholder: 'place-op',
-        containment: ".canvas",
-        forceHelperSize: true,
-        change: function (e, t) {
-          if (t.item.prop('tagName') == "DIV") { box = true; } 
-          else if (t.item.prop('tagName') == "SPAN") { box = false; }
-          console.log("box: "+box);
-          $.each($('.place-op, .place-ag'),function(i,el) { 
-            console.log($(el)[0]);
-            console.log($(t.placeholder)[0]);
-            console.log($(e)[0] == t.placeholder[0]);
-            if ($(el)[0] == t.placeholder[0]) {
-              if (box) {w = '100%'} else {w = '108px;'}
-              $(el).css('width',w);
-            } else {
-              $(el).appendTo($('body')).addClass('toRemove');
-            }
-          });
-        },
-        start: function (e, t) {
-          if (t.item.prop('tagName') == "DIV") { helper = t.helper.find('div'); } 
-          else if (t.item.prop('tagName') == "SPAN") { helper = t.helper; }
-          $(t.placeholder).css('background',helper.css('background'));
-        },
-        beforeStop: function (e, t) {
-          console.log('helper')
-          console.log(t.helper)
-          console.log('placeholder')
-          console.log(t.placeholder)
-          console.log('parent')
-          console.log(t.placeholder.parent())
-          t.item.replaceWith(createContainer(t.item));
-          $(".dropbox").sortable({
-            hoverClass: 'drop-hover',
-            connectWith: ".dropbox",
-            placeholder: 'place-op',
-            containment: ".canvas",
-            forceHelperSize: true,
-          }).disableSelection();
-        },
-        stop: function (e, t) {
-          console.log('item')
-          console.log(t.item)
-          $('.toRemove').detach();
-          $('.canvas .root.dropbox .idrag').detach();
-          $.each($('.canvas .dropbox'), function(i,it) {
-            $(it).prepend($(it).children('icon.glyphicon.op'));
-          });
-        }
-      }).disableSelection();
+      $('.dropbox').sortable(sortHash).disableSelection();
 
-      $("icon.glyphicon").sortable("disable");
+      $(".root.dropbox").on("mouseenter", "icon.glyphicon.op", function(e) { 
+        div = $('<div class="drop"></div>');
+        p = $(this).parent()
+        $.each(['and','or','not'],function(i,el){
+          if (!p.hasClass(el)) {div.append($('<div class="'+el+'">&nbsp;</div>'));}
+        });
+        if (!p.hasClass('root')) {div.append($('<icon class="glyphicon glyphicon-remove"></icon>'));}
+        $(this).append(div);
+      });
+      $(".root.dropbox").on("mouseleave", "icon.glyphicon.op", function(e) { $(this).find('div').detach(); });
+      $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().detach() });
+      $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and') });
+      $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or') });
+      $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not') });
+      $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
 
     } else {
       setTimeout(onFilterLoad,10);
@@ -136,10 +115,40 @@
   var createContainer = function (that) {
     console.log(that.prop('tagName'));
     if (that.prop('tagName')=='SPAN') {
-      return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-section="field" class="drag graybg" ><icon class="glyphicon glyphicon-chevron-down ag"></icon>'+($(that).text().length > 18 ? $(that).text().substr(0,16)+"..." : $(that).text())+'</span>');
+      $(that).find('strong').detach()
+      text = $(that).text();
+      return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="field" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong>'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text.length > 18 ? text.substr(0,16)+"..." : text)+'</span>');
     } else if ($(that).prop('tagName')=='DIV') {
-      that = $(that).find('div')
-      return $('<div><div data-value="'+that.attr('data-value')+'" data-section="box" class="dropbox '+that.attr('data-value')+'"><icon class="glyphicon glyphicon-chevron-down op"></icon></div></div>');
+      if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
+        that = $(that).find('div')
+        return $('<div><div data-value="'+that.attr('data-value')+'" data-section="box" class="dropbox '+that.attr('data-value')+'"><icon class="glyphicon glyphicon-chevron-down op"></icon></div></div>');
+      } else {
+        return $(that).clone()
+      }
     }
   };
 
+  function serializeFilter(){
+    function dive(el,ro){
+      $.each(el.children().not('icon'),function(i,e){
+        e = $(e);
+        if (e.prop('tagName')=="SPAN") {
+          key = e.attr('data-name');
+          val = e.attr('data-value');
+          $('<'+key+'>'+val+'</'+key+'>').appendTo($('<term></term>').appendTo(ro));
+        } else if (e.prop('tagName')=="DIV") {
+          e = $(e.find('div'))
+          if (e.find('div, span').length == 0) return true
+          filter = {"or":"should","and":"must","not":"must_not"}[e.attr("data-value")]
+          dive(e,$('<'+filter+'></'+filter+'>').appendTo($('<bool></bool>').appendTo(ro)));
+        } else {
+          console.log (e)
+        }
+      });
+    }
+    var root = $('<query><filtered><filter><bool></bool></filter></filtered></query>')
+    dive($('.root.dropbox'),$('<must></must>').appendTo($(root).find('bool')));
+    $('form#filterform textarea').val(root.html());
+    console.log(root.html())
+    $('form#filterform').submit();
+  }

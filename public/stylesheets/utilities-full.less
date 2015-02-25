@@ -794,10 +794,9 @@ ul.sidelink {
   }
   .dropbox {
     border-radius: 0 16px 16px 16px;
-    border: 1px solid gray;
-    margin: 0 0 8px;
-    padding:8px 8px 0 9px;
-    width: 100%;
+    margin: 8px 2% 8px 2%;
+    padding-left: 12px;
+    width: 96%;
     min-height: 40px;
     overflow: visible;
     position: relative;
@@ -806,21 +805,46 @@ ul.sidelink {
     &.or { background: @brand-success; }
     &.and { background: @brand-primary; }
     &.not { background: @brand-danger; }
-    &.drop-hover {
-      border: 1px solid black;
-    }
     &.root {
       min-height: 144px !important;
       margin-right:12px;
+      padding: 8px 2%;
+      > div > .dropbox{
+        margin: 8px 0;
+        width: 100%;
+      }
+      cursor:default;
     }
     icon.glyphicon.op{
       font-size:13px;
-      position: relative;
-      top:-9px;
-      left:-8px;
+      position: absolute;
+      top:2px;
+      left:4px;
       cursor:pointer;
       color: #ddd;
-      margin-right:-4px
+      margin-right:-4px;
+      width:13px;
+      z-index: 10;
+      > .drop {
+        z-index: 12;
+        > div {
+          height: 6px;
+          width: 14px;
+          margin-bottom:2px;
+          border-radius: 3px;
+          &.or { background: @brand-success; border: 2px solid @brand-success;}
+          &.and { background: @brand-primary; border: 2px solid @brand-primary;}
+          &.not { background: @brand-danger; border: 2px solid @brand-danger;}
+          &:hover { border: 2px solid #DDD; }
+        }
+        > icon {
+          color: #000;
+          &:hover { color: #DDD; }
+        }
+      }
+    }
+    > span {
+      margin-left: 8px;
     }
   }
   .options {
@@ -828,16 +852,31 @@ ul.sidelink {
       display: none;
       h4 {
         font-weight: bold;
+        text-align:right;
+      }
+      ul {
+        li:before,
+        li:after {
+          content: " ";
+          display: table;
+        }
+        li:after {
+          clear: both;
+        }
+        li {
+          span {
+            float: right;
+          }
+        }
       }
     }
   }
-  .place-op {
+  .placeholder {
     background: #DDD;
     border-radius: 0 16px 16px 16px;
-    border: 1px solid black;
-    margin: 0 0 8px;
-    padding:8px 8px 0 9px;
-    width: 100%;
+    margin: 8px 2% 8px 2%;
+    padding: 0;
+    width: 96%;
     height: 40px;
     display: inline-block;
     zoom: 1;
@@ -849,14 +888,11 @@ ul.sidelink {
     border: 1px solid gray;
     padding: 3px 8px 5px;
     line-height:18px;
-    margin: 0 8px 8px 0;
+    margin: 4px 8px 0 0;
     display: inline-block;
     cursor: move;
     .box-shadow(-2px -7px 8px -4px rgba(0,0,0,0.3) inset);
-    &.drag-hover {
-      border: 1px solid black;
-    }
-    icon.glyphicon.ag{
+    icon.glyphicon.ag {
       font-size:10px;
       position: relative;
       top:-6px;
@@ -865,19 +901,6 @@ ul.sidelink {
       color: #666;
       margin-right:-4px
     }
-  }
-  .place-ag {
-    background: #DDD;
-    border-radius: 0 16px 16px 16px;
-    border: 1px solid black;
-    margin:2%;
-    padding:2%;
-    width: 108px;
-    height: 24px;
-    display: inline-block;
-    zoom: 1;
-    filter: alpha(opacity=60);
-    opacity: 0.6;
   }
   .idrag {
     border-radius: 0;
