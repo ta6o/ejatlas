@@ -514,6 +514,17 @@ function dragEnd() {
   });
 }
 
+function markerFit(ids){
+  arr = []
+  $.each(markerc,function(k,v){
+    if(ids.indexOf(parseInt(k)) >= 0){
+      arr.push(v.getLatLng());
+    }
+  })
+  console.log(arr)
+  map.fitBounds(arr);
+}
+
 function mapFit(){
   markerBounds = markerLayer.getBounds();
   //console.log(markerBounds)
@@ -900,7 +911,20 @@ function toSlug(url) {
   return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/^\d+/,'').replace(/\s+/g,'_'));
 }
 
+function filterMarkers(m) {
+  $.each($('.map .map_icon'),function(i,e){
+    index = m.indexOf(parseInt($(e).attr('data-id')));
+    if (index < 0 ) { 
+      $(e).fadeOut('slow');
+    } else {
+      $(e).fadeIn('slow');
+    }
+  });
+  markerFit(m);
+}
+
 if (typeof markerinfo != 'undefined') {
   initMap();
   showMarkers(markerinfo);
 }
+

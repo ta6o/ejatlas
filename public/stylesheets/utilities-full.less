@@ -785,6 +785,9 @@ ul.sidelink {
   .head {
     width:100%;
     height: 24px;
+    h4 {
+      font-size:16px;
+    }
   }
   .body {
     width:100%;
@@ -807,7 +810,7 @@ ul.sidelink {
     &.not { background: @brand-danger; }
     &.root {
       min-height: 144px !important;
-      margin-right:12px;
+      margin: 18px 12px 0 0;
       padding: 8px 2%;
       > div > .dropbox{
         margin: 8px 0;
@@ -852,9 +855,10 @@ ul.sidelink {
       display: none;
       h4 {
         font-weight: bold;
-        text-align:right;
+        //text-align:right;
       }
       ul {
+        overflow-x: hidden;
         li:before,
         li:after {
           content: " ";
@@ -865,7 +869,7 @@ ul.sidelink {
         }
         li {
           span {
-            float: right;
+            //float: right;
           }
         }
       }

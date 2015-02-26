@@ -234,7 +234,11 @@ class AsyncTask
       countries = []
       puts "Updating countries..."
       #Region.all.each {|c| countries << [c.jsonize,c.conflicts_count] if c.conflicts_count > 1; c.save}
-      Country.all(:include=>:conflicts).each {|c| countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1; c.save}
+      Country.all(:include=>:conflicts).each do |c| 
+        countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1
+        c.save
+        client.index index: 'atlas', type: 'country', id: c.id, body: {id:c.id,name:c.name}
+      end
       countries.sort_by! {|c| c[1]}
       countries.reverse!
       ca.countries = countries.to_json
@@ -243,7 +247,11 @@ class AsyncTask
     if params["companies"] == "on"
       companies = []
       puts "Updating companies..."
-      Company.all(:include=>:conflicts).each {|c| companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1; c.save}
+      Company.all(:include=>:conflicts).each do |c|
+        companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1
+        c.save
+        client.index index: 'atlas', type: 'company', id: c.id, body: {id:c.id,name:c.name}
+      end
       companies.sort_by! {|c| c[1]}
       companies.reverse!
       ca.companies = companies.to_json
@@ -252,7 +260,11 @@ class AsyncTask
     if params["ifis"] == "on"
       supporters = []
       puts "Updating IFI's..."
-      Supporter.all(:include=>:conflicts).each {|c| supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1; c.save}
+      Supporter.all(:include=>:conflicts).each do |c|
+        supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1
+        c.save
+        client.index index: 'atlas', type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
+      end
       supporters.sort_by! {|c| c[1]}
       supporters.reverse!
       ca.supporters = supporters.to_json
@@ -344,7 +356,7 @@ class AsyncTask
       filterdata["basic_data"] = {}
       filterdata["basic_data"]["success_level"] = {:content=>[{0=>'Success'},{1=>'Not sure'},{2=>'Failure'}]}
       filterdata["basic_data"]["population_type"] = {:content=>[{0=>'Unknown'},{1=>'Urban'},{2=>'Semi-urban'},{3=>'Rural'}]}
-      filterdata["basic_data"]["country"] = {:content=>1,:name=>"country_id"}
+      filterdata["basic_data"]["country"] = {:content=>'auto',:name=>"country_id"}
 
       filterdata["category"] = {}
       filterdata["category"]["category"] = {:content=>Category.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"category_id"}
@@ -353,9 +365,9 @@ class AsyncTask
       filterdata["project"] = {}
       filterdata["project"]["commodity"] = {:content=>Product.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"products"}
       filterdata["project"]["level_of_investment"] = {:content=>"0:1000000000",:name=>"investment_sum"}
-      filterdata["project"]["company"] = {:content=>1,:name=>"companies"}
-      filterdata["project"]["country_of_company"] = {:content=>1,:name=>"country"}
-      filterdata["project"]["financial_institution"] = {:content=>1,:name=>"supporters"}
+      filterdata["project"]["company"] = {:content=>'auto',:name=>"companies"}
+      filterdata["project"]["country_of_company"] = {:content=>'auto',:name=>"country_of_company"}
+      filterdata["project"]["financial_institution"] = {:content=>'auto',:name=>"supporters"}
       
       filterdata["conflict"] = {}
       filterdata["conflict"]["start_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"start_datestamp"}

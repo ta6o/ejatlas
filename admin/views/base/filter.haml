@@ -1,28 +1,5 @@
 -# coding: utf-8
 #conflict_filter.noselect
-  .col-sm-9.canvas
-    .row
-      .col-sm-8{:style=>"padding:0"}
-        .head
-          .ready
-            %strong Drag the items from the left side below.
-        .body
-          .root.dropbox.and{"data-section"=>"box","data-value"=>'and'}
-            %icon.glyphicon.glyphicon-chevron-down.op
-
-      .col-sm-4
-        .relative.options
-          -@filterform.each do |page,content|
-            -content.each do |field,options|
-              .data{:id=>field,:style=>(field=="success_level" ? "display:block" : "")}
-                -if options.has_key? 'name' then  name = options['name'] else  name = field end
-                -if options['content'].is_a? Array
-                  %h4.head= field.gsub("_"," ").titlecase
-                  %ul.body
-                    -options['content'].each do |c|
-                      %li
-                        %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-value"=>c.keys.first}=c.values.first
-
   .col-sm-3{:style=>"padding:0"}
     #accordion.panel-group{:role=>'tablist','aria-multiselectable'=>'true'}
       .panel.panel-default
@@ -36,12 +13,16 @@
               %ul
                 -content.each do |field,options|
                   %li
-                    %a.show-filter-content{"data-id"=>"#{field}",:title=>options.to_s}= field.gsub("_"," ").titlecase
+                    %a.show-filter-content{"data-id"=>"#{field}",:title=>options.to_s,:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= field.gsub("_"," ").titlecase
     #filterInfo{:style=>'margin-top:8px;'}
-      %p.large
-        Please pick the
-        %strong filter options 
-        from the panel on the left.
+      %p.small{:style=>'line-height:16px;padding:4px;'}
+        Please pick from the
+        %strong fields
+        above and drag the 
+        %strong options
+        to the panel on the right. You can use the
+        %strong logical boxes
+        below to create complex filters.
       %ul
         %li{:style=>'color:white;font-weight:bold;text-align:center;'}
           %div.idrag
@@ -50,8 +31,35 @@
             .dropbox.or{"data-section"=>"box","data-value"=>'or'} AND
           %div.idrag
             .dropbox.not{"data-section"=>"box","data-value"=>'not'} NOT
-    %form#filterform{:method=>'POST',:action=>"/filter"}
-      %textarea{:name=>'filter'}
+
+  .col-sm-9.canvas
+    .row
+      .col-sm-4
+        .relative.options
+          -@filterform.each do |page,content|
+            -content.each do |field,options|
+              .data{:id=>field,:style=>(field=="success_level" ? "display:block" : "")}
+                -if options.has_key? 'name' then  name = options['name'] else  name = field end
+                -if options['content'].is_a? Array
+                  .body
+                    %h4= field.gsub("_"," ").titlecase
+                    %ul
+                      -options['content'].each do |c|
+                        %li
+                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-value"=>c.keys.first}=c.values.first
+                -elsif options['content'] == 'auto'
+                  .body
+                    %h4= field.gsub("_"," ").titlecase
+                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
+                    %ul
+
+      .col-sm-8{:style=>"padding:0"}
+        .head
+          .ready
+            .btn.btn-default{:onclick=>'serializeFilter()'} Apply Filter
+        .body
+          .root.dropbox.and{"data-section"=>"box","data-value"=>'and'}
+            %icon.glyphicon.glyphicon-chevron-down.op
 
 
 :javascript
@@ -64,7 +72,6 @@
         placeholder: "placeholder",
         containment: ".root.dropbox",
         forceHelperSize: true,
-        cursorAt: { left: 0 },
         start: function (e, t) {
           if (t.item.prop('tagName') == "DIV") { helper = t.helper.find('div'); } 
           else if (t.item.prop('tagName') == "SPAN") { helper = t.item.clone()}
@@ -81,7 +88,9 @@
 
       $('.show-filter-content').on('click',function (e) {
         $('.show-filter-content').css('font-weight','normal');
+        $('.show-filter-content').css('color','#0380A5');
         $(this).css('font-weight','bold');
+        $(this).css('color','black');
         id = $(this).attr('data-id');
         $('#conflict_filter .options .data').hide();
         $("#"+id).show();
@@ -93,7 +102,6 @@
         revert: "invalid",
         helper: "clone",
         containment: ".canvas",
-        cursorAt: { left: 0 },
       }).disableSelection();
 
       $('.dropbox').sortable(sortHash).disableSelection();
@@ -113,6 +121,58 @@
       $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or'); p.attr('data-value','or'); });
       $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
       $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
+
+      (function( $ ) {
+        $.ui.autocomplete.prototype.options.autoSelect = true;
+        $( "body" ).on( "blur", ".autocomplete", function( event ) {
+          var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
+          if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
+          var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
+          autocomplete.widget().children( ".ui-menu-item" ).each(function() {
+            var item = $( this )
+            if ( matcher.test( item.value || item ) ) {
+              autocomplete.selectedItem = item;
+              return false;
+            } else {
+              $('.autocomplete').val('');
+              return false
+            }
+          });
+          if ( autocomplete.selectedItem ) {
+            autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
+          }
+        });
+
+      }( jQuery ));
+      $( ".autocomplete" ).autocomplete({
+        minLength: 3,
+        position: { my : "left top", at: "left bottom" },
+        source: function( request, response ) {
+          $source = "/ac_json/"+$(".autocomplete:focus").attr("data-source");
+          $.ajax({
+            type: "GET",
+            url: $source+'?token='+request.term,
+            success: function(data){ console.log(data); response( JSON.parse(data) ); }
+          })
+        },
+        select: function( event, ui ) {
+          $item = $('.autocomplete:focus');
+          $item.val( "" );
+          $id = $item.attr('id');
+          $ul = $item.nextAll('ul')
+          $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='field' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
+          $($ul).append($('<li>', {html: $html}));
+          $('.drag, .idrag').draggable({
+            connectToSortable: ".root.dropbox",
+            placeholder: "placeholder",
+            revert: "invalid",
+            helper: "clone",
+            containment: ".canvas",
+          }).disableSelection();
+
+          return false;
+        }
+      });
 
     } else {
       setTimeout(onFilterLoad,10);
@@ -152,10 +212,17 @@
         }
       });
     }
-    var root = $('<query><filtered><filter><bool><must><bool></bool><term><approval_status>"approved"</approval_status></term></must></bool></filter></filtered></query>')
+    var root = $('<query><filtered><filter><bool><must><bool></bool><term><approval_status>approved</approval_status></term></must></bool></filter></filtered></query>')
     log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
     dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find('bool must bool')));
-    $('form#filterform textarea').val(root.html());
-    console.log(root.html())
-    $('form#filterform').submit();
+    $.ajax({
+      type: "POST",
+      url: '/filter',
+      data: 'filter='+root.html(),
+      success: function(data){
+        data = JSON.parse(data);
+        console.log(data);
+        filterMarkers(data);
+      }
+    })
   }

@@ -1,5 +1,6 @@
 #coding: utf-8
 Admin.controller do
+  client = Elasticsearch::Client.new log:false
 
   before do
     @layout = :full
@@ -376,12 +377,19 @@ Admin.controller do
   end
 
   def self.elasticify obj
-    if obj.respond_to? :to_i
-      obj.to_i
+    if obj.nil?
+      {}
+    elsif obj.is_a? String
+      begin 
+        Float(obj).to_i
+      rescue
+        obj
+      end
     elsif obj.is_a? Array
       obj.map{|item| Admin.elasticify item}
     elsif obj.is_a? Hash
       terms = {}
+      coc = nil
       obj.each do |key,val|
         if val.is_a? Array
           if key == 'bool'
@@ -399,15 +407,25 @@ Admin.controller do
             obj.delete('term')
           end
         end
-        if val.is_a? Hash and val.has_key?('bool') and key != 'filter'
-          arr = []
-          val.each do |k,v|
-            arr << {k => v}
+        if val.is_a? Hash 
+          if val.has_key?('bool') and key != 'filter'
+            arr = []
+            val.each do |k,v|
+              arr << {k => v}
+            end
+            obj[key] = arr
+          elsif key == "term" and val.keys.first == "country_of_company"
+            a = []
+            Country.find_all_by_id(val.values.first).each do |c|
+              a = a | c.companies.map(&:id)
+            end
+            coc = {'companies'=>a}
+            obj.delete('term')
           end
-          obj[key] = arr
         end
       end
       if terms == {}
+        obj['terms'] = coc if coc
         obj.merge(obj){|k,v| Admin.elasticify v}
       else
         val = []
@@ -415,9 +433,24 @@ Admin.controller do
           val << {k=>v}
         end
         terms.each do |k,v| 
-          v = v[0] if v.length == 1
-          val << {'term'=>{k=>v}}
+          puts "#{k}, #{v}"
+          if k =='country_of_company'
+            a = []
+            Country.find(v).each do |c|
+              a = a | c.companies.map(&:id)
+            end
+            val << {'terms'=>{'companies'=>a}}
+          else
+            if v.length == 1
+              val << {'term'=>{k=>v[0]}}
+            else
+              v.each do |i|
+                val << {'term'=>{k=>i}}
+              end
+            end
+          end
         end
+        puts val
         val.map{|item| Admin.elasticify item}
       end
     else
@@ -426,9 +459,7 @@ Admin.controller do
   end
 
   def self.cleanup obj
-    if obj.respond_to? :to_i
-      obj.to_i
-    elsif obj.is_a? Array
+    if obj.is_a? Array
       arr = []
       obj.each do |item|
         if item.is_a? Array
@@ -446,13 +477,28 @@ Admin.controller do
   end
 
   post :filter do
-    client = Elasticsearch::Client.new log:false
     filter = (Hash.from_xml(params[:filter]))
     puts JSON.pretty_generate filter
     filter = Admin.elasticify filter
     filter = Admin.cleanup filter
     puts JSON.pretty_generate filter
-    print resp = client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[:id,:name,:slug],query:filter})['hits']['hits'].map{|i|i['_id'].to_i}
+    result = client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[:id,:name,:slug],query:filter})['hits']['hits'].map{|i|i['_id'].to_i}
+    p result.length
+    return result.to_json
+  end
+
+  get "/ac_json/:model" do
+    token = params[:token]
+    model = params[:model]
+    model = 'country' if model == 'country_of_company'
+    filter = {match:{name:{query:token,type:"phrase_prefix"}}}
+    result = client.search(index: 'atlas', type: model, body: {from:0,size:9999,fields:[:id,:name],query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['fields']['name'][0]}}
+    puts result.length
+    return result.to_json
+  end
+
+  get "/ac_coc/:country" do
+    return 
   end
 
   post :forward do
