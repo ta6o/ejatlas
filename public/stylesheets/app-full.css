@@ -5185,7 +5185,8 @@ ul.sidelink li.active {
   margin: -3px 0 0 -3px !important;
   background-image: none !important;
 }
-.map_icon:hover {
+.map_icon:hover,
+.map_icon.hovered {
   border: 2px solid white;
 }
 .map_icon.i_ {

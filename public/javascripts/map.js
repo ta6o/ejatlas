@@ -306,12 +306,13 @@ function initMap () {
     selector = '#map .map_icon.id_'+id;
     $(selector).addClass('selected')
     transformItem(selector, 'scale', 1.25);
-    $(selector).removeClass('mic').removeClass('min');
+    $(selector).removeClass('mic').removeClass('min').addClass('hovered');
     updateInfo(1,markerc[id].content)
   })
   $('.conflict-button').on('mouseleave',function(e){
     selector = '#map .map_icon.id_'+$(this).attr('data-id');
     transformItem(selector, 'scale', 0.8);
+    $(selector).removeClass('hovered');
     singleSize(selector);
   })
   
@@ -401,13 +402,14 @@ function showMarkers(markers) {
       selector = '#map .map_icon.id_'+marker.id;
       $(selector).addClass('selected')
       transformItem(selector, 'scale', 1.25);
-      $(selector).removeClass('mic').removeClass('min');
+      $(selector).removeClass('mic').removeClass('min').addClass('hovered');
       updateInfo(1,marker.content);
     });
     marker.on('mouseout', function(e){
       selector = '#map .map_icon.id_'+marker.id;
       transformItem(selector, 'scale', 0.8);
       singleSize(selector);
+      $(selector).removeClass('hovered');
     });
     if (window.location.pathname === "/embed") {
       marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
@@ -438,14 +440,14 @@ function showMarkers(markers) {
 
 
 function transformItem(selector, property, value) {
-  matrix = $(selector).css('transform');
+  /*matrix = $(selector).css('transform');
   $(selector).css({
     '-webkit-transform' : matrix + property + '(' + value + ')',
     '-moz-transform'    : matrix + property + '(' + value + ')',
     '-ms-transform'     : matrix + property + '(' + value + ')',
     '-o-transform'      : matrix + property + '(' + value + ')',
     'transform'         : matrix + property + '(' + value + ')'
-  });
+  });*/
 }
 
 function onResize() {
