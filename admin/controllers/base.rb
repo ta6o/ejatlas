@@ -390,6 +390,7 @@ Admin.controller do
     elsif obj.is_a? Hash
       terms = {}
       coc = nil
+      range = nil
       obj.each do |key,val|
         if val.is_a? Array
           if key == 'bool'
@@ -421,9 +422,22 @@ Admin.controller do
             end
             coc = {'companies'=>a}
             obj.delete('term')
+          elsif key == "term" and val.values.first.match(/\d+:\d+/)
+            k = val.keys.first
+            if k.match(/datestamp$/)
+              r = val.values.first.split(':').map{|i| i.to_i}
+              r[0] = Date.new(r[0])
+              r[1] = Date.new(r[1]+1) - 1.days
+            else
+              r = val.values.first.split(':').map{|i| i.to_i}
+            end
+            puts r
+            range = {k=>{"gte"=>r[0],"lte"=>r[1]}}
+            obj.delete('term')
           end
         end
       end
+      obj['range'] = range if range
       if terms == {}
         obj['terms'] = coc if coc
         obj.merge(obj){|k,v| Admin.elasticify v}
@@ -433,7 +447,7 @@ Admin.controller do
           val << {k=>v}
         end
         terms.each do |k,v| 
-          puts "#{k}, #{v}"
+          #puts "#{k}, #{v}"
           if k =='country_of_company'
             a = []
             Country.find(v).each do |c|
@@ -450,7 +464,6 @@ Admin.controller do
             end
           end
         end
-        puts val
         val.map{|item| Admin.elasticify item}
       end
     else

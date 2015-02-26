@@ -5760,6 +5760,30 @@ ul.sidelink li.active {
 #conflict_filter .options .data ul li:after {
   clear: both;
 }
+#conflict_filter .options .data .slider {
+  width: 94%;
+  margin: 24px 3% 12px;
+}
+#conflict_filter .options .data input.gte,
+#conflict_filter .options .data input.lte {
+  width: 48%;
+  margin: 0 0 12px;
+  padding: 0;
+}
+#conflict_filter .options .data input.gte[type='number'],
+#conflict_filter .options .data input.lte[type='number'] {
+  max-width: 54px;
+}
+#conflict_filter .options .data input.gte[type='text'],
+#conflict_filter .options .data input.lte[type='text'] {
+  max-width: 128px;
+}
+#conflict_filter .options .data input.gte {
+  float: left;
+}
+#conflict_filter .options .data input.lte {
+  float: right;
+}
 #conflict_filter .placeholder {
   background: #DDD;
   border-radius: 0 16px 16px 16px;

@@ -354,6 +354,7 @@ class AsyncTask
       filterdata = {}
 
       filterdata["basic_data"] = {}
+      filterdata["basic_data"]["name"] = {:content=>'flat'}
       filterdata["basic_data"]["success_level"] = {:content=>[{0=>'Success'},{1=>'Not sure'},{2=>'Failure'}]}
       filterdata["basic_data"]["population_type"] = {:content=>[{0=>'Unknown'},{1=>'Urban'},{2=>'Semi-urban'},{3=>'Rural'}]}
       filterdata["basic_data"]["country"] = {:content=>'auto',:name=>"country_id"}
@@ -364,7 +365,7 @@ class AsyncTask
       
       filterdata["project"] = {}
       filterdata["project"]["commodity"] = {:content=>Product.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"products"}
-      filterdata["project"]["level_of_investment"] = {:content=>"0:1000000000",:name=>"investment_sum"}
+      filterdata["project"]["level_of_investment"] = {:content=>"0:24",:name=>"investment_sum"}
       filterdata["project"]["company"] = {:content=>'auto',:name=>"companies"}
       filterdata["project"]["country_of_company"] = {:content=>'auto',:name=>"country_of_company"}
       filterdata["project"]["financial_institution"] = {:content=>'auto',:name=>"supporters"}

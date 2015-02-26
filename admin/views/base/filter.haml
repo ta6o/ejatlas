@@ -39,7 +39,7 @@
           -@filterform.each do |page,content|
             -content.each do |field,options|
               .data{:id=>field,:style=>(field=="success_level" ? "display:block" : "")}
-                -if options.has_key? 'name' then  name = options['name'] else  name = field end
+                -if options.has_key? 'name' then  name = options['name'] else name = field end
                 -if options['content'].is_a? Array
                   .body
                     %h4= field.gsub("_"," ").titlecase
@@ -52,6 +52,114 @@
                     %h4= field.gsub("_"," ").titlecase
                     %input.autocomplete{:id=>field,:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
                     %ul
+                -elsif options['content'] == 'flat' and false
+                  .body
+                    %h4= field.gsub("_"," ").titlecase
+                    .row
+                      .col-xs-9
+                        %input.token{:id=>"#{field}-input",:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
+                      .col-xs-3
+                        .btn.btn-default{:id=>field,:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
+                    %ul
+                -elsif options['content'].match(/\d+:\d+/)
+                  -range = options['content'].split(':')
+                  %h4= field.gsub("_"," ").titlecase
+                  .slider{:id=>"#{field}-slider"}
+                  .clearfix{:style=>'width:100%'}
+                    -if name == 'investment_sum'
+                      %input.gte{:type=>'text',:id=>"#{field}-gte",:value=>range[0]}
+                      %input.lte{:type=>'text',:id=>"#{field}-lte",:value=>range[1]}
+                    -else
+                      %input.gte{:type=>'number',:id=>"#{field}-gte",:value=>range[0]}
+                      %input.lte{:type=>'number',:id=>"#{field}-lte",:value=>range[1]}
+                  %ul
+                    %li
+                      %span.drag.graybg{:id=>"#{field}-drag","data-section"=>"field","data-name"=>name,"data-field"=>field,"data-value"=>"#{range[0]}:#{range[1]}"}
+                        %strong= "#{field.gsub("_"," ").titlecase}:"
+                        ="#{range[0]} - #{range[1]}"
+                  -if name == 'investment_sum'
+                    :javascript
+                      function exp(base,roof) {
+                        div = 1
+                        if (roof % 2 == 1) {div = 2}
+                        return Math.pow(base,Math.ceil(roof/2))/div
+                      }
+                      function unexp(exp) {
+                        res = (String(exp).length-1)*2;
+                        if (String(exp).substr(0,1) == 5) res ++;
+                        return res
+                      }
+                      function commify(nStr) {
+                        nStr += '';
+                        if (nStr.length < 5) return nStr
+                        x = nStr.split('.');
+                        x1 = x[0];
+                        x2 = x.length > 1 ? '.' + x[1] : '';
+                        var rgx = /(\d+)(\d{3})/;
+                        while (rgx.test(x1)) {
+                          x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                        }
+                        return x1 + x2;
+                      }
+                      $(document).ready(function(){
+                        $(".options .gte, .options .lte").keydown(function (e) {
+                          if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+                            (e.keyCode == 65 && e.ctrlKey === true) || 
+                            (e.keyCode >= 35 && e.keyCode <= 39)) {
+                            return;
+                          }
+                          if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 48 ) && (e.keyCode < 96 || e.keyCode > 105 ))) {
+                            e.preventDefault();
+                            if (e.keyCode == 49) {$(this).val("1"+$(this).val().substr(1,12))}
+                            if (e.keyCode == 53) {$(this).val("5"+$(this).val().substr(1,12))}
+                          }
+                        });
+                        $("##{field}-slider").slider({
+                          range: true,
+                          min: #{range[0]},
+                          max: #{range[1]},
+                          values: [#{range[0]}, #{range[1]}],
+                          slide: function( event, ui ) {
+                            gte = commify(exp(10,ui.values[0]))
+                            lte = commify(exp(10,ui.values[1]))
+                            range = [gte,lte]
+                            $(".options ##{field}-gte").val(range[0]);
+                            $(".options ##{field}-lte").val(range[1]);
+                            $(".options ##{field}-drag").attr('data-value',range[ 0 ]+":"+range[ 1 ]);
+                            $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+range[ 0 ]+" - "+range[ 1 ]);
+                          }
+                        });
+                        $(".options ##{field}-gte, .options ##{field}-lte").on('change',function(e){
+                          range = [unexp($(".options ##{field}-gte").val()),unexp($(".options ##{field}-lte").val())]
+                          comms = [commify($(".options ##{field}-gte").val()),commify($(".options ##{field}-lte").val())]
+                          $("##{field}-slider").slider({values:range})
+                          $(".options ##{field}-drag").attr('data-value',comms[0]+":"+comms[1]);
+                          $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+comms[0]+" - "+comms[1]);
+                        });
+                      });
+
+                  -else
+                    :javascript
+                      $(document).ready(function(){
+                        $("##{field}-slider").slider({
+                          range: true,
+                          min: #{range[0]},
+                          max: #{range[1]},
+                          values: [#{range[0]}, #{range[1]}],
+                          slide: function( event, ui ) {
+                            $(".options ##{field}-gte").val(ui.values[0]);
+                            $(".options ##{field}-lte").val(ui.values[1]);
+                            $(".options ##{field}-drag").attr('data-value',ui.values[ 0 ]+":"+ui.values[ 1 ]);
+                            $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+ui.values[ 0 ]+" - "+ui.values[ 1 ]);
+                          }
+                        });
+                        $(".options ##{field}-gte, .options ##{field}-lte").on('change',function(e){
+                          range = [$(".options ##{field}-gte").val(),$(".options ##{field}-lte").val()]
+                          $("##{field}-slider").slider({values:range})
+                          $(".options ##{field}-drag").attr('data-value',range[0]+":"+range[1]);
+                          $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+range[0]+" - "+range[1]);
+                        });
+                      });
 
       .col-sm-8{:style=>"padding:0"}
         .head
