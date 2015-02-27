@@ -5902,3 +5902,287 @@ ul.sidelink li.active {
     font-size: 11px;
   }
 }
+#conflict_summary h2 {
+  margin-bottom: 4px;
+}
+#conflict_summary .place {
+  display: block;
+  margin: -32px 0 36px 0;
+  font-size: 13px;
+}
+#conflict_summary .place img {
+  margin-top: -4px;
+}
+#conflict_summary .meta {
+  margin-bottom: 36px;
+}
+#conflict_summary .meta .map-icon {
+  margin: 8px 52px !important;
+}
+#conflict_summary .meta .tags p {
+  font-size: 13px;
+  margin-bottom: 0;
+}
+#conflict_summary .meta .tags h3 {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+#conflict_summary .meta .date img {
+  float: left;
+  margin-left: 12px;
+}
+#conflict_summary .meta .date p {
+  font-size: 11px;
+  margin-top: -5px;
+  margin-bottom: 0;
+  float: right;
+}
+#conflict_summary .page {
+  margin-bottom: 24px;
+  background: #ffffff;
+}
+#conflict_summary .page h4 {
+  margin: 0 0 4px;
+}
+#conflict_summary .page img {
+  margin-left: 60px;
+}
+#conflict_summary .page p {
+  margin-bottom: 4px;
+}
+#conflict_summary .page p.fld {
+  font-weight: bold;
+  margin-bottom: 0;
+}
+#conflict_summary .horipane > .content > table.table {
+  margin-top: -9px;
+}
+#conflict_summary table {
+  margin-bottom: 24px;
+}
+#conflict_summary table tbody tr.sect {
+  background: #eeeeee;
+}
+#conflict_summary table tbody tr td {
+  padding: 3px 0px;
+  width: 100%;
+  float: left;
+  border-top: 0px;
+}
+#conflict_summary table tbody tr td.fld {
+  width: 100% !important;
+  font-size: 18px;
+  border-top: 1px solid #DDD;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+#conflict_summary table tbody tr td .reflink {
+  margin-top: -8px;
+}
+#conflict_summary h4 {
+  font-size: 14px;
+  margin: 48px 0px 6px !important;
+  font-weight: bold;
+}
+#conflict_filter {
+  height: 480px;
+}
+#conflict_filter .panel-heading {
+  padding: 4px 8px;
+  background: url('/images/bg.png');
+}
+#conflict_filter .panel-heading a {
+  font-weight: bold;
+  font-size: 14px;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  color: #024357;
+}
+#conflict_filter .panel-heading a:hover {
+  color: #000000;
+}
+#conflict_filter .panel-body {
+  padding: 4px 8px;
+}
+#conflict_filter .panel-body ul {
+  margin: 0;
+  padding: 0;
+}
+#conflict_filter .panel-body ul a {
+  font-size: 14px;
+  cursor: pointer;
+}
+#conflict_filter .panel-body ul a:hover {
+  color: #024357;
+}
+#conflict_filter .head {
+  width: 100%;
+  height: 24px;
+}
+#conflict_filter .head h4 {
+  font-size: 16px;
+}
+#conflict_filter .body {
+  width: 100%;
+  height: 456px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+#conflict_filter .dropbox {
+  border-radius: 0 16px 16px 16px;
+  margin: 8px 2% 8px 2%;
+  padding: 10px 0 10px 12px;
+  width: 96%;
+  min-height: 40px;
+  overflow: visible;
+  position: relative;
+  cursor: move;
+  -webkit-box-shadow: -5px -9px 11px -4px rgba(0, 0, 0, 0.3) inset;
+  -moz-box-shadow: -5px -9px 11px -4px rgba(0, 0, 0, 0.3) inset;
+  box-shadow: -5px -9px 11px -4px rgba(0, 0, 0, 0.3) inset;
+}
+#conflict_filter .dropbox.or {
+  background: #84be64;
+}
+#conflict_filter .dropbox.and {
+  background: #0380a5;
+}
+#conflict_filter .dropbox.not {
+  background: #d9534f;
+}
+#conflict_filter .dropbox.root {
+  min-height: 144px !important;
+  margin: 18px 12px 0 0;
+  padding: 8px 2%;
+  cursor: default;
+}
+#conflict_filter .dropbox.root > div > .dropbox {
+  margin: 8px 0;
+  width: 100%;
+}
+#conflict_filter .dropbox icon.glyphicon.op {
+  font-size: 13px;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  cursor: pointer;
+  color: #ddd;
+  margin-right: -4px;
+  width: 13px;
+  z-index: 10;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop {
+  z-index: 12;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div {
+  height: 12px;
+  width: 14px;
+  margin-bottom: 2px;
+  border-radius: 3px;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div.or {
+  background: #84be64;
+  border: 2px solid #84be64;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div.and {
+  background: #0380a5;
+  border: 2px solid #0380a5;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div.not {
+  background: #d9534f;
+  border: 2px solid #d9534f;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > div:hover {
+  border: 2px solid #DDD;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > icon {
+  color: #000;
+}
+#conflict_filter .dropbox icon.glyphicon.op > .drop > icon:hover {
+  color: #DDD;
+}
+#conflict_filter .dropbox > span {
+  margin-left: 8px;
+}
+#conflict_filter .options .data {
+  display: none;
+}
+#conflict_filter .options .data h4 {
+  font-weight: bold;
+}
+#conflict_filter .options .data ul {
+  overflow-x: hidden;
+}
+#conflict_filter .options .data ul li:before,
+#conflict_filter .options .data ul li:after {
+  content: " ";
+  display: table;
+}
+#conflict_filter .options .data ul li:after {
+  clear: both;
+}
+#conflict_filter .options .data .slider {
+  width: 94%;
+  margin: 24px 3% 12px;
+}
+#conflict_filter .options .data input.gte,
+#conflict_filter .options .data input.lte {
+  width: 48%;
+  margin: 0 0 12px;
+  padding: 0;
+}
+#conflict_filter .options .data input.gte[type='number'],
+#conflict_filter .options .data input.lte[type='number'] {
+  max-width: 54px;
+}
+#conflict_filter .options .data input.gte[type='text'],
+#conflict_filter .options .data input.lte[type='text'] {
+  max-width: 128px;
+}
+#conflict_filter .options .data input.gte {
+  float: left;
+}
+#conflict_filter .options .data input.lte {
+  float: right;
+}
+#conflict_filter .placeholder {
+  background: #DDD;
+  border-radius: 0 16px 16px 16px;
+  margin: 8px 2% 8px 2%;
+  padding: 0;
+  width: 96%;
+  height: 40px;
+  display: inline-block;
+  zoom: 1;
+  filter: alpha(opacity=60);
+  opacity: 0.6;
+}
+#conflict_filter .drag {
+  border-radius: 0 16px 16px 16px;
+  border: 1px solid gray;
+  padding: 3px 8px 5px;
+  line-height: 18px;
+  margin: 4px 8px 0 0;
+  display: inline-block;
+  cursor: move;
+  -webkit-box-shadow: -2px -7px 8px -4px rgba(0, 0, 0, 0.3) inset;
+  -moz-box-shadow: -2px -7px 8px -4px rgba(0, 0, 0, 0.3) inset;
+  box-shadow: -2px -7px 8px -4px rgba(0, 0, 0, 0.3) inset;
+}
+#conflict_filter .drag icon.glyphicon.ag {
+  font-size: 10px;
+  position: relative;
+  top: -6px;
+  left: -7px;
+  cursor: pointer;
+  color: #666;
+  margin-right: -4px;
+}
+#conflict_filter .idrag {
+  border-radius: 0;
+  border: none;
+  padding: none;
+  margin: 0;
+  display: block;
+}

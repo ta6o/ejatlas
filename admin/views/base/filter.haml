@@ -164,7 +164,8 @@
       .col-sm-8{:style=>"padding:0"}
         .head
           .ready
-            .btn.btn-default{:onclick=>'serializeFilter()'} Apply Filter
+            .btn.btn-default{:onclick=>'serializeFilter(true)'} Apply Filter
+            .btn.btn-default{:onclick=>'clearFilter()'} Clear Filter
         .body
           .root.dropbox.and{"data-section"=>"box","data-value"=>'and'}
             %icon.glyphicon.glyphicon-chevron-down.op
@@ -302,7 +303,11 @@
     }
   };
 
-  function serializeFilter(){
+  function clearFilter(){
+    $('.root.dropbox *').not('icon').detach();
+  };
+
+  function serializeFilter(json){
     function dive(el,ro){
       $.each(el.children().not('icon'),function(i,e){
         e = $(e);
@@ -323,10 +328,19 @@
     var root = $('<query><filtered><filter><bool><must><bool></bool><term><approval_status>approved</approval_status></term></must></bool></filter></filtered></query>')
     log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
     dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find('bool must bool')));
+    if (json) {
+      query = JSON.stringify($.xml2json(root.html()));
+      url = "/filter?json"
+      console.log(root.html())
+      console.log(query)
+    } else {
+      query = root.html()
+      url = "/filter"
+    }
     $.ajax({
       type: "POST",
-      url: '/filter',
-      data: 'filter='+root.html(),
+      url: url,
+      data: 'filter='+query,
       success: function(data){
         data = JSON.parse(data);
         console.log(data);
@@ -334,3 +348,7 @@
       }
     })
   }
+  function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  }
+

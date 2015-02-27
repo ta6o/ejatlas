@@ -401,4 +401,23 @@
     //$(".datemask").mask("99/99/9999");
     //$('.datemask').attr('placeholder','____/__/__');
   });
+  function initFeatured(f){
+    filtre = f;
+    queryhash['filter'] = filtre;
+    if (queryhash["filter"]!=undefined) {
+      filterMarkers(queryhash['filter'],true)
+    }
+  }
+  function initFilter(){
+    $.each(window.location.hash.substr(1).split('&'), function(i,v) {
+      q = v.split('=');
+      n = q.shift();
+      queryhash[n] = q.join('=').replace(/\+/g,' ').split('/');
+    });
+    if (queryhash["filter"]!=undefined) {
+      filterMarkers(queryhash['filter'],true)
+      $('#filter-row .dnone').slideDown()
+    }
+  }
+
 

@@ -84,9 +84,9 @@
               %label.checkbox.inline.acc_lvl
                 %input.local_disable.mustcheck.acclvl{:type=>'radio',:value=>'1',:name=>'conflict[accuracy_level]'} &nbsp;LOW (Country level)
               %label.checkbox.inline.acc_lvl
-                %input.local_disable.mustcheck.acclvl{:type=>'radio',:value=>'2',:name=>'conflict[accuracy_level]'} &nbsp;MEDIUM
+                %input.local_disable.mustcheck.acclvl{:type=>'radio',:value=>'2',:name=>'conflict[accuracy_level]'} &nbsp;MEDIUM (Regional level)
               %label.checkbox.inline.acc_lvl
-                %input.local_disable.mustcheck.acclvl{:type=>'radio',:value=>'3',:name=>'conflict[accuracy_level]'} &nbsp;HIGH
+                %input.local_disable.mustcheck.acclvl{:type=>'radio',:value=>'3',:name=>'conflict[accuracy_level]'} &nbsp;HIGH (Local level)
               -if acclvl = @conflict.accuracy_level
                 :javascript
                   $('input.acclvl[value=#{acclvl}]').prop('checked',true);
@@ -102,7 +102,7 @@
 
         .row
           .col-md-4
-            .group.local_fade
+            .group
               .required=f.error_message_on :population_type
               =f.label 'Type of Population'
               %label.checkbox.inline.pop_type
@@ -1291,7 +1291,7 @@
             return false;
           }
        },
-       jQuery.format("Write an exlanation with {0} minimum.")
+       jQuery.format("Write an explanation with {0} words minimum.")
     );
     $.validator.addMethod("maxwords",
        function(value, element, params) {
@@ -1343,7 +1343,7 @@
         },
         'conflict[description]': {
           required: true,
-          minwords: 1
+          minwords: 2
         },
         'conflict[category_id]': {
           required: true,

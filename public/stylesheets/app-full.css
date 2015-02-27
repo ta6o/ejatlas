@@ -5715,7 +5715,7 @@ ul.sidelink li.active {
   z-index: 12;
 }
 #conflict_filter .dropbox icon.glyphicon.op > .drop > div {
-  height: 6px;
+  height: 12px;
   width: 14px;
   margin-bottom: 2px;
   border-radius: 3px;
@@ -5944,14 +5944,12 @@ ul.sidelink li.active {
 .rightpane .inner .summary_header .commands #commands ul li {
   padding-left: 12px;
   float: left;
+  font-size: 16px;
 }
 .rightpane .inner .summary_header .commands a {
-  color: white;
-}
-.rightpane .inner .summary_header:hover .commands a {
   color: #0380a5;
 }
-.rightpane .inner .summary_header:hover .commands a:hover {
+.rightpane .inner .summary_header .commands a:hover {
   color: #024357;
 }
 .rightpane h1,

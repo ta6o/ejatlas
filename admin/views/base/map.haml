@@ -88,6 +88,37 @@
       #legendpane
         .legend.noselect
 
+  -if @browseinfo.keys.length > 1
+    .horipane#filter-container
+      .title Filter
+      .content{:style=>'display:none;'}
+        #filter-row.block{'data-width'=>600}
+          #filter= @filter
+
+    .horipane
+      .title Browse maps
+      .conten{:style=>'display:none;'}
+        -@browseinfo.each do |k,v|
+          .horipane.browse
+            .title{:style=>'background:transparent'}= "by #{k.titlecase}"
+            .content{:style=>'display:none;'}
+              %div{:id=>"browse#{k}"}
+                %ul.columns
+                  -v.each do |c|
+                    -j = JSON.parse c[0]
+                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+
+  -else
+    -k = @browseinfo.keys.first
+    .horipane.browse
+      .title.active= "Browse by #{k}"
+      .content
+        %div{:id=>"browse#{k}"}
+          %ul.columns
+            -@browseinfo[k].each do |c|
+              -j = JSON.parse c[0]
+              %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+
 
   -if @feats
     .horipane
@@ -123,37 +154,6 @@
                     -if ago < 100
                       %small.blocked= "Updated #{ago < 1 ? "today" : (ago == 1 ? "#{ago} day ago" : "#{ago} days ago")}."
                   %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
-
-  -if @browseinfo.keys.length > 1
-    .horipane
-      .title Browse maps
-      .content{:style=>'display:none;'}
-        -@browseinfo.each do |k,v|
-          .horipane.browse
-            .title{:style=>'background:transparent'}= "by #{k.titlecase}"
-            .content{:style=>'display:none;'}
-              %div{:id=>"browse#{k}"}
-                %ul.columns
-                  -v.each do |c|
-                    -j = JSON.parse c[0]
-                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-
-    .horipane#filter-container
-      .title.active Filter
-      .content
-        #filter-row.block{'data-width'=>600}
-          #filter= @filter
-
-  -else
-    -k = @browseinfo.keys.first
-    .horipane.browse
-      .title.active= "Browse by #{k}"
-      .content
-        %div{:id=>"browse#{k}"}
-          %ul.columns
-            -@browseinfo[k].each do |c|
-              -j = JSON.parse c[0]
-              %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
 -content_for :body_end do
   :javascript

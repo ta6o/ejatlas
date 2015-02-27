@@ -69,7 +69,7 @@ Admin.controller do
     @maptitle = "World Map"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     @recent = Conflict.select('id, headline, modified_at, name, slug').where("headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
     @feats = Featured.select('id, description, name, slug, image').where(published:true).order("slug").limit(6)
     render "base/map", :layout => @layout
@@ -490,10 +490,13 @@ Admin.controller do
   end
 
   post :filter do
-    filter = (Hash.from_xml(params[:filter]))
+    if params.has_key? 'json'
+      filter = {filtered:JSON.parse(params[:filter])}
+    else
+      filter = Hash.from_xml(params[:filter])
+    end
     puts JSON.pretty_generate filter
-    filter = Admin.elasticify filter
-    filter = Admin.cleanup filter
+    filter = Admin.cleanup Admin.elasticify filter
     puts JSON.pretty_generate filter
     result = client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[:id,:name,:slug],query:filter})['hits']['hits'].map{|i|i['_id'].to_i}
     p result.length
