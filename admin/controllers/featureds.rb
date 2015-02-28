@@ -51,11 +51,11 @@ Admin.controllers :featureds do
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
-    if @followed = Admin.filter(@featured.filter || "")
-      @followed.sort! {|a,b| a.slug <=> b.slug}
+    begin
+      @followed = Admin.filter(@featured.filter).map{|i| Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}
+    rescue
     end
     @filterform = JSON.parse(Cached.last.filterdata)
-    @filterinfo = Cached.last.conflicts_json
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
     @imps = ['env_impacts','hlt_impacts','sec_impacts']
     render 'featureds/edit'
@@ -78,13 +78,11 @@ Admin.controllers :featureds do
           conflict.save
         end
       end
-      if params.has_key? :images_attributes and params['images_attributes'].any?
+      if params.has_key? 'images_attributes' and params['images_attributes'].any?
         images = {}
-        params['images_attributes'].each{|i,v| images["n#{i}"] = @featured.images[i.to_i]}
+        params['images_attributes'].each {|i,v| images["n#{i}"] = @featured.images[i.to_i]}
         params['images_attributes'].each do |i, v|
           img = images["n#{i}"]
-          #puts i
-          #puts img
           if v['_destroy'] == "on"
             img.destroy
             next

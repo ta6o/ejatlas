@@ -636,6 +636,7 @@ function getBack() {
     map.setView(pan,zoom);
   } else {
     $('#conflict_summary').hide();
+    markerBounds = markerLayer.getBounds();
     map.fitBounds(markerBounds);
   }
 }

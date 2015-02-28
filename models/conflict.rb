@@ -108,7 +108,7 @@ class Conflict < ActiveRecord::Base
     self.table = self.as_table
   end
 
-  def as_marker
+  def as_mark
     clr = self.category ? self.category.id : 0
     cat = self.category ? self.category.name : ''
     sta = self.start_date ? self.start_date : ''
@@ -119,6 +119,13 @@ class Conflict < ActiveRecord::Base
     cslg = ''
     cslg = self.country.slug if self.country
     return {:name=>self.name,:lon=>lon,:lat=>lat,:id=>self.id,:cat=>cat,:start=>sta,:clr=>clr,:slug=>self.slug,:cslg=>cslg,:title=>self.title}.to_json
+  end
+
+  def as_marker
+    clr = self.category ? self.category.id : 0
+    lat = 0; lat = self.lat if self.lat.to_f.abs <= 180
+    lon = 0; lon = self.lon if self.lon.to_f.abs <= 180
+    return {:lon=>lon,:lat=>lat,:id=>self.id,:clr=>clr}.to_json
   end
 
   def get_start_date

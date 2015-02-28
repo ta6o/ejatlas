@@ -1,6 +1,5 @@
 #coding: utf-8
 Admin.controller do
-  client = Elasticsearch::Client.new log:false
 
   before do
     @layout = :full
@@ -376,131 +375,13 @@ Admin.controller do
     redirect to 'jobs'
   end
 
-  def self.elasticify obj
-    if obj.nil?
-      {}
-    elsif obj.is_a? String
-      begin 
-        Float(obj).to_i
-      rescue
-        obj
-      end
-    elsif obj.is_a? Array
-      obj.map{|item| Admin.elasticify item}
-    elsif obj.is_a? Hash
-      terms = {}
-      coc = nil
-      range = nil
-      obj.each do |key,val|
-        if val.is_a? Array
-          if key == 'bool'
-            bool = {'should'=>[],'must'=>[],'must_not'=>[]}
-            obj['bool'].each do |arr|
-              arr.each do |k,v| bool[k] << v end
-            end
-            bool.delete_if {|k,v| v == []}
-            obj['bool'] = bool
-          elsif key == 'term'
-            val.each do |it|
-              terms[it.keys.first] = [] unless terms.has_key? it.keys.first
-              terms[it.keys.first] << it.values.first
-            end
-            obj.delete('term')
-          end
-        end
-        if val.is_a? Hash 
-          if val.has_key?('bool') and key != 'filter'
-            arr = []
-            val.each do |k,v|
-              arr << {k => v}
-            end
-            obj[key] = arr
-          elsif key == "term" and val.keys.first == "country_of_company"
-            a = []
-            Country.find_all_by_id(val.values.first).each do |c|
-              a = a | c.companies.map(&:id)
-            end
-            coc = {'companies'=>a}
-            obj.delete('term')
-          elsif key == "term" and val.values.first.match(/\d+:\d+/)
-            k = val.keys.first
-            if k.match(/datestamp$/)
-              r = val.values.first.split(':').map{|i| i.to_i}
-              r[0] = Date.new(r[0])
-              r[1] = Date.new(r[1]+1) - 1.days
-            else
-              r = val.values.first.split(':').map{|i| i.to_i}
-            end
-            puts r
-            range = {k=>{"gte"=>r[0],"lte"=>r[1]}}
-            obj.delete('term')
-          end
-        end
-      end
-      obj['range'] = range if range
-      if terms == {}
-        obj['terms'] = coc if coc
-        obj.merge(obj){|k,v| Admin.elasticify v}
-      else
-        val = []
-        obj.each do |k,v|
-          val << {k=>v}
-        end
-        terms.each do |k,v| 
-          #puts "#{k}, #{v}"
-          if k =='country_of_company'
-            a = []
-            Country.find(v).each do |c|
-              a = a | c.companies.map(&:id)
-            end
-            val << {'terms'=>{'companies'=>a}}
-          else
-            if v.length == 1
-              val << {'term'=>{k=>v[0]}}
-            else
-              v.each do |i|
-                val << {'term'=>{k=>i}}
-              end
-            end
-          end
-        end
-        val.map{|item| Admin.elasticify item}
-      end
-    else
-      obj
-    end
-  end
-
-  def self.cleanup obj
-    if obj.is_a? Array
-      arr = []
-      obj.each do |item|
-        if item.is_a? Array
-          item.each {|i| arr << i}
-        else
-          arr << item
-        end
-      end
-      arr.map {|item| Admin.cleanup item }
-    elsif obj.is_a? Hash
-      obj.merge( obj ) {|k, val| Admin.cleanup val }
-    else
-      obj
-    end
-  end
 
   post :filter do
-    if params.has_key? 'json'
-      filter = {filtered:JSON.parse(params[:filter])}
+    if params.has_key? 'feat'
+      Admin.filter(params[:filter]).map{|i| Conflict.select('id, slug, name').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}.to_json
     else
-      filter = Hash.from_xml(params[:filter])
+      Admin.filter(params[:filter]).map{|i| i['_id'].to_i }.to_json
     end
-    puts JSON.pretty_generate filter
-    filter = Admin.cleanup Admin.elasticify filter
-    puts JSON.pretty_generate filter
-    result = client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[:id,:name,:slug],query:filter})['hits']['hits'].map{|i|i['_id'].to_i}
-    p result.length
-    return result.to_json
   end
 
   get "/ac_json/:model" do

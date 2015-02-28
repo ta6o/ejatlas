@@ -48,18 +48,19 @@
                         %li
                           %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-value"=>c.keys.first}=c.values.first
                 -elsif options['content'] == 'auto'
-                  .body
+                  .body.auto
                     %h4= field.gsub("_"," ").titlecase
                     %input.autocomplete{:id=>field,:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
                     %ul
-                -elsif options['content'] == 'flat' and false
-                  .body
+                -elsif options['content'] == 'flat'
+                  .body.flat
                     %h4= field.gsub("_"," ").titlecase
                     .row
                       .col-xs-9
-                        %input.token{:id=>"#{field}-input",:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
+                        %input.token{:id=>"#{field}-input",:type=>'text',:style=>'width:100%'}
                       .col-xs-3
-                        .btn.btn-default{:id=>field,:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
+                        .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field}
+                          %icon.glyphicon.glyphicon-arrow-right
                     %ul
                 -elsif options['content'].match(/\d+:\d+/)
                   -range = options['content'].split(':')
@@ -164,7 +165,10 @@
       .col-sm-8{:style=>"padding:0"}
         .head
           .ready
-            .btn.btn-default{:onclick=>'serializeFilter(true)'} Apply Filter
+            -if @contained
+              .btn.btn-default{:onclick=>'serializeFilter("feat")'} Apply Filter
+            -else
+              .btn.btn-default{:onclick=>'serializeFilter("")'} Apply Filter
             .btn.btn-default{:onclick=>'clearFilter()'} Clear Filter
         .body
           .root.dropbox.and{"data-section"=>"box","data-value"=>'and'}
@@ -224,12 +228,26 @@
         if (!p.hasClass('root')) {div.append($('<icon class="glyphicon glyphicon-remove"></icon>'));}
         $(this).append(div);
       });
+
       $(".root.dropbox").on("mouseleave", "icon.glyphicon.op", function(e) { $(this).find('div').detach(); });
+      
       $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().parent().detach() });
+      
       $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and'); p.attr('data-value','and'); });
       $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or'); p.attr('data-value','or'); });
       $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
       $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
+
+      $('.options').on('click',$('.flat .create'),function (e) {
+        me = $(e.target);
+        field = me.attr('data-field');
+        name = me.attr('data-name');
+        that = me.prev('input');
+        text = that.text();
+        drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="field" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
+        console.log(drag)
+        me.nextAll('ul').append(drag);
+      });
 
       (function( $ ) {
         $.ui.autocomplete.prototype.options.autoSelect = true;
@@ -287,6 +305,7 @@
       setTimeout(onFilterLoad,10);
     }
   }
+
   var createContainer = function (that) {
     console.log(that.prop('tagName'));
     if (that.prop('tagName')=='SPAN') {
@@ -307,7 +326,7 @@
     $('.root.dropbox *').not('icon').detach();
   };
 
-  function serializeFilter(json){
+  function serializeFilter(page_type){
     function dive(el,ro){
       $.each(el.children().not('icon'),function(i,e){
         e = $(e);
@@ -328,23 +347,21 @@
     var root = $('<query><filtered><filter><bool><must><bool></bool><term><approval_status>approved</approval_status></term></must></bool></filter></filtered></query>')
     log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
     dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find('bool must bool')));
-    if (json) {
-      query = JSON.stringify($.xml2json(root.html()));
-      url = "/filter?json"
-      console.log(root.html())
-      console.log(query)
-    } else {
-      query = root.html()
-      url = "/filter"
-    }
+    query = JSON.stringify($.xml2json(root.html()));
+    url = "/filter"
     $.ajax({
       type: "POST",
       url: url,
-      data: 'filter='+query,
+      data: 'filter='+query+"&"+page_type,
       success: function(data){
         data = JSON.parse(data);
-        console.log(data);
-        filterMarkers(data);
+        if (page_type == 'feat') {
+          filterFollowed(data);
+          $('#featured_filter').val(query)
+          $('#filter-modal').modal('show');
+        } else  {
+          filterMarkers(data);
+        }
       }
     })
   }

@@ -36,6 +36,8 @@ class Admin < Padrino::Application
   $sitemail = 'ejoltmap@gmail.com'
   $baselayers = ["Esri.WorldImagery", "Thunderforest.Landscape", "Esri.WorldTopoMap"]
 
+  $client = Elasticsearch::Client.new log:false
+
   configure :development do
     $consurl = 'http://0.0.0.0:3000'
   end
@@ -144,68 +146,121 @@ class Admin < Padrino::Application
 
   $attrhash = {"Category" => "category_id", "Types" => "types", "Other Types" => "other_types", "Description" => "description", "Country" => "country_id", "Province" => "province", "Site" => "site", "Level of Accuracy" => "accuracy_level", "Project Area" => "project_area", "Project Length" => "project_length", "Type of Population" => "population_type", "Commodities" => "products", "Other Commodities" => "other_products", "Companies" => "companies", "IFI's" => "supporters", "Other IFI's" => "other_supporters", "EJO's" => "ejos", "Government Actors" => "govt_actors", "Mobilizing Groups" => "mobilizing_groups", "Other Mobilizing Groups" => "other_mobilizing_groups", "Mobilizing Forms" => "mobilizing_forms", "Other Mobilizing Forms" => "other_mobilizing_forms", "Environmental Impacts" => "env_impacts", "Other Environmental Impacts" => "other_env_impacts", "Health Impacts" => "hlt_impacts", "Other Health Impacts" => "other_hlt_impacts", "Socio-economic Impacts" => "sec_impacts", "Other Socio-economic Impacts" => "other_sec_impacts", "Outcomes" => "conflict_events", "Other Outcomes" => "other_outcomes", "Project Details" => "project_details", "Level of Investment" => "investment_string", "Potentially Affected Population" => "affected_people", "Intensity Level" => "status_id", "Reactionary Stage" => "reaction_id", "Start Date" => "start_date", "End Date" => "end_date", "Project Status" => "project_status_id", "Development of Alternatives" => "suggested_alternatives", "Succes Level" => "success_level", "Success Reason" => "success_reason", "Other Comments" => "other_comments"}
 
-  def self.filter options
-    require 'pp'
-    map = {"cntry" => "country_id", "comp" => "company", "success" => "success_level", "poptype" => "population_type", "category" => "category_id", "types" => "type", "intensity" => "status_id", "envi" => "env_impact", "hlti" => "hlt_impact", "seci" => "sec_impact", "mobgroup" => "mobilizing_group", "mobform" => "mobilizing_form", "product" => "product", "pstatus" => "project_status_id", "stage" => "reaction_id", "outcome" => "conflict_event", "tag" => "tag"}
-    simple = ["country_id", "success_level", "population_type", "category_id", "status_id", "project_status_id", "reaction_id"]
-    relation = ["company", "type", "env_impact", "hlt_impact", "sec_impact", "mobilizing_group", "mobilizing_form", "product", "conflict_event", "tag"]
-    comparison = ["invest-g","invest-l","start-g","start-l","end-g","end-l"]
-    hash = {}
-    if options.class == String
-      if options[0] == "{"
-        options = JSON.parse(options)
-      else
-        arr = options.split('/')
-        options = {}
-        arr.each do |a|
-          h = a.split(/[~=]/)
-          map.has_key?(h[0]) ? k = map[h[0]] : k = h[0]
-          h[-1].match(/,/) ? v = h[-1].split(',').map{|i|i.to_i} : v = [h[-1].to_i]
-          options[k] = v
-        end
+  def self.elasticify obj
+    if obj.nil?
+      {}
+    elsif obj.is_a? String
+      begin 
+        Float(obj).to_i
+      rescue
+        obj
       end
-    end
-    rarray = []
-    options.each do |k,v|
-      map.has_key?(k) ? k = map[k] : k = k
-      rarray << []
-      if simple.include? k
-        v.each do |va|
-          va -= 1 if k == "population_type"
-          rarray[-1] << Conflict.where(approval_status: 'approved').where("#{k} = ?",va)#.select('conflicts.id, name, slug, features, approval_status')
-        end
-      elsif relation.include? k
-        model = eval(UnicodeUtils.titlecase(k.gsub(/[_-]/,' ')).gsub(/\s/,''))
-        v.each do |va|
-          if va.is_a?(Integer) or va == va.to_i.to_s
-            rarray[-1] << model.find(va.to_i).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')
-          else
-            rarray[-1] << model.find_by_slug(va).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')
+    elsif obj.is_a? Array
+      obj.map{|item| Admin.elasticify item}
+    elsif obj.is_a? Hash
+      terms = {}
+      coc = nil
+      range = nil
+      obj.each do |key,val|
+        if val.is_a? Array
+          if key == 'bool'
+            bool = {'should'=>[],'must'=>[],'must_not'=>[]}
+            obj['bool'].each do |arr|
+              arr.each do |k,v| bool[k] << v end
+            end
+            bool.delete_if {|k,v| v == []}
+            obj['bool'] = bool
+          elsif key == 'term'
+            val.each do |it|
+              terms[it.keys.first] = [] unless terms.has_key? it.keys.first
+              terms[it.keys.first] << it.values.first
+            end
+            obj.delete('term')
           end
         end
-      elsif comparison.include? k
-        operator = {'g'=>'>','l'=>'<'}[k.split('-')[-1]]
-        field = {'invest'=>'investment_sum','start'=>'start_datestamp','end'=>'end_datestamp'}[k.split('-')[0]]
-        v = v[0].to_i
-        v = Date.parse("#{v}-12-31") if ['start-g','end-g'].include? k
-        v = Date.parse("#{v}-01-01") if ['start-l','end-l'].include? k
-        p Conflict.where("#{field} #{operator} ?",v).to_sql
-        rarray[-1] << Conflict.where("#{field} #{operator} ?",v)#.select('conflicts.id, name, slug, features, approval_status')
+        if val.is_a? Hash 
+          if val.has_key?('bool') and key != 'filter'
+            arr = []
+            val.each do |k,v|
+              arr << {k => v}
+            end
+            obj[key] = arr
+          elsif key == "term" and val.keys.first == "country_of_company"
+            a = []
+            Country.find_all_by_id(val.values.first).each do |c|
+              a = a | c.companies.map(&:id)
+            end
+            coc = {'companies'=>a}
+            obj.delete('term')
+          elsif key == "term" and val.values.first.match(/\d+:\d+/)
+            k = val.keys.first
+            if k.match(/datestamp$/)
+              r = val.values.first.split(':').map{|i| i.to_i}
+              r[0] = Date.new(r[0])
+              r[1] = Date.new(r[1]+1) - 1.days
+            else
+              r = val.values.first.split(':').map{|i| i.to_i}
+            end
+            puts r
+            range = {k=>{"gte"=>r[0],"lte"=>r[1]}}
+            obj.delete('term')
+          end
+        end
       end
-    end
-    resu = []
-    rarray.each do |res|
-      re = []
-      res.each do |r|
-        re = re | r
+      obj['range'] = range if range
+      if terms == {}
+        obj['terms'] = coc if coc
+        obj.merge(obj){|k,v| Admin.elasticify v}
+      else
+        val = []
+        obj.each do |k,v|
+          val << {k=>v}
+        end
+        terms.each do |k,v| 
+          #puts "#{k}, #{v}"
+          if k =='country_of_company'
+            a = []
+            Country.find(v).each do |c|
+              a = a | c.companies.map(&:id)
+            end
+            val << {'terms'=>{'companies'=>a}}
+          else
+            if v.length == 1
+              val << {'term'=>{k=>v[0]}}
+            else
+              v.each do |i|
+                val << {'term'=>{k=>i}}
+              end
+            end
+          end
+        end
+        val.map{|item| Admin.elasticify item}
       end
-      resu << re
+    else
+      obj
     end
-    result = resu.first
-    resu.each do |res|
-      result = result & res
+  end
+
+  def self.cleanup obj
+    if obj.is_a? Array
+      arr = []
+      obj.each do |item|
+        if item.is_a? Array
+          item.each {|i| arr << i}
+        else
+          arr << item
+        end
+      end
+      arr.map {|item| Admin.cleanup item }
+    elsif obj.is_a? Hash
+      obj.merge( obj ) {|k, val| Admin.cleanup val }
+    else
+      obj
     end
-    result
+  end
+
+  def self.filter filter
+    $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))})['hits']['hits']
   end
 
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]

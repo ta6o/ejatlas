@@ -1,8 +1,6 @@
 -content_for :include do
   =javascript_include_tag 'upload_iframe'
   :javascript
-    var filterinfo = eval("["+#{@filterinfo}.join(',')+"]");
-    var markerCount = filterinfo.length
 -content_for :outer do
   -unless @featured.new_record?
     #csv-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
@@ -42,7 +40,7 @@
       .modal-content
         %form
           .modal-header
-            %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+            %button.btn.btn-default.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
             %h3 Upload Image
           .modal-body
             %label Title:
@@ -139,7 +137,7 @@
   .col-md-4
     .group
       %label Additional Attributes
-      %textarea.feature{:name=>'data', :class => :text_area, :rows => 2}=@features.join(', ')
+      %textarea.feature.text_area{:name=>'data', :class => :text_area, :rows => 2}=@features.join(', ')
 
     .group#bfields
       %label Base map layers
@@ -357,7 +355,7 @@
 -unless @featured.new_record?
   :javascript
     $(document).ready(function(){
-      initFeatured(#{@featured.filter.split('/')});
+      //initFeatured(#{@featured.filter.split('/')});
     });
 
 :javascript
@@ -400,24 +398,10 @@
     });
     //$(".datemask").mask("99/99/9999");
     //$('.datemask').attr('placeholder','____/__/__');
+    //nicEditors.allTextAreas();
+    new nicEditor({}).panelInstance('featured_description',{hasPanel : true});
   });
-  function initFeatured(f){
-    filtre = f;
-    queryhash['filter'] = filtre;
-    if (queryhash["filter"]!=undefined) {
-      filterMarkers(queryhash['filter'],true)
-    }
-  }
-  function initFilter(){
-    $.each(window.location.hash.substr(1).split('&'), function(i,v) {
-      q = v.split('=');
-      n = q.shift();
-      queryhash[n] = q.join('=').replace(/\+/g,' ').split('/');
-    });
-    if (queryhash["filter"]!=undefined) {
-      filterMarkers(queryhash['filter'],true)
-      $('#filter-row .dnone').slideDown()
-    }
-  }
 
-
+  function filterFollowed(data) {
+    console.log(data)
+  }
