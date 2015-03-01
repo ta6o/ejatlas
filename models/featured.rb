@@ -47,7 +47,7 @@ class Featured < ActiveRecord::Base
       end
     end
     conflicts.each do |c|
-      cmarker = JSON.parse(c.marker)
+      cmarker = JSON.parse(c.as_marker)
       JSON.parse(c.features||"{}").each do |k,v|
         cmarker[k] = v
       end

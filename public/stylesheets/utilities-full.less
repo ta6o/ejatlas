@@ -721,8 +721,11 @@ ul.sidelink {
       }
     }
   }
-  .horipane > .content > table.table {
-    margin-top: -9px;
+  .horipane > .content {
+    padding: 0;
+    &> table.table {
+      margin-top: -9px;
+    }
   }
   table {
     margin-bottom: 24px;
@@ -1206,37 +1209,35 @@ position: relative;
 .modal-dialog.modal-sm {
   width: 20%;
 }
-#thank_fb {
+#share_fb {
   cursor: pointer;
-  padding:8px 0px;
   #img {
-    background: url('/images/facebook.png');
+    background: url('/images/fb.png');
     background-repeat: no-repeat;
-    background-position: 0px 0px;
-    width: 64px;
-    height: 64px;
+    background-position: 0px;
+    width: 20px;
+    height: 20px;
     overflow-y: hidden;
     }
   &:hover {
     #img{
-      background-position: 0px -64px;
+      background-position: 0px -20px;
     }
   }
 }
-#thank_tw {
+#share_tw {
   cursor: pointer;
-  padding: 8px 12px;
   #img {
-    background: url('/images/twitter.png');
+    background: url('/images/tw.png');
     background-repeat: no-repeat;
-    background-position: 0px 0px;
-    width: 64px;
-    height: 64px;
+    background-position: 0px;
+    width: 20px;
+    height: 20px;
     overflow-y: hidden;
   }
   &:hover {
     #img{
-      background-position: 0px -64px;
+      background-position: 0px -20px;
     }
   }
 }

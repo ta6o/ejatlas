@@ -34,53 +34,6 @@
   #infopane
     %h3=@maptitle
     %p="#{@markercount} cases reported"
-  -#%br/
-    %input#conf.autocomplete{:type=>'text','data-source'=>'markerinfo'}
-    :javascript
-      window.onload = function () {
-        (function( $ ) {
-          $.ui.autocomplete.prototype.options.autoSelect = true;
-          $( "body" ).on( "blur", ".autocomplete", function( event ) {
-            var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
-            if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
-            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
-            autocomplete.widget().children( ".ui-menu-item" ).each(function() {
-              var item = $( this )
-              if ( matcher.test( item.name || item ) ) {
-                autocomplete.selectedItem = item;
-                return false;
-              } else {
-                $('.autocomplete').val('');
-                return false
-              }
-            });
-            if ( autocomplete.selectedItem ) {
-              autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
-            }
-          });
-
-        }( jQuery ));
-        $( ".autocomplete" ).autocomplete({
-          minLength: 2,
-          position: { my : "right top", at: "right bottom" },
-          source: function( request, response ) {
-            $source = eval($('.autocomplete:focus').attr('data-source'));
-            var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
-            response( $.grep( $source, function( value ) {
-              value = value.name || value;
-              return matcher.test( value );
-            }) );
-          },
-          select: function( event, ui ) {
-            console.log(ui)
-            $item = $('.autocomplete:focus');
-            $item.val( "" );
-            $id = $item.attr('id');
-            return false;
-          }
-        });
-      }
-
 
   .horipane
     .title Legend
@@ -97,7 +50,7 @@
 
     .horipane
       .title Browse maps
-      .conten{:style=>'display:none;'}
+      .content{:style=>'display:none;'}
         -@browseinfo.each do |k,v|
           .horipane.browse
             .title{:style=>'background:transparent'}= "by #{k.titlecase}"
@@ -149,7 +102,7 @@
                     .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.thumb.url}');" : "")}
                 %td.exp
                   %h4
-                    %a{:href=>"/conflict/#{c.slug}"}= c.name
+                    %a{:href=>"/conflict/#{c.slug}"}= c.name.split(',')[0]
                     -ago = ((Time.now-c.modified_at)/(60*60*24)).to_i
                     -if ago < 100
                       %small.blocked= "Updated #{ago < 1 ? "today" : (ago == 1 ? "#{ago} day ago" : "#{ago} days ago")}."

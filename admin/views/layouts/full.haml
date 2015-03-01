@@ -4,15 +4,30 @@
   %head
     %meta{:charset => "utf-8"}/
     %title= @name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"
+
     %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
     %meta{:content => 'text/html;charset=UTF-8', 'http-equiv' => "content-type"}/
-    %meta{:content => 'Environmental Justice Atlas', :property => "og:title"}/
-    %meta{:content => (@headline || $pagedesc), :property => "og:description"}/
-    %meta{:content => $siteurl, :property => "og:url"}/
-    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-og.jpg'), :property => "og:image"}/
+
+    %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :name => 'title'}
     %meta{:content => (@headline || $pagedesc), :name => "description"}/
     %meta{:content => $pageauthor, :name => "author"}/
     %meta{:content => $pagekeyws, :name => "keywords"}/
+
+    / Facebook meta tags
+    %meta{:content => "website", :property => "og:type"}/
+    %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :property => 'og:title'}
+    %meta{:content => (@headline || $pagedesc), :property => "og:description"}/
+    %meta{:content => $siteurl, :property => "og:url"}/
+    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-og.jpg'), :property => "og:image"}/
+    %meta{:content => "Environmental Justice Atlas", :property => 'og:site_name'}
+
+    / Twitter meta tags
+    %meta{:content => "summary", :name => "twitter:card"}/
+    %meta{:content => $tw_handle, :name => "twitter:site"}/
+    %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :name => 'twitter:title'}
+    %meta{:content => (@headline || $pagedesc), :name => "twitter:description"}/
+    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-og.jpg'), :name => "twitter:image"}/
+
     =stylesheet_link_tag 'main-full'
     =javascript_include_tag 'jQl'
     =yield_content :include

@@ -311,7 +311,8 @@ Admin.controller do
     @maptitle = con.slogan
     @baselayers = (con.baselayers != "" ? con.baselayers : "")
     begin
-      @domains = JSON.parse(con.filter)
+      @domains = []
+      JSON.parse(con.filter).each{}
       puts JSON.pretty_generate @domains
     rescue
     end
@@ -392,8 +393,9 @@ Admin.controller do
     token = params[:token]
     model = params[:model]
     model = 'country' if model == 'country_of_company'
-    filter = {match:{name:{query:token,type:"phrase_prefix"}}}
-    result = client.search(index: 'atlas', type: model, body: {from:0,size:9999,fields:[:id,:name],query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['fields']['name'][0]}}
+    #filter = {match:{name:"#{token}"}}
+    filter = {query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}}
+    result = $client.search(index: 'atlas', type: model, body: {from:0,size:9999,fields:[:name],query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['fields']['name'][0]}}
     puts result.length
     return result.to_json
   end

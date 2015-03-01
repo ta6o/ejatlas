@@ -21,9 +21,7 @@
       }
     }
 
-.front
-  -#infopane{:style=>'height:340px;'}
-  -#%p= $pagedesc
+.front#conflict
   -if @defs
     %svg{:style=>'height:0'}
       %defs
@@ -35,11 +33,19 @@
       .pull-right#commands
         %ul.clearfix.list-unstyled
           %li
-            %a{:href=>"/print/#{@slug}",:target=>"_blank"}
+            %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fconsole.ejatlas.org/conflict/#{@slug}",:target=>"_blank",:title=>"Share on Facebook"}
+              #share_fb 
+                #img &nbsp;
+          %li
+            %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out ‘"+@name.split(',')[0]+"‘ on #EJAtlas!")}&url=#{$siteurl}/conflict/#{@slug}",:target=>"_blank",:title=>"Tweet"}
+              #share_tw 
+                #img &nbsp;
+          %li
+            %a{:href=>"/print/#{@slug}",:target=>"_blank",:title=>"Full page"}
               %span.glyphicon.glyphicon-print
           -if current_account and ['admin','editor'].include? current_account.role
             %li
-              %a{:href=>"/conflicts/edit/#{@id}",:target=>"_blank"}
+              %a{:href=>"/conflicts/edit/#{@id}",:target=>"_blank",:title=>"Edit"}
                 %span.glyphicon.glyphicon-edit
 
     .clearfix#disclaimer
@@ -160,7 +166,10 @@
             %a{:href=>"/conflict/#{rel.slug}"}= rel.name
 
 
-  #disqus_thread
+  .horipane
+    .title.active Comments
+    .content
+      #disqus_thread
 
 -content_for :body_end do
   :javascript

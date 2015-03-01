@@ -230,6 +230,7 @@ class AsyncTask
       ca.conflicts_json = ""#"["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
     end
 
+
     if params["countries"] == "on"
       countries = []
       puts "Updating countries..."
@@ -307,7 +308,7 @@ class AsyncTask
       Featured.all.each do |featured|
         #features = JSON.parse(featured.features || '{}')
         begin 
-          featured.ping(Admin.filter(@featured.filter).map{|i| Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug})
+          featured.ping(Admin.filter(featured.filter).map{|i| Conflict.select('id, slug, name, approval_status, features, lat, lon, category_id').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug})
         rescue
           featured.ping([])
         end
@@ -350,6 +351,8 @@ class AsyncTask
 
     if params["filter"] == "on"
       puts "Updating filter..."
+      Tag.all.each {|c| client.index index: 'atlas', type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
+      Account.where(public:true).each {|c| client.index index: 'atlas', type: 'account', id: c.id, body: {id:c.id,name:c.name}}
       filterdata = {}
 
       filterdata["basic_data"] = {}
@@ -368,6 +371,8 @@ class AsyncTask
       filterdata["project"]["company"] = {:content=>'auto',:name=>"companies"}
       filterdata["project"]["country_of_company"] = {:content=>'auto',:name=>"country_of_company"}
       filterdata["project"]["financial_institution"] = {:content=>'auto',:name=>"supporters"}
+      filterdata["project"]["government_actors"] = {:content=>'flat',:name=>"govt_actors"}
+      filterdata["project"]["env_justice_organizations"] = {:content=>'flat',:name=>"ejos"}
       
       filterdata["conflict"] = {}
       filterdata["conflict"]["start_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"start_datestamp"}
@@ -387,6 +392,12 @@ class AsyncTask
       filterdata["outcomes"] = {}
       filterdata["outcomes"]["project_status"] =  {:content=>ProjectStatus.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"project_status_id"}
       filterdata["outcomes"]["outcome"] =  {:content=>ConflictEvent.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"conflict_events"}
+
+      filterdata["meta"] = {}
+      filterdata["meta"]["collaborator"] =  {:content=>'auto',:name=>"account_id",:model=>'account'}
+      filterdata["meta"]["tags"] = {:content=>'auto',:name=>"tags",:model=>'tag'}
+      #filterdata["meta"]["created"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"created_at"}
+      #filterdata["meta"]["modified"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"modified_at"}
 
       ca.filterdata = filterdata.to_json
     end

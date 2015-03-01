@@ -367,13 +367,14 @@ function showMarkers(markers) {
 
   $.each(markers, function(i,m){
     mark = m;//JSON.parse(m);
-    if (!mark.lat || !mark.lon) {
+    if (!mark.a || !mark.o) {
       console.log(mark);
       return 0
     }
-    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
-    if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
-    popcontent += '</td></tr></table>';
+    //popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
+    //if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
+    //popcontent += '</td></tr></table>';
+    popcontent = '<div>';
 
     cclass = "";
     if ('dmn' in mark && mark.dmn.length > 0) {
@@ -400,18 +401,18 @@ function showMarkers(markers) {
     }
     popcontent += '</div>';
 
-    var marker = L.marker([mark.lat, mark.lon],{
-      icon: L.divIcon({ className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+''+cclass, }),
+    var marker = L.marker([mark.a, mark.o],{
+      icon: L.divIcon({ className: 'map_icon mic i_'+mark.c+' id_'+mark.i+''+cclass, }),
       riseOnHover: true,
     }).addTo(markerLayer);
     
-    $('.map_icon.id_'+mark.id).attr('data-id',mark.id);
+    $('.map_icon.id_'+mark.i).attr('data-id',mark.i);
 
-    marker.id = mark.id;
-    marker.name = mark.name;
-    marker.slug = mark.slug;
-    marker.cslg = mark.cslg;
-    marker.content = popcontent;
+    marker.id = mark.i;
+    //marker.name = mark.name;
+    //marker.slug = mark.slug;
+    //marker.cslg = mark.cslg;
+    //marker.content = popcontent;
     marker.on('mouseover', function(e){
       selector = '#map .map_icon.id_'+marker.id;
       $(selector).addClass('selected')
@@ -426,13 +427,13 @@ function showMarkers(markers) {
       $(selector).removeClass('hovered');
     });
     if (window.location.pathname === "/embed") {
-      marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
+      //marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
     } else {
-      marker.on('click', function(e){window.location="/conflict/"+marker.slug});
+      //marker.on('click', function(e){window.location="/conflict/"+marker.slug});
     }
-    markerc[mark.id] = marker;
+    markerc[mark.i] = marker;
     //oms.addMarker(marker);
-    arrr.push(mark.id);
+    arrr.push(mark.i);
     all ++;
   });
   $(document).ready(function(){

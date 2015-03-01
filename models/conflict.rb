@@ -69,8 +69,15 @@ class Conflict < ActiveRecord::Base
   before_save :set_slug
 
   def title
-    return self.headline if self.headline and self.headline.length > 0
-    return self.description.split(".")[0]+"." if self.description and self.description.split(".").any?
+    return "#{self.headline.sub(/\s+$/,'')}.".sub(/\.+$/,'.') if self.headline and self.headline.length > 0
+    if self.description and self.description.split(".").any?
+      desc = self.description.split(".")[0]
+      if desc.length < 255
+        return desc+'.'
+      else
+        return desc[0..255].split(/\s/)[0..-2].join(' ')+'...'
+      end
+    end
     return nil
   end
 
@@ -123,9 +130,11 @@ class Conflict < ActiveRecord::Base
 
   def as_marker
     clr = self.category ? self.category.id : 0
-    lat = 0; lat = self.lat if self.lat.to_f.abs <= 180
-    lon = 0; lon = self.lon if self.lon.to_f.abs <= 180
-    return {:lon=>lon,:lat=>lat,:id=>self.id,:clr=>clr}.to_json
+    lat = 0; 
+    lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 180
+    lon = 0; 
+    lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 180
+    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr}.to_json
   end
 
   def get_start_date

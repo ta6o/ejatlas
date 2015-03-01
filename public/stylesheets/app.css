@@ -6186,3 +6186,6 @@ ul.sidelink li.active {
   margin: 0;
   display: block;
 }
+.graybg {
+  background: url('/images/bg.png');
+}

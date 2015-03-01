@@ -30,7 +30,7 @@ class Admin < Padrino::Application
 
   $title = 'EJAtlas'
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
-  $siteurl = 'http://ejatlas.org'
+  $siteurl = 'http://console.ejatlas.org'
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
@@ -260,7 +260,10 @@ class Admin < Padrino::Application
   end
 
   def self.filter filter
-    $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))})['hits']['hits']
+    puts JSON.pretty_generate(JSON.parse filter)
+    filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))
+    puts JSON.pretty_generate(filter)
+    $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:filter})['hits']['hits']
   end
 
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]

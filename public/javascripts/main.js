@@ -3227,42 +3227,49 @@ function initMap () {
 
   $(document).on('click','.vectorlegend .overlays tr',function(e){
     box = $(this).find('input');
-    name = $(this).find('td:last').text();
+    title = $(this).find('td:last')
+    name = title.text();
     hit = e.target == box[0];
     chk = box.prop('checked');
     if ((chk && !hit) || (!chk && hit)) {
       box.prop('checked',false);
       map.removeLayer(overlayMaps[name]);
+      title.css('font-weight','normal');
     } else if ((chk && hit) || (!chk && !hit)){
       box.prop('checked',true);
       map.addLayer(overlayMaps[name]);
+      title.css('font-weight','bold');
     }
   });
 
   $(document).on('click','.vectorlegend .choropleths tr',function(e){
     if ($(this).hasClass('leg')) return
+    $('body').css('cursor','wait !important');
     box = $(this).find('input');
-    name = $(this).find('td:last').text();
+    title = $(this).find('td:last')
+    name = title.text();
     hit = e.target == box[0];
     chk = box.prop('checked');
+    $('.vectorlegend .choropleths tr td').css('font-weight','normal');
     if (chk && !hit) {
       box.prop('checked',false);
       map.removeLayer(overlayMaps[name]);
-      $('.vectorlegend .choropleths tr.leg').fadeOut();
+      $('.vectorlegend .choropleths tr.leg').hide();
     } else if ((chk && hit) || (!chk && !hit)){
       if (box.attr('id') == choro_last && hit) {
         box.prop('checked',false);
         map.removeLayer(overlayMaps[name]);
-        $('.vectorlegend .choropleths tr.leg').fadeOut();
+        $('.vectorlegend .choropleths tr.leg').hide();
       } else {
-        $('.vectorlegend .choropleths tr.leg').fadeOut(function(){
-          $(this).nextAll('.leg.'+toSlug(name)).fadeIn();
-        });
+        title.css('font-weight','bold');
+        $('.vectorlegend .choropleths tr.leg').hide();
+        $(this).nextAll('.leg.'+toSlug(name).replace(/\W/g,'')).fadeIn();
         $('.vectorlegend .choropleths .input').prop('checked',false)
         box.prop('checked',true);
         if (map.hasLayer(overlayMaps['Country Data'])) {
           map.removeLayer(overlayMaps['Country Data']);
           $('.vectorlegend .overlays input#checkbox_country_data').prop('checked',false);
+          $('.vectorlegend .overlays input#checkbox_country_data').closest('tr').css('font-weight','normal');
         }
         $.each(Object.keys(choropleths),function(i,n){
           if (map.hasLayer(overlayMaps[n])) {
@@ -3273,6 +3280,7 @@ function initMap () {
       }
     }
     choro_last = box.attr('id');
+    $('body').css('cursor','auto !important');
   });
 
   var zoomControl = L.control.zoom({position:'topright'});
@@ -3473,13 +3481,14 @@ function showMarkers(markers) {
 
   $.each(markers, function(i,m){
     mark = m;//JSON.parse(m);
-    if (!mark.lat || !mark.lon) {
+    if (!mark.a || !mark.o) {
       console.log(mark);
       return 0
     }
-    popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
-    if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
-    popcontent += '</td></tr></table>';
+    //popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
+    //if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
+    //popcontent += '</td></tr></table>';
+    popcontent = '<div>';
 
     cclass = "";
     if ('dmn' in mark && mark.dmn.length > 0) {
@@ -3506,18 +3515,18 @@ function showMarkers(markers) {
     }
     popcontent += '</div>';
 
-    var marker = L.marker([mark.lat, mark.lon],{
-      icon: L.divIcon({ className: 'map_icon mic i_'+mark.clr+' id_'+mark.id+''+cclass, }),
+    var marker = L.marker([mark.a, mark.o],{
+      icon: L.divIcon({ className: 'map_icon mic i_'+mark.c+' id_'+mark.i+''+cclass, }),
       riseOnHover: true,
     }).addTo(markerLayer);
     
-    $('.map_icon.id_'+mark.id).attr('data-id',mark.id);
+    $('.map_icon.id_'+mark.i).attr('data-id',mark.i);
 
-    marker.id = mark.id;
-    marker.name = mark.name;
-    marker.slug = mark.slug;
-    marker.cslg = mark.cslg;
-    marker.content = popcontent;
+    marker.id = mark.i;
+    //marker.name = mark.name;
+    //marker.slug = mark.slug;
+    //marker.cslg = mark.cslg;
+    //marker.content = popcontent;
     marker.on('mouseover', function(e){
       selector = '#map .map_icon.id_'+marker.id;
       $(selector).addClass('selected')
@@ -3532,13 +3541,13 @@ function showMarkers(markers) {
       $(selector).removeClass('hovered');
     });
     if (window.location.pathname === "/embed") {
-      marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
+      //marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
     } else {
-      marker.on('click', function(e){window.location="/conflict/"+marker.slug});
+      //marker.on('click', function(e){window.location="/conflict/"+marker.slug});
     }
-    markerc[mark.id] = marker;
+    markerc[mark.i] = marker;
     //oms.addMarker(marker);
-    arrr.push(mark.id);
+    arrr.push(mark.i);
     all ++;
   });
   $(document).ready(function(){
@@ -3895,6 +3904,22 @@ function showVector(v) {
   }
   vr = toSlug(vect['url']);
   ly = eval(vr);
+  tl = vect['name']
+  jsons[tl] = {features:[]};
+  $.each(ly,function(k,v){
+    if (k == 'features') {
+      $.each(v,function(i,e){
+          jsons[tl][k][i] = {};
+        $.each(e,function(kk,vv){
+          if (kk != 'geometry') {
+            jsons[tl][k][i][kk] = vv;
+          }
+        });
+      });
+    } else {
+      jsons[tl][k] = v;
+    }
+  });
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
       lStyle = JSON.parse(vect["style"])
@@ -3910,24 +3935,19 @@ function showVector(v) {
         }
       }
     }
-    tl = vect["name"]
-    jsons[tl] = ly;
     jsons[tl]['style'] = lStyle;
     overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
   } else {
     lStyle = {};
-    tl = vect['name']
-    sl = toSlug(tl);
-    jsons[tl] = ly;
+    sl = toSlug(tl).replace(/\W/g,'');
     choropleths[tl] = JSON.parse(vect['choropleth'])
     sp = '';
     if (vect['shown'] == '1') sp = 'style="display: table-row;"';
-    console.log(sp)
     leg = '';
     $.each(choropleths[tl],function(k,v){
       leg += '<tr class="leg '+sl+'" '+sp+'> <td>&nbsp;</td> <td class="icon"> <div class="chorostyle" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+v['legend']+'</td> </tr>';
     });
-    leg += '<tr class="leg last '+sl+'" '+sp+'> <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td> </tr>';
+    leg += '<tr class="leg last '+sl+'" '+sp+'> <td></td><td></td><td></td> </tr>';
     jsons[tl]['legend'] = leg;
     overlayMaps[tl] = L.geoJson(ly['features'],{style: style, pointToLayer: pToLayer, onEachFeature:onEachFeature});
   }
@@ -3950,14 +3970,16 @@ function addOverlay(name,lstyle,shown){
     if ($('#legendpane .vectorlegend .choropleths').length == 0) {
       $('#legendpane .vectorlegend').append('<table class="choropleths"><tbody></tbody></table>');
     }
-    html = "<tr><td class='input'><input type='radio' id='radio_"+toSlug(name)+"' name='choropleth'"
+    html = "<tr><td class='input'><input type='radio' id='radio_"+toSlug(name).replace(/\W/g,'')+"' name='choropleth'"
     if (shown == '1') { html += " checked='checked'" }
     html += "></input></td><td class='icon'><div class='chorostyle clearfix'>"
     clength = Object.keys(choropleths[name]).length;
     $.each(choropleths[name],function(k,v){
       html += "<div style='width:"+(16/clength)+"px;background-color:#"+v.color.replace(/^#/,'')+"'>&nbsp;</div>";
     });
-    html += "</div></td><td>"+name+"</td></tr>"
+    html += "</div></td><td";
+    if (shown == '1') { html += " style='font-weight:bold'" }
+    html += ">"+name+"</td></tr>"
     html += jsons[name].legend.replace("class=\"legend\"","class=\"legend static\"");
     $('#legendpane .vectorlegend table.choropleths tbody').append(html);
   } else {
@@ -3975,7 +3997,9 @@ function addOverlay(name,lstyle,shown){
     html = "<tr><td class='input'><input type='checkbox' id='checkbox_"+toSlug(name)+"'"
     if (shown == '1') { html += " checked='checked'" }
     html += "></input></td><td class='icon'><svg id='icon_"+toSlug(name)+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+toSlug(name)+" > rect "+stylestr+"</style></td>"
-    html += "<td>"+name+"</td></tr>"
+    html += "<td";
+    if (shown == '1') { html += " style='font-weight:bold'" }
+    html += ">"+name+"</td></tr>"
     $('#legendpane .vectorlegend table.overlays tbody').append(html);
   }
 }

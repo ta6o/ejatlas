@@ -13,7 +13,7 @@
               %ul
                 -content.each do |field,options|
                   %li
-                    %a.show-filter-content{"data-id"=>"#{field}",:title=>options.to_s,:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= field.gsub("_"," ").titlecase
+                    %a.show-filter-content{"data-id"=>"#{field}",:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= field.gsub("_"," ").titlecase
     #filterInfo{:style=>'margin-top:8px;'}
       %p.small{:style=>'line-height:16px;padding:4px;'}
         Please pick from the
@@ -40,6 +40,7 @@
             -content.each do |field,options|
               .data{:id=>field,:style=>(field=="success_level" ? "display:block" : "")}
                 -if options.has_key? 'name' then  name = options['name'] else name = field end
+                -if options.has_key? 'model' then  model = options['model'] else model = field end
                 -if options['content'].is_a? Array
                   .body
                     %h4= field.gsub("_"," ").titlecase
@@ -50,16 +51,16 @@
                 -elsif options['content'] == 'auto'
                   .body.auto
                     %h4= field.gsub("_"," ").titlecase
-                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
+                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>model,"data-name"=>name,"data-field"=>field,"data-section"=>"field",:style=>'width:100%'}
                     %ul
-                -elsif options['content'] == 'flat' and false
+                -elsif options['content'] == 'flat'
                   .body.flat
                     %h4= field.gsub("_"," ").titlecase
                     .row
                       .col-xs-9
                         %input.token{:id=>"#{field}-input",:type=>'text',:style=>'width:100%'}
                       .col-xs-3
-                        .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field}
+                        .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-section"=>"prefix"}
                           %icon.glyphicon.glyphicon-arrow-right
                     %ul
                 -elsif options['content'].match(/\d+:\d+/)
@@ -239,15 +240,25 @@
       $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
       $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
 
-      $('.options').on('click',$('.flat .create'),function (e) {
-        me = $(e.target);
+      $('.options').on('click','.flat .create',function (e) {
+        me = $(e.target).closest('col-xs-3').find('.create');
+        me = $(this);
         field = me.attr('data-field');
         name = me.attr('data-name');
-        that = me.prev('input');
-        text = that.text();
-        drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="field" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
-        console.log(drag)
-        me.nextAll('ul').append(drag);
+        row = me.closest('.row');
+        that = row.find('input');
+        text = that.val().substr(0,1).toUpperCase() + that.val().substr(1);
+        drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
+        console.log(drag.html())
+        row.nextAll('ul').append(drag);
+
+        $('.drag, .idrag').draggable({
+          connectToSortable: ".root.dropbox",
+          placeholder: "placeholder",
+          revert: "invalid",
+          helper: "clone",
+          containment: ".canvas",
+        }).disableSelection();
       });
 
       (function( $ ) {
@@ -280,7 +291,7 @@
           $.ajax({
             type: "GET",
             url: $source+'?token='+request.term,
-            success: function(data){ console.log(data); response( JSON.parse(data) ); }
+            success: function(data){ response( JSON.parse(data) ); }
           })
         },
         select: function( event, ui ) {
@@ -288,7 +299,7 @@
           $item.val( "" );
           $id = $item.attr('id');
           $ul = $item.nextAll('ul')
-          $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='field' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
+          $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='"+$item.attr('data-section')+"' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
           $($ul).append($('<li>', {html: $html}));
           $('.drag, .idrag').draggable({
             connectToSortable: ".root.dropbox",
@@ -312,7 +323,7 @@
     if (that.prop('tagName')=='SPAN') {
       $(that).find('strong').detach()
       text = $(that).text();
-      return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="field" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text)+'</span>');
+      return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text)+'</span>');
     } else if ($(that).prop('tagName')=='DIV') {
       if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
         that = $(that).find('div')
@@ -333,8 +344,16 @@
         e = $(e);
         if (e.prop('tagName')=="SPAN") {
           key = e.attr('data-name');
-          val = e.attr('data-value');
-          $('<'+key+'>'+val+'</'+key+'>').appendTo($('<term></term>').appendTo(ro));
+          val = e.attr('data-value').toLowerCase().replace(/^\s+/,'').replace(/\s+$/,'');
+          if (e.attr('data-section') == 'prefix' && val.split(/\s/).length > 1) {
+            terms = ""
+            $.each(val.split(/\s/),function(i,e){
+              terms += "<term><"+key+">"+e+"</"+key+"></term>";
+            })
+            $('<must>'+terms+'</must>').appendTo($('<bool></bool>').appendTo(ro));
+          } else {
+            $('<'+key+'>'+val+'</'+key+'>').appendTo($('<term></term>').appendTo(ro));
+          }
         } else if (e.prop('tagName')=="DIV") {
           e = $(e.find('div'))
           if (e.find('div, span').length == 0) return true
