@@ -3485,6 +3485,16 @@ function showMarkers(markers) {
       console.log(mark);
       return 0
     }
+    if (markers.length == 1){
+      var marker = L.marker([mark.a, mark.o],{
+        icon: L.divIcon({ className: 'map_icon mic i_'+mark.c+' id_'+mark.i }),
+        riseOnHover: true,
+      }).addTo(markerLayer);
+      markerc[mark.i] = marker;
+      $('.id_'+mark.i).css('cursor','grab');
+      $('.id_'+mark.i).css('cursor','-webkit-grab');
+      return false
+    }
     popcontent = '<div>';
 
     cclass = "";
@@ -3520,9 +3530,6 @@ function showMarkers(markers) {
     $('.map_icon.id_'+mark.i).attr('data-id',mark.i);
 
     marker.id = mark.i;
-    //marker.name = mark.name;
-    //marker.slug = mark.slug;
-    //marker.cslg = mark.cslg;
     marker.content = popcontent;
     marker.bindPopup(L.popup({
         autoPanPaddingTopLeft: L.point(24, 96),
@@ -3895,7 +3902,10 @@ function onEachFeature(feature, layer) {
     inf += "</p>";
   }
   inf += "</div>"
-  layer.bindPopup(inf);
+  layer.bindPopup(inf,{
+        autoPanPaddingTopLeft: L.point(24, 96),
+        autoPanPaddingBottomRight: L.point(72, 64),
+      });
   layer.on({
     mouseover:highlightFeature,
     mouseout: resetHighlight,

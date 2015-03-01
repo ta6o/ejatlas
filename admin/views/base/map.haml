@@ -110,6 +110,16 @@
 
 -content_for :body_end do
   :javascript
+    $(document).ready(function(){
+      $('#rightpane').scroll(function() {
+        if(!scrolling) {return}
+        if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
+          $('body').css('cursor','wait');
+          ask();
+          console.log('ok')
+        }
+      });
+    });
     function resetColumns() {
       columns = $('.browse .title.active').next('.content').find('.columns');
       if (columns.length > 0) {
@@ -118,6 +128,19 @@
         $('.columns').css('-moz-column-count', iColumns);
         $('.columns').css('-webkit-column-count', iColumns);
       }
+    }
+    var scrolling = true;
+    function ask() {
+      $.getJSON("/more_recent","offset="+$('.recent tr').length,function(data){
+        if (data.length < 6) scrolling = false;
+        $.each(data,function(i,n) {
+          n = n.conflict
+          row = "<tr class='block' data-width='360'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><h4><a href='/conflict/"+n.slug+"'>"+n.name.split(',')[0]+"</a></h4><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+n.headline+"</p></td></tr>"
+          $('tbody.recent').append(row);
+        });
+        dragEnd();
+        $('body').css('cursor','auto');
+      })
     }
 
 

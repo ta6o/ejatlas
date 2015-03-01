@@ -115,6 +115,7 @@ class Conflict < ActiveRecord::Base
     self.table = self.as_table
   end
 
+=begin
   def as_mark
     clr = self.category ? self.category.id : 0
     cat = self.category ? self.category.name : ''
@@ -127,6 +128,16 @@ class Conflict < ActiveRecord::Base
     cslg = self.country.slug if self.country
     return {:name=>self.name,:lon=>lon,:lat=>lat,:id=>self.id,:cat=>cat,:start=>sta,:clr=>clr,:slug=>self.slug,:cslg=>cslg,:title=>self.title}.to_json
   end
+
+  def compact_marker
+    clr = self.category ? self.category.id : 0
+    lat = 0; 
+    lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 180
+    lon = 0; 
+    lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 180
+    return "#{self.id},#{clr},#{lat},#{lon}"
+  end
+=end
 
   def as_marker
     clr = self.category ? self.category.id : 0

@@ -5170,14 +5170,8 @@ ul.sidelink li.active {
 .map_icon {
   display: block;
   content: '&nbsp;';
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#555555), to(#2f2f2f));
-  background-image: -webkit-linear-gradient(top, #555555 0%, #2f2f2f 100%);
-  background-image: -moz-linear-gradient(top, #555555 0%, #2f2f2f 100%);
-  background-image: linear-gradient(to bottom, #555555 0%, #2f2f2f 100%);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff555555', endColorstr='#ff2f2f2f', GradientType=0);
   border-radius: 18px;
   width: 32px !important;
   height: 32px !important;
@@ -6125,7 +6119,7 @@ ul.sidelink li.active {
 #share_fb #img {
   background: url('/images/fb.png');
   background-repeat: no-repeat;
-  background-position: 0px;
+  background-position: 0px 0px;
   width: 20px;
   height: 20px;
   overflow-y: hidden;
@@ -6139,7 +6133,7 @@ ul.sidelink li.active {
 #share_tw #img {
   background: url('/images/tw.png');
   background-repeat: no-repeat;
-  background-position: 0px;
+  background-position: 0px 0px;
   width: 20px;
   height: 20px;
   overflow-y: hidden;
