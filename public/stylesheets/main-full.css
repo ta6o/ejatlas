@@ -5456,9 +5456,6 @@ ul.sidelink li.active {
   font-weight: bold;
   font-size: 14px;
 }
-#infopane .chicon {
-  width: 20px;
-}
 #infopane .features {
   font-size: smaller;
   margin: -12px 0 0;
@@ -5499,6 +5496,12 @@ ul.sidelink li.active {
 }
 #legendpane table tbody tr td.icon {
   width: 20px;
+}
+#legendpane table tbody tr.leg {
+  display: none;
+}
+#legendpane table tbody tr.leg.last {
+  height: 12px;
 }
 #legendpane .vectorlegend table tbody tr td.input {
   padding: 0 4px 0 2px;

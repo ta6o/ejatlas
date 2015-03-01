@@ -306,10 +306,9 @@ class AsyncTask
       end
       Featured.all.each do |featured|
         #features = JSON.parse(featured.features || '{}')
-        if confs = Admin.filter(featured.filter)
-          confs.sort!{|a,b|a.slug<=>b.slug}
-          featured.ping(confs)
-        else
+        begin 
+          featured.ping(Admin.filter(@featured.filter).map{|i| Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug})
+        rescue
           featured.ping([])
         end
       end

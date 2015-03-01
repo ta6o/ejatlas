@@ -69,7 +69,7 @@ Admin.controller do
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
-    @recent = Conflict.select('id, headline, modified_at, name, slug').where("headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
+    @recent = Conflict.select('id, headline, modified_at, name, slug').where("approval_status = 'approved' AND headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
     @feats = Featured.select('id, description, name, slug, image').where(published:true).order("slug").limit(6)
     render "base/map", :layout => @layout
   end
@@ -306,11 +306,15 @@ Admin.controller do
     end
     @defs = @defs.to_set.to_a
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link').to_json
-    @image = con.images.where(prime:1)[0]
+    @image = con.image#s.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan
     @baselayers = (con.baselayers != "" ? con.baselayers : "")
-    #@domains = JSON.parse(con.filter)['tag']
+    begin
+      @domains = JSON.parse(con.filter)
+      puts JSON.pretty_generate @domains
+    rescue
+    end
     @fid = con.id
     @color = "##{con.color}"
     render "base/front", :layout => @layout

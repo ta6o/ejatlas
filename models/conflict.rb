@@ -535,6 +535,10 @@ class Conflict < ActiveRecord::Base
   def structure
     [
 
+      ['Description', '1', [
+        [:mini, 'c' ,'description', ''],
+      ]],
+
       ['Basic Data', '1', [
         [:flat, 'c' ,'name', 'Name'],
         [:link, 'v', 'country', 'country', 'Country'],
@@ -546,7 +550,6 @@ class Conflict < ActiveRecord::Base
       ['Source of Conflict', '1', [
         [:name, 'v', 'category', 'Type of Conflict (1st level)'],
         [:many, 'types', 'Type of Conflict (2nd level)'],
-        [:mini, 'c' ,'description', 'Description'],
         [:mlnk, 'products', 'Specific Commodities'],
       ]],
 

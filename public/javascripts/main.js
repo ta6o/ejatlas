@@ -3240,6 +3240,7 @@ function initMap () {
   });
 
   $(document).on('click','.vectorlegend .choropleths tr',function(e){
+    if ($(this).hasClass('leg')) return
     box = $(this).find('input');
     name = $(this).find('td:last').text();
     hit = e.target == box[0];
@@ -3247,11 +3248,16 @@ function initMap () {
     if (chk && !hit) {
       box.prop('checked',false);
       map.removeLayer(overlayMaps[name]);
+      $('.vectorlegend .choropleths tr.leg').fadeOut();
     } else if ((chk && hit) || (!chk && !hit)){
       if (box.attr('id') == choro_last && hit) {
         box.prop('checked',false);
         map.removeLayer(overlayMaps[name]);
+        $('.vectorlegend .choropleths tr.leg').fadeOut();
       } else {
+        $('.vectorlegend .choropleths tr.leg').fadeOut(function(){
+          $(this).nextAll('.leg.'+toSlug(name)).fadeIn();
+        });
         $('.vectorlegend .choropleths .input').prop('checked',false)
         box.prop('checked',true);
         if (map.hasLayer(overlayMaps['Country Data'])) {
@@ -3795,7 +3801,7 @@ function style(feature) {
     chname = feature.properties.pn;
     category = feature.properties.category;
   }
-  console.log(category)
+  //console.log(category)
   if (category) {
     dense = choropleths[chname][category]['color'];
   } else {
@@ -3817,7 +3823,7 @@ function highlightFeature(e) {
   var layer = e.target;
   pn = layer.feature.category
   inf = "<div class='infocontent'><h3><strong>"+pn+"</strong></h3>"
-  if (jsons[pn]['legend']){ inf += jsons[pn].legend.replace("class=\"legend\"","class=\"legend static\""); inf += "<br />" }
+  //if (jsons[pn]['legend']){ inf += jsons[pn].legend.replace("class=\"legend\"","class=\"legend static\""); inf += "<br />" }
   if (jsons[pn]['desc']){ inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>" }
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
@@ -3911,13 +3917,17 @@ function showVector(v) {
   } else {
     lStyle = {};
     tl = vect['name']
+    sl = toSlug(tl);
     jsons[tl] = ly;
     choropleths[tl] = JSON.parse(vect['choropleth'])
-    leg = '<div class="legend"><table> <tbody>';
+    sp = '';
+    if (vect['shown'] == '1') sp = 'style="display: table-row;"';
+    console.log(sp)
+    leg = '';
     $.each(choropleths[tl],function(k,v){
-      leg += '<tr> <td class="chicon"> <div class="chlegend" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+v['legend']+'</td> </tr>';
+      leg += '<tr class="leg '+sl+'" '+sp+'> <td>&nbsp;</td> <td class="icon"> <div class="chorostyle" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+v['legend']+'</td> </tr>';
     });
-    leg += '</tr></tbody></table></div>';
+    leg += '<tr class="leg last '+sl+'" '+sp+'> <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td> </tr>';
     jsons[tl]['legend'] = leg;
     overlayMaps[tl] = L.geoJson(ly['features'],{style: style, pointToLayer: pToLayer, onEachFeature:onEachFeature});
   }
@@ -3934,7 +3944,7 @@ function showVector(v) {
 
 function addOverlay(name,lstyle,shown){
   if ($('#legendpane .vectorlegend').length == 0) {
-    $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=480><table class="overlays"><tbody></tbody></table></div>');
+    $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
   }
   if (Object.keys(choropleths).indexOf(name) >= 0) {
     if ($('#legendpane .vectorlegend .choropleths').length == 0) {
@@ -3948,6 +3958,7 @@ function addOverlay(name,lstyle,shown){
       html += "<div style='width:"+(16/clength)+"px;background-color:#"+v.color.replace(/^#/,'')+"'>&nbsp;</div>";
     });
     html += "</div></td><td>"+name+"</td></tr>"
+    html += jsons[name].legend.replace("class=\"legend\"","class=\"legend static\"");
     $('#legendpane .vectorlegend table.choropleths tbody').append(html);
   } else {
     stylestr = "{\n"

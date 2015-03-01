@@ -52,7 +52,7 @@
                     %h4= field.gsub("_"," ").titlecase
                     %input.autocomplete{:id=>field,:type=>'text','data-source'=>field,"data-name"=>name,"data-field"=>field,:style=>'width:100%'}
                     %ul
-                -elsif options['content'] == 'flat'
+                -elsif options['content'] == 'flat' and false
                   .body.flat
                     %h4= field.gsub("_"," ").titlecase
                     .row
@@ -166,10 +166,11 @@
         .head
           .ready
             -if @contained
-              .btn.btn-default{:onclick=>'serializeFilter("feat")'} Apply Filter
+              .btn.btn-default{:onclick=>'serializeFilter("feat")'} Apply
             -else
-              .btn.btn-default{:onclick=>'serializeFilter("")'} Apply Filter
-            .btn.btn-default{:onclick=>'clearFilter()'} Clear Filter
+              .btn.btn-default{:onclick=>'serializeFilter("")'} Apply
+            .btn.btn-default{:onclick=>'clearFilter()'} Clear
+            .btn.btn-default{:onclick=>'saveFilter()'} Save
         .body
           .root.dropbox.and{"data-section"=>"box","data-value"=>'and'}
             %icon.glyphicon.glyphicon-chevron-down.op
