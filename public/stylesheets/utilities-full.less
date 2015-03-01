@@ -3,7 +3,7 @@
 // --------------------------------------------------
 
 p {
-  line-height: 24px;
+  line-height: 20px;
   &.headline {
     font-size: 18px;
   }
@@ -118,9 +118,22 @@ small {
 }
 
 .maplink {
-  margin-bottom: 4px;
+  padding: 36px 36px 12px;
+  margin: -36px -36px -8px;
+  background: @brand-dark;
+  text-align: center;
+  color: white !important;
   a {
+    color: white !important;
     cursor: pointer;
+  }
+  &.darkred {
+    background: @brand-darkred;
+    margin: -32px -32px 8px;
+    padding: 4px 18px 0px;
+    p {
+      padding-bottom:6px;
+    }
   }
 }
 
@@ -1266,7 +1279,7 @@ position: relative;
 }
 .nav.nav-pills {
   left: 48px;
-  top: 40px;
+  top: 36px;
   font-weight: bold;
   li.first {
     width: 44px;
@@ -1289,7 +1302,19 @@ position: relative;
   -ms-user-select: none;
   user-select: none;
 }
-.navbar { min-height: 0px !important; }
+
+.leaflet-popup-pane {
+  z-index: 7 !important;
+  border-radius:4px;
+  .leaflet-popup {
+    a.leaflet-popup-close-button {
+    }
+  }
+}
+
+.navbar { 
+  min-height: 0px !important; 
+  }
 .navbar-collapse { height: 0px !important; }
 #disqus_thread {
   background: url('/images/bg.png');
@@ -1378,7 +1403,7 @@ br.small {
     position: absolute;
     top:0px;
     left:0px;
-    padding: 4px 40px;
+    padding: 6px 40px;
     width:100%;
   }
   .nav, .nav.nav-pills {
@@ -1421,14 +1446,14 @@ br.small {
     position: absolute;
     top:0px;
     left:0px;
-    padding: 4px 20px;
+    padding: 6px 20px;
     width:100%;
     cursor:pointer;
     p {font-size:14px;}
   }
   .nav, .nav.nav-pills {
     position: absolute;
-    top:24px;
+    top:20px;
     left:0px;
     width:100%;
     background-color:@brand-primary;

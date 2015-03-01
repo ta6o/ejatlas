@@ -371,9 +371,16 @@ function showMarkers(markers) {
       console.log(mark);
       return 0
     }
-    //popcontent = "<h4 class='maplink'><a href='/conflict/"+mark.slug+"'>"+mark.name + "</a></h4><p>"+mark.title+"</p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon i_"+mark.clr+" s_1' style='margin:0 !important;'></div><td>";
-    //if (mark.cat !== '' ) {popcontent += "<strong>"+mark.cat+"</strong>"};
-    //popcontent += '</td></tr></table>';
+    if (markers.length == 1){
+      var marker = L.marker([mark.a, mark.o],{
+        icon: L.divIcon({ className: 'map_icon mic i_'+mark.c+' id_'+mark.i }),
+        riseOnHover: true,
+      }).addTo(markerLayer);
+      markerc[mark.i] = marker;
+      $('.id_'+mark.i).css('cursor','grab');
+      $('.id_'+mark.i).css('cursor','-webkit-grab');
+      return false
+    }
     popcontent = '<div>';
 
     cclass = "";
@@ -409,10 +416,11 @@ function showMarkers(markers) {
     $('.map_icon.id_'+mark.i).attr('data-id',mark.i);
 
     marker.id = mark.i;
-    //marker.name = mark.name;
-    //marker.slug = mark.slug;
-    //marker.cslg = mark.cslg;
-    //marker.content = popcontent;
+    marker.content = popcontent;
+    marker.bindPopup(L.popup({
+        autoPanPaddingTopLeft: L.point(24, 96),
+        autoPanPaddingBottomRight: L.point(72, 64),
+      }).setContent('<img src="/images/loading-bg.gif" class="loading"/>'));
     marker.on('mouseover', function(e){
       selector = '#map .map_icon.id_'+marker.id;
       $(selector).addClass('selected')
@@ -426,16 +434,23 @@ function showMarkers(markers) {
       singleSize(selector);
       $(selector).removeClass('hovered');
     });
-    if (window.location.pathname === "/embed") {
-      //marker.on('click', function(e){window.open("http://ejatlas.org/conflict/"+marker.slug,"_blank")});
-    } else {
-      //marker.on('click', function(e){window.location="/conflict/"+marker.slug});
-    }
+    marker.on('click', function(e){
+      m = this;
+      $.ajax({
+        type: "get",
+        url: "/info/"+this.id,
+        success: function(data){
+          m.getPopup().setContent(data+m.content).openOn(map);
+        }
+      })
+    });
     markerc[mark.i] = marker;
     //oms.addMarker(marker);
     arrr.push(mark.i);
     all ++;
   });
+  map.closePopup();
+
   $(document).ready(function(){
     onResize();
     dmns = dmns.distinct();
@@ -714,28 +729,13 @@ function style(feature) {
   };
 }
 
+function featurePopup(e) {
+  var layer = e.target;
+  //layer.getPopup().openOn(map);
+}
+
 function highlightFeature(e) {
   var layer = e.target;
-  pn = layer.feature.category
-  inf = "<div class='infocontent'><h3><strong>"+pn+"</strong></h3>"
-  //if (jsons[pn]['legend']){ inf += jsons[pn].legend.replace("class=\"legend\"","class=\"legend static\""); inf += "<br />" }
-  if (jsons[pn]['desc']){ inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>" }
-  ia = []
-  if (layer.feature.properties && layer.feature.properties.data) {
-    $.each(layer.feature.properties.data,function(k,v){
-      if (v) {
-        ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v);
-      }
-    });
-  }
-  inf += ia.join("<br />");
-  if (jsons[pn]['source']){ 
-    inf += "<br /><br /><p>Source: &nbsp; <strong>"+jsons[pn]['source']+"</strong>" ;
-    if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
-    inf += "</p>";
-  }
-  inf += "</div>"
-  updateInfo(2,inf);
   layer.setStyle({
     fillOpacity: 1
   });
@@ -762,9 +762,40 @@ function zoomToFeature(e) {
 }
 
 function onEachFeature(feature, layer) {
+  pn = feature.properties.pn
+  console.log(pn)
+  inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong>"
+  if (jsons[pn]['desc']){ inf += "<br />"+jsons[pn]['desc'] }
+  inf += "</p></div>"
+  ia = []
+  if (layer.feature.properties && layer.feature.properties.data) {
+    titled = false;
+    $.each(layer.feature.properties.data,function(k,v){
+      if (v) {
+        if (k.match(/country/) && !titled) {
+          ia.push("<h3>"+v+"</h3>");
+          titled = true;
+        } else {
+          ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v);
+        }
+      }
+    });
+  }
+  inf += ia.join("<br />");
+  if (jsons[pn]['source']){ 
+    inf += "<br /><br /><p>Source: &nbsp; <strong>"+jsons[pn]['source']+"</strong>" ;
+    if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
+    inf += "</p>";
+  }
+  inf += "</div>"
+  layer.bindPopup(inf,{
+        autoPanPaddingTopLeft: L.point(24, 96),
+        autoPanPaddingBottomRight: L.point(72, 64),
+      });
   layer.on({
     mouseover:highlightFeature,
     mouseout: resetHighlight,
+    click: featurePopup,
     dblclick: zoomToFeature,
   });
 }

@@ -162,6 +162,9 @@ class Admin < Padrino::Application
       coc = nil
       range = nil
       obj.each do |key,val|
+        if val.is_a? String and val.length == 0 and key == "must"
+          obj[key] = {}
+        end
         if val.is_a? Array
           if key == 'bool'
             bool = {'should'=>[],'must'=>[],'must_not'=>[]}

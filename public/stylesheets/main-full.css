@@ -4867,7 +4867,7 @@ button.close {
   border-bottom-color: #000000;
 }
 p {
-  line-height: 24px;
+  line-height: 20px;
 }
 p.headline {
   font-size: 18px;
@@ -4942,10 +4942,23 @@ small {
   display: none;
 }
 .maplink {
-  margin-bottom: 4px;
+  padding: 36px 36px 12px;
+  margin: -36px -36px -8px;
+  background: #024357;
+  text-align: center;
+  color: white !important;
 }
 .maplink a {
+  color: white !important;
   cursor: pointer;
+}
+.maplink.darkred {
+  background: #6d1a18;
+  margin: -32px -32px 8px;
+  padding: 4px 18px 0px;
+}
+.maplink.darkred p {
+  padding-bottom: 6px;
 }
 a.genlink {
   cursor: pointer;
@@ -6112,13 +6125,13 @@ ul.sidelink li.active {
 #share_fb #img {
   background: url('/images/fb.png');
   background-repeat: no-repeat;
-  background-position: 0px -20px;
+  background-position: 0px;
   width: 20px;
   height: 20px;
   overflow-y: hidden;
 }
 #share_fb:hover #img {
-  background-position: 0px 0px;
+  background-position: 0px -20px;
 }
 #share_tw {
   cursor: pointer;
@@ -6126,13 +6139,13 @@ ul.sidelink li.active {
 #share_tw #img {
   background: url('/images/tw.png');
   background-repeat: no-repeat;
-  background-position: 0px -20px;
+  background-position: 0px;
   width: 20px;
   height: 20px;
   overflow-y: hidden;
 }
 #share_tw:hover #img {
-  background-position: 0px 0px;
+  background-position: 0px -20px;
 }
 .i_choropleth {
   float: left;
@@ -6159,7 +6172,7 @@ ul.sidelink li.active {
 }
 .nav.nav-pills {
   left: 48px;
-  top: 40px;
+  top: 36px;
   font-weight: bold;
 }
 .nav.nav-pills li.first {
@@ -6187,6 +6200,10 @@ ul.sidelink li.active {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.leaflet-popup-pane {
+  z-index: 7 !important;
+  border-radius: 4px;
 }
 .navbar {
   min-height: 0px !important;
@@ -6290,7 +6307,7 @@ br.small {
     position: absolute;
     top: 0px;
     left: 0px;
-    padding: 4px 40px;
+    padding: 6px 40px;
     width: 100%;
   }
   .nav,
@@ -6345,7 +6362,7 @@ br.small {
     position: absolute;
     top: 0px;
     left: 0px;
-    padding: 4px 20px;
+    padding: 6px 20px;
     width: 100%;
     cursor: pointer;
   }
@@ -6355,7 +6372,7 @@ br.small {
   .nav,
   .nav.nav-pills {
     position: absolute;
-    top: 24px;
+    top: 20px;
     left: 0px;
     width: 100%;
     background-color: #0380a5;
@@ -6557,7 +6574,6 @@ br.small {
 	outline: 0;
 	}
 .leaflet-container a {
-	color: #000;
   font-weight: 700;
 	}
 .leaflet-container a.leaflet-active {
@@ -6777,11 +6793,23 @@ br.small {
 	position: absolute;
 	text-align: center;
 	}
+.leaflet-popup-content img.loading {
+  width:144px;
+  margin: 48px 80px;
+	}
+
+.leaflet-popup-content h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 4px;
+    margin-bottom: 0px;
+  }
+
 .leaflet-popup-content-wrapper {
 	padding: 1px;
 	text-align: left;
-	-webkit-border-radius: 20px;
-	        border-radius: 20px;
+	-webkit-border-radius: 4px;
+	        border-radius: 4px;
 	}
 .leaflet-popup-content {
 	margin: 14px 20px;
@@ -6812,25 +6840,27 @@ br.small {
 	}
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
 	background: white;
-
 	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+  overflow:hidden;
 	}
 .leaflet-container a.leaflet-popup-close-button {
-	position: absolute;
-	top: 0;
-	right: 0;
-	padding: 4px 5px 0 0;
-	text-align: center;
-	width: 18px;
-	height: 14px;
-	font: 16px/14px Tahoma, Verdana, sans-serif;
-	color: #c3c3c3;
-	text-decoration: none;
-	font-weight: bold;
-	background: transparent;
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  padding: 3px 2px;
+  text-align: center;
+  width: 24px;
+  height: 24px;
+  font: bold 18px/14px Tahoma,Verdana,sans-serif;
+  color: #000;
+  text-decoration: none;
+  background: url("/images/bg.png") repeat scroll 0% 0% transparent;
+  border: 2px solid #000;
+  border-radius: 20px;
 	}
 .leaflet-container a.leaflet-popup-close-button:hover {
-	color: #999;
+	border-color: white;
+  text-decoration:underline;
 	}
 .leaflet-popup-scrolled {
 	overflow: auto;

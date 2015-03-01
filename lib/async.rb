@@ -372,17 +372,19 @@ class AsyncTask
       filterdata["project"]["country_of_company"] = {:content=>'auto',:name=>"country_of_company"}
       filterdata["project"]["financial_institution"] = {:content=>'auto',:name=>"supporters"}
       filterdata["project"]["government_actors"] = {:content=>'flat',:name=>"govt_actors"}
-      filterdata["project"]["env_justice_organizations"] = {:content=>'flat',:name=>"ejos"}
+      filterdata["project"]["project_details"] = {:content=>'flat'}
       
       filterdata["conflict"] = {}
       filterdata["conflict"]["start_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"start_datestamp"}
       filterdata["conflict"]["end_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"end_datestamp"}
       filterdata["conflict"]["intensity"] = {:content=>Status.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"status_id"}
       filterdata["conflict"]["reaction_stage"] =  {:content=>Reaction.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"reaction_id"}
+      filterdata["conflict"]["description"] = {:content=>'flat'}
 
       filterdata["resistance"] = {}
       filterdata["resistance"]["mobilizing_groups"] =  {:content=>MobilizingGroup.order(:name).select('name, id').map{|c|{c.id=>c.name}}}
       filterdata["resistance"]["mobilizing_forms"] =  {:content=>MobilizingForm.order(:name).select('name, id').map{|c|{c.id=>c.name}}}
+      filterdata["resistance"]["env_justice_organizations"] = {:content=>'flat',:name=>"ejos"}
 
       filterdata["impacts"] = {}
       filterdata["impacts"]["environmental_impacts"] = {:content=>EnvImpact.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"env_impacts"}
