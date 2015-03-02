@@ -43,7 +43,7 @@ class Admin < Padrino::Application
   end
 
   configure :production do
-    $consurl = 'http://console.ejatlas.org'
+    $consurl = 'http://ejatlas.org'
   end
 
   def self.slugify str

@@ -85,7 +85,7 @@
                   = 'Login'
                   %b.right-caret
                 %ul.dropdown-menu.dropdown-right
-                  =form_tag("#{$consurl}/sessions/create/", :class => 'form login', :style=>'margin:0') do
+                  =form_tag("/sessions/create/", :class => 'form login', :style=>'margin:0') do
                     .clearfix
                       .pull-left
                         &nbsp; Email:
@@ -95,7 +95,7 @@
                       .pull-left=password_field_tag :password, :value => params[:password]
                       .pull-left=submit_tag('Enter', :class => :btn)
                       .pull-left.small
-                        %a{:href=>"#{$consurl}/sessions/login"} Help!
+                        %a{:href=>"/sessions/login"} Help!
             -else
               %li.dropdown#profile
                 %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#profile'}
