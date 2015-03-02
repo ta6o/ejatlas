@@ -110,6 +110,53 @@
                       %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
                         %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
                       %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+                  -else
+                    %li.dropdown#ejolt
+                      %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#ejolt'}
+                        %span.ej EJ
+                        Atlas
+                        %b.caret
+                      %ul.dropdown-menu
+                        %li
+                          %a{:href=>'/about'} About
+                        %li
+                          %a{:href=>'/disclaimer'} Disclaimer
+                        %li
+                          %a{:href=>'/credits'} Credits &amp; Collaborators
+                        %li
+                          %a{:href=>'/contact'} Contact
+                    %li.home
+                      %a{:href => "http://ejolt.org/"}= "EJOLT"
+                    %li.dropdown#maps
+                      %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#maps'}
+                        = 'Maps'
+                        %b.caret
+                      %ul.dropdown-menu
+                        %li
+                          %a.disable{:href=>'#'} Featured Maps
+                        %li
+                          %a{:href=>'/country'} Country Maps
+                        %li
+                          %a{:href=>'/company'} Company Maps
+                        %li
+                          %a{:href=>'/commodity'} Commodity Maps
+                    -if current_account.nil?
+                      %li.dropdown#login
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#login'}
+                          = 'Login'
+                          %b.right-caret
+                        %ul.dropdown-menu.dropdown-right
+                          =form_tag("/sessions/create/", :class => 'form login', :style=>'margin:0') do
+                            .clearfix
+                              .pull-left
+                                &nbsp; Email:
+                              .pull-left=text_field_tag :email, :value => params[:email]
+                              .pull-left
+                                Password: 
+                              .pull-left=password_field_tag :password, :value => params[:password]
+                              .pull-left=submit_tag('Enter', :class => :btn)
+                              .pull-left.small
+                                %a{:href=>"/sessions/login"} Help!
 
                 .tagline
                   %p Environmental Justice Atlas
@@ -118,6 +165,9 @@
         .container
           =yield_content :outer
           .inner= yield
+          %br/
+          %br/
+          %br/
 
       :javascript
         var _gaq = _gaq || [];
@@ -210,19 +260,4 @@
           $target.find('a').attr('onclick',"remove_li('"+name+"',"+id+")");
         }
 
-
-    -#%footer.footer
-      .container
-        .row
-          -#.col-md-1
-            %a{:href=>'http://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>'_blank'}
-              %img#ccbutton{:src=>'/images/by-nc-sa.eu.png',:width=>'100%',:height=>'auto',:title=>'Lisans bilgileri için tıklayınız.',:alt=>'CC BY-NC-SA',:style=>'margin-top:6px'}
-          .col-md-12
-            #footerbottom
-              %a.large{:href=>'http://www.ejolt.org/'} www.ejolt.org
-              -#Environmental Justice Organisations, Liabilities and Trade
-              %span.large ,
-              %span.large= DateTime.now.year
-              .pull-right
-                #totop{:onclick=>'window.scrollTo(0,0);'} ^
 

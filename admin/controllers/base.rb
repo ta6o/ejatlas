@@ -14,42 +14,42 @@ Admin.controller do
   get :about do
     @name = "About"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/about.haml")
-    render "base/about", :layout => @layout
+    render "base/about", :layout => :application
   end
   get :faq do
     @name = "Frequently Asked Questions"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/faq.haml")
-    render "base/faq", :layout => @layout
+    render "base/faq", :layout => :application
   end
   get :disclaimer do
     @name = "Disclaimer"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/disclaimer.haml")
-    render "base/disclaimer", :layout => @layout
+    render "base/disclaimer", :layout => :application
   end
 
   get :contact do
     @name = "Contact"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/contect.haml")
-    render "base/contact", :layout => @layout
+    render "base/contact", :layout => :application
   end
 
   get :credits do
     @name = "Credits & Collaborators"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/credits.haml")
-    render "base/credits", :layout => @layout
+    render "base/credits", :layout => :application
   end
 
   get :welcome do
     @name = "Welcome"   
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
-    render "base/welcome", :layout => @layout
+    render "base/welcome", :layout => :application
   end
 
   get :mailsent do
     @name = "You'll receive an email..."   
     @account = current_account || nil
     #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
-    render "base/mailsent", :layout => @layout
+    render "base/mailsent", :layout => :application
   end
 
   get :index do
@@ -315,7 +315,7 @@ Admin.controller do
     begin
       @domains = []
       JSON.parse(con.filter).each{}
-      puts JSON.pretty_generate @domains
+      #puts JSON.pretty_generate @domains
     rescue
     end
     @fid = con.id

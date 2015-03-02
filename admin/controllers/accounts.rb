@@ -13,6 +13,7 @@ Admin.controllers :accounts do
   end
 
   get :new do
+    @name = "Collaborate"
     @account = Account.new
     render 'accounts/new'
   end

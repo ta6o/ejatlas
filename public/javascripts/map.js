@@ -761,11 +761,19 @@ function zoomToFeature(e) {
 }
 
 function onEachFeature(feature, layer) {
-  pn = feature.properties.pn
-  console.log(pn)
+  if (Object.keys(feature).indexOf('properties') == -1) {
+    pn = feature.pn
+  } else {
+    pn = feature.properties.pn
+  }
   inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong>"
-  if (jsons[pn]['desc']){ inf += "<br />"+jsons[pn]['desc'] }
-  inf += "</p></div>"
+  if (Object.keys(jsons[pn]).indexOf('desc') >= 0) {
+    console.log(jsons[pn].desc);
+    if(jsons[pn].desc.length > 0){ 
+      inf += "<br />"+jsons[pn]['desc']; 
+    }
+  }
+  inf += "</p></div>";
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
     titled = false;
@@ -786,7 +794,6 @@ function onEachFeature(feature, layer) {
     if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
     inf += "</p>";
   }
-  inf += "</div>"
   layer.bindPopup(inf,{
         autoPanPaddingTopLeft: L.point(24, 96),
         autoPanPaddingBottomRight: L.point(72, 64),
