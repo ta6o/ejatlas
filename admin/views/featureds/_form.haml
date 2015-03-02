@@ -240,10 +240,10 @@
         #filter-head
         #filter-list
           .clearfix
+            %strong.pull-left{:style=>'margin:8px 0 0 -15px'}= "Showing #{@followed.count} filtered cases."
             %a.btn.pull-left{:href=>"/featureds/export/#{@featured.id}"} Export CSV
             %a.btn.pull-left{:onclick=>"$('#csv-modal').modal('show');"} Import CSV
           %br/
-          -@followed ||= []
           -@followed.each do |conflict|
             .row
               .clearfix
