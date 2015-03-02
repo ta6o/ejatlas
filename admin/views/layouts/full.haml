@@ -17,7 +17,7 @@
     %meta{:content => "website", :property => "og:type"}/
     %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :property => 'og:title'}
     %meta{:content => (@headline || $pagedesc), :property => "og:description"}/
-    %meta{:content => $siteurl, :property => "og:url"}/
+    %meta{:content => "#{$siteurl}#{request.path}", :property => "og:url"}/
     %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-og.jpg'), :property => "og:image"}/
     %meta{:content => "Environmental Justice Atlas", :property => 'og:site_name'}
 
