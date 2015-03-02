@@ -162,7 +162,7 @@ Admin.controller do
     @defs = @defs.to_set.to_a
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown').to_json
     @image = nil
-    @image = con.flag_images.first if con.flag_images.any?
+    @image = con.flag_images.first.file.url if con.flag_images.any?
     @maptitle = "Environmental Conflicts in #{@name}"
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout
@@ -184,7 +184,7 @@ Admin.controller do
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
     @image = nil
-    @image = con.logo_images.first if con.logo_images.any?
+    @image = con.logo_images.first.file.url if con.logo_images.any?
     @maptitle = "Environmental Conflicts of #{@name}"
     @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     render "base/front", :layout => @layout

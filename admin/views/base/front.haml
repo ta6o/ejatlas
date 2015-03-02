@@ -32,8 +32,8 @@
 
   .summary_header
     .clearfix
-      -if @image
-        %img.pull-left{:src=>@image.file.url,:style=>'max-height:20px;width:auto;margin:4px 12px 20px 0px;'}
+      -if @image and @image.length > 0
+        %img.pull-left{:src=>@image ,:style=>'max-height:20px;width:auto;margin:4px 12px 20px 0px;'}
         .pull-left
           %h2= @name
       -else
