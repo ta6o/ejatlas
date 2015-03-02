@@ -83,11 +83,11 @@
               %tr.block{"data-width"=>360}
                 %td.image
                   %a{:href=>"/featured/#{c.slug}"}
-                    .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.url}');" : "")}
+                    .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.url}');background-repeat:no-repeat;background-size:cover;" : "")}
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
-                  %p="#{c.description.html_safe}"
+                  =c.description.split(/<br\s?\/?>/)[0].html_safe
 
   .horipane
     .title Social
