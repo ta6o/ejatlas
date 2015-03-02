@@ -195,7 +195,7 @@ class Admin < Padrino::Application
             end
             coc = {'companies'=>a}
             obj.delete('term')
-          elsif key == "term" and val.values.first.match(/\d+:\d+/)
+          elsif key == "term" and val.values.first.is_a? String and val.values.first.match(/\d+:\d+/)
             k = val.keys.first
             if k.match(/datestamp$/)
               r = val.values.first.split(':').map{|i| i.to_i}
@@ -264,9 +264,13 @@ class Admin < Padrino::Application
 
   def self.filter filter
     puts JSON.pretty_generate(JSON.parse filter)
-    filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))
+    filter = Admin.elasticify({filtered:JSON.parse(filter)})
     puts JSON.pretty_generate(filter)
-    $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:filter})['hits']['hits']
+    filter = Admin.cleanup(filter)
+    puts JSON.pretty_generate(filter)
+    result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:filter})['hits']['hits']
+    puts result.length
+    return result
   end
 
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]

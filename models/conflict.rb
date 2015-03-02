@@ -148,6 +148,15 @@ class Conflict < ActiveRecord::Base
     return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr}.to_json
   end
 
+  def accurate_marker
+    clr = self.category ? self.category.id : 0
+    lat = 0; 
+    lat = self.lat.to_f if self.lat and self.lat.to_f.abs <= 180
+    lon = 0; 
+    lon = self.lon.to_f if self.lon and self.lon.to_f.abs <= 180
+    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr}.to_json
+  end
+
   def get_start_date
     date = self.start_date
     if date.length == 4

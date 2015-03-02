@@ -78,7 +78,7 @@ Admin.controller do
     c = Conflict.find_slug(params[:slug])
     #last_modified c.updated_at
     pass unless c
-    @markerinfo = "[#{c.as_marker.to_json}]"
+    @markerinfo = c.accurate_marker
     @cmarker = c.as_marker.to_json
     @defs = []
     c.country.vector_data.each do |vd|
