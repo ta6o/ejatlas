@@ -83,7 +83,7 @@
               %tr.block{"data-width"=>360}
                 %td.image
                   %a{:href=>"/featured/#{c.slug}"}
-                    .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.url}');background-repeat:no-repeat;background-size:cover;" : "")}
+                    .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.url}');background-repeat:no-repeat;background-size:contain;" : "")}
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
