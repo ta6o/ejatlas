@@ -360,6 +360,7 @@ class AsyncTask
       filterdata["basic_data"]["success_level"] = {:content=>[{0=>'Success'},{1=>'Not sure'},{2=>'Failure'}]}
       filterdata["basic_data"]["population_type"] = {:content=>[{0=>'Unknown'},{1=>'Urban'},{2=>'Semi-urban'},{3=>'Rural'}]}
       filterdata["basic_data"]["country"] = {:content=>'auto',:name=>"country_id"}
+      filterdata["basic_data"]["region"] = {:content=>Region.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"region_id"}
 
       filterdata["category"] = {}
       filterdata["category"]["category"] = {:content=>Category.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"category_id"}

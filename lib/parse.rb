@@ -180,3 +180,11 @@ def define_capitals
   end
 end
 
+def regionalize 
+  require 'csv'
+  CSV.read("#{Dir.pwd}/misc/regions.csv").each do |row|
+    next unless c = Country.find_slug(Admin.slugify(row[1]))
+    r = Region.create(:name=>row[2]) unless r = Region.find_slug(Admin.slugify(row[2]))
+    r.countries << c
+  end
+end

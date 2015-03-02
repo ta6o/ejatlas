@@ -240,6 +240,7 @@ class Conflict < ActiveRecord::Base
         result[a] << ass.id
       end
     end
+    result[:region_id] = self.country.region_id if self.country
     result
   end
 
