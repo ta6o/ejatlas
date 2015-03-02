@@ -30,7 +30,7 @@ class Admin < Padrino::Application
 
   $title = 'EJAtlas'
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
-  $siteurl = 'http://console.ejatlas.org'
+  $siteurl = 'http://ejatlas.org'
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
