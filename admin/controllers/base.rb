@@ -93,6 +93,7 @@ Admin.controller do
     @slug = c.slug
     @desc = c.description
     @headline = c.headline
+    @title = c.title
     @ogimage = c.images.first.file.url if c.images.any?
     @cid = c.id 
     @maptitle = c.name
