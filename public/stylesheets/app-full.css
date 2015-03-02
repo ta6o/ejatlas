@@ -4956,6 +4956,7 @@ small {
   background: #6d1a18;
   margin: -32px -32px 8px;
   padding: 4px 32px 0px;
+  text-align: left;
 }
 .maplink.darkred p {
   padding-bottom: 6px;

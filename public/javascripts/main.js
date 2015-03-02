@@ -3881,6 +3881,7 @@ function onEachFeature(feature, layer) {
     pn = feature.properties.pn
   }
   inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong>"
+  console.log(Object.keys(jsons[pn]));
   if (Object.keys(jsons[pn]).indexOf('desc') >= 0) {
     console.log(jsons[pn].desc);
     if(jsons[pn].desc.length > 0){ 
@@ -3957,6 +3958,9 @@ function showVector(v) {
       jsons[tl][k] = v;
     }
   });
+  jsons[tl]['desc'] = vect['description']
+  jsons[tl]['source'] = vect['source']
+  jsons[tl]['link'] = vect['link']
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
       lStyle = JSON.parse(vect["style"])
@@ -3992,9 +3996,6 @@ function showVector(v) {
     feature["category"] = tl;
     feature["name"] = vr;
   });
-  jsons[tl]['desc'] = vect['description']
-  jsons[tl]['source'] = vect['source']
-  jsons[tl]['link'] = vect['link']
   if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
   addOverlay(tl,lStyle,vect['shown'])
 }
