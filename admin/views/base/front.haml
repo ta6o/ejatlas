@@ -3,7 +3,7 @@
   :javascript
     img = new Image(330,30);
     img.src = 'https://file.ejatlas.org/static/ikon.png';
-    var markerinfo = #{@markerinfo.gsub('\\"', '"').gsub('","',',').sub(/^\["/,'[').sub(/",\]$/,']')};
+    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var vectorinfo = [];
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";

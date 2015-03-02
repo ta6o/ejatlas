@@ -263,11 +263,11 @@ class Admin < Padrino::Application
   end
 
   def self.filter filter
-    puts JSON.pretty_generate(JSON.parse filter)
+    #puts JSON.pretty_generate(JSON.parse filter)
     filter = Admin.elasticify({filtered:JSON.parse(filter)})
-    puts JSON.pretty_generate(filter)
+    #puts JSON.pretty_generate(filter)
     filter = Admin.cleanup(filter)
-    puts JSON.pretty_generate(filter)
+    #puts JSON.pretty_generate(filter)
     result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:filter})['hits']['hits']
     puts result.length
     return result
