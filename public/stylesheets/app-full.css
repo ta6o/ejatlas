@@ -5314,6 +5314,9 @@ iframe#twitter-widget-0 {
 .fb-like-box span iframe {
   width: 100%;
 }
+.ui-widget-content {
+  z-index: 1200;
+}
 .feat {
   position: absolute;
   margin: 6px;

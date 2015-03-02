@@ -3487,7 +3487,7 @@ function showMarkers(markers) {
     }
     if (markers.length == 1){
       var marker = L.marker([mark.a, mark.o],{
-        icon: L.divIcon({ className: 'map_icon mic i_'+mark.c+' id_'+mark.i }),
+        icon: L.divIcon({ className: 'map_icon i_'+mark.c+' id_'+mark.i }),
         riseOnHover: true,
       }).addTo(markerLayer);
       markerc[mark.i] = marker;
