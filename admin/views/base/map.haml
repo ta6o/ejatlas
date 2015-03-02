@@ -87,7 +87,7 @@
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
-                  %p="#{c.description.split("\n")[0]}"
+                  %p="#{c.description.html_safe}"
 
   .horipane
     .title Social

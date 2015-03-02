@@ -48,7 +48,7 @@
           .clearfix#disclaimer
             -if @maptitle.length > 0
               %h2= @maptitle
-        -dar = @description.gsub("\n","<br />").split(/<br\s?\/>/)
+        -dar = @description.gsub("\n","<br />").split(/<br\s?\/?>/)
         -if dar.length > 1
           %p.description
             .less= dar[0].html_safe

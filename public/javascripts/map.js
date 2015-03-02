@@ -933,6 +933,7 @@ function getObjectSize(obj) {
 
 function vectorPing(varname) {
   loadQueue -= 1;
+  if (varname.features.length == 0) return
   if (varname.features[0].pn) {
     pn = varname.features[0].pn;
   } else if (varname.features[0].properties.pn) {
