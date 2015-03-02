@@ -51,9 +51,12 @@ Admin.controllers :featureds do
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
-    filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(@featured.filter)}))
-    puts JSON.pretty_generate filter
-    @followed = Admin.filter(filter).map{|i| Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}
+    begin
+      filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(@featured.filter)}))
+      @followed = Admin.filter(filter).map{|i| Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}
+    rescue
+      puts ''
+    end
     @filterform = JSON.parse(Cached.last.filterdata)
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
     @imps = ['env_impacts','hlt_impacts','sec_impacts']
