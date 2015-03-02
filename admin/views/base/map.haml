@@ -83,7 +83,7 @@
               %tr.block{"data-width"=>360}
                 %td.image
                   %a{:href=>"/featured/#{c.slug}"}
-                    .img{:style=>(c.image ? "background:url('#{c.image}');" : "")}
+                    .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.url}');" : "")}
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
@@ -117,7 +117,7 @@
         %table
           %tbody.recent
             -@recent.each do |c|
-              %tr.block{"data-width"=>360}
+              %tr.block{"data-width"=>360,:id=>"recent_#{c.id}"}
                 %td.image
                   %a{:href=>"/conflict/#{c.slug}"}
                     .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.thumb.url}');" : "")}
@@ -132,15 +132,21 @@
 -content_for :body_end do
   :javascript
     $(document).ready(function(){
+      fillWithCases();
       $('#rightpane').scroll(function() {
         if(!scrolling) {return}
         if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
           $('body').css('cursor','wait');
           ask();
-          console.log('ok')
         }
       });
     });
+    function fillWithCases() {
+      if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
+        $('body').css('cursor','wait');
+        ask();
+      }
+    }
     function resetColumns() {
       columns = $('.browse .title.active').next('.content').find('.columns');
       if (columns.length > 0) {
@@ -156,11 +162,14 @@
         if (data.length < 6) scrolling = false;
         $.each(data,function(i,n) {
           n = n.conflict
-          row = "<tr class='block' data-width='360'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><h4><a href='/conflict/"+n.slug+"'>"+n.name.split(',')[0]+"</a></h4><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+n.headline+"</p></td></tr>"
-          $('tbody.recent').append(row);
+          if ($('#recent_'+n.id).length == 0){
+            row = "<tr class='block' data-width='360' id='recent_"+n.id+"'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><h4><a href='/conflict/"+n.slug+"'>"+n.name.split(',')[0]+"</a></h4><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+n.headline+"</p></td></tr>"
+            $('tbody.recent').append(row);
+          }
         });
         dragEnd();
         $('body').css('cursor','auto');
+        fillWithCases();
       })
     }
 
