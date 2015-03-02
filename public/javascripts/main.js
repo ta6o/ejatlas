@@ -3880,15 +3880,7 @@ function onEachFeature(feature, layer) {
   } else {
     pn = feature.properties.pn
   }
-  inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong>"
-  console.log(Object.keys(jsons[pn]));
-  if (Object.keys(jsons[pn]).indexOf('desc') >= 0) {
-    console.log(jsons[pn].desc);
-    if(jsons[pn].desc.length > 0){ 
-      inf += "<br />"+jsons[pn]['desc']; 
-    }
-  }
-  inf += "</p></div>";
+  inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong></p></div>";
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
     titled = false;
@@ -3904,15 +3896,18 @@ function onEachFeature(feature, layer) {
     });
   }
   inf += ia.join("<br />");
-  if (jsons[pn]['source']){ 
-    inf += "<br /><br /><p>Source: &nbsp; <strong>"+jsons[pn]['source']+"</strong>" ;
+  if (jsons[pn].desc){ 
+    inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>"; 
+  }
+  if (jsons[pn].source){ 
+    inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
     if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
     inf += "</p>";
   }
   layer.bindPopup(inf,{
-        autoPanPaddingTopLeft: L.point(24, 96),
-        autoPanPaddingBottomRight: L.point(72, 64),
-      });
+    autoPanPaddingTopLeft: L.point(24, 96),
+    autoPanPaddingBottomRight: L.point(72, 64),
+  });
   layer.on({
     mouseover:highlightFeature,
     mouseout: resetHighlight,
