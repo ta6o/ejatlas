@@ -12,6 +12,7 @@
     :javascript
       vectorinfo = #{@vectors};
   :javascript
+    window.onload = onLoad;
     function onLoad() {
       if (typeof initMap === 'function' ) {
         getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom},true)
@@ -19,7 +20,6 @@
         setTimeout(onLoad,10);
       }
     }
-    onLoad;
 
 .front#conflict
   -if @defs
