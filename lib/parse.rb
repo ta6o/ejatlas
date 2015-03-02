@@ -181,6 +181,7 @@ def define_capitals
 end
 
 def regionalize 
+  return
   require 'csv'
   CSV.read("#{Dir.pwd}/misc/regions.csv").each do |row|
     next unless c = Country.find_slug(Admin.slugify(row[1]))
