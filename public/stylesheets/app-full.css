@@ -5277,6 +5277,43 @@ ul.sidelink li.active {
 .map-icon.i_8 {
   background: #c685d0 url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;
 }
+.btn-twitter {
+  background: #4099ff;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 28px !important;
+}
+.btn-twitter.full {
+  width: 100%;
+  margin: 0;
+}
+.btn-twitter:hover,
+.btn-twitter:active,
+.btn-twitter:focus {
+  background: #0d7eff;
+  color: white;
+}
+.btn-facebook {
+  background: #4c66a4;
+  color: white;
+  font-weight: bold;
+}
+.btn-facebook.full {
+  width: 100%;
+  margin: 0;
+}
+.btn-facebook:hover,
+.btn-facebook:active,
+.btn-facebook:focus {
+  background: #3c5081;
+  color: white;
+}
+iframe#twitter-widget-0 {
+  width: 100%;
+}
+.fb-like-box span iframe {
+  width: 100%;
+}
 .feat {
   position: absolute;
   margin: 6px;
