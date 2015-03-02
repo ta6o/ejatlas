@@ -46,6 +46,7 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
+    @featured.description = @featured.description.gsub("\n","<br />")
     @features = JSON.parse(@featured.features) - $attrhash.values  
     @contained = {}
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|

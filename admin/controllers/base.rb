@@ -307,7 +307,7 @@ Admin.controller do
     end
     @defs = @defs.to_set.to_a
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link').to_json
-    @image = con.image#s.where(prime:1)[0]
+    @image = con.images.first.file.url#s.where(prime:1)[0]
     @feature = true
     @maptitle = con.slogan
     @baselayers = (con.baselayers != "" ? con.baselayers : "")
