@@ -3417,13 +3417,13 @@ function initMap () {
     }
   });
 
-  $('#conflict_summary').on('click','.seemore',function(e){
+  $('#conflict_summary, .horipane.description').on('click','.seemore',function(e){
     e.preventDefault();
     more = $(this).next('.more');
     $(this).fadeOut(100,function(){more.slideDown();});
   });
 
-  $('#conflict_summary').on('click','.seeless',function(e){
+  $('#conflict_summary, .horipane.description').on('click','.seeless',function(e){
     e.preventDefault();
     more = $(this).parent().prev('.seemore');
     $(this).parent().slideUp(function(){more.slideDown();});
