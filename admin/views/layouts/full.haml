@@ -18,7 +18,7 @@
     %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :property => 'og:title'}
     %meta{:content => (@title || $pagedesc), :property => "og:description"}/
     %meta{:content => "#{$siteurl}#{request.path}", :property => "og:url"}/
-    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-fb.jpg?new'), :property => "og:image"}/
+    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-fb.jpg'), :property => "og:image"}/
     %meta{:content => "Environmental Justice Atlas", :property => 'og:site_name'}
 
     / Twitter meta tags
