@@ -383,7 +383,7 @@
       data: 'filter='+query+"&"+page_type,
       success: function(data){
         data = JSON.parse(data);
-        $('#head p strong').text(data.length+" cases filtered")
+        $('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
         if (page_type == 'feat') {
           filterFollowed(data);
           $('#featured_filter').val(query);
