@@ -43,7 +43,7 @@
     #top
       .navbar.navbar-fixed-top{:role=>'navigation'}
         .navbar-inner
-          %ul.nav.nav-pills
+          %ul.nav.nav-pills{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>"Site menu"}
             %li.first
               %a &nbsp;
             %li.home
@@ -124,8 +124,8 @@
           #map.map.leftpane.noselect
             -#bottompane.bottompane
               .inner=yield_content :bottom
-          .resize#resize.noselect{:title=>'Drag to resize info pane'}
-            %span.glyphicon.glyphicon-forward{:title=>'Toggle info pane'}
+          .resize#resize.noselect{:title=>'Drag to resize info pane',"data-help"=>"popover","data-placement"=>"right","title"=>"","data-content"=>"Resize the information pane"}
+            %span.glyphicon.glyphicon-forward{:title=>'Toggle info pane',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Go full screen"}
           #rightpane.rightpane.graybg
             :javascript
               function getStyle(eId, strCssRule){ var oElm = document.getElementById(eId); var strValue = ""; if(document.defaultView && document.defaultView.getComputedStyle){ strValue = document.defaultView.getComputedStyle(oElm, "").getPropertyValue(strCssRule); } else if(oElm.currentStyle){ strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); }); strValue = oElm.currentStyle[strCssRule]; } return strValue; }

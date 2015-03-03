@@ -336,6 +336,67 @@ ul.sidelink {
     border-color: transparent;
   }
 }
+#help {
+  margin: 0 0 -70px;
+  padding: 18px 0;
+  .pull-right {
+    cursor:pointer;
+    width: 25px;
+    height: 25px;
+    font: bold 18px/14px;
+    color: #fff !important;
+    text-decoration: none;
+    background: @brand-primary;
+    border-radius: 20px;
+    text-align: center;
+    &:hover {
+      background: @brand-dark;
+    }
+    h4 strong {
+      line-height: 24px;
+    }
+  }
+}
+#welcome {
+  .modal-dialog {
+    position: absolute;
+    bottom:12px;
+    right:30%;
+    width:40%;
+    .modal-content {
+      border-radius: 8px 8px 6px 6px;
+      .modal-header {
+        border-radius: 6px 6px 0 0;
+        padding: 8px;
+        background: @brand-primary;
+        text-align: center;
+        color: white !important;
+        .close {
+          position: absolute;
+          top: -1px;
+          right: -3px;
+          text-align: center;
+          padding: 3px 2px;
+          width: 25px;
+          height: 25px;
+          font: bold 18px/14px Tahoma,Verdana,sans-serif;
+          color: #000 !important;
+          text-decoration: none;
+          background: url("/images/bg.png") !important;
+          border: 2px solid #000;
+          border-radius: 20px;
+          zoom: 1;
+          filter: alpha(opacity=100);
+          opacity: 1;
+          &:hover {
+            border-color: white;
+            text-decoration:underline;
+          }
+        }
+      }
+    }
+  }
+}
 
 .map_icon {
   display: block;
@@ -426,16 +487,6 @@ ul.sidelink {
   &:hover, &:active, &:focus {
     background: darken(#4c66a4,10%);
     color: white;
-  }
-}
-iframe#twitter-widget-0 {
-  width: 100%;
-}
-.fb-like-box {
-  span {
-    iframe {
-      width: 100%;
-    }
   }
 }
 .ui-widget-content {
@@ -617,6 +668,18 @@ iframe#twitter-widget-0 {
           padding:0;
           font-size:12px;
           line-height:16px;
+        }
+      }
+    }
+    iframe#twitter-widget-0 {
+      width: 100% !important;
+    }
+    .fb-like-box {
+      width: 100% !important;
+      span {
+        width: 100% !important;
+        iframe {
+          width: 100% !important;
         }
       }
     }

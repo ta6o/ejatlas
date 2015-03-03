@@ -22,6 +22,22 @@
       }
     }
 
+-content_for :outer do
+  #welcome.modal
+    .modal-dialog
+      .modal-content
+        .modal-header
+          %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+          %h4
+            %strong Welcome to Environmental Justice Atlas
+        .modal-body
+          %p The EJ Atlas is a teaching, networking and advocacy resource. Strategists, activist organizers, scholars, and teachers will find many uses for the database, as well as citizens wanting to learn more about the often invisible conflicts taking place. 
+          %p
+            %strong Please click the markers on the map for more information.
+          .clearfix
+            .pull-right
+              %input{:type=>'checkbox'} &nbsp; Do not show this information again
+
 .front
   -if @defs
     %svg{:style=>'height:0'}
@@ -30,15 +46,19 @@
           %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
             %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
-  #head
-    %br/
-    %h3=@maptitle
-    %p
-      %strong="#{@markercount} cases reported"
+  #help.clearfix
+    .pull-right
+      %h4
+        %strong{:style=>'left:0',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Show this help"} ?
+  .clearfix
+    #head
       %br/
-      Please click the markers on the map for more information.
+      %h3
+        %strong=@maptitle
+      %p
+        %strong="#{@markercount} cases reported"
 
-  .horipane
+  .horipane{:style=>'left:0',"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>"Drop down each pane"}
     .title Legend
     .content{:style=>'display:none'}
       #legendpane
@@ -90,11 +110,19 @@
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
-                  =c.description.split(/<br\s?\/?>/)[0].html_safe
+                  -if c.description.split(/<br\s?\/?>/)[0]
+                    =c.description.split(/<br\s?\/?>/)[0].html_safe
+                  -else
+                    =c.description.html_safe
 
   .horipane
-    .title Social
-    .content{:style=>'display:none;'}
+    .title Get Involved
+    .content.social{:style=>'display:none;'}
+      %h4{:style=>'text-align:center;padding:12px 0;font-weight:bold'}
+        You&nbsp;can
+        %a{:href=>'/accounts/new'}contribute&nbsp;to&nbsp;EJ&nbsp;Atlas
+        and&nbsp;/&nbsp;or
+        %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}fill&nbsp;out&nbsp;our&nbsp;survey.
       .block{"data-width"=>240}
         %a.btn.btn-twitter.full{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas!")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"} Tweet about EJAtlas
         %a.twitter-timeline{'data-dnt'=>"true",:href=>"https://twitter.com/EnvJustice",'data-widget-id'=>"498025848931246080",'data-chrome'=>'nofooter noborders',:height=>490} 
@@ -128,13 +156,30 @@
                   %h4
                     %a{:href=>"/conflict/#{c.slug}"}= c.name.split(',')[0]
                     -ago = ((Time.now-c.modified_at)/(60*60*24)).to_i
-                    -if ago < 100
-                      %small.blocked= "Updated #{ago < 1 ? "today" : (ago == 1 ? "#{ago} day ago" : "#{ago} days ago")}."
+                    -if c.commented
+                      %small commented
                   %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
 
 -content_for :body_end do
   :javascript
     $(document).ready(function(){
+      $('#help').on('click',function(){
+        $('#welcome').modal('show');
+      })
+      $('#welcome input').on('change',function(){
+        localStorage['hideHelp'] = $(this).prop('checked')
+      })
+      $('#welcome').on('shown.bs.modal',function(){
+        showPopovers();
+      });
+      $('#welcome').on('hidden.bs.modal',function(){
+        $('.popover').detach();
+      });
+      if (localStorage['hideHelp'] == "true") {
+        $('#welcome input').prop('checked',true)
+      } else {
+        $('#welcome').modal('show');
+      }
       fillWithCases();
       $('#rightpane').scroll(function() {
         if(!scrolling) {return}
@@ -175,5 +220,15 @@
         fillWithCases();
       })
     }
-
+    function showPopovers(){
+      $('.popover').detach();
+      $('[data-help="popover"]').popover('show');
+      $.each($('.popover'),function(i,e){
+        pos = $(e).offset();
+        $(e).css('position','fixed');
+        $(e).css('top',pos.top);
+        $(e).css('left',pos.left);
+      });
+      $('.popover').insertAfter("#welcome");
+    }
 

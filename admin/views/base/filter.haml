@@ -171,7 +171,10 @@
             -else
               .btn.btn-default{:onclick=>'serializeFilter("")'} Apply
             .btn.btn-default{:onclick=>'clearFilter()'} Clear
-            .btn.btn-default{:onclick=>'saveFilter()'} Save
+            -#
+              .btn.btn-default{:onclick=>'saveFilter()'} Save
+              -if current_account
+                .btn.btn-default{:onclick=>'embedFilter()'} Embed
         .body
           .root.dropbox.and{"data-section"=>"box","data-value"=>'and'}
             %icon.glyphicon.glyphicon-chevron-down.op
@@ -336,6 +339,11 @@
 
   function clearFilter(){
     $('.root.dropbox *').not('icon').detach();
+    if (typeof map != 'undefined') {
+      $('.map_icon').show();
+      map.fitBounds(markerLayer.getBounds());
+    }
+    $('#head strong').text($('.map_icon').length+" cases reported");
   };
 
   function serializeFilter(page_type){
@@ -375,6 +383,7 @@
       data: 'filter='+query+"&"+page_type,
       success: function(data){
         data = JSON.parse(data);
+        $('#head strong').text(data.length+" cases filtered")
         if (page_type == 'feat') {
           filterFollowed(data);
           $('#featured_filter').val(query);

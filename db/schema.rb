@@ -228,6 +228,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text     "features"
     t.string   "headline"
     t.boolean  "general"
+    t.boolean  "commented"
   end
 
   create_table "contact_people", :force => true do |t|
@@ -298,6 +299,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text   "basemaps"
     t.string "color", :limit=>6
     t.boolean "published"
+  end
+
+  create_table "filters", :force => true do |t|
+    t.string  "uid", :limit=>6
+    t.string  "name"
+    t.text    "query"
+    t.integer "account_id"
   end
 
   create_table "government_actors", :force => true do |t|

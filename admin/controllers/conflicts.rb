@@ -528,6 +528,7 @@ Admin.controllers :conflicts do
       end
       @conflict.ping
       @conflict.modified_at = Time.now
+      @conflict.commented = false;
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
         if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 

@@ -452,6 +452,9 @@ function showMarkers(markers) {
 
   $(document).ready(function(){
     onResize();
+    if($('.popover').length > 0){
+      showPopovers();
+    }
     dmns = dmns.distinct();
     if (dmns.length > 0) {
       $.each(dmns,function(i,n){
@@ -524,6 +527,7 @@ function dragEnd() {
   $.each($('.horipane .block'),function(i,e){
     elWidth = parseInt($(e).attr('data-width'));
     cols = Math.floor(rightWidth / elWidth);
+    if ($(e).attr('data-break')=="even" && cols%2 == 1) { cols --; }
     siblings = $(e).closest('.horipane').find('.block').length;
     if (cols == 0) {
       hori = $(e).closest('.horipane');
@@ -553,7 +557,7 @@ function markerFit(ids){
     }
   })
   console.log(arr)
-  map.fitBounds(arr);
+  map.fitBounds(arr,{maxZoom:16});
 }
 
 function mapFit(){
