@@ -299,6 +299,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text   "basemaps"
     t.string "color", :limit=>6
     t.boolean "published"
+    t.string   "headline"
   end
 
   create_table "filters", :force => true do |t|

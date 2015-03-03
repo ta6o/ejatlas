@@ -110,10 +110,7 @@
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
-                  -if c.description.split(/<br\s?\/?>/)[0]
-                    =c.description.split(/<br\s?\/?>/)[0].html_safe
-                  -else
-                    =c.description.html_safe
+                  =c.headline
 
   .horipane
     .title Get Involved

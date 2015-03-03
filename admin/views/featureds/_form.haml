@@ -78,9 +78,14 @@
       ~f.text_field :slogan, :class => :text_field
 
     .group
+      =f.label :headline
+      =f.error_message_on :headline
+      ~f.text_area :headline, :class => :text_area, :rows=>2
+
+    .group
       =f.label :description
       =f.error_message_on :description
-      ~f.text_area :description, :class => :text_area, :rows=>5
+      ~f.text_area :description, :class => :text_area, :rows=>6
 
     %br/
     -unless @featured.new_record?
