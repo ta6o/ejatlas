@@ -4599,6 +4599,16 @@ function render(){
   });
 }
 
+if (localStorage['pageHits']) {
+  localStorage['pageHits'] = parseInt(localStorage['pageHits']) + 1;
+  if (parseInt(localStorage['pageHits']) == 10 && localStorage['surveyAsked'] == "0") {
+    $('#survey').modal('show');
+  }
+} else {
+  localStorage['pageHits'] = 1;
+  localStorage['surveyAsked'] = 0;
+}
+
 function toSlug(url) {
   arr = url.split('/');
   return ascii(arr[arr.length-1].split('.')[0].toLowerCase().replace(/-+/g,' ').replace(/^\d+/,'').replace(/\s+/g,'_'));

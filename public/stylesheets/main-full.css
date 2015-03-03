@@ -5350,7 +5350,41 @@ ul.sidelink li.active {
 }
 #welcome .modal-dialog .modal-content .modal-header .close:hover {
   border-color: white;
-  text-decoration: underline;
+}
+#survey .modal-dialog {
+  width: 30%;
+  top: 144px;
+}
+#survey .modal-dialog .modal-content {
+  border-radius: 8px 8px 6px 6px;
+}
+#survey .modal-dialog .modal-content .modal-header {
+  border-radius: 6px 6px 0 0;
+  padding: 8px;
+  background: #0380a5;
+  text-align: center;
+  color: white !important;
+}
+#survey .modal-dialog .modal-content .modal-header .close {
+  position: absolute;
+  top: -1px;
+  right: -3px;
+  text-align: center;
+  padding: 3px 2px;
+  width: 25px;
+  height: 25px;
+  font: bold 18px/14px Tahoma, Verdana, sans-serif;
+  color: #000 !important;
+  text-decoration: none;
+  background: url("/images/bg.png") !important;
+  border: 2px solid #000;
+  border-radius: 20px;
+  zoom: 1;
+  filter: alpha(opacity=100);
+  opacity: 1;
+}
+#survey .modal-dialog .modal-content .modal-header .close:hover {
+  border-color: white;
 }
 .map_icon {
   display: block;

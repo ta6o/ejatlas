@@ -972,10 +972,6 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-function askSurvey(){
-  console.log('survey?')
-}
-
 function render(){
   leafletImage(map, function(err, canvas) {
       var dataURL = canvas.toDataURL("image/png");
@@ -988,14 +984,12 @@ function render(){
 
 if (localStorage['pageHits']) {
   localStorage['pageHits'] = parseInt(localStorage['pageHits']) + 1;
-  if (localStorage['pageHits'] >= (parseInt(localStorage['surveyAsked'])+1)*10 && localStorage['surveyAnswered'] == "false") {
-    localStorage['surveyAsked'] = parseInt(localStorage['surveyAsked']) + 1;
-    askSurvey();
+  if (parseInt(localStorage['pageHits']) == 10 && localStorage['surveyAsked'] == "0") {
+    $('#survey').modal('show');
   }
 } else {
   localStorage['pageHits'] = 1;
   localStorage['surveyAsked'] = 0;
-  localStorage['surveyAnswered'] = false;
 }
 
 function toSlug(url) {

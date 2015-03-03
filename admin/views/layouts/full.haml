@@ -18,7 +18,7 @@
     %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :property => 'og:title'}
     %meta{:content => (@title || $pagedesc), :property => "og:description"}/
     %meta{:content => "#{$siteurl}#{request.path}", :property => "og:url"}/
-    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-fb.jpg'), :property => "og:image"}/
+    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-fb.jpg?new'), :property => "og:image"}/
     %meta{:content => "Environmental Justice Atlas", :property => 'og:site_name'}
 
     / Twitter meta tags
@@ -40,6 +40,22 @@
     / %link{:href => "assets/ico/apple-touch-icon-57-precomposed.png", :rel => "apple-touch-icon-precomposed"}/
 
   %body{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
+    #survey.modal
+      .modal-dialog
+        .modal-content
+          .modal-header
+            %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+            %h4
+              %strong Thanks for using our platform!
+          .modal-body
+            %p We commit to make our work as much as possible participative and to welcome all constructive suggestions and critiques.
+            %p
+              %strong 
+                Would you like to 
+                %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform',:target=>'_blank'} fill our survey 
+                to help us improve our work?
+
+
     #top
       .navbar.navbar-fixed-top{:role=>'navigation'}
         .navbar-inner
