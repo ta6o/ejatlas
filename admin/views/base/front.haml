@@ -23,14 +23,23 @@
     }
 
 .front
-  -if @defs
-    %svg{:style=>'height:0'}
+  %svg{:style=>'height:0'}
+    -if @defs
       %defs
         -@defs.each do |d|
           %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
             %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
   .summary_header
+    .clearfix#share
+      .pull-right
+        %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out ‘"+@name.split(',')[0]+"‘ on #EJAtlas!")}&url=#{$siteurl+request.path}",:target=>"_blank",:title=>"Tweet"}
+          #share_tw 
+            #img &nbsp;
+      .pull-right
+        %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=#{CGI.escape($siteurl+request.path)}",:target=>"_blank",:title=>"Share on Facebook"}
+          #share_fb 
+            #img &nbsp;
     .clearfix
       -if @image and @image.length > 0
         %img.pull-left{:src=>@image ,:style=>'max-height:20px;width:auto;margin:4px 12px 20px 0px;'}
@@ -67,8 +76,19 @@
   .horipane
     .title.active{:class=> @feature ? "" : "active"} Legend
     .content
-      #legendpane
+      #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
         .legend.noselect.block{'data-width'=>220}
+
+  -if @browseinfo
+    -k = @browseinfo.keys.first
+    .horipane.browse
+      .title.active= "Browse by #{k}"
+      .content
+        %div{:id=>"browse#{k}"}
+          %ul.columns
+            -@browseinfo[k].each do |c|
+              -j = JSON.parse c[0]
+              %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
   -if @load and @load.length > 0
     .horipane

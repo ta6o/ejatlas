@@ -339,8 +339,12 @@ ul.sidelink {
 #help {
   margin: 0 0 -70px;
   padding: 18px 0;
-  .pull-right {
-    cursor:pointer;
+  .pull-right #img {
+    margin:3px 12px 0 0;
+  }
+  .pull-right h4 {
+    display: block;
+    cursor: pointer;
     width: 25px;
     height: 25px;
     font: bold 18px/14px;
@@ -352,7 +356,7 @@ ul.sidelink {
     &:hover {
       background: @brand-dark;
     }
-    h4 strong {
+    strong {
       line-height: 24px;
     }
   }
@@ -401,7 +405,7 @@ ul.sidelink {
 .map_icon {
   display: block;
   content: '&nbsp;';
-  border: 2px solid rgba(0,0,0,0.4); 
+  border: 1px solid #000;
   cursor: pointer;
   //#gradient > .vertical(@gray, darken(@gray,15%));
   border-radius: 18px; 
@@ -423,9 +427,6 @@ ul.sidelink {
     margin: -3px 0 0 -3px !important;
     background-image: none !important;
   }
-  &:hover, &.hovered {
-    border: 2px solid white; 
-  }
   &.i_ {background:red}
   &.i_0 {background:transparent}
   &.i_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
@@ -435,7 +436,7 @@ ul.sidelink {
   &.i_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
   &.i_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;}
   &.i_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
-  &.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;}
+  &.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center; border:1px solid #000 !important;}
   &.i_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
   &.i_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
 }
@@ -763,6 +764,13 @@ ul.sidelink {
   padding: 24px;
   margin: -24px;
   cursor: default;
+  #share {
+    margin: 0 0 -70px;
+    padding: 0;
+    .pull-right #img {
+      margin:3px 12px 0 0;
+    }
+  }
   #disclaimer {
     margin-bottom: 12px;
     p {

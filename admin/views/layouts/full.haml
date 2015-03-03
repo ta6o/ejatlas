@@ -18,7 +18,7 @@
     %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :property => 'og:title'}
     %meta{:content => (@title || $pagedesc), :property => "og:description"}/
     %meta{:content => "#{$siteurl}#{request.path}", :property => "og:url"}/
-    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-og.jpg'), :property => "og:image"}/
+    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-fb.jpg'), :property => "og:image"}/
     %meta{:content => "Environmental Justice Atlas", :property => 'og:site_name'}
 
     / Twitter meta tags
@@ -26,7 +26,7 @@
     %meta{:content => $tw_handle, :name => "twitter:site"}/
     %meta{:content => (@name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"), :name => 'twitter:title'}
     %meta{:content => (@headline || $pagedesc), :name => "twitter:description"}/
-    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-og.jpg'), :name => "twitter:image"}/
+    %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-fb.jpg'), :name => "twitter:image"}/
 
     =stylesheet_link_tag 'main-full'
     =javascript_include_tag 'jQl'
@@ -69,8 +69,10 @@
                 = 'Maps'
                 %b.caret
               %ul.dropdown-menu
-                -#%li
-                  %a.disable{:href=>'#'} Featured Maps
+                -Featured.where(published:true).select('name, slug').each do |feat|
+                  %li
+                    %a{:href=>"/featured/#{feat.slug}"}= feat.name
+                %li.divider
                 %li
                   %a{:href=>'/country'} Country Maps
                 %li

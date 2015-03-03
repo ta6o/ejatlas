@@ -5293,7 +5293,11 @@ ul.sidelink li.active {
   margin: 0 0 -70px;
   padding: 18px 0;
 }
-#help .pull-right {
+#help .pull-right #img {
+  margin: 3px 12px 0 0;
+}
+#help .pull-right h4 {
+  display: block;
   cursor: pointer;
   width: 25px;
   height: 25px;
@@ -5304,7 +5308,7 @@ ul.sidelink li.active {
   border-radius: 20px;
   text-align: center;
 }
-#help .pull-right:hover {
+#help .pull-right h4:hover {
   background: #024357;
 }
 #help .pull-right h4 strong {
@@ -5351,7 +5355,7 @@ ul.sidelink li.active {
 .map_icon {
   display: block;
   content: '&nbsp;';
-  border: 2px solid rgba(0, 0, 0, 0.4);
+  border: 1px solid #000;
   cursor: pointer;
   border-radius: 18px;
   width: 32px !important;
@@ -5372,10 +5376,6 @@ ul.sidelink li.active {
   height: 6px !important;
   margin: -3px 0 0 -3px !important;
   background-image: none !important;
-}
-.map_icon:hover,
-.map_icon.hovered {
-  border: 2px solid white;
 }
 .map_icon.i_ {
   background: #ff0000;
@@ -5406,6 +5406,7 @@ ul.sidelink li.active {
 }
 .map_icon.i_1 {
   background: #ffff00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;
+  border: 1px solid #000 !important;
 }
 .map_icon.i_4 {
   background: #754c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;
@@ -5758,6 +5759,13 @@ ul.sidelink li.active {
   padding: 24px;
   margin: -24px;
   cursor: default;
+}
+.summary_header #share {
+  margin: 0 0 -70px;
+  padding: 0;
+}
+.summary_header #share .pull-right #img {
+  margin: 3px 12px 0 0;
 }
 .summary_header #disclaimer {
   margin-bottom: 12px;

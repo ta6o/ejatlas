@@ -165,7 +165,7 @@ Admin.controller do
     @image = nil
     @image = con.flag_images.first.file.url if con.flag_images.any?
     @maptitle = "Environmental Conflicts in #{@name}"
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     render "base/front", :layout => @layout
   end
 
@@ -187,7 +187,7 @@ Admin.controller do
     @image = nil
     @image = con.logo_images.first.file.url if con.logo_images.any?
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     render "base/front", :layout => @layout
   end
 
@@ -207,7 +207,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     render "base/front", :layout => @layout
   end
 
@@ -227,7 +227,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts on #{@name}"
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     render "base/front", :layout => @layout
   end
 
@@ -248,7 +248,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts about #{@name}"
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     render "base/front", :layout => @layout
   end
 
@@ -266,7 +266,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     render "base/front", :layout => @layout
   end
 
@@ -282,7 +282,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     render "base/front", :layout => @layout
   end
 
@@ -309,8 +309,10 @@ Admin.controller do
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link').to_json
     @image = nil
     @image = con.images.first.file.url if con.images.any?
+    @ogimage = @image
     @feature = true
     @maptitle = con.slogan
+    @title = con.headline
     @baselayers = (con.baselayers != "" ? con.baselayers : "")
     begin
       @domains = []
@@ -364,9 +366,9 @@ Admin.controller do
     @name = browseinfo[params[:model]].titlecase
     @maptitle = "Browse #{@name}"
     @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
-    render "base/map"
+    render "base/front"
   end
 
   get :cache do
