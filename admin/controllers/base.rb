@@ -70,7 +70,7 @@ Admin.controller do
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     @recent = Conflict.select('id, headline, modified_at, name, slug, commented').where("approval_status = 'approved' AND headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
-    @feats = Featured.select('id, description, name, slug, image').where(published:true).order("slug").limit(6)
+    @feats = Featured.select('id, description, name, slug, image, headline').where(published:true).order("slug").limit(6)
     render "base/map", :layout => @layout
   end
 
