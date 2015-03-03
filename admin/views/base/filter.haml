@@ -343,7 +343,7 @@
       $('.map_icon').show();
       map.fitBounds(markerLayer.getBounds());
     }
-    $('#head strong').text($('.map_icon').length+" cases reported");
+    $('#head p strong').text($('.map_icon').length+" cases reported");
   };
 
   function serializeFilter(page_type){
@@ -383,7 +383,7 @@
       data: 'filter='+query+"&"+page_type,
       success: function(data){
         data = JSON.parse(data);
-        $('#head strong').text(data.length+" cases filtered")
+        $('#head p strong').text(data.length+" cases filtered")
         if (page_type == 'feat') {
           filterFollowed(data);
           $('#featured_filter').val(query);
