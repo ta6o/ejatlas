@@ -6668,20 +6668,48 @@ br.small {
     margin: 0 !important;
   }
 }
-.embed#map {
-  width: 100% !important;
-  height: 100% !important;
+@media (min-width: 0) {
+  .embedbody {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .embed #map {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+  .embed #map .leaflet-top {
+    top: 0px !important;
+  }
+  .embed #map .leaflet-right {
+    right: 6px !important;
+  }
+  .embed #top {
+    cursor: pointer !important;
+    position: fixed !important;
+  }
+  .embed #top #eja-logo {
+    width: 48px !important;
+    height: 70px !important;
+    top: 2px !important;
+    left: 12px !important;
+  }
+  .embed #top .tagline {
+    top: 16px !important;
+    left: 48px !important;
+    padding: 4px 16px !important;
+    width: 260px !important;
+    position: relative !important;
+  }
+  .embed #top .tagline p {
+    margin: 0 0 0 8px !important;
+  }
 }
-.embed#map .leaflet-top {
-  top: 0px !important;
-}
-.embed#map .leaflet-right {
-  right: 6px !important;
-}
-.embed#top #eja-logo {
-  width: 48px !important;
-  height: 70px !important;
-}
-.embed#top .tagline p {
-  margin: 0 0 0 8px !important;
+@media (max-width: 480px) {
+  .embed #map .leaflet-top {
+    top: 48px !important;
+  }
+  .embed #top .tagline {
+    width: 230px !important;
+  }
 }

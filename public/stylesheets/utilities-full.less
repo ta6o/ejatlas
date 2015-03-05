@@ -1621,21 +1621,49 @@ br.small {
     margin: 0 !important;
   }
 }
-
-.embed {
-  &#map {
-    width: 100% !important;
-    height: 100% !important;
-    .leaflet-top { top:0px !important}
-    .leaflet-right { right:6px !important}
-  }
-  &#top {
-    #eja-logo {
-      width: 48px !important;
-      height: 70px !important;
+@media (min-width: 0) {//(@screen-md - 1)) {
+  .embed {
+    &body {
+      width: 100% !important;
+      height: 100% !important;
     }
-    .tagline p {
-      margin: 0 0 0 8px !important;
+    #map {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      .leaflet-top { top:0px !important}
+      .leaflet-right { right:6px !important}
+    }
+    #top {
+      cursor: pointer !important;
+      position: fixed !important;
+      #eja-logo {
+        //position:relative !important;
+        width: 48px !important;
+        height: 70px !important;
+        top: 2px !important;
+        left: 12px !important;
+      }
+      .tagline {
+        top: 16px !important;
+        left: 48px !important;
+        padding: 4px 16px !important;
+        width: 260px !important;
+        position:relative !important;
+        p { margin: 0 0 0 8px !important; } 
+      }
+    }
+  }
+}
+@media (max-width: @screen-xs) {//(@screen-md - 1)) {
+  .embed {
+    #map {
+      .leaflet-top { top:48px !important}
+    }
+    #top {
+      .tagline {
+        width: 230px !important;
+      }
     }
   }
 }

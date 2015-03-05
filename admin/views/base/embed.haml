@@ -59,15 +59,15 @@
     / %link{:href => "assets/ico/apple-touch-icon-72-precomposed.png", :rel => "apple-touch-icon-precomposed", :sizes => "72x72"}/
     / %link{:href => "assets/ico/apple-touch-icon-57-precomposed.png", :rel => "apple-touch-icon-precomposed"}/
 
-  %body{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
-    #top.embed
+  %body.embed{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
+    #top{:onclick=>'window.location = "http://ejatlas.org/"'}
       .navbar.navbar-fixed-top
         .navbar-inner
           .tagline
             %p Environmental Justice Atlas
           .ejatlas-logo#eja-logo
 
-    #map.map.embed{:style=>'width:100%;height:100% !important'} 
+    #map.map
     -if ENV['RACK_ENV'] == 'development'
       :javascript
         conflict = false;
