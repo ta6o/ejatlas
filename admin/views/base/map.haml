@@ -25,13 +25,14 @@
 -content_for :fb do
   #fb-root
   :javascript
-    (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_PI/sdk.js#xfbml=1&appId=842943955772994&version=v2.0";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    window.fbAsyncInit = function() { FB.init({ appId: '842943955772994', xfbml: true, version: 'v2.2' }); }; 
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
 
 -content_for :outer do
   #welcome.modal
@@ -62,12 +63,12 @@
       %h4
         %strong{:style=>'left:0',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Show this help"} ?
     .pull-right
-      %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas!")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"}
+      %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas,")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"}
         #share_tw 
           #img &nbsp;
     .pull-right
-      .fb-like{"data-href"=>"https://developers.facebook.com/docs/plugins/","data-layout"=>"button","data-action"=>"like","data-show-faces"=>"true","data-share"=>"true"}
-      -#%a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"}
+      -#.fb-like{"data-href"=>"https://developers.facebook.com/docs/plugins/","data-layout"=>"button","data-action"=>"like","data-show-faces"=>"true","data-share"=>"true"}
+      %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"}
         #share_fb 
           #img &nbsp;
   .clearfix
