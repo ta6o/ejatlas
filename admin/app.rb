@@ -34,7 +34,7 @@ class Admin < Padrino::Application
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
-  $baselayers = ["Esri.WorldImagery", "Thunderforest.Landscape", "Esri.WorldTopoMap"]
+  $baselayers = "Thunderforest.Landscape,Esri.WorldImagery,Esri.WorldTopoMap"
 
   $client = Elasticsearch::Client.new log:false
 

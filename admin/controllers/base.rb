@@ -59,7 +59,6 @@ Admin.controller do
     @filter = render "base/filter", :layout => false
     @markercount = Conflict.where(approval_status: 'approved').count
     @markerinfo = ca.conflicts_marker
-    @filterinfo = ca.conflicts_json
     countries = JSON.parse(ca.countries)
     companies = JSON.parse(ca.companies)[0..100]
     commodities = JSON.parse(ca.commodities)
@@ -325,6 +324,14 @@ Admin.controller do
     render "base/feat", :layout => @layout
   end
 
+  get :embed do
+    ca = Cached.first
+    @markercount = Conflict.where(approval_status: 'approved').count
+    @markerinfo = ca.conflicts_marker
+    headers({ 'X-Frame-Options' => 'ALLOWALL' })
+    render "base/embed", :layout => false
+  end
+
   get :company_list do
     return Company.all.map{|c| "#{c.id}|#{c.name}"}.join('$%')
   end
@@ -363,6 +370,7 @@ Admin.controller do
     @filterinfo = ca.conflicts_json
     info = eval("JSON.parse(ca.#{browseinfo[params[:model]]})")
     @browseinfo = {params[:model] => info}
+    puts @browseinfo
     @name = browseinfo[params[:model]].titlecase
     @maptitle = "Browse #{@name}"
     @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json

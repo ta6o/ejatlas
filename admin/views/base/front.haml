@@ -79,15 +79,16 @@
       #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
         .legend.noselect.block{'data-width'=>220}
 
-  -k = @browseinfo.keys.first
-  .horipane.browse
-    .title.active= "Browse by #{k}"
-    .content
-      %div{:id=>"browse#{k}"}
-        %ul.columns
-          -@browseinfo[k].each do |c|
-            -j = JSON.parse c[0]
-            %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+  -if @browseinfo
+    -k = @browseinfo.keys.first
+    .horipane.browse
+      .title.active= "Browse by #{k}"
+      .content
+        %div{:id=>"browse#{k}"}
+          %ul.columns
+            -@browseinfo[k].each do |c|
+              -j = JSON.parse c[0]
+              %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
   -if @load and @load.length > 0
     .horipane
