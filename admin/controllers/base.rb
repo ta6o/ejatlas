@@ -322,7 +322,7 @@ Admin.controller do
     end
     @fid = con.id
     @color = "##{con.color}"
-    render "base/front", :layout => @layout
+    render "base/feat", :layout => @layout
   end
 
   get :company_list do
