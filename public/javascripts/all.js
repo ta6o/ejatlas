@@ -4601,8 +4601,10 @@ function render(){
 
 if (localStorage['pageHits']) {
   localStorage['pageHits'] = parseInt(localStorage['pageHits']) + 1;
-  if (parseInt(localStorage['pageHits']) == 10 && localStorage['surveyAsked'] == "0") {
+  hits = parseInt(localStorage['pageHits']);
+  if (hits <= 10 && hits >= 3 && localStorage['surveyAsked'] == "0") {
     $('#survey').modal('show');
+    localStorage['pageHits'] = 10;
   }
 } else {
   localStorage['pageHits'] = 1;

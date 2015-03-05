@@ -6410,6 +6410,9 @@ ul.sidelink li.active {
 #share_tw:hover #img {
   background-position: 0px -20px;
 }
+.fb-like.fb_iframe_widget {
+  margin: 3px 4px 0px 0px;
+}
 .i_choropleth {
   float: left;
   width: 200px !important;
