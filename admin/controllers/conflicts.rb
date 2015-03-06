@@ -205,7 +205,7 @@ Admin.controllers :conflicts do
           @conflicts << batch
         end
         @conflicts.flatten!
-        @conflicts.sort_by! {|c| c.modified_at}
+        @conflicts.sort_by! {|c| ( c.modified_at || Time.now ) }
         @conflicts.reverse!
       else
         @conflicts = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id).order('modified_at desc')

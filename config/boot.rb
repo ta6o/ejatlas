@@ -10,6 +10,7 @@ Bundler.require(:default, RACK_ENV)
 Padrino::Logger::Config[:development] = { :log_level => :warn, :stream => :stdout }
 
 Padrino.before_load do
+  #I18n.locale = :it
 end
 
 Padrino.after_load do
