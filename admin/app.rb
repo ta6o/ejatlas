@@ -117,6 +117,13 @@ class Admin < Padrino::Application
     Admin.send_mail(@account, (c.approval_status == "approved" ? "#{c.name} approved on EJAtlas" : "Moderation update for #{c.name}"), html)
   end
 
+  def self.newsletter(a)
+    @account = Account.find a
+    return 0 unless @account
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/newsletter.haml").render(self)
+    Admin.send_mail(@account, "EJAtlas Newsletter", html)
+  end
+
   access_control.roles_for :any do |role|
     role.allow '/'
     role.protect "/conflicts"
