@@ -319,7 +319,7 @@ function initMap () {
     id = $(this).attr('data-id');
     selector = '#map .map_icon.id_'+id;
     $(selector).addClass('selected')
-    markerc[id].setZIndexOffset(markerCount+1)
+    markerc[parseInt(id)].setZIndexOffset(markerCount+1)
     transformItem(selector, 'scale', 1.25);
     $(selector).removeClass('mic').removeClass('min').addClass('hovered');
     updateInfo(1,markerc[id].content)
