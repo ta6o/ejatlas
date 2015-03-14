@@ -430,7 +430,7 @@ Admin.controller do
     Conflict.select('id, headline, modified_at, name, slug').where("approval_status = 'approved' AND headline <> '' AND headline IS NOT NULL").order("modified_at desc").offset(params[:offset]).limit(6).each do |c|
       j = JSON.parse(c.to_json)
       begin 
-        j["conflict"]["image"] = c.images.first.file.url
+        j["conflict"]["image"] = c.images.first.file.thumb.url
       rescue 
         j["conflict"]["image"] = "/images/bg.png"
       end

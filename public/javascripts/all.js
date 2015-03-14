@@ -3932,15 +3932,16 @@ function initMap () {
     $(this).parent().slideUp(function(){more.slideDown();});
   });
   
-  $('.conflict-button').on('mouseenter',function(e){
+  $('.horipane').on('mouseenter','.conflict-button',function(e){
     id = $(this).attr('data-id');
     selector = '#map .map_icon.id_'+id;
     $(selector).addClass('selected')
+    markerc[id].setZIndexOffset(markerCount+1)
     transformItem(selector, 'scale', 1.25);
     $(selector).removeClass('mic').removeClass('min').addClass('hovered');
     updateInfo(1,markerc[id].content)
   })
-  $('.conflict-button').on('mouseleave',function(e){
+  $('.horipane').on('mouseleave','.conflict-button',function(e){
     selector = '#map .map_icon.id_'+$(this).attr('data-id');
     transformItem(selector, 'scale', 0.8);
     $(selector).removeClass('hovered');

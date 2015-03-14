@@ -5683,7 +5683,7 @@ ul.sidelink li.active {
 .horipane .content table td.image a .img {
   width: 120px;
   height: 90px;
-  background-size: cover;
+  background-size: cover !important;
   background: url('/images/bg.png');
 }
 .horipane .content table td.exp {
