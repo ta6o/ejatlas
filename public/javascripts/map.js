@@ -393,11 +393,12 @@ function showMarkers(markers) {
         id = parseInt(n.split(':')[0]);
         if (id == fid && mark[n]) {
           if (Object.keys(attrhash).indexOf(n.split(':')[1]) >= 0){
-            popcontent += '<br /><strong>'+attrhash[n.split(':')[1]].replace(/\sId$/,'')+':</strong> ';
+            popcontent += '<br />'+attrhash[n.split(':')[1]].replace(/\sId$/,'')+': <strong>';
           } else {
-            popcontent += '<br /><strong>'+toTitleCase(n.split(':')[1].replace(/_/g,' '))+':</strong> ';
+            popcontent += '<br />'+toTitleCase(n.split(':')[1].replace(/_/g,' '))+': <strong>';
           }
           popcontent += mark[n];
+          popcontent += "</strong>";
         }
       })
       popcontent += "<br /><br />"
@@ -420,6 +421,7 @@ function showMarkers(markers) {
     marker.bindPopup(L.popup({
         autoPanPaddingTopLeft: L.point(24, 96),
         autoPanPaddingBottomRight: L.point(72, 64),
+        keepInView: true
       }).setContent('<img src="/images/loading-bg.gif" class="loading"/>'));
     marker.on('mouseover', function(e){
       selector = '#map .map_icon.id_'+marker.id;
@@ -468,6 +470,10 @@ function showMarkers(markers) {
       m = $(".id_"+k);
       m.attr('src',"/")
     })
+
+    if (markerinfo.length == 0) {
+      legendpane.hide();
+    }
   });
 }
 
@@ -1013,6 +1019,9 @@ function filterMarkers(m) {
 }
 
 if (typeof markerinfo != 'undefined') {
+  if (markerinfo.length === 0) {
+    legend = "";
+  }
   initMap();
   showMarkers(markerinfo);
 }
