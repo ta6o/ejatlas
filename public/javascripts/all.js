@@ -4394,7 +4394,7 @@ function onEachFeature(feature, layer) {
   } else {
     pn = feature.properties.pn
   }
-  inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong></p></div>";
+  inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong></p></div><div class='scrollme'>";
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
     titled = false;
@@ -4404,7 +4404,7 @@ function onEachFeature(feature, layer) {
           ia.push("<h3>"+v+"</h3>");
           titled = true;
         } else {
-          ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v);
+          ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v.replace(/\n+/g,'<br /><br />')+"<br />");
         }
       }
     });
@@ -4418,9 +4418,11 @@ function onEachFeature(feature, layer) {
     if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
     inf += "</p>";
   }
+  inf += "</div>"
   layer.bindPopup(inf,{
     autoPanPaddingTopLeft: L.point(24, 96),
     autoPanPaddingBottomRight: L.point(72, 64),
+    keepInView: true
   });
   layer.on({
     mouseover:highlightFeature,

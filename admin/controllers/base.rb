@@ -321,6 +321,7 @@ Admin.controller do
     end
     @fid = con.id
     @color = "##{con.color}"
+    headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/feat", :layout => @layout
   end
 
