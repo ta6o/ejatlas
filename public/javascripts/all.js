@@ -3649,10 +3649,6 @@ Array.prototype.distinct = function(){
    return a;
 }
 
-function toTitleCase(str) {
-  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-}
-
 function initMap () {
   info = $("#infopane");
   legendpane = $("#legendpane .legend");
@@ -4497,7 +4493,7 @@ function showVector(v) {
     if (vect['shown'] == '1') sp = 'style="display: table-row;"';
     leg = '';
     $.each(choropleths[tl],function(k,v){
-      leg += '<tr class="leg '+sl+'" '+sp+'> <td>&nbsp;</td> <td class="icon"> <div class="chorostyle" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+v['legend']+'</td> </tr>';
+      leg += '<tr class="leg '+sl+'" '+sp+'> <td>&nbsp;</td> <td class="icon"> <div class="chorostyle" style="background-color:#'+v['color'].replace(/^#/,'')+'"></div> </td> <td class="chdesc">'+toSentenceCase(v['legend'])+'</td> </tr>';
     });
     leg += '<tr class="leg last '+sl+'" '+sp+'> <td></td><td></td><td></td> </tr>';
     jsons[tl]['legend'] = leg;
@@ -4596,6 +4592,10 @@ function pausecomp(millis) {
 }
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+function toSentenceCase(str) {
+  return str.replace(/^\w/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
 function render(){
