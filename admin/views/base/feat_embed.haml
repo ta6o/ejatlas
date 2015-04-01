@@ -1,0 +1,92 @@
+-# coding: utf-8
+-content_for :include do
+  :javascript
+    img = new Image(330,30);
+    img.src = 'https://file.ejatlas.org/static/ikon.png';
+    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
+    var vectorinfo = [];
+    var maptitle = "#{@maptitle}";
+    var layers = "#{@baselayers}";
+    var fid = #{@fid || 0};
+  -if @vectors
+    :javascript
+      vectorinfo = #{@vectors};
+  :javascript
+    window.onload = onLoad;
+    function onLoad() {
+      if (typeof initMap === 'function' ) {
+        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+        mapFit();
+      } else {
+        setTimeout(onLoad,10);
+      }
+    }
+
+.front
+  %svg{:style=>'height:0'}
+    -if @defs
+      %defs
+        -@defs.each do |d|
+          %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+            %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+
+  .summary_header
+    .clearfix#share
+      .pull-right
+        %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out ‘"+@name.split(',')[0]+"‘ on #EJAtlas: ")}&url=#{$siteurl+request.path}",:target=>"_blank",:title=>"Tweet"}
+          #share_tw 
+            #img &nbsp;
+      .pull-right
+        %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=#{CGI.escape($siteurl+request.path)}",:target=>"_blank",:title=>"Share on Facebook"}
+          #share_fb 
+            #img &nbsp;
+    .clearfix
+      -if @image and @image.length > 0
+        %img.pull-left{:src=>@image ,:style=>'max-height:60px;width:auto;margin:-10px 12px 12px 0;'}
+        .pull-left
+          %h2= @name
+      -else
+        .pull-left
+          %h2= @name
+
+  -if @description and @description.length > 0 or @maptitle.length > 0 and @feature
+    .horipane.description
+      .title.active Description
+      .content
+        -if @feature
+          .clearfix#disclaimer
+            -if @maptitle.length > 0
+              %h2= @maptitle
+        -dar = @description.gsub("\n","<br />").split(/<br\s?\/?>/)
+        -if dar.length > 1
+          %p.description
+            .less= dar[0].html_safe
+            %a.seemore{:href=>"#"} See more...
+            .more{:style=>'display:none;'}
+              =dar[1..-1].join('<br />').html_safe
+              -#%a.seeless{:href=>"#"}(See less)
+        -else
+          %p.description= @description.gsub("\n","<br />").html_safe
+              
+  .horipane
+    .title.active{:class=> @feature ? "" : "active"} Legend
+    .content
+      #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
+        .legend.noselect.block{'data-width'=>220}
+
+  -if @load and @load.length > 0
+    .horipane
+      .title.active Cases
+      .content
+        -if @feature
+          .clearfix#disclaimer
+            =(@load || "").html_safe
+          .clearfix
+            %h2.pull-left#name
+        -else
+          .clearfix#disclaimer
+            %h2{:style=>"margin-top:0"}= @maptitle
+            =@load.html_safe
+          .clearfix
+            %h2.pull-left#name
+

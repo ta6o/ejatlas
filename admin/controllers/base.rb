@@ -333,6 +333,46 @@ Admin.controller do
     render "base/embed", :layout => false
   end
 
+  get :embed, :with => :slug do
+    ca = Cached.select(:filterdata).first
+    con = Featured.find_slug(params[:slug])
+    pass unless con
+    @markerinfo = con.conflicts_marker
+    @load = @markerinfo.length > 60000 ? nil : con.conflicts_link
+    @name = con.name
+    @description = con.description
+    @id = con.id
+    @desc = con.description
+    @headline = con.slogan
+    @ogimage = con.images.where(prime:1)[0].file.url if con.images.where(prime:1).any?
+    @markercount = JSON.parse(@markerinfo || "[]").count
+    @defs = []
+    con.vector_data.each do |vd|
+      if vd.vector_style and vd.vector_style.defs
+        @defs << JSON.parse(vd.vector_style.defs)
+      end
+    end
+    @defs = @defs.to_set.to_a
+    @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link').to_json
+    @image = nil
+    @image = con.images.first.file.url if con.images.any?
+    @ogimage = @image
+    @feature = true
+    @maptitle = con.slogan
+    @title = con.headline
+    @baselayers = (con.baselayers != "" ? con.baselayers : "")
+    begin
+      @domains = []
+      JSON.parse(con.filter).each{}
+      #puts JSON.pretty_generate @domains
+    rescue
+    end
+    @fid = con.id
+    @color = "##{con.color}"
+    headers({ 'X-Frame-Options' => 'ALLOWALL' })
+    render "base/feat_embed", :layout => :embed
+  end
+
   get :company_list do
     return Company.all.map{|c| "#{c.id}|#{c.name}"}.join('$%')
   end
