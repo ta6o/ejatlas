@@ -55,7 +55,7 @@ Admin.controllers :featureds do
     begin
       @followed = (Admin.filter(@featured.filter).map{|i| begin Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug}
     rescue => e
-      puts "#{featured.name} | #{e}"
+      puts "#{@featured.name} | #{e}"
       @followed = (Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug}
     end
     @filterform = JSON.parse(Cached.last.filterdata)
