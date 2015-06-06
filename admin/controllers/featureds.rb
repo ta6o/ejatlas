@@ -114,7 +114,7 @@ Admin.controllers :featureds do
     begin
       filter = "{}"
       filter = featured.filter if featured.filter.length > 0
-      stack = Admin.filter(filter).map{|i| Conflict.find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}
+      stack = Admin.filter(filter).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}.sort{|a,b| a.slug <=> b.slug} - [nil]
     rescue => e
       stack = Admin.old_filter(featured.filter).sort{|a,b| a.slug <=> b.slug}
     end
