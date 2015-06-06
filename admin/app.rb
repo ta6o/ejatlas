@@ -287,6 +287,7 @@ class Admin < Padrino::Application
     comparison = ["invest-g","invest-l","start-g","start-l","end-g","end-l"]
     hash = {}
     if options.class == String
+      puts options
       if options[0] == "{"
         options = JSON.parse(options)
       else

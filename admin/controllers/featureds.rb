@@ -233,7 +233,7 @@ Admin.controllers :featureds do
       end
     end
     
-    tags.delete nil
+    tags -= [nil]
     ftags = []
     itags = []
     tags.each_with_index do |tag,index|
@@ -251,6 +251,7 @@ Admin.controllers :featureds do
       else
         ftag = Tag.create :name => UnicodeUtils::titlecase(tag.gsub(/[-_]/,' ')), :domain => domain
       end
+      feat.tags << ftag
       itags << ftag.id
     end
     p tags
@@ -281,6 +282,7 @@ Admin.controllers :featureds do
     header.delete 'name'
     features = header - tags
     feat.features = features.to_json
+=begin
     filter = (feat.filter || "").split('/')
     tag = filter.index{|x| x =~ /^tag~/ }
     if tag
@@ -291,6 +293,7 @@ Admin.controllers :featureds do
       filter << "tag~#{(itags | curtags).join(',')}"
     end
     feat.filter = filter.join('/')
+=end
     feat.save
     redirect to "/featureds/edit/#{feat.id}"
   end
