@@ -1,5 +1,6 @@
 # coding: utf-8
 Admin.controllers :conflicts do
+  require 'pp'
 
   before do
     @name = "Conflicts"
@@ -401,6 +402,7 @@ Admin.controllers :conflicts do
   put :update, :with => :id do
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
+    pp params
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
     ##puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"

@@ -91,6 +91,7 @@ Admin.controllers :accounts do
     p params
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     #puts params[:account]
+    params[:account].delete 'role' unless ["admin"].include?(current_account.role)
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
@@ -126,6 +127,7 @@ Admin.controllers :accounts do
     @account = Account.find(params[:id])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.approved = true
+    @account.role = "user"
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
         flash[:notice] = 'Account was successfully updated.'

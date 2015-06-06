@@ -17,7 +17,7 @@
 ActiveRecord::Base.configurations[:development] = {
   :adapter  => 'postgresql',
   :encoding => 'utf8',
-  :database => 'ejtest',
+  :database => 'ejatlas',
   :username => 'yakup',
   :password => '***REMOVED***',
   :host     => '127.0.0.1'

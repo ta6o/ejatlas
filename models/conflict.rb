@@ -82,7 +82,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def related
-    rel = (self.related_to | self.related_from).map{|c| c.approval_status == "approved" ? c : nil}.delete(nil)
+    rel = (self.related_to | self.related_from).map{|c| c.approval_status == "approved" ? c : nil} - [nil]
     return [] unless rel
     return rel
   end
