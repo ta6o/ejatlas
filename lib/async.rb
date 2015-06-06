@@ -313,7 +313,7 @@ class AsyncTask
           featured.ping(Admin.filter(filter).map{|i| Conflict.find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug})
         rescue => e
           puts "#{featured.name} | #{e}"
-          featured.ping(Admin.old_filter(featured.filter).sort{|a,b| a.slug <=> b.slug})
+          featured.ping((Admin.old_filter(featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
         end
       end
     end
