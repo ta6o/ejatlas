@@ -24,9 +24,9 @@
           -@featureds.each do |featured|
             %tr
               %td.first=featured.name
-              %td=featured.description.split(" ")[0..12].join(" ")+"..."
+              %td=featured.description.split(" ")[0..12].join(" ")
               %td
-                -if img = featured.images.where(prime:1)[0]
+                -if img = featured.images.first
                   %img{:src=>img.file.thumb_url,:style=>'max-height:50px;'}
                 -else
                   =""

@@ -53,9 +53,10 @@ Admin.controllers :featureds do
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
     begin
-      @followed = Admin.filter(@featured.filter).map{|i| Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}
+      @followed = (Admin.filter(@featured.filter).map{|i| begin Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i rescue nil end)}-[nil]).sort{|a,b| a.slug <=> b.slug}
     rescue => e
-      puts e
+      puts "#{featured.name} | #{e}"
+      @followed = (Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
     end
     @filterform = JSON.parse(Cached.last.filterdata)
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
