@@ -301,7 +301,7 @@ class Admin < Padrino::Application
       end
     end
     rarray = []
-    pp options
+    #pp options
     options.each do |k,v|
       map.has_key?(k) ? k = map[k] : k = k
       rarray << []
@@ -343,6 +343,7 @@ class Admin < Padrino::Application
     end
     result
   end
+
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo", "Ayşe"]
 
