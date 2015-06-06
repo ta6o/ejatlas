@@ -111,7 +111,13 @@ Admin.controllers :featureds do
   get :export, :with => :id do
     featured = Featured.find(params['id'])
     redirect to '/featureds' unless featured
-    stack = Admin.filter(featured.filter || "")
+    begin
+      filter = "{}"
+      filter = featured.filter if featured.filter.length > 0
+      stack = Admin.filter(filter).map{|i| Conflict.find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}
+    rescue => e
+      stack = Admin.old_filter(featured.filter).sort{|a,b| a.slug <=> b.slug}
+    end
     tags = (featured.filter || "").split('/').grep(/^tag~/)
     tags = tags[0].split('~')[-1].split(',') if tags.any?
     tags = tags.map {|t| Tag.find(t)}

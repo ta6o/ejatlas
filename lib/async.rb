@@ -308,9 +308,12 @@ class AsyncTask
       Featured.all.each do |featured|
         features = JSON.parse(featured.features || '{}')
         begin
-          featured.ping(Admin.filter(featured.filter).map{|i| Conflict.find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug})
-        rescue
-          featured.ping([])
+          filter = "{}"
+          filter = featured.filter if featured.filter.length > 0
+          featured.ping(Admin.filter(filter).map{|i| Conflict.find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug})
+        rescue => e
+          puts "#{featured.name} | #{e}"
+          featured.ping(Admin.old_filter(featured.filter).sort{|a,b| a.slug <=> b.slug})
         end
       end
     end

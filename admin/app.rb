@@ -279,6 +279,70 @@ class Admin < Padrino::Application
     return result
   end
 
+  def self.old_filter options
+    require 'pp'
+    map = {"cntry" => "country_id", "comp" => "company", "success" => "success_level", "poptype" => "population_type", "category" => "category_id", "types" => "type", "intensity" => "status_id", "envi" => "env_impact", "hlti" => "hlt_impact", "seci" => "sec_impact", "mobgroup" => "mobilizing_group", "mobform" => "mobilizing_form", "product" => "product", "pstatus" => "project_status_id", "stage" => "reaction_id", "outcome" => "conflict_event", "tag" => "tag"}
+    simple = ["country_id", "success_level", "population_type", "category_id", "status_id", "project_status_id", "reaction_id"]
+    relation = ["company", "type", "env_impact", "hlt_impact", "sec_impact", "mobilizing_group", "mobilizing_form", "product", "conflict_event", "tag"]
+    comparison = ["invest-g","invest-l","start-g","start-l","end-g","end-l"]
+    hash = {}
+    if options.class == String
+      if options[0] == "{"
+        options = JSON.parse(options)
+      else
+        arr = options.split('/')
+        options = {}
+        arr.each do |a|
+          h = a.split(/[~=]/)
+          map.has_key?(h[0]) ? k = map[h[0]] : k = h[0]
+          h[-1].match(/,/) ? v = h[-1].split(',').map{|i|i.to_i} : v = [h[-1].to_i]
+          options[k] = v
+        end
+      end
+    end
+    rarray = []
+    pp options
+    options.each do |k,v|
+      map.has_key?(k) ? k = map[k] : k = k
+      rarray << []
+      if simple.include? k
+        v.each do |va|
+          va -= 1 if k == "population_type"
+          rarray[-1] << Conflict.where(approval_status: 'approved').where("#{k} = ?",va)#.select('conflicts.id, name, slug, features, approval_status')
+        end
+      elsif relation.include? k
+        model = eval(UnicodeUtils.titlecase(k.gsub(/[_-]/,' ')).gsub(/\s/,''))
+        v.each do |va|
+          if va.is_a?(Integer) or va == va.to_i.to_s
+            rarray[-1] << model.find(va.to_i).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')
+          else
+            rarray[-1] << model.find_by_slug(va).conflicts.where(approval_status: 'approved')#.select('conflicts.id, name, slug, features, approval_status')
+          end
+        end
+      elsif comparison.include? k
+        operator = {'g'=>'>','l'=>'<'}[k.split('-')[-1]]
+        field = {'invest'=>'investment_sum','start'=>'start_datestamp','end'=>'end_datestamp'}[k.split('-')[0]]
+        v = v[0].to_i
+        v = Date.parse("#{v}-12-31") if ['start-g','end-g'].include? k
+        v = Date.parse("#{v}-01-01") if ['start-l','end-l'].include? k
+        p Conflict.where("#{field} #{operator} ?",v).to_sql
+        rarray[-1] << Conflict.where("#{field} #{operator} ?",v)#.select('conflicts.id, name, slug, features, approval_status')
+      end
+    end
+    resu = []
+    rarray.each do |res|
+      re = []
+      res.each do |r|
+        re = re | r
+      end
+      resu << re
+    end
+    result = resu.first
+    resu.each do |res|
+      result = result & res
+    end
+    result
+  end
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo", "Ayşe"]
 
