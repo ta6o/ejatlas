@@ -221,7 +221,12 @@ Admin.controllers :featureds do
     unless feat = Featured.find(params['id'])
       redirect to '/featureds'
     end
-    csv = CSV.parse params['featured']['file'][:tempfile].read.force_encoding('utf-8')
+    begin
+      csv = ::CSV.parse(params['featured']['file'][:tempfile].read, :row_sep => :auto, :col_sep => "\t", encoding: "utf-8")
+    rescue
+      csv = ::CSV.parse(params['featured']['file'][:tempfile].read, :row_sep => :auto, :col_sep => ",", encoding: "utf-8")
+    end
+    #csv = CSV.parse params['featured']['file'][:tempfile].read.force_encoding('utf-8')
     header = csv.shift
     tags = header.dup
 
