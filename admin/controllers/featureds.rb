@@ -256,7 +256,7 @@ Admin.controllers :featureds do
       else
         ftag = Tag.create :name => UnicodeUtils::titlecase(tag.gsub(/[-_]/,' ')), :domain => domain
       end
-      feat.tags << ftag
+      feat.tags << ftag unless feat.tags.include? ftag
       itags << ftag.id
     end
     p tags
@@ -314,6 +314,7 @@ Admin.controllers :featureds do
   end
 
   post :getimage do
+    self.slug.downcase!
     #puts params
     fid = params['image']['featured_id']
     f = Featured.find(fid)

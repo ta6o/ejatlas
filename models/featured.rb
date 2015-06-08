@@ -147,6 +147,7 @@ class Featured < ActiveRecord::Base
   private
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
+    self.slug.downcase!
   end
 end
 
