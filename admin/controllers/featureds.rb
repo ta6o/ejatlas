@@ -97,7 +97,15 @@ Admin.controllers :featureds do
         end
       end
       begin
-        @featured.tags = params["tags"].split(',').map{|t| Tag.find(t.to_i)}
+        tags = params["tags"].split(/,\s*/).to_set.to_a.map{|t| Tag.find(t.to_i)}
+        rem = @featured.tags - tags
+        add = tags - @featured.tags
+        rem.each do |t|
+          FTag.where(:tag_id=>t.id,:featured_id=>@featured.id).each {|f| f.destroy}
+        end
+        add.each do |t|
+          @featured.tags << t
+        end
         @featured.ping(Admin.filter(@featured.filter))
       rescue => e
         @error = e
