@@ -4565,6 +4565,7 @@ function vectorPing(varname) {
   } else if (varname.features[0].properties.pn) {
     pn = varname.features[0].properties.pn;
   }
+  //
   //console.log(loadQueue+' '+varname['features'][0]['pn'])
   showVector(varname);
   if (loadQueue == 0) {
