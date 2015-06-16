@@ -5412,7 +5412,7 @@ ul.sidelink li.active {
   background-image: none !important;
 }
 .map_icon.i_ {
-  background: #ff0000;
+  background: red;
 }
 .map_icon.i_0 {
   background: transparent;
@@ -5458,7 +5458,7 @@ ul.sidelink li.active {
   height: 32px !important;
 }
 .map-icon.i_ {
-  background: #ff0000;
+  background: red;
 }
 .map-icon.i_0 {
   background: transparent;

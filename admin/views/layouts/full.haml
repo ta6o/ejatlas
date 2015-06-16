@@ -226,13 +226,13 @@
               url: '/error',
               data: "message="+message+"&url="+window.location.href+"&file="+url+"&line="+lineNumber,  
               success: function(data,ts){
-                console.log('error reported:');
-                console.log(message, url, lineNumber);
+                //console.log('error reported:');
+                //console.log(message, url, lineNumber);
               },
               error: function(data,ts,error){
-                console.log('error report failed:');
-                console.log(error);
-                console.log(message, url, lineNumber);
+                //console.log('error report failed:');
+                //console.log(error);
+                //console.log(message, url, lineNumber);
               }
             });
             return true;

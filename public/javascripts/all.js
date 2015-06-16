@@ -3962,7 +3962,7 @@ function initMap () {
 function slideAttribution () {
   return
   c = $('.leaflet-control-attribution');
-  console.log(c.innerWidth()+" "+c.width());
+  //console.log(c.innerWidth()+" "+c.width());
   if (c.innerWidth() > c.width() && $attrSlide ) {
     c.css('width',(c.width()+11)+'px');
     setTimeout(125,slideAttribution());
@@ -3981,7 +3981,7 @@ function showMarkers(markers) {
 
   $.each(markers, function(i,mark){
     if (!mark.a || !mark.o) {
-      console.log(mark);
+      //console.log(mark);
       return 0
     }
     if (markers.length == 1){
@@ -4140,7 +4140,7 @@ function dragEnd() {
   if (mapWidth * window.innerWidth / 100 <= window.innerWidth - 475 ) {
     localStorage['mapWidth'] = mapWidth;
   } else {
-    console.log(mapWidth)
+    //console.log(mapWidth)
   }
   resetColumns();
   rightWidth = $('#rightpane .inner').width();
@@ -4176,7 +4176,7 @@ function markerFit(ids){
       arr.push(v.getLatLng());
     }
   })
-  console.log(arr)
+  //console.log(arr)
   map.fitBounds(arr,{maxZoom:16});
 }
 
@@ -4434,17 +4434,17 @@ function showVector(v) {
   } else if (v.features[0].properties.pn) {
     pn = v.features[0].properties.pn;
   } else {
-    console.log('fail - no pn');
+    //console.log('fail - no pn');
     return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
   if(vect.length == 0) {
-    console.log('fail - no vect');
+    //console.log('fail - no vect');
     return 0
   }
   vect = vect[0].vector_datum;
   if(vect['url']==="") {
-    console.log('fail - no url');
+    //console.log('fail - no url');
     return 0
   }
   vr = toSlug(vect['url']);
@@ -4603,7 +4603,7 @@ function render(){
       var dataURL = canvas.toDataURL("image/png");
       typeof dataURL
       $.post('/image',{image: dataURL},function(data){
-        console.log(data);
+        //console.log(data);
       });
   });
 }

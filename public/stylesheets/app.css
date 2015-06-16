@@ -5203,7 +5203,7 @@ ul.sidelink li.active {
   cursor: pointer;
 }
 .i_ {
-  background: #ff0000;
+  background: red;
 }
 .i_0 {
   background: transparent;

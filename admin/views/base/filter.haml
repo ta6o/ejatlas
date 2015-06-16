@@ -252,7 +252,7 @@
         that = row.find('input');
         text = that.val().substr(0,1).toUpperCase() + that.val().substr(1);
         drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
-        console.log(drag.html())
+        //console.log(drag.html())
         row.nextAll('ul').append(drag);
 
         $('.drag, .idrag').draggable({
@@ -322,7 +322,7 @@
   }
 
   var createContainer = function (that) {
-    console.log(that.prop('tagName'));
+    //console.log(that.prop('tagName'));
     if (that.prop('tagName')=='SPAN') {
       $(that).find('strong').detach()
       text = $(that).text();
@@ -368,7 +368,7 @@
           filter = {"or":"should","and":"must","not":"must_not"}[e.attr("data-value")]
           dive(e,$('<'+filter+'></'+filter+'>').appendTo($('<bool></bool>').appendTo(ro)));
         } else {
-          console.log (e)
+          //console.log (e)
         }
       });
     }
