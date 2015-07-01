@@ -106,7 +106,11 @@ Admin.controllers :featureds do
         add.each do |t|
           @featured.tags << t
         end
-        @featured.ping(Admin.filter(@featured.filter))
+        begin
+          @featured.ping(Admin.filter(@featured.filter))
+        rescue
+          @featured.ping(Admin.filter("{}"))
+        end
       rescue => e
         @error = e
         redirect url(:featureds, :edit, :id => @featured.id)
