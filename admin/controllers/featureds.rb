@@ -33,7 +33,7 @@ Admin.controllers :featureds do
     if @featured.save
       flash[:notice] = 'Featured was successfully created.'
       begin
-        @featured.ping(Admin.filter(@featured.filter))
+        @featured.ping(Admin.filter(@featured.filter,false))
       rescue => e
         @error = e
         redirect url(:featureds, :edit, :id => @featured.id)
@@ -53,7 +53,7 @@ Admin.controllers :featureds do
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
     begin
-      @followed = (Admin.filter(@featured.filter).map{|i| begin Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug}
+      @followed = (Admin.filter(@featured.filter,false).map{|i| begin Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug}
     rescue => e
       puts "#{@featured.name} | #{e}"
       @followed = (Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug}
@@ -107,9 +107,9 @@ Admin.controllers :featureds do
           @featured.tags << t
         end
         begin
-          @featured.ping(Admin.filter(@featured.filter))
+          @featured.ping(Admin.filter(@featured.filter,false))
         rescue
-          @featured.ping(Admin.filter("{}"))
+          @featured.ping(Admin.filter("{}",false))
         end
       rescue => e
         @error = e
@@ -127,7 +127,7 @@ Admin.controllers :featureds do
     begin
       filter = "{}"
       filter = featured.filter if featured.filter.length > 0
-      stack = (Admin.filter(filter).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end} - [nil]).sort{|a,b| a.slug <=> b.slug}
+      stack = (Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end} - [nil]).sort{|a,b| a.slug <=> b.slug}
     rescue => e
       stack = Admin.old_filter(featured.filter).sort{|a,b| a.slug <=> b.slug}
     end

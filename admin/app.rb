@@ -269,7 +269,8 @@ class Admin < Padrino::Application
     end
   end
 
-  def self.filter filter
+  def self.filter filter, all_if_empty=true
+    return [] if !all_if_empty and ["{}","",nil].include?(filter)
     #puts JSON.pretty_generate(JSON.parse filter)
     filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))
     #puts JSON.pretty_generate(filter)
