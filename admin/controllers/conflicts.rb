@@ -1,6 +1,5 @@
 # coding: utf-8
 Admin.controllers :conflicts do
-  require 'pp'
 
   before do
     @name = "Conflicts"
@@ -301,6 +300,9 @@ Admin.controllers :conflicts do
       @conflict = Conflict.find(params[:id])
       if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id
         @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
+        if @conflict.general
+          @conflict.save
+        end
         @lat = @conflict.lat == "" ? nil : @conflict.lat
         @lon = @conflict.lon == "" ? nil : @conflict.lon
         render 'conflicts/edit'
@@ -402,14 +404,10 @@ Admin.controllers :conflicts do
   put :update, :with => :id do
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
-    pp params
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
     ##puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     oldstat = @conflict.approval_status
-    updated['conflict'].each do |k,v|
-      @conflict.update_attribute k,v
-    end
     if @conflict.save :validate=>false
       multies = {
         'company'=>{:attr=>@conflict.companies,:class=>Company,:join=>@conflict.c_companies},
@@ -504,6 +502,7 @@ Admin.controllers :conflicts do
           end
         end
       end
+
       general = false
       updated['conflict'].each do |k,v|
         if k == 'name' and v.match(/"/)
@@ -513,24 +512,27 @@ Admin.controllers :conflicts do
             v = v.sub(/"/,quotes[fi+1])
             fi *= -1
           end
-        elsif k == "general"
-          if v == "on"
-            general = true
-            @conflict.update_attribute k, true
-          else
-            @conflict.update_attribute k, false
-          end
+        elsif k == "general" and v == "on"
+          general = true
+          next
         end
-        @conflict.update_attribute k, v
+        unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
+          @conflict.update_attribute k, v 
+        end
       end
+
+      puts "general: #{general}"
       if general
-        capital = Country.find(updated['conflict']['country_id']).capital.split('|')
-        @conflict.update_attribute :lat, capital[1].sub(",",".").to_f
-        @conflict.update_attribute :lon, capital[2].sub(",",".").to_f
+        capital = Country.find(updated['conflict']['country_id']).capital.gsub(',','.').split('|')
+        @conflict.lat = capital[1]
+        @conflict.lon = capital[2]
       end
+
+      @conflict.general = general
       @conflict.ping
       @conflict.modified_at = Time.now
       @conflict.commented = false;
+
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
         if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 

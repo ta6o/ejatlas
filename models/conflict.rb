@@ -639,10 +639,14 @@ class Conflict < ActiveRecord::Base
   private
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
+=begin
     if self.general and self.country and self.country.capital and self.country.capital.length > 0
-      self.lat = self.country.capital.split("|")[2]
-      self.lon = self.country.capital.split("|")[1]
+      capital = self.country.capital.gsub(',','.').split("|")
+      self.lat = capital[1]
+      self.lon = capital[2]
     end
+=end
+    puts "#{self.id} saved #{self.changed_attributes}"
     #ping
   end
 

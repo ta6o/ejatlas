@@ -55,7 +55,7 @@ function updateMap(position) {
   position = new L.latLng(position);
   map.panTo(position)
   $('#maplat').html(position.lat);
-  $('#imaplat').val(position.lat);
+  $('#imaplat').attr('value',position.lat);
   $('#maplon').html(position.lng);
-  $('#imaplon').val(position.lng);
+  $('#imaplon').attr('value',position.lng);
 }
