@@ -44,6 +44,24 @@ class Country < ActiveRecord::Base
     return self.slug
   end
 
+  def query_capital
+    return self.name unless self.capital
+    city = self.capital.split('|')[0]
+    puts self.capital
+    uri = URI("http://nominatim.openstreetmap.org/search?city=#{city.to_ascii.downcase.gsub(' ','+')}&format=jsonv2")
+    begin
+      res = Net::HTTP.get_response(uri)
+    rescue => e 
+      puts "Error: #{e}"
+      return nil
+    end
+    res = JSON.parse(res.body)[0] 
+    ll = [res["lat"],res["lon"]].map {|l| "#{l.split('.')[0]}.#{l.split('.')[1].gsub('.','')[0..1]}"}
+    self.capital = "#{city}|#{ll[0]}|#{ll[1]}"
+    puts self.capital
+    self.save
+  end
+
   def ping
     json, marker, link = [], [], []
     self.conflicts.order("name asc").where(approval_status: 'approved').each do |c|

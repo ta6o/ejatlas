@@ -358,4 +358,8 @@ class Admin < Padrino::Application
     return 200
   end
 
+  def self.dump_capitals
+    (Country.all.map(&:capital)-[nil]).sort
+  end
+
 end
