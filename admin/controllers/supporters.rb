@@ -143,7 +143,7 @@ Admin.controllers :ifis do
     return Admin.mergeSupporters params['source'], params['target']
   end
 
-  delete :destroy, :with => :id do
+  get :destroy, :with => :id do
     supporter = Supporter.find(params[:id])
     if supporter.destroy
       flash[:notice] = 'supporter was successfully destroyed.'

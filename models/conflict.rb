@@ -646,7 +646,7 @@ class Conflict < ActiveRecord::Base
       self.lon = capital[2]
     end
 =end
-    puts "#{self.id} saved #{self.changed_attributes}"
+    #puts "#{self.id} saved #{self.changed_attributes}"
     #ping
   end
 

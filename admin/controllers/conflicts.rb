@@ -300,9 +300,6 @@ Admin.controllers :conflicts do
       @conflict = Conflict.find(params[:id])
       if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id
         @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
-        if @conflict.general
-          @conflict.save
-        end
         @lat = @conflict.lat == "" ? nil : @conflict.lat
         @lon = @conflict.lon == "" ? nil : @conflict.lon
         render 'conflicts/edit'
