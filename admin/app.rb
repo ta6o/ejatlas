@@ -273,7 +273,7 @@ class Admin < Padrino::Application
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
     #puts JSON.pretty_generate(JSON.parse filter)
     filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))
-    #puts JSON.pretty_generate(filter)
+    puts JSON.pretty_generate(filter)
     #p filter.to_json
     result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:filter})['hits']['hits']
     #puts result.length

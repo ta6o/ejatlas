@@ -24,5 +24,5 @@ gem 'gdal'
 gem 'unidecoder'
 gem 'elasticsearch'
 
-gem 'padrino', '0.12.2'
+gem 'padrino', '0.12.5'
 
