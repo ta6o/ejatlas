@@ -115,6 +115,7 @@ Admin.controller do
 
   get :print, :with => :slug do
     c = Conflict.find_slug(params[:slug])
+    pass unless c
     @markerinfo = c.country.conflicts_marker
     @cmarker = c.as_marker.to_json
     @defs = []
@@ -252,10 +253,11 @@ Admin.controller do
   end
 
   get 'country-of-company', :with => :slug do
+    con = Country.find_slug(params[:slug])
+    pass unless con
     ca = Cached.select(:filterdata).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    con = Country.find_slug(params[:slug])
     ##last_modified con.updated_at
     @markerinfo = con.companies_marker
     @filterinfo = con.companies_json
