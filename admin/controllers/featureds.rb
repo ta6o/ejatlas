@@ -328,7 +328,7 @@ Admin.controllers :featureds do
   end
 
   post :getimage do
-    self.slug.downcase!
+    #self.slug.downcase!
     #puts params
     fid = params['image']['featured_id']
     f = Featured.find(fid)

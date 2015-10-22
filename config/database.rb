@@ -55,6 +55,3 @@ ActiveSupport.escape_html_entities_in_json = false
 # Now we can estabilish connection with our db
 ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrino.env])
 
-# mongo -u heroku -p JqIwwmBHDqqDCowJf3_hR2twtoIGZlYkJbXAweJEYeT2q_GzSNxO-HZtREBGvaAF3XfD20yAo2s3H2d98ZxhsQ --host oceanic.mongohq.com --port 10020 app23892089
-#
-# { \"_id\" : ObjectId(\"538077cb4b689e4453000001\"), \"priority\" : 0, \"attempts\" : 0, \"queue\" : null, \"handler\" : \"--- !ruby/object:Delayed::PerformableMethod\nobject: !ruby/object:AsyncTask {}\nmethod_name: :setcache_without_delay\nargs:\n- filter: 'on'\n  conflicts: 'on'\n  countries: 'on'\n  companies: 'on'\n  ifis: 'on'\n  commodities: 'on'\n  categories: 'on'\n\", \"run_at\" : ISODate(\"2014-05-24T10:43:23.115Z\"), \"updated_at\" : ISODate(\"2014-05-24T10:43:23.115Z\"), \"created_at\" : ISODate(\"2014-05-24T10:43:23.115Z\") }
