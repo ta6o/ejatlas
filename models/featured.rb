@@ -52,8 +52,13 @@ class Featured < ActiveRecord::Base
       JSON.parse(c.features||"{}").each do |k,v|
         cmarker[k] = v
       end
-      cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain} || ""
-      cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
+      if (ftags & c.tags).length > 1
+        cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain} || ""
+        cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
+      else
+        cmarker[:dmn] = []
+        cmarker[:tags] = []
+      end
       (Conflict.attribute_names & feats).each do |f|
         v = eval("c.#{f}")
         k = f
