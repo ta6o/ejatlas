@@ -83,17 +83,19 @@ Admin.controllers :featureds do
       end
       if params.has_key? 'images_attributes' and params['images_attributes'].any?
         images = {}
-        params['images_attributes'].each {|i,v| images["n#{i}"] = @featured.images[i.to_i]}
+        params['images_attributes'].each {|i,v| images["n#{i}"] = @featured.images.order(:created_at)[i.to_i]}
+        pp images
         params['images_attributes'].each do |i, v|
           img = images["n#{i}"]
+          puts v
           if v['_destroy'] == "on"
             img.destroy
             next
           end
-          img.title = v['title'] if v['title'] != img.title
+          img.update_attribute :title, v['title']
           ih = {nil=>nil, "on"=>1}
-          img.prime = ih[v['prime']] if ih[v['prime']] != img.prime
-          img.save
+          img.update_attribute :prime, ih[v['prime']] if ih[v['prime']] != img.prime
+          puts "ahoy! #{i}"
         end
       end
       begin

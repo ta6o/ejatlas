@@ -32,6 +32,10 @@
 
   .summary_header
     .clearfix#share
+      -if current_account and ['admin','editor'].include? current_account.role
+        .pull-right
+          %a{:href=>"/featureds/edit/#{@id}",:target=>"_blank",:title=>"Edit"}
+            %span.glyphicon.glyphicon-edit
       .pull-right
         %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out ‘"+@name.split(',')[0]+"‘ on #EJAtlas: ")}&url=#{$siteurl+request.path}",:target=>"_blank",:title=>"Tweet"}
           #share_tw 
@@ -41,13 +45,107 @@
           #share_fb 
             #img &nbsp;
     .clearfix
-      -if @image and @image.length > 0
-        %img.pull-left{:src=>@image ,:style=>'max-height:60px;width:auto;margin:-10px 12px 12px 0;'}
-        .pull-left
-          %h2= @name
-      -else
-        .pull-left
-          %h2= @name
+      .pull-left
+        %h2= @name
+
+    -if @images.any?
+      .full.row
+        #carousel_container{:style=>'display:none'}
+          #left_scroll
+            %span.glyphicon.glyphicon-chevron-left
+          #carousel_inner
+            %ul#carousel_ul
+              -@images.order(:created_at).each do |image|
+                %li
+                  %a{:href=>image.file.url,:target=>'_blank'}
+                    %img{:src=>image.file.thumb_url,:style=>'height:240px;width:auto;display:none;'}
+                  -if image.title and image.title.length > 0 and image.title != '-'
+                    -if image.title.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+                      .title
+                        %a{:href=>image.title,:target=>'_blank'} Click to go to the source
+
+                    -else
+                      .url
+                        %strong= image.title
+                        -if image.description and image.description.length > 0
+                          ="#{image.title and image.title != '-' ? "- " : ""}#{image.description}"
+          #right_scroll
+            %span.glyphicon.glyphicon-chevron-right
+        :javascript
+          function resetCarousel (){
+            wdiff = $('#carousel_container').width() - crswidth;
+            if (wdiff > 0){
+              $('#carousel_ul').css('left','18px')
+              $('#left_scroll').hide();
+              $('#right_scroll').hide();
+            } else {
+              //$('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
+              var item_width = $('#carousel_ul li:first').width() + crsgap; 
+              $('#carousel_ul').css({'left' : (item_width * -1) + 'px'});
+              $('#carousel_ul').css('left','0px')
+              $('#left_scroll').show();
+              $('#right_scroll').show();
+            }
+          }
+          function imageLoaded() {
+            counter--; 
+            if( counter === 0 ) {
+              if ($('#carousel_ul li img').length == $('#carousel_ul li img.error').length) {
+                //console.log('err');
+              } else {
+                $('#carousel_ul li img').show();
+                $('#carousel_container').slideDown('400');
+              }
+              crsgap = 6;
+              crswidth = 0
+              $('#carousel_ul li').each(function(i,v){
+                crswidth += $(this).width();
+                crswidth += crsgap;
+              })
+              crswidth -= crsgap;
+              resetCarousel();
+              $('#right_scroll').click(function(){
+                $('#carousel_ul li:last').after($('#carousel_ul li:first').clone());
+                var item_width = $('#carousel_ul li:first').width() + crsgap;
+                $('#carousel_ul').animate({'left' : -item_width},{queue:false, duration:500, complete: function(){
+                  $('#carousel_ul li:first').remove();
+                  $('#carousel_ul').css('left','0px');
+                }});
+              });
+              $('#left_scroll').click(function(){
+                $('#carousel_ul li:first').before($('#carousel_ul li:last').clone());
+                var item_width = $('#carousel_ul li:first').width() + crsgap;
+                $('#carousel_ul').css({'left' : (item_width * -1) + 'px'});
+                $('#carousel_ul').animate({'left' : 0},{queue:false, duration:500, complete:function(){
+                  $('#carousel_ul li:last').remove();
+                }});
+              });
+              $('#carousel_ul').on('mouseenter','li',function(){
+                $(this).find('.title').show();
+                $(this).find('.url').show();
+              });
+              $('#carousel_ul').on('mouseleave','li',function(){
+                $(this).find('.title').hide();
+                $(this).find('.url').hide();
+              });
+            }
+          }
+          var images, counter, crswidth;
+          $(function() {
+            images = $('#rightpane img');
+            counter = images.length;  // initialize the counter
+            images.each(function() {
+              if( this.complete ) {
+                imageLoaded.call( this );
+              } else {
+                $(this).one('load', imageLoaded);
+              }
+            });
+            images.error(function(){
+              imageLoaded();
+              $(this).addClass('error');
+            });
+          });
 
   -if @description and @description.length > 0 or @maptitle.length > 0 and @feature
     .horipane.description

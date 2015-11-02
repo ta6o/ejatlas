@@ -23,6 +23,6 @@ class Image < ActiveRecord::Base
   end
 
   def inspect
-    self.name
+    self.file
   end
 end
