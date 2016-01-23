@@ -19,7 +19,7 @@
               %label Name of actor
               %input.i_actor#actor_name{:type=>'text',:name=>'name',:value=>(@actor.name if @actor.name)}
             -if @actor.has_attribute? :description# and ['admin','editor'].include?(current_account.role)
-              %label Description
+              %label= "General description for this #{namehash[@actor.class.to_s]}"
               %textarea.i_actor#actor_description{:type=>'text',:name=>'description',:rows=>6}
                 = @actor.description if @actor.description
           .col-md-6
@@ -30,7 +30,7 @@
               %label Website
               %input.i_actor#actor_url{:type=>'text',:name=>'url',:placeholder=>'http://',:value=>(@actor.url if @actor.url)}
             -if @cactor or @actor.new_record?
-              %label Involvement
+              %label Involvement in this project/conflict
               %input.i_actor#actor_involvement{:type=>'text',:name=>'involvement',:value=>(@cactor.involvement if @cactor)}
             -if @actor.has_attribute? :country_id# and ['admin','editor'].include?(current_account.role)
               %label Country of origin
