@@ -127,7 +127,11 @@
           %span#maplon.large.hide
           =f.text_field :lon, :class => 'text_field', :id => :imaplon
           %br/
-          %p.description Please point to the location of conflict with the red marker.
+          %p.description 
+            Please point to the location of conflict with the red marker or use the fields above to enter coordinates in a decimal format, like
+            %strong 39.737929
+            or
+            %strong -125.139646
         .group
           #map
           :javascript
@@ -277,7 +281,9 @@
                   %input{:type=>'checkbox',:name=>'product_'+p.id.to_s,:id=>'product_'+p.id.to_s,:class=>'mustcheck product_cb'}
                   %label= p.name
           ~f.text_area :other_products, :class => 'text_area', :rows=>1, :id => 'other_products'
+          - pids = @conflict.products.map &:id
           :javascript
+            var ta_width;
             $('#product_57').change(function(){
               if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
                 $('#other_products').slideDown(100,function(){this.focus()});
@@ -286,9 +292,27 @@
                 $('#other_products').val('');
               }
             });
-          -@conflict.products.each do |m|
-            :javascript
-              $('#product_#{m.id}').attr('checked','checked');
+            bkLib.onDomLoaded(function() {
+              nicEditors.editors.push(
+                new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
+              );
+              window.setTimeout(niceWidth,1000);
+            });
+            function niceWidth(){
+              ta_width = $(".tab-pane.active .row").width() / 3 - 15;
+              console.log(ta_width)
+              $("ul#conflict-tabs li a").on('shown.bs.tab',function(e){
+                console.log(ta_width)
+                item = $($(e.target).attr('href')).find(".group textarea#conflict_description").parent();
+                item.find("div").not(".nicEdit-buttonContain,.nicEdit-button,.nicEdit-button-undefined,.nicEdit-panel>div").css("width",ta_width);
+                item.find("div.nicEdit-main").css("width",ta_width-8).css("min-height",114);
+                item.find("div.nicEdit-panelContain").css("width",ta_width);
+              })
+            }
+            pids = #{pids}
+            $.each(pids, function(i,pid){
+              $('#product_'+pid).attr('checked','checked');
+            })
 
 
     .row
@@ -407,7 +431,7 @@
 
         .group
           %br/
-          =f.label 'Environmental Justice Organizations and other supporters'
+          =f.label 'Environmental justice organizations (and other supporters) and their websites, if available'
           .required=f.error_message_on :justice_party_id
           %br/
           %textarea#conflict_ejos.text-area{:rows=>4,:name=>'conflict[ejos]'}=@conflict.ejos
@@ -924,8 +948,8 @@
         .group
           .row
             .col-md-12
-              %label Web Links
-              %span.description - related web pages, news articles, etc.
+              %label Links
+              %span.description - to general newspaper articles, blogs or other websites
               %a#n_weblink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_weblink'} Add
           #current_weblinks
             -@conflict.weblinks.each do |l|
@@ -970,7 +994,7 @@
           .row
             .col-md-12
               %label References
-              %span.description - Article, book, etc.
+              %span.description - to published books, academic articles, movies or published documentaries
               %a#n_reference.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_reference'} Add
           #current_references
             -@conflict.references.each do |l|
@@ -1009,7 +1033,7 @@
           .row
             .col-md-12
               %label Related Media
-              %span.description - links to photos, videos, etc.
+              %span.description - links to videos, campaigns, social networks
               %a#n_medialink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_medialink'} Add
           #current_medialinks
             -@conflict.medialinks.each do |l|
@@ -1057,8 +1081,8 @@
         .group
           .row
             .col-md-12
-              %label Other Documents
-              %span.description - here you may upload a photo, video, pdf, etc.
+              %label Upload a picture here
+              %span.description - you can also upload pdf documents
               -unless @conflict.new_record?
                 %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'} Add
               -if @conflict.new_record?
@@ -1160,36 +1184,40 @@
           .group
             %label= "Conflict ID: #{@conflict.id}"
 
-          .group
-            =f.label 'Headline text'
-            .required=f.error_message_on :headline
-            %p.description Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences.
-            ~f.text_area :headline, :class => :text_area, :rows=>4
+        .group
+          =f.label 'Headline text'
+          .required=f.error_message_on :headline
+          %p.description 
+            Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences, 
+            %strong 255 
+            characters maximum.
+          ~f.text_area :headline, :class => :text_area, :rows=>4, :max=>255
 
-        -unless @conflict.new_record?
-          .group
-            .required=f.error_message_on :approval_status
-            =f.label 'Approval status'
+        .group
+          .required=f.error_message_on :approval_status
+          =f.label 'Approval status'
+          %label.checkbox.inline.apstat
+            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'} &nbsp;Deleted
+          %label.checkbox.inline.apstat
+            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'} &nbsp;Draft
+          %label.checkbox.inline.apstat
+            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'} &nbsp;Submit for moderation
+          %label.checkbox.inline.apstat
+            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'} &nbsp;Modified
+          -if ["admin","editor"].include? current_account.role
             %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'} &nbsp;Deleted
-            %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'} &nbsp;Draft
-            %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'} &nbsp;Queued
-            %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'} &nbsp;Modified
-            -if ["admin","editor"].include? current_account.role
-              %label.checkbox.inline.apstat
-                %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'} &nbsp;Approved
-            -if apstat = @conflict.approval_status
-              -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
-              :javascript
-                $('input.apstat[value=#{apstat}]').prop('checked',true);
-            -if ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
-              %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
-                %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-                %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
-          %br/
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'} &nbsp;Approved
+          -if apstat = @conflict.approval_status
+            -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
+          -else
+            -apstat = 'draft'
+          :javascript
+            $('input.apstat[value=#{apstat}]').prop('checked',true);
+          -if ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
+            %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
+              %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+              %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
+        %br/
 
       .col-md-8
         .group

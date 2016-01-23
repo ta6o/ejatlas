@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string  "phone",            :limit => 20
     t.boolean "approved"
     t.boolean "public"
+    t.text    "source"
     t.text    "intention"
     t.text    "comments"
   end

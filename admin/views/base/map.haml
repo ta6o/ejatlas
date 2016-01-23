@@ -78,6 +78,11 @@
         %strong=@maptitle
       %p
         %strong="#{@markercount} cases reported"
+      %h4{:style=>'padding:12px 0;font-weight:bold'}
+        You&nbsp;can
+        %a{:href=>'/accounts/new'}contribute&nbsp;to&nbsp;EJ&nbsp;Atlas
+        and&nbsp;/&nbsp;or
+        %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}fill&nbsp;out&nbsp;our&nbsp;survey.
 
   .horipane{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>"Drop down each pane"}
     .title Legend
@@ -108,11 +113,6 @@
   .horipane
     .title Get Involved
     .content.social{:style=>'display:none;'}
-      %h4{:style=>'text-align:center;padding:12px 0;font-weight:bold'}
-        You&nbsp;can
-        %a{:href=>'/accounts/new'}contribute&nbsp;to&nbsp;EJ&nbsp;Atlas
-        and&nbsp;/&nbsp;or
-        %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}fill&nbsp;out&nbsp;our&nbsp;survey.
       .block{"data-width"=>240}
         %a.btn.btn-twitter.full{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas, mapping environmental justice:")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"} Tweet about EJAtlas
         %a.twitter-timeline{'data-dnt'=>"true",:href=>"https://twitter.com/EnvJustice",'data-widget-id'=>"498025848931246080",'data-chrome'=>'nofooter noborders',:height=>490} 

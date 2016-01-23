@@ -96,6 +96,11 @@
       =f.text_field :organization, :class => :text_field
 
     .group
+      %label{:for=>"account_source"} How did you learn about the EJAtlas?
+      =f.error_message_on :source
+      =f.text_area :source, :class => :text_area
+
+    .group
       -if @account.new_record?
         =f.label 'Please tell us what conflicts you wish to enter and describe briefly your activity related to them'
       -else
