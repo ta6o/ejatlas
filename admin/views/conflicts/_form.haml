@@ -1191,7 +1191,7 @@
             Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences, 
             %strong 255 
             characters maximum.
-          ~f.text_area :headline, :class => :text_area, :rows=>4, :max=>255
+          ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255
 
         .group
           .required=f.error_message_on :approval_status
