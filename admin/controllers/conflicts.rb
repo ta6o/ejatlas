@@ -24,6 +24,7 @@ Admin.controllers :conflicts do
   def self.correctForm(params)
     params["conflict"]["lon"] = params["conflict"]["lon"].gsub(",",".")
     params["conflict"]["lat"] = params["conflict"]["lat"].gsub(",",".")
+    params["conflict"]["description"] = params["conflict"]["description"].gsub(/\r\n/," ")
     multies = {
       'mobilizing_group'=>[],
       'mobilizing_form'=>[],
