@@ -216,14 +216,12 @@ class AsyncTask
         lines.each do |id, comp|
           line = comp[:attrs]
           step = 7
+          pp comp[:invs]
           comp[:invs].each do |conf, inv|
-            pp step
             (header.index(conf)-step-1).times { line << nil }
             line << inv
             step = header.index(conf)
           end
-          pp step
-          puts
           output << line
         end
       end
