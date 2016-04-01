@@ -13,6 +13,7 @@ class AsyncTask
     #return stack.map(&:name).to_s
     mania = {Type=>[],Product=>[],ConflictEvent=>[],ConflictEvent=>[],MobilizingGroup=>[],MobilizingForm=>[]}
     imps = {EnvImpact=>[],HltImpact=>[],SecImpact=>[]}
+    actors = {Companies=>{},Supporters=>{},:ids=>[]}
     numfields = []
     lines = []
     header = []
@@ -87,16 +88,23 @@ class AsyncTask
         line << at.join(":::")
         nfields += 1
       end
-      ['companies','supporters'].each do |rel|
+      [Companies,Supporters].each do |mod|
+        rel = mod.to_s.downcase
         rels = eval("conf.#{rel}")
         header << rel.titlecase if index == 0
         lin = ""
         rels.each do |m|
-          acr = m.acronym ? " [#{m.acronym}]" : ""
+          acr = m.acronym and m.acronym.length > 0 ? " [#{m.acronym}]" : ""
           cnt = m.country ? " (#{m.country.name})" : ""
           cm = eval("m.c_#{rel}.find_by_conflict_id(#{conf.id})")
-          inv = cm.involvement ? ":#{cm.involvement}" : ""
+          inv = cm.involvement and m.acronym.length > 0 ? ":#{cm.involvement}" : ""
           lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
+          unless actors[mod].has_key? m.id
+            actors[mod][m.id] = { :attrs = [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country.name],
+                                  :invs = {}} 
+          end
+          inv = cm.involvement and m.acronym.length > 0 ? cm.involvement : "-"
+          actors[mod][m.id][:invs][conf.id] = inv
         end
         line << lin
         nfields += 1
@@ -156,6 +164,7 @@ class AsyncTask
         line << lin
         nfields += 1
       end
+      actors[:ids] << conf.id
       numfields << nfields
       lines << line
       #puts
@@ -185,6 +194,25 @@ class AsyncTask
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
         lines.each do |line|
+          output << line
+        end
+      end
+      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
+    end
+    actors.each do |many,lines|
+      header = ["id", "name", "slug", "description", "url", "acronym", "country"]
+      actors[:ids].uniq.each {|c| header << c}
+      many.order(:id).each {|h| header << h.name}
+      ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
+        output << header
+        lines.each do |id, comp|
+          line = comp[:attrs]
+          step = 7
+          comp[:invs].each do |conf, inv|
+            (header.index(conf)-step-1).times { line << nil }
+            line << inv
+            step = header.index(conf)
+          end
           output << line
         end
       end
