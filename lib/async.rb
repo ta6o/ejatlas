@@ -13,7 +13,7 @@ class AsyncTask
     #return stack.map(&:name).to_s
     mania = {Type=>[],Product=>[],ConflictEvent=>[],ConflictEvent=>[],MobilizingGroup=>[],MobilizingForm=>[]}
     imps = {EnvImpact=>[],HltImpact=>[],SecImpact=>[]}
-    actors = {Companies=>{},Supporters=>{},:ids=>[]}
+    actors = {Company=>{},Supporter=>{},:ids=>[]}
     numfields = []
     lines = []
     header = []
