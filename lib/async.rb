@@ -111,7 +111,7 @@ class AsyncTask
             actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil],
                                   :invs => {}} 
           end
-          inv = cm.involvement and m.acronym.length > 0 ? cm.involvement : "-"
+          inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           actors[mod][m.id][:invs][conf.id] = inv
         end
         line << lin
