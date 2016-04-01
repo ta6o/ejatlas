@@ -100,8 +100,8 @@ class AsyncTask
           inv = cm.involvement and m.acronym.length > 0 ? ":#{cm.involvement}" : ""
           lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
           unless actors[mod].has_key? m.id
-            actors[mod][m.id] = { :attrs = [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country.name],
-                                  :invs = {}} 
+            actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country.name],
+                                  :invs => {}} 
           end
           inv = cm.involvement and m.acronym.length > 0 ? cm.involvement : "-"
           actors[mod][m.id][:invs][conf.id] = inv
