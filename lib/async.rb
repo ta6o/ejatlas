@@ -212,7 +212,9 @@ class AsyncTask
       actors[:ids].uniq.each {|c| header << c}
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
+        pp lines
         lines.each do |id, comp|
+          pp comp
           line = comp[:attrs]
           step = 7
           comp[:invs].each do |conf, inv|
