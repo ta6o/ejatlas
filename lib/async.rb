@@ -218,7 +218,7 @@ class AsyncTask
           step = 7
           pp comp[:invs]
           comp[:invs].each do |conf, inv|
-            (header.index(conf)-step-1).times { line << nil }
+            (header.index(conf)-step).times { line << nil }
             inv ||= '-'
             line << inv
             step = header.index(conf)
