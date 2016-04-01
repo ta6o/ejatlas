@@ -210,7 +210,6 @@ class AsyncTask
     actors.each do |many,lines|
       header = ["id", "name", "slug", "description", "url", "acronym", "country"]
       actors[:ids].uniq.each {|c| header << c}
-      many.order(:id).each {|h| header << h.name}
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
         lines.each do |id, comp|
