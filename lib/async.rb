@@ -88,7 +88,7 @@ class AsyncTask
         line << at.join(":::")
         nfields += 1
       end
-      [Companies,Supporters].each do |mod|
+      [Company,Supporter].each do |mod|
         rel = mod.to_s.downcase
         rels = eval("conf.#{rel}")
         header << rel.titlecase if index == 0
