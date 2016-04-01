@@ -100,7 +100,11 @@ class AsyncTask
         rels.each do |m|
           acr = m.acronym and m.acronym.length > 0 ? " [#{m.acronym}]" : ""
           cnt = m.country ? " (#{m.country.name})" : ""
-          cm = eval("m.c_#{rel}.find_by_conflict_id(#{conf.id})")
+          if mod == Company
+            cm = eval("m.c_companies.find_by_conflict_id(#{conf.id})")
+          else
+            cm = eval("m.c_supporters.find_by_conflict_id(#{conf.id})")
+          end
           inv = cm.involvement and m.acronym.length > 0 ? ":#{cm.involvement}" : ""
           lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
           unless actors[mod].has_key? m.id
