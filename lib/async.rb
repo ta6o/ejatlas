@@ -208,11 +208,11 @@ class AsyncTask
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
     actors.each do |many,lines|
+      next if many == :ids
       header = ["id", "name", "slug", "description", "url", "acronym", "country"]
       actors[:ids].uniq.each {|c| header << c}
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
-        pp lines
         lines.each do |id, comp|
           pp comp
           line = comp[:attrs]
