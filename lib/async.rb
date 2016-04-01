@@ -90,7 +90,11 @@ class AsyncTask
       end
       [Company,Supporter].each do |mod|
         rel = mod.to_s.downcase
-        rels = eval("conf.#{rel}")
+        if mod == Company
+          rels = conf.companies
+        else
+          rels = conf.supporters
+        end
         header << rel.titlecase if index == 0
         lin = ""
         rels.each do |m|
