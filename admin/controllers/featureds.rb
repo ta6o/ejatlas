@@ -298,6 +298,7 @@ Admin.controllers :featureds do
       end
       conflict.features = features.to_json
       conflict.save
+      print "\r#{conflict.slug}"
     end
     header.delete 'id'
     header.delete 'name'
