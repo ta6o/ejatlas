@@ -109,7 +109,7 @@ Admin.controllers :featureds do
           @featured.tags << t
         end
         begin
-          @featured.ping(Admin.filter(@featured.filter,false))
+          @featured.ping(Admin.filter(@featured.filter,false).map{|c| Conflict.find(c["_id"])})
         rescue
           @featured.ping(Admin.filter("{}",false))
         end
