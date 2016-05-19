@@ -469,7 +469,7 @@ function showMarkers(markers) {
 
     if (markerinfo.length == 0) {
       legendpane.hide();
-    } else if (markerinfo.length == 0) {
+    } else if (markerinfo.length <= 128) {
       $(".mic").removeClass("mic");
     }
   });
