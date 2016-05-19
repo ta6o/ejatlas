@@ -3956,7 +3956,6 @@ function initMap () {
   window.onresize = onResize; 
 
   updateInfo(1,disclaimer);
-  markerSize();
 }
 
 function slideAttribution () {
@@ -4088,6 +4087,7 @@ function showMarkers(markers) {
       legendpane.hide();
     }
   });
+  markerSize();
 }
 
 
