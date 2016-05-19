@@ -20,16 +20,11 @@ function initMap (mltln) {
   var lControl = L.control.layers(blayers,{}).addTo(map);
 
   if (mltln[0] == 0 && mltln[1] == 0) {
-    $.getJSON('https://telize.com/geoip/',function(data,error){
-        console.log(data)
-        console.log(error)
-      if (Object.keys(data).indexOf("latitude") >= 0) {
-        ll = new L.latLng(data['latitude'],data['longitude']);
-      } else {
-        ll = new L.latLng(0,0);
-        zoomLevel = 3;
-      }
-      map.setView(ll,zoomLevel);
+    //$.getJSON('https://telize.com/geoip/',function(data,error){
+      //ll = new L.latLng(data['latitude'],data['longitude']);
+      //map.setView(ll,zoomLevel);
+      ll = new L.latLng(0,0);
+      map.setView(ll,3);
       marker = L.marker(ll,{
         icon: L.divIcon({className: 'map_icon i_ s_0'}),
         draggable: true,
@@ -41,7 +36,7 @@ function initMap (mltln) {
       });
       updateMap(ll);
       return ll;
-    });
+    //});
   } else {
     map.setView(mltln,zoomLevel);
     marker = L.marker(mltln,{
