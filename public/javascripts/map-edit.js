@@ -21,6 +21,8 @@ function initMap (mltln) {
 
   if (mltln[0] == 0 && mltln[1] == 0) {
     $.getJSON('https://telize.com/geoip/',function(data,error){
+        console.log(data)
+        console.log(error)
       if (Object.keys(data).indexOf("latitude") >= 0) {
         ll = new L.latLng(data['latitude'],data['longitude']);
       } else {
