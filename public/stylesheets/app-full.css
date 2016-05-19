@@ -5712,6 +5712,12 @@ ul.sidelink li.active {
 .horipane .content .fb-like-box span iframe {
   width: 100% !important;
 }
+.horipane .content .ctitle {
+  font-weight: bold;
+}
+.horipane .content .cdata {
+  display: none;
+}
 #infopane {
   color: #333333;
 }

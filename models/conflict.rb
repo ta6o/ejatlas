@@ -293,9 +293,11 @@ class Conflict < ActiveRecord::Base
   end
 
   def as_button(options={})
-    html = "<p class='conflict-button' data-id='#{self.id}'><a href='/conflict/#{self.slug}'>#{self.name}</a>"
     require 'pp'
-    unless options.empty?
+    if options.empty?
+      html = "<p class='conflict-button' data-id='#{self.id}'><a href='/conflict/#{self.slug}'>#{self.name}</a>"
+    else
+      html = "<p class='conflict-button' data-id='#{self.id}'><span class='ctitle'>#{self.name}</span><a href='/conflict/#{self.slug}'><i class='fa fa-external-link'></i></a><span class='cdata'>"
       features = JSON.parse(self.features || "{}")
       list = []
       options["data"].each do |data|
@@ -380,6 +382,7 @@ class Conflict < ActiveRecord::Base
       end
       html += " &nbsp; #{tags.join(" &nbsp; ")}" if tags.any?
       html += "<br class='small'/>#{list.join("<br class='small'/>")}" if list.any?
+      html += "</span>"
     end
     html += "</p>"
     return html
