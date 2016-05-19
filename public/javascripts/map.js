@@ -469,8 +469,6 @@ function showMarkers(markers) {
 
     if (markerinfo.length == 0) {
       legendpane.hide();
-    } else if (markerinfo.length <= 128) {
-      $(".mic").removeClass("mic");
     }
   });
 }
@@ -580,14 +578,14 @@ function markerSize() {
     $('.map_icon').removeClass('mic').removeClass('min');
     return
   }
-  if (markerCount > 100) {
+  if (markerCount > 128) {
     $('.map_icon').addClass('mic').removeClass('min');
-  } else if (markerCount > 10) {
+  } else if (markerCount > 16) {
     $('.map_icon').removeClass('mic').addClass('min');
   } else {
     $('.map_icon').removeClass('mic').removeClass('min');
   }
-  if (map.getZoom() > 3) {
+  if (map.getZoom() <= 3) {
     $('.map_icon').removeClass('mic').addClass('min');
   } else {
     $('.map_icon').addClass('mic').removeClass('min');
