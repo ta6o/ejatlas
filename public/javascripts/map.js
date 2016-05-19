@@ -379,7 +379,7 @@ function showMarkers(markers) {
     popcontent = '<div>';
 
     cclass = "";
-    if ('dmn' in mark && mark.dmn.length > 0) {
+    if ('dmn' in mark && mark.dmn.length >= 0) {
       dmns.push(mark.dmn[0])
       cclass = " c_"+mark.dmn[0];
       popcontent += "<div class='features'>";
