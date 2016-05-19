@@ -292,7 +292,7 @@ Admin.controller do
     con = Featured.find_slug(params[:slug])
     pass unless con
     @markerinfo = con.conflicts_marker
-    @load = @markerinfo.length > 60000 ? nil : con.conflicts_link
+    @load = @markerinfo.length > 4096 ? nil : con.conflicts_link
     @name = con.name
     @description = con.description
     @id = con.id
