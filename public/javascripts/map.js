@@ -469,6 +469,8 @@ function showMarkers(markers) {
 
     if (markerinfo.length == 0) {
       legendpane.hide();
+    } else if (markerinfo.length == 0) {
+      $(".mic").removeClass("mic");
     }
   });
 }
