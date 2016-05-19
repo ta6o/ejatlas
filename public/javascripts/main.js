@@ -4191,27 +4191,22 @@ function mapFit(){
 }
 
 function markerSize() {
-  if (conflict) {
-    $('.map_icon').removeClass('mic').removeClass('min');
-    return
+  $('.map_icon').removeClass('mic').removeClass('min');
+  if (conflict) { return }
+  state = 0
+  if (markerCount <= 128) { state ++; }
+  if (markerCount <= 16) { state ++; }
+  if (map.getZoom() < 3) { state --; }
+  if (map.getZoom() > 9) { state ++; }
+  switch (state) {
+    case -1:
+      $('.map_icon').addClass('mic');
+      break;
+    case 3:
+      break;
+    default:
+      $('.map_icon').addClass('min');
   }
-  if (markerCount > 128) {
-    $('.map_icon').addClass('mic').removeClass('min');
-  } else if (markerCount > 16) {
-    $('.map_icon').removeClass('mic').addClass('min');
-  } else {
-    $('.map_icon').removeClass('mic').removeClass('min');
-  }
-  /*if (map.getZoom() < 3) {
-    $('.map_icon').removeClass('mic').addClass('min');
-  } else {
-    $('.map_icon').addClass('mic').removeClass('min');
-  }
-  if (map.getZoom() > 9) {
-    $('.map_icon').removeClass('min');
-  } else {
-    $('.map_icon').addClass('min');
-  }*/
 }
 
 function singleSize(selector) {
