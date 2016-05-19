@@ -585,7 +585,7 @@ function markerSize() {
   } else {
     $('.map_icon').removeClass('mic').removeClass('min');
   }
-  if (map.getZoom() <= 3) {
+  /*if (map.getZoom() < 3) {
     $('.map_icon').removeClass('mic').addClass('min');
   } else {
     $('.map_icon').addClass('mic').removeClass('min');
@@ -594,7 +594,7 @@ function markerSize() {
     $('.map_icon').removeClass('min');
   } else {
     $('.map_icon').addClass('min');
-  }
+  }*/
 }
 
 function singleSize(selector) {
