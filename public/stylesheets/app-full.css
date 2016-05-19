@@ -5714,6 +5714,10 @@ ul.sidelink li.active {
 }
 .horipane .content .ctitle {
   font-weight: bold;
+  cursor: pointer;
+}
+.horipane .content .ctitle:hover {
+  text-decoration: underline;
 }
 .horipane .content .cdata {
   display: none;
