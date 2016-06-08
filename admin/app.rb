@@ -57,7 +57,44 @@ class Admin < Padrino::Application
     return res
   end
 
+
   def self.send_mail account, subject, message
+    require 'sendgrid-ruby'
+
+    stamp = Time.now.to_i.to_s
+    from = "EJOLT Project"  
+
+    client = SendGrid::Client.new do |c|
+      c.api_key = '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'
+    end
+    p [account.name, account.email]
+    email = {
+      :to => [account.email],
+      :toname => [account.name],
+      :from => "info@ejatlas.org", #$sitemail,
+      :fromname => from,
+      :subject => subject,
+      :html => message,
+      "x-smtpapi" => {
+        "asm_group_id" => 743,
+      }.to_json
+    }
+
+
+    if ENV['RACK_ENV'] == "development" and false
+      puts "SENDGRID omitting mail =>\n#{pp message}"
+      return
+    end
+    begin
+      sending = client.send(email)
+      puts "SENDGRID #{sending.code} #{sending.body.to_json}"
+    rescue => exc
+      sending = exc
+      puts "SENDGRID #{sending}"
+    end
+  end
+
+  def self.send_mail_obsolete account, subject, message
     require 'mandrill'
     from = "EJOLT Project"  
     mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'

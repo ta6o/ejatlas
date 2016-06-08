@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.1.2'
+#ruby '2.1.2'
 
 gem 'puma'
 
@@ -17,7 +17,8 @@ gem 'unf'
 #gem 'fog', :git => 'https://github.com/fog/fog.git'
 gem 'pg'
 gem 'zip-zip'
-gem 'mandrill-api'
+#gem 'mandrill-api'
+gem 'sendgrid-ruby'
 gem 'delayed_job'
 gem 'delayed_job_active_record'
 gem 'gdal'
