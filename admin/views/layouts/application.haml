@@ -182,6 +182,7 @@
       -if ENV['RACK_ENV'] == "production"
         :javascript
           window.onerror = function(message, url, lineNumber) {  
+            console.log(message, url, lineNumber);
             $.ajax({
               type: 'POST',
               url: '/error',

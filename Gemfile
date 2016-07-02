@@ -10,7 +10,7 @@ gem 'bcrypt'
 gem 'haml'
 gem 'activerecord', :require => "active_record"
 gem 'rainbow'
-gem "rmagick", :require => 'RMagick'
+gem "rmagick"
 gem 'unicode_utils'
 gem 'carrierwave', :require => %w(carrierwave carrierwave/orm/activerecord)
 gem 'unf'
