@@ -7,19 +7,19 @@
 %ul#conflict-tabs.nav.nav-tabs{:style=>'margin-bottom:0'}
   %li.active
     %a{:href=>'#basic'}BASIC DATA
-  %li.closed
+  %li
     %a{:href=>'#source'}SOURCE OF CONFLICT
-  %li.closed
+  %li
     %a{:href=>'#project'}PROJECT DETAILS
-  %li.closed
+  %li
     %a{:href=>'#conflict'}CONFLICT AND MOBILIZATION
-  %li.closed
+  %li
     %a{:href=>'#impacts'}IMPACTS
-  %li.closed
+  %li
     %a{:href=>'#outcome'}OUTCOME
-  %li.closed
+  %li
     %a{:href=>'#materials'}SOURCES AND MATERIALS
-  %li.closed
+  %li
     %a{:href=>'#meta'}META
 
 .tab-content.whitebox
@@ -1412,8 +1412,7 @@
   });
   */
 
--if @example or not @conflict.new_record? or true
+-if @conflict.new_record? 
   :javascript
-    oldRecord = true;
-    $('#conflict-tabs > li').removeClass('closed');
+    $('#conflict-tabs > li').not('.active').addClass('closed');
       
