@@ -170,14 +170,13 @@ Admin.controllers :conflicts do
     @countries = Country.all :order => :slug
     @categories = Category.all :order => :id
     @alltypes = Type.where('category_id is not null').order('name asc')
-    @types = [[{:type=>{:id=>'',:name=>'Lütfen bir Ana Başlık seçiniz.'}}]]
+    @types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
     @alltypeoptions = ""
     @categories.each do |c|
       @types.push c.types.all
       @alltypeoptions += "<option value='0' disabled='disabled'>#{c.name}</option>"
       c.types.each do |ct|
         @alltypeoptions += "<option value='#{ct.id.to_s}'>#{ct.name}</option>"
-
       end
       @alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
     end
