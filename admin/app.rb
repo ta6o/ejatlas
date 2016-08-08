@@ -310,7 +310,7 @@ class Admin < Padrino::Application
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
     #puts JSON.pretty_generate(JSON.parse filter)
     filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))
-    puts JSON.pretty_generate(filter)
+    #puts JSON.pretty_generate(filter)
     #p filter.to_json
     result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:filter})['hits']['hits']
     #puts result.length
@@ -325,7 +325,7 @@ class Admin < Padrino::Application
     comparison = ["invest-g","invest-l","start-g","start-l","end-g","end-l"]
     hash = {}
     if options.class == String
-      puts options
+      #puts options
       if options[0] == "{"
         options = JSON.parse(options)
       else

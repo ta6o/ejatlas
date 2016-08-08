@@ -39,7 +39,7 @@ class Featured < ActiveRecord::Base
     data["attrs"] = (Conflict.attribute_names & feats)
     data["mania"] = ((mania | imps) & feats)
     data["data"] = feats - (mania | imps | Conflict.attribute_names)
-    ftags = (data['tag'] || []).map do |t| 
+    ftags = (data['tag'] || []).map do |t|
       if t.is_a?(Integer) or t == t.to_i.to_s
         Tag.find(t.to_i)
       else
@@ -52,7 +52,7 @@ class Featured < ActiveRecord::Base
       JSON.parse(c.features||"{}").each do |k,v|
         cmarker[k] = v
       end
-      if (ftags & c.tags).length > 1
+      if (ftags & c.tags).length >= 1
         cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain} || ""
         cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
       else
