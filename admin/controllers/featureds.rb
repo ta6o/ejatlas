@@ -53,7 +53,7 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
-    unless current_account and @featured and @featured.account_id == current_account.id
+    unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
       redirect to "/featureds"
     end
     @featured.description = @featured.description.gsub("\n","<br />")
@@ -76,7 +76,7 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
-    unless current_account and @featured and @featured.account_id == current_account.id
+    unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
       redirect to "/featureds"
     end
     params[:featured][:color].gsub! /#/, ''
@@ -139,7 +139,7 @@ Admin.controllers :featureds do
   get :export, :with => :id do
     featured = Featured.find(params['id'])
     redirect to '/featureds' unless featured
-    unless current_account and featured and featured.account_id == current_account.id
+    unless current_account and featured and (featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
       redirect to "/featureds"
     end
     begin
@@ -338,7 +338,7 @@ Admin.controllers :featureds do
 
   delete :destroy, :with => :id do
     featured = Featured.find(params[:id])
-    unless current_account and featured and featured.account_id == current_account.id
+    unless current_account and featured and (featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
       redirect to "/featureds"
     end
     if featured.destroy
