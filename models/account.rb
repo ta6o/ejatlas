@@ -3,6 +3,7 @@ class Account < ActiveRecord::Base
 
   has_many :conflicts
   has_many :filters
+  has_many :featureds
   has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
 

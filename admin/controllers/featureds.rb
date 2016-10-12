@@ -1,21 +1,28 @@
 Admin.controllers :featureds do
 
   before do
-    if current_account and ["admin","editor"].include?(current_account.role)
-      @name = "Featured Maps"
-    else
-      redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
-    end
+    redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account
+    @name = "Featured Maps"
   end
 
   get :index do
     @featureds = []
-    Featured.select("id, name, slug, description, image").find_in_batches do |batch|
-      @featureds << batch
+    if current_account and ["admin","editor"].include?(current_account.role)
+      Featured.select("id, name, slug, description, image").find_in_batches do |batch|
+        @featureds << batch
+      end
+      @featureds.flatten!
+    elsif current_account
+      @featureds = current_account.featureds.select("id, name, slug, description, image")
+    else
+      redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
     end
-    @featureds.flatten!
     #puts @featureds.count
     render 'featureds/index'
+  end
+
+  get :help do
+    render 'featureds/fm_doc'
   end
 
   get :new do
@@ -46,6 +53,9 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
+    unless current_account and @featured and @featured.account_id == current_account.id
+      redirect to "/featureds"
+    end
     @featured.description = @featured.description.gsub("\n","<br />")
     @features = JSON.parse(@featured.features) - $attrhash.values  
     @contained = {}
@@ -66,6 +76,9 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
+    unless current_account and @featured and @featured.account_id == current_account.id
+      redirect to "/featureds"
+    end
     params[:featured][:color].gsub! /#/, ''
     unless params[:featured].has_key?('published')
       @featured.published = false
@@ -126,6 +139,9 @@ Admin.controllers :featureds do
   get :export, :with => :id do
     featured = Featured.find(params['id'])
     redirect to '/featureds' unless featured
+    unless current_account and featured and featured.account_id == current_account.id
+      redirect to "/featureds"
+    end
     begin
       filter = "{}"
       filter = featured.filter if featured.filter.length > 0
@@ -322,6 +338,9 @@ Admin.controllers :featureds do
 
   delete :destroy, :with => :id do
     featured = Featured.find(params[:id])
+    unless current_account and featured and featured.account_id == current_account.id
+      redirect to "/featureds"
+    end
     if featured.destroy
       flash[:notice] = 'Featured map was successfully destroyed.'
     else

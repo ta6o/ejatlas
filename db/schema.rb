@@ -301,6 +301,9 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string "color", :limit=>6
     t.boolean "published"
     t.string   "headline"
+    t.integer "account_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "filters", :force => true do |t|

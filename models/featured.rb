@@ -7,6 +7,8 @@ class Featured < ActiveRecord::Base
   has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
 
+  belongs_to :account
+
   validates_presence_of :slug
   #validates_uniqueness_of :slug
 

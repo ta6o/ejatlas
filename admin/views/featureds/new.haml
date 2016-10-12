@@ -5,7 +5,10 @@
 .row
   .col-md-12
     .hero-unit
-      %h1.title= @title
+      %h1.title
+        New featured map
+        %small
+          %a{:href=>'/featureds/help',:target=>"_blank"} get help
     .inner
       =form_for :featured, url(:featureds, :create), :class => :form do |f|
         =partial "featureds/form", :locals => { :f => f }

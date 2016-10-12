@@ -1,0 +1,273 @@
+-content_for :include do
+  :css
+    img {
+      width: 650px !important;
+      height: auto !important;
+    }
+    ol, ul {
+      padding-left: 0px !important;
+    }
+    li {
+      padding-top: 12px;
+    }
+-3.times do
+  %br/
+%p These instructions are meant to guide users to create featured maps on the EJAtlas. The maps might only show some selected cases from the Atlas together with a description (see for example  XXX)
+%p To create maps showing additional information rather than conflicts (population density, forest areas, GDP per capita distribution in provinces, etc) you need first to gather and process the data you aim to show in form of a vector (.shp, .kml or . kmr)
+%p The instructions are divided in two parts: 1. How to create a new map and 2. How to upload a vector. and 2.1. How to create a vector style.
+%p I recommend you read this instructions while you explore one of the featured maps available at ejatlas, so you visualize the different elements that are mentioned in this document.
+
+%br/
+%h2
+  %b HOW TO CREATE A NEW MAP
+%br/
+%p Generally the maps consist of a number of selected conflicts from the Atlas, a number of layers (vectors) that are displayed on the map, and a title, a description and a picture that are displayed on the right menu. This is an example of a map with all those features:
+%p
+  %img{:align => "bottom", :border => "0", :height => "321", :hspace => "1", :name => "Imagen 15", :src => "/img/feat/fm_html_9e1426949f75eb6.png", :vspace => "1", :width => "624"}/
+%br/
+%p
+  To create a map, you should follow these steps:
+%ol
+  %li
+    %p After getting the permissions, in the site menu, go to – Models – Featured maps
+    %p
+      %img{:align => "bottom", :border => "0", :height => "333", :hspace => "1", :name => "Imagen 1", :src => "/img/feat/fm_html_e1dd56d604272f96.png", :width => "624"}/
+      %br/
+  %li
+    %p The list of all featured maps will appear. You can manage and edit featured maps from here. To create a new map, click on add new.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "321", :hspace => "1", :name => "Imagen 2", :src => "/img/feat/fm_html_192828b682de0805.png", :vspace => "1", :width => "624"}/
+      %br/
+  %li
+    %p You will get this screen with different fields that you have to fill up
+    %p
+      %img{:align => "bottom", :border => "0", :height => "320", :hspace => "1", :name => "Imagen 3", :src => "/img/feat/fm_html_296fc52f9434e758.png", :width => "624"}/
+      %br/
+      %img{:align => "bottom", :border => "0", :height => "320", :hspace => "1", :name => "Imagen 6", :src => "/img/feat/fm_html_f9218fc033d1cb9f.png", :vspace => "1", :width => "624"}/
+      %br/
+
+    %p
+      %b Name: 
+      Name the featured map
+    %p
+      %b Slug: 
+      Write the slug (no spaces). The slug is the name that will be used to créate the link to access to the map (ejatlas.org/featured/SLUG)
+    %p
+      %b Slogan: 
+      Write a slogan for the map
+    %p
+      %b Headline: 
+      Write a short sentence that summarizes the description
+    %p
+      %b Description: 
+      Write the description of the map, its context, about the process of creation
+    %p
+      %b Filter: 
+      see Step 4
+    %p
+      %b Tags: 
+      see Step 4
+    %p
+      %b Additional attributes:
+    %p Base map layers: Select the base maps you want to add for your map.  The first one listed will be the one shown by default. The others will be options on a drop down menu
+    %p
+      %b Color:
+    %p 
+      %b Contained fields: 
+      Select the fields from the database (i.e. forms of mobilization, commodity, intensity of conflict, etc.) that you want to be shown in the list of conflicts. Select those that are relevant for the purpose of the map.
+    %p
+      %b Upload image: 
+      the image will be displayed next to the name. If you don´t upload any, a screenshot of the map will be generated automatically.
+    %p
+      %b Published?: 
+      check when it is ready for publishing. If you want to unpublished the map temporally for any reason just uncheck and the map will not be shown on ejatlas.org.
+    %br/
+
+  %li
+    %p
+      To select the conflicts you want to be displayed in the map, go to Edit fliter options. Filter the cases using the filter and click on Apply
+    %p
+      %img{:align => "bottom", :border => "0", :height => "321", :hspace => "1", :name => "Imagen 4", :src => "/img/feat/fm_html_9f13c3f9a489044b.png", :vspace => "1", :width => "624"}/
+      %br/
+
+    %ul
+      %li
+        %p The filtered cases should appear at the bottom after saving.
+        %p
+          %img{:align => "bottom", :border => "0", :height => "320", :hspace => "1", :name => "Imagen 5", :src => "/img/feat/fm_html_fda54dd72a83a610.png", :width => "624"}/
+      %li
+        %p
+          %b Using TAGS to filter:
+          When the selection of the cases cannot be made using the filtering categories with the AND/OR functions, you can select cases using Tags. In addition, tags can also be used to classify the conflicts you want to displayed using different categories than the normalized ones. For example, if you are filtering mining conflicts in Colombia and you want to classify them by the decade the conflict was started so each of the decade is displayed with a different color – you will need to use tags.
+
+  %li
+    %p You can save at each moment, close and continue later. To see the map, click on View. With all these fields completed you can have a cool thematic map. For making the map more complete, you can add more geographical information (in forms of layers) to the map. The vectors uploading is explained in the next section.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "330", :hspace => "1", :name => "Imagen 7", :src => "/img/feat/fm_html_f4b7ecc6b6dbcea0.png", :width => "624"}/
+      %br/
+
+%br/
+%h2
+  %b HOW TO UPLOAD VECTORS TO BE DISPAYED IN FEATURED MAPS
+%br/
+%p Data in vector format can be uploaded to the featured maps in order to give additional information about the topic the map is related to. You first need to create the vectors and then assign them to the map you want.
+%ol
+  %li
+    %p In the site menu, go to – Models – Vectors
+    %p
+      %img{:align => "bottom", :border => "0", :height => "311", :name => "Imagen 8", :src => "/img/feat/fm_html_2552b538ca910128.png", :vspace => "1", :width => "610"}/
+      %br/
+  %li
+    %p The list of all vectors will appear. You can manage and edit older vectors from here. To create a new vector, click on add new.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "319", :hspace => "1", :name => "Imagen 10", :src => "/img/feat/fm_html_bb463059866aa8b5.png", :vspace => "1", :width => "624"}/
+      %br/
+  %li
+    %p You will get this screen with different fields that you have to fill up.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "318", :hspace => "1", :name => "Imagen 9", :src => "/img/feat/fm_html_c1820955c3c8bc82.png", :width => "624"}/
+      %br/
+    %p
+      %b Name: 
+      Name the vector
+    %p
+      %b Attached to: 
+      Select if the vector will be assigned to a country map or featured map
+    %p
+      %b Featured: 
+      Select which map the vector will be attached to
+    %p
+      %b Url:
+      don´t write here, the field will be generated automaticaly
+    %p
+      %b Description:
+      Write the description of the vector: what shows, what says, observations, etc.
+    %p
+      %b Source: 
+      Where the data comes from
+    %p
+      %b Link: 
+      Where to find the data
+    %p
+      %b NOTE:
+      description, source and link will be displayed when hovering over the vector. It’s important that this information is accurate to make the data reliable.
+    %p
+      %b Status: 
+      Select 
+      %i Published 
+      when it´s ready to be displayed
+    %p
+      %b Show by default?:
+      Select Yes if you want the vector to be shown by default when the map is charged. Otherwise users have to select the vector in the legend to be displayed. For capacity reasons, only one vector per map should be selected by default.
+    %p
+      %b Vector style:
+      select the vector style you want to apply. To create vector styles see next subsection at page 11.
+      %br/
+
+  %li
+    %p After these fields are completed and you save, you will be able to upload the vector file
+    %p
+      %img{:align => "bottom", :border => "0", :height => "272", :name => "Imagen 11", :src => "/img/feat/fm_html_273df555a9efbfab.png", :width => "450"}/
+      %br/
+%ul
+  %li
+    %p There are different types of vectors you can upload. Depending on which type you want you will need to upload two or three files.
+  %li
+    %p If you want to upload a vector with information attached to each element of the vector you need to upload a vector file (as a compressed shape, kml o kmz) and the CSV file with statistical data. This is the case for example, when you want to upload a file with all the nuclear power plants in a country, and for each plant give some information and quantitiative indicators. If you want to upload a vector with no information attached (like the borders of a country), you can add the vector only (not the CSV). In the picture below, two vectors (in addition to the conflicts) are displayed: pink points show activists killed and green poligons biodiversity areas.
+  %p
+    %img{:align => "bottom", :border => "0", :height => "287", :name => "Imagen 19", :src => "/img/feat/fm_html_5c992530fe8ccb1d.png", :width => "480"}/
+    %br/
+  %li
+    %p If you want to differentiate/classify elements of your vector based on a characteristic of them (this is called intensity maps or cloropleth) – you need to upload also the CSV file with legend color data. This will be the case, for example, when you want to classify the provinces of a country based on number of power plants, of GDP.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "298", :name => "Imagen 20", :src => "/img/feat/fm_html_d3154c249ee93645.png", :width => "450"}/
+      %br/
+    %p Here are the descriptions of each of the three possible files:
+    %p
+      %b NOTE: 
+      for creating the .csv files I use open office and select Unicode UTF-8 when saving. We have encountered problems when saving as csv when using Excel.
+    %p
+      %u a. Vector file (zip, kml or kmz):
+      This file should be a compressed shape, a kml or a kmz, containing the geographical elements that you want to display: few countries, the districts of a province,  the river basins of a region, etc. If you want to attach some info to each vector element the vector attribute table should contain a column “feature_id” which is the linking column to the data uploaded in the CSV. The column “feature_id” is the only one that the systems will read from this file. If you have additional columns won´t be displayed – you need to export the attribute table to a .csv and uploaded separately
+    %p
+      %img{:align => "bottom", :border => "0", :height => "293", :hspace => "1", :name => "Imagen 18", :src => "/img/feat/fm_html_525665029e06bbe0.png", :width => "549"}/
+      %br/
+    %p
+      %u b. CSV file with statistical data:
+      This file is a .csv with a column labelled “feature_id” so each of the lines relate to a poligon of the vector. Then, you can organize the data you want to show for each element in different columns. The data will be displayed when hovering over a vector.
+    %p
+      If you want to create a cloropleth, this file should also need to have a column “category” when you categorize (using 1, 2, 3, 4, etc.) the variable of interest. This column is the linking data with the next file.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "326", :name => "Imagen 17", :src => "/img/feat/fm_html_6efee04d87a3a7ac.png", :width => "450"}/
+      %br/
+    %p
+      %u c. CSV file
+      with color legend data (for cloropleth only): This file is a .csv file with three columns: Category, Colour, Legend.
+    %p
+      %b “category” 
+      is the linking column with the previous file.
+    %p
+      %b “color”
+      is the colour code you attach to each category. You can select colour codes in this site: 
+      %a{:href=>"http://html-color-codes.info/codigos-de-colores-hexadecimales/",:target=>"_blank"} http://html-color-codes.info/codigos-de-colores-hexadecimales/
+    %p
+      %b “legend”
+      is the text that will be written in the layers menu of the map.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "175", :hspace => "1", :name => "Imagen 16", :src => "/img/feat/fm_html_bc8d8f623cd75ef1.png", :vspace => "1", :width => "263"}/
+
+  %p
+    %b
+      NOTE: only one file with the same name can be uploaded. If you upload a vector and a csv files and you want to make changes afterwards, you can make the changes in the file and upload them again with different file’s name. For example layer_vector.shp could become layer_vector_v2.shp
+
+%br/
+%h2
+  %b HOW TO CREATE A VECTOR STYLE
+%br/
+%ol
+  %li
+    %p In the site menu, go to – Models – Vector Styles
+    %p
+      %img{:align => "bottom", :border => "0", :height => "320", :hspace => "1", :name => "Imagen 12", :src => "/img/feat/fm_html_9332cb0e1272bd0f.png", :width => "624"}/
+      %br/
+  %li
+    %p The list of all vector styles will appear. You can modify styles from here.  To create a new vector style, click on add new.
+    %p
+      %img{:align => "bottom", :border => "0", :height => "320", :hspace => "1", :name => "Imagen 13", :src => "/img/feat/fm_html_157ecc63a4171a73.png", :width => "624"}/
+      %br/
+  %li
+    %p You will get to this screen where you can define the style characteristics
+    %p
+      %img{:align => "bottom", :border => "0", :height => "320", :hspace => "1", :name => "Imagen 14", :src => "/img/feat/fm_html_6a10c5937042a420.png", :width => "624"}/
+      %br/
+    %p
+      %b Plain/Pattern:
+      You can select of you want a plain background or one with a pattern
+    %p
+      %b Fill color:
+      Select the color of the background
+    %p
+      %b Fill opacity:
+      Select the opacity of the background from 0% to 100%.  Write 0 if you want no background
+    %p
+      %b Line color:
+      Select the color of the outline
+    %p
+      %b Line opacity:
+      Select the opacity of the outline from 0% to 100%.  Write 0 if you want no outline
+    %p
+      %b Thickness:
+      Select the thickness of the outline
+    %p
+      %b Dashes:
+      Select the appearance of the outline
+    %p
+      %b Name:
+      Name the vector style
+    %p
+      %b Preview:
+      A preview of the style will be displayed after saving
+    %p
+      %b NOTE: you can modify styles as many times as you want. Don´t forget to save each time. Sometimes, the preview function does now work, and you should go to the map in order to see the appearance of the layer.
+  %li
+    %p Once you save the style will be shown in the list of vector styles at ejatlas.org/vectors/styles. You can edit or delete styles from there.

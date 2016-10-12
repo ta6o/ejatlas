@@ -177,7 +177,7 @@ class Admin < Padrino::Application
     role.protect "/companies"
     role.protect "/commodities"
     role.protect "/types"
-    role.protect "/featureds"
+    #role.protect "/featureds"
   end
 
   access_control.roles_for :admin do |role|
