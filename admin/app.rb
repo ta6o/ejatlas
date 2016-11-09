@@ -46,6 +46,10 @@ class Admin < Padrino::Application
     $consurl = 'http://ejatlas.org'
   end
 
+  after do
+    ActiveRecord::Base.connection.close
+  end
+
   def self.slugify str
     return str if str.nil?
     res = str.to_ascii
