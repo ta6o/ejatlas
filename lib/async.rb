@@ -177,6 +177,7 @@ class AsyncTask
       lines << line
       #puts
     end
+    Dir.mkdir "/tmp/export"  unless File.directory? "/tmp/export"
     ::CSV.open('/tmp/export/cases.csv',"w") do |output|
       output << header
       lines.each do |line|
