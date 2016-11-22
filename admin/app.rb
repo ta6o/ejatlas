@@ -2,7 +2,7 @@
 
 class Admin < Padrino::Application
   #use ActiveRecord::ConnectionAdapters::ConnectionManagement
-  use ConnectionPoolManagement
+  #use ConnectionPoolManagement
   #register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
