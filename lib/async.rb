@@ -239,6 +239,20 @@ class AsyncTask
   end
   handle_asynchronously :csvexport
 
+  def backup params
+    now = Time.now.strftime('%y%m%d%H%M')
+    `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://root:***REMOVED***@0.0.0.0:5432/ejatlas > #{Dir.home}/backup/ej-#{now}.dump`
+    bak = Backup.new
+    bak.file = File.open("#{Dir.home}/backup/ej-#{now}.dump","rb")
+    if pat.save
+      bak = nil
+    else
+      #puts 'nein!'
+    end
+    GC.start
+  end
+  handle_asynchronously :backup
+
   def setcache params
     ca = Cached.new unless ca = Cached.first
     client = Elasticsearch::Client.new log: false
@@ -360,6 +374,8 @@ class AsyncTask
     if params["images"] == "on"
       puts "Updating images..."
       docs = []
+
+      # TODO: use mimetypes
       ext = ["jpg", "bmp", "png", "jpeg", "gif"]
       Document.all.each do |doc|
         if ext.include? doc.file.file.filename.split('.')[-1].downcase

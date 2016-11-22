@@ -428,6 +428,12 @@ Admin.controller do
     render 'base/cache', :layout => :application
   end
 
+  get :backup do
+    pass unless $ips.include? request.ip
+    AsyncTask.new.backup
+    200
+  end
+
   post :cache do
     redirect to "/sessions/login?return=cache" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role

@@ -16,3 +16,12 @@ class GeoData
   end
 end
 
+class Backup
+  extend CarrierWave::Mount
+  attr_accessor :file, :folder
+  mount_uploader :file, BackupUploader
+  def save
+    self.store_file!
+  end
+end
+
