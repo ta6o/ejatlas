@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 #ruby '2.1.2'
 
-gem 'puma'
-
 gem 'rake'
 gem 'sinatra-flash', :require => 'sinatra/flash'
 
@@ -14,16 +12,20 @@ gem "rmagick"
 gem 'unicode_utils'
 gem 'carrierwave', :require => %w(carrierwave carrierwave/orm/activerecord)
 gem 'unf'
-gem 'fog', :git => 'https://github.com/fog/fog.git'
+gem 'fog'#, :git => 'https://github.com/fog/fog.git'
 gem 'pg'
 gem 'zip-zip'
 gem 'sendgrid-ruby'
 gem 'delayed_job'
 gem 'delayed_job_active_record'
-gem 'gdal'
 gem 'unidecoder'
 gem 'elasticsearch'
 gem 'sanitize'
 
-gem 'padrino'
+gem 'padrino', '0.13.2'
+
+if ENV["RACK_ENV"] == "production"
+  gem 'gdal'
+  gem 'puma'
+end
 

@@ -394,15 +394,7 @@ Admin.controller do
     return hash.to_json
   end
 
-  get :csv, :with=>:model do
-    redirect to "/sessions/login?return=csv/#{params[:model]}" unless current_account
-    redirect to "/" unless ["admin","editor"].include? current_account.role
-    filename = to_csv params[:model]
-    send_file filename[0], :type=> :csv, :filename => filename[1]
-    return filename+" sent."
-  end
-
-  get "/:model/?" do
+  get "/:model" do
     browseinfo = {"country"=>"countries","company"=>"companies","commodity"=>"commodities","type"=>"types"}
     pass unless browseinfo.has_key?(params[:model])
     ca = Cached.first
@@ -422,12 +414,6 @@ Admin.controller do
     render "base/front"
   end
 
-  get :cache do
-    redirect to "/sessions/login?return=cache" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
-    render 'base/cache', :layout => :application
-  end
-
   get :backup do
     puts
     puts [$ips, request.ip].flatten
@@ -435,6 +421,12 @@ Admin.controller do
     pass unless $ips.include?(request.ip)
     AsyncTask.new.backup
     "TASK STARTED"
+  end
+
+  get :cache do
+    redirect to "/sessions/login?return=cache" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
+    render 'base/cache', :layout => :application
   end
 
   post :cache do

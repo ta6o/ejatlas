@@ -36,6 +36,7 @@ class Admin < Padrino::Application
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
   $baselayers = "Thunderforest.Landscape,Esri.WorldImagery,Esri.WorldTopoMap"
+  
   $ips = Socket.ip_address_list.find_all{|ai| ai.ipv4?}.map &:ip_address
 
   $client = Elasticsearch::Client.new log:false
