@@ -430,6 +430,7 @@ Admin.controller do
 
   get :backup do
     pp [$ips, request.ip].flatten
+
     pass unless $ips.include? request.ip
     AsyncTask.new.backup
     200
