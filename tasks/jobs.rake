@@ -1,5 +1,6 @@
 task :environment do
   require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'boot.rb'))
+  require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'async.rb'))
 end
  
 namespace :jobs do
