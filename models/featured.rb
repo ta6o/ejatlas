@@ -140,7 +140,7 @@ class Featured < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Featured.find(:first, :conditions => ["slug = lower(?)", slug])
+    if c = Featured.where(:slug=>slug.downcase).first
       return c
     else
       return nil
@@ -148,7 +148,7 @@ class Featured < ActiveRecord::Base
   end
 
   def self.find_name name
-    Featured.find(:first, :conditions => ["name = lower(?)", name])
+    Featured.where(:name=>slug.downcase).first
   end
 
   private

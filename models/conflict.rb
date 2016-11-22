@@ -88,9 +88,9 @@ class Conflict < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Conflict.find(:first, :conditions => ["slug = lower(?)", slug])
+    if c = Conflict.where(:slug=>slug.downcase).first
       return c
-    elsif os = OldSlug.where("attachable_type = 'Conflict'").find(:first, :conditions => ["name = lower(?)", slug])
+    elsif os = OldSlug.where("attachable_type = 'Conflict'").where(:name=>slug.downcase).first
       return os.attachable
     else
       return nil
@@ -99,7 +99,7 @@ class Conflict < ActiveRecord::Base
 
   def self.find_name name
     slug = Admin.slugify name
-    Conflict.find(:first, :conditions => ["slug = lower(?)", slug])
+    Conflict.where(:slug=>slug.downcase).first
   end
 
   def old_slug

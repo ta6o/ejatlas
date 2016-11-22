@@ -23,9 +23,9 @@ class Country < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Country.find(:first, :conditions => ["slug = lower(?)", slug])
+    if c = Country.where(:slug=>slug.downcase).first
       return c
-    elsif os = OldSlug.where("attachable_type = 'Country'").find(:first, :conditions => ["name = lower(?)", slug])
+    elsif os = OldSlug.where("attachable_type = 'Country'").where(:name=>slug.downcase).first
       return os.attachable
     else
       return nil
@@ -34,7 +34,7 @@ class Country < ActiveRecord::Base
 
   def self.find_name name
     slug = Admin.slugify name
-    Country.find(:first, :conditions => ["slug = lower(?)", slug])
+    Country.where(:slug=>slug.downcase).first
   end
 
   def old_slug
@@ -138,9 +138,9 @@ class Region < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Region.find(:first, :conditions => ["slug = lower(?)", slug])
+    if c = Region.where(:slug=>slug.downcase).first
       return c
-    elsif os = OldSlug.where("attachable_type = 'Region'").find(:first, :conditions => ["name = lower(?)", slug])
+    elsif os = OldSlug.where("attachable_type = 'Region'").where(:name=>slug.downcase).first
       return os.attachable
     else
       return nil
@@ -149,7 +149,7 @@ class Region < ActiveRecord::Base
 
   def self.find_name name
     slug = Admin.slugify name
-    Region.find(:first, :conditions => ["slug = lower(?)", slug])
+    Region.where(:slug=>slug.downcase).first
   end
 
   def ping

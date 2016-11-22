@@ -21,9 +21,9 @@ class Tag < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Tag.find(:first, :conditions => ["slug = lower(?)", slug])
+    if c = Tag.where(:slug=>slug.downcase).first
       return c
-    elsif os = OldSlug.where("attachable_type = 'Tag'").find(:first, :conditions => ["name = lower(?)", slug])
+    elsif os = OldSlug.where("attachable_type = 'Tag'").where(:name=>slug.downcase).first
       return os.attachable
     else
       return nil

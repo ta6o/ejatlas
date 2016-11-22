@@ -45,9 +45,9 @@ class Company < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Company.find(:first, :conditions => ["slug = lower(?)", slug])
+    if c = Company.where(:slug=>slug.downcase).first
       return c
-    elsif os = OldSlug.where("attachable_type = 'Company'").find(:first, :conditions => ["name = lower(?)", slug])
+    elsif os = OldSlug.where("attachable_type = 'Company'").where(:name=>slug.downcase).first
       return os.attachable
     else
       return nil
@@ -56,7 +56,7 @@ class Company < ActiveRecord::Base
 
   def self.find_name name
     slug = Admin.slugify name
-    Company.find(:first, :conditions => ["slug = lower(?)", slug])
+    Company.where(:slug=>slug.downcase).first
   end
 
   private

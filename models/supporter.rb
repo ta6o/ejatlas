@@ -42,9 +42,9 @@ class Supporter < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Supporter.find(:first, :conditions => ["slug = lower(?)", slug])
+    if c = Supporter.where(:slug=>slug.downcase).first
       return c
-    elsif os = OldSlug.where("attachable_type = 'Supporter'").find(:first, :conditions => ["name = lower(?)", slug])
+    elsif os = OldSlug.where("attachable_type = 'Supporter'").where(:name=>slug.downcase).first
       return os.attachable
     else
       return nil
@@ -53,7 +53,7 @@ class Supporter < ActiveRecord::Base
 
   def self.find_name name
     slug = Admin.slugify name
-    Supporter.find(:first, :conditions => ["slug = lower(?)", slug])
+    Supporter.where(:slug=>slug.downcase).first
   end
 
   private
