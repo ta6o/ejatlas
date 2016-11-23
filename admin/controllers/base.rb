@@ -415,9 +415,6 @@ Admin.controller do
   end
 
   get :backup do
-    puts
-    puts [$ips, request.ip].flatten
-    puts
     pass unless $ips.include?(request.ip)
     AsyncTask.new.backup nil
     "TASK STARTED"

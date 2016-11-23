@@ -1,3 +1,48 @@
+CarrierWave.configure do |config|
+  config.storage = :fog
+  #config.fog_provider = "fog/aws"
+  config.fog_credentials = {
+    :provider               => 'AWS',
+    :region                 => 'us-east-1',
+    :aws_access_key_id      => 'AKIAJQV2IS77WH4CVNOQ',
+    :aws_secret_access_key  => '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'
+  }
+  config.fog_directory  = 'ejatlas'
+end
+
+class ImageUploader < CarrierWave::Uploader::Base
+  include CarrierWave::RMagick
+  storage :file
+  def store_dir
+    at = self.model.attachable 
+    return "#{Padrino.root}/../file/img/#{at.class}/#{at.old_slug}"if at.methods.include?(:old_slug)
+    return "#{Padrino.root}/../file/img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
+    "#{Padrino.root}/../file/img/#{at.class}/#{at.id}"
+  end
+
+  def cache_dir
+    "/tmp/uploads"
+  end
+
+  def url
+    at = self.model.attachable 
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/#{self.file.filename}"if at.methods.include?(:old_slug)
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/#{self.file.filename}"if at.has_attribute?('slug')
+    "https://file.ejatlas.org/img/#{at.class}/#{at.id}/#{self.file.filename}"
+  end
+
+  def thumb_url
+    at = self.model.attachable 
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}"if at.methods.include?(:old_slug)
+    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}"if at.has_attribute?('slug')
+    "https://file.ejatlas.org/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"
+  end
+
+  version :thumb do
+    process :resize_to_fit => [2400,240]
+  end
+end
+
 class DocumentUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
@@ -43,7 +88,7 @@ class BackupUploader < CarrierWave::Uploader::Base
   storage :fog
 
   def store_dir
-    "/backup"
+    "/ejatlas/backup"
   end
 
   def cache_dir
