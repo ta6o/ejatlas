@@ -65,7 +65,7 @@ Admin.controllers :vectors do
       params['style']['fill_opacity'] = pattern[2]
       pattern[4] = [pattern[4].to_i,pattern[2].to_i].min.to_s
       alp = ((pattern[4].to_i/100.0) / (pattern[2].to_i/100.0))
-      alpha = (Magick::MaxRGB * (1-alp)).to_i
+      alpha = (Magick::QuantumRange * (1-alp)).to_i
       plain = Magick::Image.read("#{PADRINO_ROOT}/public/img/canvas.png").first
       canvas = plain.colorize(1,1,1,0,"##{pattern[3]}")
       canvas.alpha(Magick::ActivateAlphaChannel)
@@ -124,7 +124,7 @@ Admin.controllers :vectors do
       pattern[4] = [pattern[4].to_i,pattern[2].to_i].min.to_s
       pattern[2] = '1' if pattern[2] == '0'
       alp = ((pattern[4].to_i/100.0) / (pattern[2].to_i/100.0))
-      alpha = (Magick::MaxRGB * (1-alp)).to_i
+      alpha = (Magick::QuantumRange * (1-alp)).to_i
       plain = Magick::Image.read("#{PADRINO_ROOT}/public/img/canvas.png").first
       canvas = plain.colorize(1,1,1,0,"##{pattern[3]}")
       canvas.alpha(Magick::ActivateAlphaChannel)
