@@ -7,7 +7,7 @@ CarrierWave.configure do |config|
     :aws_access_key_id      => 'AKIAJQV2IS77WH4CVNOQ',
     :aws_secret_access_key  => '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'
   }
-  config.fog_directory  = 'ejatlas'
+  config.fog_directory  = 'ej-backups'
 end
 
 class ImageUploader < CarrierWave::Uploader::Base
@@ -86,10 +86,6 @@ end
 
 class BackupUploader < CarrierWave::Uploader::Base
   storage :fog
-
-  def store_dir
-    "/backup"
-  end
 
   def cache_dir
     "/tmp"
