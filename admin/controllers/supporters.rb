@@ -110,7 +110,7 @@ Admin.controllers :ifis do
       key = []
       modifier = -1
       slugz.scan(/[^,]*#{keyword}[^,]*/).to_set.to_a.each do |slug,index|
-        Supporter.find_all_by_slug(slug).each do |comp|
+        Supporter.where(:slug=>slug).each do |comp|
           country = ""
           country = comp.country.name if comp.country
           key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id}) [#{c.approval_status}]"}.join("\n"), :country => country}
