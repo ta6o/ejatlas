@@ -167,8 +167,8 @@ Admin.controllers :conflicts do
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
-    @countries = Country.all :order => :slug
-    @categories = Category.all :order => :id
+    @countries = Country.all.order :slug
+    @categories = Category.all.order :id
     @alltypes = Type.where('category_id is not null').order('name asc')
     @types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
     @alltypeoptions = ""
@@ -187,7 +187,7 @@ Admin.controllers :conflicts do
     @reactions = Reaction.all
     @mobgroups = Admin.setOrder 3, MobilizingGroup.order('name asc')
     @mobforms = Admin.setOrder 3, MobilizingForm.order('name asc')
-    @project_statuses = ProjectStatus.all :order => :id
+    @project_statuses = ProjectStatus.all.order :id
     @conflict_events = Admin.setOrder 2, ConflictEvent.order('name asc')
     @lat = 0
     @lon = 0

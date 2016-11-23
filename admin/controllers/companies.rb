@@ -122,7 +122,7 @@ Admin.controllers :companies do
 
   get :new do
     @company = Company.new
-    @countries = Country.all :order => :slug
+    @countries = Country.all.order :slug
     render 'companies/new'
   end
 
@@ -138,7 +138,7 @@ Admin.controllers :companies do
 
   get :edit, :with => :id do
     @company = Company.find(params[:id])
-    @countries = Country.all :order => :slug
+    @countries = Country.all.order :slug
     @companies = Company.where("id != ?",@company.id).select("name,id").map{|c|{:label=>c.name,:value=>c.id}}.to_json
     render 'companies/edit'
   end

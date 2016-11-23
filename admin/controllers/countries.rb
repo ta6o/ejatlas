@@ -15,7 +15,7 @@ Admin.controllers :countries do
 
   get :new do
     @country = Country.new
-    @regions = Region.all :order => :slug
+    @regions = Region.all.order :slug
     render 'countries/new'
   end
 
@@ -31,7 +31,7 @@ Admin.controllers :countries do
 
   get :edit, :with => :id do
     @country = Country.find(params[:id])
-    @regions = Region.all :order => :slug
+    @regions = Region.all.order :slug
     @countries = Country.where("id != ?",@country.id).select("name,id").map{|c|{:label=>c.name,:value=>c.id}}.to_json
     render 'countries/edit'
   end

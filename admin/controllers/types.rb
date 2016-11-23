@@ -15,7 +15,7 @@ Admin.controllers :types do
 
   get :new do
     @type = Type.new
-    @categories = Category.all :order => :id
+    @categories = Category.all.order :id
     render 'types/new'
   end
 
@@ -31,7 +31,7 @@ Admin.controllers :types do
 
   get :edit, :with => :id do
     @type = Type.find(params[:id])
-    @categories = Category.all :order => :id
+    @categories = Category.all.order :id
     render 'types/edit'
   end
 

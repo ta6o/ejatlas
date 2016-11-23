@@ -31,7 +31,6 @@ end
 class GeoUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
-    puts self.model.folder
     "#{Padrino.root}/../file/vector/#{self.model.folder}"
   end
 
@@ -42,6 +41,10 @@ end
 
 class BackupUploader < CarrierWave::Uploader::Base
   storage :fog
+
+  def store_dir
+    "/backup"
+  end
 
   def cache_dir
     "/tmp"

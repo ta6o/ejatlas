@@ -23,7 +23,7 @@ Admin.controllers :vectors do
     @vector = VectorDatum.new
     @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
     @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
-    @styles = VectorStyle.all :order => :name
+    @styles = VectorStyle.all.order :name
     render 'vector_data/new'
   end
 
@@ -42,7 +42,7 @@ Admin.controllers :vectors do
     @vector = VectorDatum.find(params[:id])
     @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
     @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
-    @styles = VectorStyle.all :order => :name
+    @styles = VectorStyle.all.order :name
     render 'vector_data/edit'
   end
 

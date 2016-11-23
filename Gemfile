@@ -12,7 +12,7 @@ gem "rmagick"
 gem 'unicode_utils'
 gem 'carrierwave', :require => %w(carrierwave carrierwave/orm/activerecord)
 gem 'unf'
-gem 'fog'#, :git => 'https://github.com/fog/fog.git'
+gem 'fog'
 gem 'pg'
 gem 'zip-zip'
 gem 'sendgrid-ruby'
@@ -22,7 +22,7 @@ gem 'unidecoder'
 gem 'elasticsearch'
 gem 'sanitize'
 
-gem 'padrino', '0.13.2'
+gem 'padrino'
 
 if ENV["RACK_ENV"] == "production"
   gem 'gdal'

@@ -38,7 +38,7 @@ Admin.controllers :ifis do
 
   get :new do
     @supporter = Supporter.new
-    @countries = Country.all :order => :slug
+    @countries = Country.all.order :slug
     render 'supporters/new'
   end
 
@@ -124,7 +124,7 @@ Admin.controllers :ifis do
 
   get :edit, :with => :id do
     @supporter = Supporter.find(params[:id])
-    @countries = Country.all :order => :slug
+    @countries = Country.all.order :slug
     @supporters = Supporter.where("id != ?",@supporter.id).select("name,id").map{|c|{:label=>c.name,:value=>c.id}}.to_json
     render 'supporters/edit'
   end
