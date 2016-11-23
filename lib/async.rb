@@ -244,6 +244,7 @@ class AsyncTask
     `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://root:***REMOVED***@0.0.0.0:5432/ejatlas > #{Dir.home}/backup/ej-#{now}.dump`
     bak = Backup.new
     bak.file = File.open("#{Dir.home}/backup/ej-#{now}.dump","rb")
+    puts "#{Dir.home}/backup/ej-#{now}.dump"
     if bak.save
       bak = nil
     else

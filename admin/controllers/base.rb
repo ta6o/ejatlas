@@ -419,7 +419,7 @@ Admin.controller do
     puts [$ips, request.ip].flatten
     puts
     pass unless $ips.include?(request.ip)
-    AsyncTask.new.backup
+    AsyncTask.new.backup nil
     "TASK STARTED"
   end
 
