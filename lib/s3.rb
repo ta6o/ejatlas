@@ -42,8 +42,10 @@ end
 
 class BackupUploader < CarrierWave::Uploader::Base
   storage :fog
-  def store_dir
-    "backup"
+
+  def cache_dir
+    "/tmp"
   end
+
 end
 
