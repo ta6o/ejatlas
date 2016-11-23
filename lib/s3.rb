@@ -88,7 +88,7 @@ class BackupUploader < CarrierWave::Uploader::Base
   storage :fog
 
   def store_dir
-    "/ejatlas/backup"
+    "/../backup"
   end
 
   def cache_dir
