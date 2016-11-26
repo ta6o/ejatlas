@@ -313,15 +313,13 @@ class Admin < Padrino::Application
     end
   end
 
-  def self.filter filter, all_if_empty=true
+  def self.filter filter, all_if_empty=true, stored_fields=[]
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
-    #puts JSON.pretty_generate(JSON.parse filter)
-    filter = Admin.cleanup(Admin.elasticify({filtered:JSON.parse(filter)}))
-    #puts JSON.pretty_generate(filter)
-    #p filter.to_json
-    result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,fields:[],query:filter})['hits']['hits']
-    #puts result.length
-    return result
+    puts JSON.pretty_generate(filter)
+    filter = Admin.cleanup(Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}} ))
+    puts JSON.pretty_generate(filter)
+    pp stored_fields
+    result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})['hits']['hits']
   end
 
   def self.old_filter options

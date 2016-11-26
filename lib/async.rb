@@ -239,6 +239,60 @@ class AsyncTask
   end
   handle_asynchronously :csvexport
 
+  def export_graphcommons params
+    header = ["Type","Name","Description"]#,"Announcement Date","Project Type","Investment"]
+    actors = {"relevant"=>"Relevant Actor","architect"=>"Architecture Agency","constructor"=>"Contruction Company"}
+    edges = [["Node Type","Node Name","Edge Type","Node Type","Node Name","Weight"]]
+    CSV.open("#{Dir.pwd}/public/gc_nodes.csv","w") do |csv|
+      csv << header
+      Conflict.find(params["cons"]).each do |con|
+        line = []
+        line << "Project"
+        line << con.name.gsub('"',"'")
+        line << con.headline.gsub('"',"'")
+=begin
+        line << con.announcement_date
+        line << con.project_model.gsub('"',"'")
+        begin
+          line << con.investments.last.name.to_f.to_i
+        rescue
+          line << ""
+        end
+        line << con.types.map(&:name).join(", ").gsub('"',"'")
+=end
+        csv << line
+      end
+      params["fields"].each do |key, value|
+        eval("key").find(value.values).each do |act|
+          line = []
+          line << value
+          line << act.name.gsub('"',"'")
+          line << ""
+          line << ""
+          line << ""
+          line << ""
+          csv << line
+          edge = []
+          edge << "Project"
+          edge << Conflict.find(act.conflict_id).name.gsub('"',"'")
+          edge << "RELATES"
+          edge << value
+          edge << act.name.gsub('"',"'")
+          edge << 1
+          edges << edge
+        end
+      end
+    end
+    puts edges.length
+    CSV.open("#{Dir.pwd}/public/gc_edges.csv","w") do |csv|
+      edges.each do |edge|
+        csv << edge
+      end
+    end
+    nil
+  end
+  handle_asynchronously :export_graphcommons
+
   def backup params
     now = Time.now.strftime('%y%m%d%H%M')
     `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://root:***REMOVED***@0.0.0.0:5432/ejatlas > #{Dir.home}/backup/ej-#{now}.dump`
@@ -289,7 +343,7 @@ class AsyncTask
       countries = []
       puts "Updating countries..."
       #Region.all.each {|c| countries << [c.jsonize,c.conflicts_count] if c.conflicts_count > 1; c.save}
-      Country.all(:include=>:conflicts).each do |c| 
+      Country.includes(:conflicts).each do |c| 
         countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1
         c.save
         client.index index: 'atlas', type: 'country', id: c.id, body: {id:c.id,name:c.name}
@@ -302,7 +356,7 @@ class AsyncTask
     if params["companies"] == "on"
       companies = []
       puts "Updating companies..."
-      Company.all(:include=>:conflicts).each do |c|
+      Company.includes(:conflicts).each do |c|
         companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1
         c.save
         client.index index: 'atlas', type: 'company', id: c.id, body: {id:c.id,name:c.name}
@@ -315,7 +369,7 @@ class AsyncTask
     if params["ifis"] == "on"
       supporters = []
       puts "Updating IFI's..."
-      Supporter.all(:include=>:conflicts).each do |c|
+      Supporter.includes(:conflicts).each do |c|
         supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1
         c.save
         client.index index: 'atlas', type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
@@ -328,7 +382,7 @@ class AsyncTask
     if params["commodities"] == "on"
       commodities = []
       puts "Updating commodities..."
-      Product.all(:include=>:conflicts).each {|c| commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"; c.save}
+      Product.all.includes(:conflicts).each {|c| commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"; c.save}
       commodities.sort_by! {|c| c[1]}
       commodities.reverse!
       ca.commodities = commodities.to_json
@@ -337,7 +391,7 @@ class AsyncTask
     if params["categories"] == "on"
       types = []
       puts "Updating categories..."
-      Type.all(:include=>:conflicts).each {|c| types << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"; c.save}
+      Type.all.includes(:conflicts).each {|c| types << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"; c.save}
       types.sort_by! {|c| c[1]}
       types.reverse!
       ca.types = types.to_json

@@ -28,7 +28,7 @@ Admin.controllers :featureds do
   get :new do
     @featured = Featured.new
     @features = []
-    @contained = {}
+    @page_type = "feat"
     @filterform = JSON.parse(Cached.last.filterdata)
     @filterinfo = Cached.last.conflicts_json
     render 'featureds/new'
@@ -58,6 +58,7 @@ Admin.controllers :featureds do
     end
     @featured.description = @featured.description.gsub("\n","<br />")
     @features = JSON.parse(@featured.features) - $attrhash.values  
+    @page_type = "feat"
     @contained = {}
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val

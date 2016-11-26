@@ -435,10 +435,29 @@ Admin.controller do
 
 
   post :filter do
-    if params.has_key? 'feat'
-      Admin.filter(params[:filter]).map{|i| Conflict.select('id, slug, name').find(i['_id'].to_i)}.sort{|a,b| a.slug <=> b.slug}.to_json
+    if params['page_type'] == "feat"
+      (Admin.filter(params["filter"]).map{|i| begin Conflict.select('id, slug, name').find(i['_id'].to_i) rescue nil end }-[nil]).sort{|a,b| a.slug <=> b.slug}.to_json
+    elsif params['page_type'] == "network"
+      result = Admin.filter(params["filter"],true,params["fields"].split(","))
+      response = {"_count"=>result.length}
+      params["fields"].split(",").each do |field|
+        resp = {}
+        (result.map{|x| x["_source"][field] }.flatten - [nil]).each do |z|
+          if field == "population_type"
+            y = ['Unknown','Urban','Semi-urban','Rural'][z]
+          else
+            y = eval(field.sub(/_id$/,"").classify).select("name").find(z).name.strip
+          end
+          resp[y] = 0 unless resp.has_key?(y)
+          resp[y] += 1
+        end
+        resp.delete_if {|x,y| y < params["limit"].to_i}
+        p resp
+        response[field] = resp
+      end
+      response.to_json
     else
-      Admin.filter(params[:filter]).map{|i| i['_id'].to_i }.to_json
+      Admin.filter(params["filter"]).map{|i| i['_id'].to_i }.to_json
     end
   end
 
@@ -448,7 +467,8 @@ Admin.controller do
     model = 'country' if model == 'country_of_company'
     #filter = {match:{name:"#{token}"}}
     filter = {query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}}
-    result = $client.search(index: 'atlas', type: model, body: {from:0,size:9999,fields:[:name],query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['fields']['name'][0]}}
+    result = $client.search(index: 'atlas', type: model, body: {from:0,size:9999,"_source":{"includes":[:name]},query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['_source']['name']}}
+    pp result
     puts result.length
     return result.to_json
   end
@@ -530,6 +550,15 @@ Admin.controller do
     end
     puts "MANDRILL INBOUND\n  SUCCESS: #{oks}\n  FAIL: #{nots}"
     [200,{},'']
+  end
+
+  get :graph do
+    redirect to "/sessions/login?return=export" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
+    @filterform = JSON.parse(Cached.first.filterdata)
+    @page_type = "network"
+    @filter = render "base/filter", :layout => false
+    render 'base/network', :layout => :application
   end
 
   get :export do

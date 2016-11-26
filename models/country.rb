@@ -74,7 +74,7 @@ class Country < ActiveRecord::Base
     self.conflicts_link = link.join
 
     cs, marker, json, link = [], [], [], []
-    self.companies.order("name asc").all(:include => :conflicts).each do |c|
+    self.companies.order("name asc").includes(:conflicts).each do |c|
       #next if c.conflicts.count < 2
       c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
         next if cs.include?(cc.id)
@@ -91,7 +91,7 @@ class Country < ActiveRecord::Base
     self.companies_link = link.join
 
     cs, marker, json, link = [], [], [], []
-    self.supporters.order("name asc").all(:include => :conflicts).each do |c|
+    self.supporters.order("name asc").includes(:conflicts).each do |c|
       #next if c.conflicts.count < 2
       c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
         next if cs.include?(cc.id)
@@ -165,7 +165,7 @@ class Region < ActiveRecord::Base
       self.conflicts_link = link.join
 
       cs, marker, json, link = [], [], [], []
-      self.countries.first.companies.order("name asc").all(:include => :conflicts).each do |c|
+      self.countries.first.companies.order("name asc").includes(:conflicts).each do |c|
         next if c.conflicts.count < 2
         c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
           next if cs.include?(cc.id)
@@ -182,7 +182,7 @@ class Region < ActiveRecord::Base
       self.companies_link = link.join
 
       cs, marker, json, link = [], [], [], []
-      self.countries.first.supporters.order("name asc").all(:include => :conflicts).each do |c|
+      self.countries.first.supporters.order("name asc").includes(:conflicts).each do |c|
         next if c.conflicts.count < 2
         c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
           next if cs.include?(cc.id)

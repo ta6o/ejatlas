@@ -166,11 +166,10 @@
       .col-sm-8{:style=>"padding:0"}
         .head
           .ready
-            -if @contained
-              .btn.btn-default{:onclick=>'serializeFilter("feat")'} Apply
-            -else
-              .btn.btn-default{:onclick=>'serializeFilter("")'} Apply
+            .btn.btn-default{:onclick=>"serializeFilter('#{@page_type}');"} Apply
             .btn.btn-default{:onclick=>'clearFilter()'} Clear
+            -if @page_type == "network"
+              %span.count{:style=>"padding-left:12px;"}
             -#
               .btn.btn-default{:onclick=>'saveFilter()'} Save
               -if current_account
@@ -372,15 +371,20 @@
         }
       });
     }
-    var root = $('<query><filtered><filter><bool><must><bool></bool><term><approval_status>approved</approval_status></term></must></bool></filter></filtered></query>')
+    var root = $('<query><bool></bool></query>')
     log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
-    dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find('bool must bool')));
+    dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find("bool")));
+    //if (root.html() == "<bool><should></should></bool>") {root.html("<bool><should><match_all>{}</match_all></should></bool>")};
     query = JSON.stringify($.xml2json(root.html()));
+    if (query.match(/{"(should|must|must_not)":""}/)) query = '{"should":{"match_all":{}}}';
+    console.log(query)
+    fields = [];
+    $("input.field:checked").each(function(i,e){ fields.push($(e).val())})
     url = "/filter"
     $.ajax({
       type: "POST",
       url: url,
-      data: 'filter='+query+"&"+page_type,
+      data: 'filter='+query.replace('{\"match_all\":\"{}\"}}','{\"match_all\":{}}}')+"&page_type="+page_type+"&fields="+fields.join(",")+"&limit="+$("input.limit").val(),
       success: function(data){
         data = JSON.parse(data);
         $('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
@@ -388,7 +392,13 @@
           filterFollowed(data);
           $('#featured_filter').val(query);
           $('#filter-modal').modal('hide');
-        } else  {
+        } else if (page_type == 'network') {
+          console.log(data)
+          count = data._count;
+          delete data._count;
+          $(".count").text(" "+count+" cases filtered.")
+          updateGraph(data)
+        } else {
           filterMarkers(data);
         }
       }
