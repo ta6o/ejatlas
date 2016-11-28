@@ -459,6 +459,10 @@ Admin.controller do
       end
       if params["page_type"] == "network"
         id = 1
+        require "graphcommons"
+        unless Graphcommons::API.check_key
+          Graphcommons::API.set_key($gc_api_key)
+        end
         id = Graphcommons::Endpoint.new_graph(:name => params["name"],:subtitle=>params["subtitle"],:description=>params["desc"])["graph"]["id"]
         prms = {"id"=>id,"name"=>params["name"],"subtitle"=>params["subtitle"],"description"=>params["desc"]}
         prms["cons"] = result.map{|x| x["_id"]}
