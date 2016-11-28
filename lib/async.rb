@@ -240,55 +240,57 @@ class AsyncTask
   handle_asynchronously :csvexport
 
   def export_graphcommons params
-    header = ["Type","Name","Description"]#,"Announcement Date","Project Type","Investment"]
-    actors = {"relevant"=>"Relevant Actor","architect"=>"Architecture Agency","constructor"=>"Contruction Company"}
-    edges = [["Node Type","Node Name","Edge Type","Node Type","Node Name","Weight"]]
-    CSV.open("#{Dir.pwd}/public/gc_nodes.csv","w") do |csv|
-      csv << header
-      Conflict.find(params["cons"]).each do |con|
-        line = []
-        line << "Project"
-        line << con.name.gsub('"',"'")
-        line << con.headline.gsub('"',"'")
-=begin
-        line << con.announcement_date
-        line << con.project_model.gsub('"',"'")
+    start = Time.now
+    require "graphcommons"
+    unless Graphcommons::API.check_key
+      Graphcommons::API.set_key($gc_api_key)
+    end
+    id = params["id"]
+    puts "Creating graph ##{id}"
+    Conflict.find(params["cons"]).each_with_index do |con,ind|
+      print "\rProcessing case #{ind+1} of #{params["cons"].length}             "
+      ops = {}
+      ops[:type] = "Conflict"
+      ops[:name] = con.name.strip
+      ops[:reference] = "https://ejatlas.org/conflict/#{con.slug}"
+      ops[:properties] = {
+        :category => con.category.name,
+        :types => con.types.any? ? con.types.map(&:name).join(", ").strip : "",
+        :description => con.headline ? con.headline.strip : ""
+      }
+      begin
+        ops[:image] = con.images.first.file.url
+      rescue
+        ops[:image] = ""
+      end
+      Graphcommons::Signal.node_create id, ops
+    end
+    params["fields"].each do |key, value|
+      eval(key).find(value).each_with_index do |act,ind|
+        print "\rProcessing #{key} #{ind+1} of #{value.length}             "
+        ops = {}
+        ops[:type] = key
+        ops[:name] = act.name.strip
         begin
-          line << con.investments.last.name.to_f.to_i
+          ops[:image] = act.images.first.file.url
         rescue
-          line << ""
+          ops[:image] = ""
         end
-        line << con.types.map(&:name).join(", ").gsub('"',"'")
-=end
-        csv << line
-      end
-      params["fields"].each do |key, value|
-        eval("key").find(value.values).each do |act|
-          line = []
-          line << value
-          line << act.name.gsub('"',"'")
-          line << ""
-          line << ""
-          line << ""
-          line << ""
-          csv << line
-          edge = []
-          edge << "Project"
-          edge << Conflict.find(act.conflict_id).name.gsub('"',"'")
-          edge << "RELATES"
-          edge << value
-          edge << act.name.gsub('"',"'")
-          edge << 1
-          edges << edge
+        Graphcommons::Signal.node_create id, ops
+        act.conflicts.where(:id=>params["cons"]).each do |con|
+          ops = {}
+          ops[:from_type] = key
+          ops[:to_type] = "Conflict"
+          ops[:from_name] = act.name.strip
+          ops[:to_name] = con.name.strip
+          ops[:name] = "RELATED"
+          Graphcommons::Signal.edge_create id, ops
         end
       end
     end
-    puts edges.length
-    CSV.open("#{Dir.pwd}/public/gc_edges.csv","w") do |csv|
-      edges.each do |edge|
-        csv << edge
-      end
-    end
+    print "\rProcess completed in #{(Time.now - start).to_i} seconds.                                              "
+    puts
+    GC.start
     nil
   end
   handle_asynchronously :export_graphcommons

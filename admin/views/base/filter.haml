@@ -165,18 +165,25 @@
 
       .col-sm-8{:style=>"padding:0"}
         .head
+          -if @page_type == "graph"
+            %span.count &nbsp;
           .ready
             .btn.btn-default{:onclick=>"serializeFilter('#{@page_type}');"} Apply
             .btn.btn-default{:onclick=>'clearFilter()'} Clear
-            -if @page_type == "network"
-              %span.count{:style=>"padding-left:12px;"}
+            -if @page_type == "graph"
+              .btn.btn-default{'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
             -#
               .btn.btn-default{:onclick=>'saveFilter()'} Save
               -if current_account
                 .btn.btn-default{:onclick=>'embedFilter()'} Embed
         .body
-          .root.dropbox.or{"data-section"=>"box","data-value"=>'or'}
-            %icon.glyphicon.glyphicon-chevron-down.op
+          -if @page_type == "graph"
+            .root.dropbox.or{"data-section"=>"box","data-value"=>'or',:style=>"margin-top:28px;"}
+              %icon.glyphicon.glyphicon-chevron-down.op
+          -else
+            .root.dropbox.or{"data-section"=>"box","data-value"=>'or'}
+              %icon.glyphicon.glyphicon-chevron-down.op
+
 
 
 :javascript
@@ -381,10 +388,14 @@
     fields = [];
     $("input.field:checked").each(function(i,e){ fields.push($(e).val())})
     url = "/filter"
+    data = 'filter='+query.replace('{\"match_all\":\"{}\"}}','{\"match_all\":{}}}')+"&page_type="+page_type+"&fields="+fields.join(",")+"&limit="+$("input.limit").val();
+    if (page_type == "network") {
+      data += "&name="+$(".nname").val()+"&subtitle="+$(".nsubtitle").val()+"&desc="+$(".ndesc").val();
+    } 
     $.ajax({
       type: "POST",
       url: url,
-      data: 'filter='+query.replace('{\"match_all\":\"{}\"}}','{\"match_all\":{}}}')+"&page_type="+page_type+"&fields="+fields.join(",")+"&limit="+$("input.limit").val(),
+      data: data,
       success: function(data){
         data = JSON.parse(data);
         $('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
@@ -392,12 +403,22 @@
           filterFollowed(data);
           $('#featured_filter').val(query);
           $('#filter-modal').modal('hide');
-        } else if (page_type == 'network') {
+        } else if (page_type == 'network' || page_type == 'graph') {
           console.log(data)
+
           count = data._count;
+          names = data._names;
+
           delete data._count;
-          $(".count").text(" "+count+" cases filtered.")
-          updateGraph(data)
+          delete data._names;
+
+          if (page_type=="network") {
+            $("iframe.gc").attr("src",params["url"]+"/embed?auto=true&show=Graph")
+            $("iframe.gc").slideDown();
+          } else {
+            $(".count").text(" "+count+" cases filtered.")
+            updateGraph(data)
+          }
         } else {
           filterMarkers(data);
         }

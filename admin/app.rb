@@ -36,6 +36,7 @@ class Admin < Padrino::Application
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
   $baselayers = "Thunderforest.Landscape,Esri.WorldImagery,Esri.WorldTopoMap"
+  $relatives = {"category_id" => "Categories", "types" => "Subcategories", "population_type" => "Population Type", "country_id" => "Country", "companies"=>"Companies","supporters"=>"IFI's","products"=>"Commodities", "mobilizing_groups" => "Mobilizing Groups", "mobilizing_forms" => "Mobilizing Forms", "env_impacts"=>"Environmental Impacts", "hlt_impacts"=>"Health Impacts", "sec_impacts"=>"Socioeconomical Impacts", "conflict_events" => "Outcomes"}
   
   $ips = Socket.ip_address_list.find_all{|ai| ai.ipv4?}.map &:ip_address
 
@@ -297,6 +298,21 @@ class Admin < Padrino::Application
 
   def self.cleanup obj
     if obj.is_a? Array
+      if obj.length == 1 and obj.first.is_a?(Hash) and obj.first.keys.length == 1 and obj.first.keys.first == "bool" and obj.first["bool"].values.any?{|x| x.length > 1 and x.all?{|y| y.is_a? Array}}
+        obje = []
+        obj[0]["bool"].each do |k,v|
+          if v.length == 1 or not v.all?{|x| x.is_a?(Array)}
+            v.each do |x|
+              obje << {"bool"=>{k=>x}}
+            end
+          else
+            v.each do |x|
+              obje << {"bool"=>{k=>x}}
+            end
+          end
+        end
+        obj = obje
+      end
       arr = []
       obj.each do |item|
         if item.is_a? Array
@@ -315,10 +331,13 @@ class Admin < Padrino::Application
 
   def self.filter filter, all_if_empty=true, stored_fields=[]
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
+    #puts JSON.pretty_generate(JSON.parse(filter))
+    filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}} )
     puts JSON.pretty_generate(filter)
-    filter = Admin.cleanup(Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}} ))
+    filter = Admin.cleanup(filter)
+    #filter = { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}}
     puts JSON.pretty_generate(filter)
-    pp stored_fields
+    #pp stored_fields
     result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})['hits']['hits']
   end
 

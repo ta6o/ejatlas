@@ -437,11 +437,12 @@ Admin.controller do
   post :filter do
     if params['page_type'] == "feat"
       (Admin.filter(params["filter"]).map{|i| begin Conflict.select('id, slug, name').find(i['_id'].to_i) rescue nil end }-[nil]).sort{|a,b| a.slug <=> b.slug}.to_json
-    elsif params['page_type'] == "network"
+    elsif params['page_type'] == "network" or params['page_type'] == "graph"
       result = Admin.filter(params["filter"],true,params["fields"].split(","))
-      response = {"_count"=>result.length}
+      response = {"_count"=>result.length,"_names"=>{}}
       params["fields"].split(",").each do |field|
         resp = {}
+        name = {}
         (result.map{|x| x["_source"][field] }.flatten - [nil]).each do |z|
           if field == "population_type"
             y = ['Unknown','Urban','Semi-urban','Rural'][z]
@@ -450,10 +451,23 @@ Admin.controller do
           end
           resp[y] = 0 unless resp.has_key?(y)
           resp[y] += 1
+          name[z] = y
         end
-        resp.delete_if {|x,y| y < params["limit"].to_i}
-        p resp
+        resp.delete_if {|k,v| v < params["limit"].to_i}
         response[field] = resp
+        response["_names"][field] = name
+      end
+      if params["page_type"] == "network"
+        id = 1
+        id = Graphcommons::Endpoint.new_graph(:name => params["name"],:subtitle=>params["subtitle"],:description=>params["desc"])["graph"]["id"]
+        prms = {"id"=>id,"name"=>params["name"],"subtitle"=>params["subtitle"],"description"=>params["desc"]}
+        prms["cons"] = result.map{|x| x["_id"]}
+        prms["fields"] = {}
+        response["_names"].each do |key,val|
+          prms["fields"][key.sub(/_id$/,"").classify] = val.keys
+        end
+        AsyncTask.new.export_graphcommons prms
+        response[:url] = "https://graphcommons.com/graphs/#{id}"
       end
       response.to_json
     else
@@ -552,11 +566,20 @@ Admin.controller do
     [200,{},'']
   end
 
-  get :graph do
+  get :network do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     @filterform = JSON.parse(Cached.first.filterdata)
     @page_type = "network"
+    @filter = render "base/filter", :layout => false
+    render 'base/network', :layout => :application
+  end
+
+  get :graph do
+    redirect to "/sessions/login?return=export" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
+    @filterform = JSON.parse(Cached.first.filterdata)
+    @page_type = "graph"
     @filter = render "base/filter", :layout => false
     render 'base/network', :layout => :application
   end

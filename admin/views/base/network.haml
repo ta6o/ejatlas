@@ -1,4 +1,3 @@
--models = {"category_id" => "Categories", "types" => "Subcategories", "population_type" => "Population Type", "country_id" => "Country", "companies"=>"Companies","supporters"=>"IFI's","products"=>"Commodities", "mobilizing_groups" => "Mobilizing Groups", "mobilizing_forms" => "Mobilizing Forms", "env_impacts"=>"Environmental Impacts", "hlt_impacts"=>"Health Impacts", "sec_impacts"=>"Socioeconomical Impacts", "conflict_events" => "Outcomes"}
 
 -content_for :include do
 
@@ -55,28 +54,47 @@
       min-height: 240px;
     }
 
+-content_for :outer do
+  #gc.modal.fade
+    .modal-dialog
+      .modal-content
+        .modal-header
+          %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+          %p Please enter details for the Graphcommons network graph
+        .modal-body
+          %input.nname{:type=>"text",:placeholder=>"Name",:style=>"width:100%;"}
+          %br/
+          %br/
+          %input.nsubtitle{:type=>"text",:placeholder=>"Subtitle",:style=>"width:100%;"}
+          %br/
+          %br/
+          %textarea.ndesc{:rows=>2,:placeholder=>"Description",:style=>"width:100%;"}
+          %br/
+          %br/
+          %button.btn.network{:onclick=>"serializeFilter('network')"} Send
+.row
+  .col-md-12
+    %iframe.gc{:src => "", :frameborder => "0", :style => "display:none;overflow:hidden;border:1px solid #DDDDDD;width:1px;min-width:100%;height:100vh;min-height:400px;", :width => "100%", :height => "100%", :allowfullscreen=>true}
 %br
 %br
 .row
   .col-md-12
-
     #graph.middle
       .top
         #select
-          -xs = models
           %select
-            -xs.each do |k,v|
+            -$relatives.each do |k,v|
               %option{:value=>k}= v
         %p#canvasinfo
       .d3canvas &nbsp;
-    %br/
+  %br/
 
 .row{:style=>"background:white;"}
   %br/
   .col-sm-3
     %br/
     %ul{:style=>"padding:0;list-style-type:none;"}
-      -models.each do |k,v|
+      -$relatives.each do |k,v|
         %li
           %input.field{:type=>"checkbox",:value=>k,:checked=>(k=="companies" ? :checked : nil )}= v
     %hr/
@@ -92,7 +110,7 @@
 -content_for :body_end do
   =javascript_include_tag 'd3.v3'
   :javascript
-    $params = {x:"#{models.keys.first}"}
+    $params = {x:"#{$relatives.keys.first}"}
     fill = "#0380a5"
     $("#graph select").on("change",function(e){
       updateGraph(false);

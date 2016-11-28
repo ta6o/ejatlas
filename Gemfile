@@ -20,6 +20,7 @@ gem 'delayed_job'
 gem 'delayed_job_active_record'
 gem 'unidecoder'
 gem 'elasticsearch'
+gem 'graphcommons'
 gem 'sanitize'
 
 gem 'padrino'

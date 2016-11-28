@@ -14,6 +14,8 @@
 #   }
 #
 
+$gc_api_key = "sk_a_ObU9QyRlYL4zUCCjIECQ"
+
 ActiveRecord::Base.configurations[:development] = {
   :adapter  => 'postgresql',
   :encoding => 'utf8',
