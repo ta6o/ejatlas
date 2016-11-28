@@ -14,7 +14,7 @@
 #   }
 #
 
-$gc_api_key = "sk_a_ObU9QyRlYL4zUCCjIECQ"
+$gc_api_key = "***REMOVED***"
 
 ActiveRecord::Base.configurations[:development] = {
   :adapter  => 'postgresql',
