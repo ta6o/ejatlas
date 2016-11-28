@@ -243,7 +243,7 @@ class Admin < Padrino::Application
             obj[key] = arr
           elsif key == "term" and val.keys.first == "country_of_company"
             a = []
-            Country.find_all_by_id(val.values.first).each do |c|
+            Country.where(val.values.first).each do |c|
               a = a | c.companies.map(&:id)
             end
             coc = {'companies'=>a}
