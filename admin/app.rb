@@ -122,7 +122,7 @@ class Admin < Padrino::Application
     email = {
       :to => [user.email],
       :toname => [user.name],
-      :from => "info@ejatlas.org"
+      :from => "info@ejatlas.org",
       :fromname => from,
       :subject => subject,
       :html => message,
