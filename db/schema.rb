@@ -145,6 +145,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text   "description"
   end
 
+  create_table "murders", :force => true do |t|
+    t.string  "name"
+    t.text    "description"
+    t.date    "murdered_at"
+    t.integer "conflict_id"
+  end
+
   create_table "companies", :force => true do |t|
     t.string  "name"
     t.string  "slug"

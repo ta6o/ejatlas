@@ -67,6 +67,7 @@ class Admin < Padrino::Application
   end
 
 
+=begin
   def self.send_mail account, subject, message
     require 'sendgrid-ruby'
 
@@ -97,6 +98,49 @@ class Admin < Padrino::Application
     begin
       sending = client.send(email)
       puts "SENDGRID #{sending.code} #{sending.body.to_json}"
+    rescue => exc
+      sending = exc
+      puts "SENDGRID #{sending}"
+    end
+  end
+=end
+
+  def self.send_mail user, subject, message
+    require 'sendgrid-ruby'
+    include SendGrid
+
+    stamp = Time.now.to_i.to_s
+
+    sg = SendGrid::API.new(api_key:'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')
+
+    from = Email.new(email: "info@ejatlas.org", name: "EJOLT Project"  )
+    to = Email.new(email: user.email, name: user.name)
+    content = Content.new(type: 'text/plain', value: message)
+
+    mail = Mail.new(from, subject, to, content)
+    puts mail.to_json
+    email = {
+      :to => [user.email],
+      :toname => [user.name],
+      :from => "info@ejatlas.org"
+      :fromname => from,
+      :subject => subject,
+      :html => message,
+      "x-smtpapi" => {
+        "asm_group_id" => 743,
+      }.to_json
+    }
+
+    if ENV['RACK_ENV'] == "development" and false
+      puts "SENDGRID omitting mail =>\n#{pp message}"
+      return
+    end
+    begin
+      sending = sg.client.mail._('send').post(request_body: mail.to_json)
+      puts "SENDGRID #{sending.status_code} #{sending.body.to_json}"
+      puts
+      puts sending
+      puts
     rescue => exc
       sending = exc
       puts "SENDGRID #{sending}"
@@ -243,7 +287,7 @@ class Admin < Padrino::Application
             obj[key] = arr
           elsif key == "term" and val.keys.first == "country_of_company"
             a = []
-            Country.where(val.values.first).each do |c|
+            Country.where(:id => val.values.first).each do |c|
               a = a | c.companies.map(&:id)
             end
             coc = {'companies'=>a}

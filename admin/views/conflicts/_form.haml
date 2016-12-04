@@ -357,7 +357,7 @@
           %label Affected Population:
           %p.description (It may also be a range)
           .required=f.error_message_on :affected_people
-          =f.text_field :affected_people, :class => :text_field
+          =f.text_field :affected_people, :class => :text_field, :maxlength => 255
         %br/
         %br/
 

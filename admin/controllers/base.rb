@@ -138,13 +138,13 @@ Admin.controller do
   end
 
   get :country, :with => :slug do
+    con = Country.find_slug(params[:slug])
+    con = Region.find_slug(params[:slug]) unless con
+    pass unless con
     ca = Cached.select(:filterdata).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    con = Country.find_slug(params[:slug])
-    con = Region.find_slug(params[:slug]) unless con
     ##last_modified con.updated_at
-    pass unless con
     @markerinfo = con.conflicts_marker
     contents = File.read('admin/views/base/filter.haml')
     @filterinfo = con.conflicts_json
@@ -170,11 +170,11 @@ Admin.controller do
   end
 
   get :company, :with => :slug do
+    con = Company.find_slug(params[:slug])
+    pass unless con
     ca = Cached.select(:filterdata).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    con = Company.find_slug(params[:slug])
-    pass unless con
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
@@ -192,10 +192,11 @@ Admin.controller do
   end
 
   get :institution, :with => :slug do
+    con = Supporter.find_slug(params[:slug])
+    pass unless con
     ca = Cached.select(:filterdata).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    con = Supporter.find_slug(params[:slug])
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
@@ -272,8 +273,9 @@ Admin.controller do
   end
 
   get 'country-of-institution', :with => :slug do
-    ca = Cached.select(:filterdata).first
     con = Country.find_slug(params[:slug])
+    pass unless con
+    ca = Cached.select(:filterdata).first
     ##last_modified con.updated_at
     @markerinfo = con.supporters_marker
     @load = con.supporters_link
@@ -288,9 +290,9 @@ Admin.controller do
   end
 
   get :featured, :with => :slug do
-    ca = Cached.select(:filterdata).first
     con = Featured.find_slug(params[:slug])
     pass unless con
+    ca = Cached.select(:filterdata).first
     @markerinfo = con.conflicts_marker
     @load = con.conflicts_link.length > (2**16) ? nil : con.conflicts_link
     @name = con.name
