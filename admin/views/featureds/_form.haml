@@ -216,11 +216,13 @@
               %option{:value=>v}=k
         .col-md-3
           #addc.btn Add
-      %ul#conti{:style=>'padding:12px 0;list-style-type:none'}
-        -@contained.each do |k,v|
-          %li{:id=>"cont-#{v}"}
-            %span=k
-            %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
+
+      -if @contained
+        %ul#conti{:style=>'padding:12px 0;list-style-type:none'}
+          -@contained.each do |k,v|
+            %li{:id=>"cont-#{v}"}
+              %span=k
+              %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
 
 
 
