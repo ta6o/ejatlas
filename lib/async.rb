@@ -534,7 +534,7 @@ class AsyncTask
       .downcase
       .strip
       .gsub(/[-_\s\/]+/, '-')
-      .gsub(/[^\w-\.]/, '')
+      .gsub(/[^-\w\.]/, '')
       .gsub(/-+/,'-')
     return res
   end

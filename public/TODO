@@ -1,10 +1,2 @@
-
-TODO: #dirençevre
-
-* istek kabulünde, bilgiyi gönderen kişi ihtilafın alanlarını süzebilecek
-
-* inithar vakaları: kapatılan hesaplar (varsa) yarattıkları ihtilafın kendi
-  sürümleriyle birlikte silinecek, fakat mevcut data mail olarak bizim
-  hesabımıza ulaştırılacak.
-
-* site grafiği değişecek
+integrate cartodb api to fmaps
+make unpublished fmaps visible with a link

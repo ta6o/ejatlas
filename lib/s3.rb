@@ -1,17 +1,17 @@
+require "carrierwave-aws"
 CarrierWave.configure do |config|
-  config.storage = :fog
-  #config.fog_provider = "fog/aws"
-  config.fog_credentials = {
-    :provider               => 'AWS',
-    :region                 => 'us-east-1',
-    :aws_access_key_id      => 'AKIAJQV2IS77WH4CVNOQ',
-    :aws_secret_access_key  => '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'
+  config.storage = :aws
+  config.aws_bucket = 'ejatlas'
+  config.aws_acl = 'public-read'
+  config.aws_credentials = {
+    access_key_id: 'AKIAJQV2IS77WH4CVNOQ',
+    secret_access_key: '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',
+    region: 'us-east-1'
   }
-  config.fog_directory  = 'ejatlas'
 end
 
 class ImageUploader < CarrierWave::Uploader::Base
-  include CarrierWave::RMagick
+  #include CarrierWave::RMagick
   storage :file
   def store_dir
     at = self.model.attachable 
@@ -85,7 +85,7 @@ class GeoUploader < CarrierWave::Uploader::Base
 end
 
 class BackupUploader < CarrierWave::Uploader::Base
-  storage :fog
+  storage :aws
 
   def store_dir
     "/backup"

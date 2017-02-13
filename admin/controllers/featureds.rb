@@ -77,9 +77,7 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
-    unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
-      redirect to "/featureds"
-    end
+    redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
     params[:featured][:color].gsub! /#/, ''
     unless params[:featured].has_key?('published')
       @featured.published = false

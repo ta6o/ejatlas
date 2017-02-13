@@ -1,18 +1,16 @@
 source 'https://rubygems.org'
-#ruby '2.1.2'
 
 gem 'rake'
-gem 'sinatra-flash', :require => 'sinatra/flash'
+gem 'sinatra-flash'
 
 gem 'bcrypt'
 gem 'haml'
-gem 'activerecord', :require => "active_record"
+gem 'activerecord'
 gem 'rainbow'
 gem "rmagick"
 gem 'unicode_utils'
-gem 'carrierwave', :require => %w(carrierwave carrierwave/orm/activerecord)
+gem 'carrierwave-aws'
 gem 'unf'
-gem 'fog'
 gem 'pg'
 gem 'zip-zip'
 gem 'sendgrid-ruby'
