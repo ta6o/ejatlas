@@ -43,21 +43,6 @@ class ImageUploader < CarrierWave::Uploader::Base
   end
 end
 
-class DocumentUploader < CarrierWave::Uploader::Base
-  storage :file
-  def store_dir
-    "#{Padrino.root}/../file/docs/"
-  end
-
-  def url
-    "https://file.ejatlas.org/docs/#{self.file.filename}"
-  end
-
-  def cache_dir
-    "/tmp/uploads"
-  end
-end
-
 class PatternUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
