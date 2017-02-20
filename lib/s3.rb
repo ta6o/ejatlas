@@ -1,4 +1,5 @@
 require "carrierwave-aws"
+require "carrierwave/orm/activerecord"
 CarrierWave.configure do |config|
   config.storage = :aws
   config.aws_bucket = 'ejatlas'
@@ -40,6 +41,21 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   version :thumb do
     process :resize_to_fit => [2400,240]
+  end
+end
+
+class DocumentUploader < CarrierWave::Uploader::Base
+  storage :file
+  def store_dir
+    "#{Padrino.root}/../file/docs/"
+  end
+
+  def url
+    "https://file.ejatlas.org/docs/#{self.file.filename}"
+  end
+
+  def cache_dir
+    "/tmp/uploads"
   end
 end
 
