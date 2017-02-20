@@ -231,7 +231,7 @@
     .group
       =f.text_field :baselayers, :type => :hidden, :value=>@featured.baselayers, :id => 'baselayers'
       =f.text_field :features, :type => :hidden, :value=>@featured.features, :id => 'features'
-      %input#account{:name=>'account_id', :type => :hidden, :value=>current_account.id}
+      %input#account{:name=>'featured[account_id]', :type => :hidden, :value=>current_account.id}
       %input#tags{:name=>'tags', :type => :hidden, :value=>@featured.tags.map(&:id).join(',')}
 
     .group.navform.wat-cf.clearfix
