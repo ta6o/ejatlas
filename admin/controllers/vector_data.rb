@@ -2,7 +2,7 @@ Admin.controllers :vectors do
 
   before do
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
+    #redirect back unless ["admin","editor"].include? current_account.role
     @name = "Vectors"
   end
 

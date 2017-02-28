@@ -298,6 +298,23 @@ class Conflict < ActiveRecord::Base
       html = "<p class='conflict-button' data-id='#{self.id}'><a href='/conflict/#{self.slug}'>#{self.name}</a>"
     else
       html = "<p class='conflict-button' data-id='#{self.id}'><span class='ctitle'>#{self.name}</span>&nbsp;<a href='/conflict/#{self.slug}' target='_blank'><span class='glyphicon glyphicon-link'></span></a><span class='cdata'>"
+
+      tags = []
+      ftags = (options['tag'] || []).map do |t| 
+        if t.is_a?(Integer) or t == t.to_i.to_s
+          Tag.find(t.to_i)
+        else
+          Tag.find_slug(t)
+        end
+      end
+      ftags.each do |tag|
+        next unless self.tags.include?(tag)
+        tags << "<span class='badge' style='background-color:##{tag.domain || '666'}'>#{tag.name}</span>"
+      end
+      html += " &nbsp; #{tags.join(" &nbsp; ")}" if tags.any?
+
+      html += "<span class='cdata'>"
+
       features = JSON.parse(self.features || "{}")
       list = []
       options["data"].each do |data|
@@ -368,19 +385,7 @@ class Conflict < ActiveRecord::Base
           list << "<span class='small'><strong>#{get_name data}:</strong> #{val.map(&:name).join(', ')}</span>"
         end
       end
-      tags = []
-      ftags = (options['tag'] || []).map do |t| 
-        if t.is_a?(Integer) or t == t.to_i.to_s
-          Tag.find(t.to_i)
-        else
-          Tag.find_slug(t)
-        end
-      end
-      ftags.each do |tag|
-        next unless self.tags.include?(tag)
-        tags << "<span class='badge' style='background-color:##{tag.domain || '666'}'>#{tag.name}</span>"
-      end
-      html += " &nbsp; #{tags.join(" &nbsp; ")}" if tags.any?
+
       html += "<br class='small'/>#{list.join("<br class='small'/>")}" if list.any?
       html += "</span>"
     end
