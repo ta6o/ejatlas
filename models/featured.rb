@@ -30,6 +30,12 @@ class Featured < ActiveRecord::Base
     return self.slug
   end
 
+  def filterping
+    filter = "{}"
+    filter = self.filter if self.filter.length > 0
+    self.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
+  end
+
   def ping conflicts
     json, marker, link = [], [], []
     data = {}
