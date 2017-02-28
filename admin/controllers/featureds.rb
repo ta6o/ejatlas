@@ -331,6 +331,7 @@ Admin.controllers :featureds do
     end
     feat.filter = filter.join('/')
 =end
+    feat.filterping
     feat.save
     redirect to "/featureds/edit/#{feat.id}"
   end
