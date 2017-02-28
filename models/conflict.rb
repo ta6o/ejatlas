@@ -297,7 +297,7 @@ class Conflict < ActiveRecord::Base
     if options.empty?
       html = "<p class='conflict-button' data-id='#{self.id}'><a href='/conflict/#{self.slug}'>#{self.name}</a>"
     else
-      html = "<p class='conflict-button' data-id='#{self.id}'><span class='ctitle'>#{self.name}</span>&nbsp;<a href='/conflict/#{self.slug}' target='_blank'><span class='glyphicon glyphicon-link'></span></a><span class='cdata'>"
+      html = "<p class='conflict-button' data-id='#{self.id}'><span class='ctitle'>#{self.name}</span>&nbsp;<a href='/conflict/#{self.slug}' target='_blank'><span class='glyphicon glyphicon-link'></span></a>"
 
       tags = []
       ftags = (options['tag'] || []).map do |t| 
