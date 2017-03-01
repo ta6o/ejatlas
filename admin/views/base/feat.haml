@@ -14,10 +14,8 @@
   :javascript
     window.onload = onLoad;
     function onLoad() {
-      if (typeof initMap === 'function' ) {
-        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
-        mapFit();
-      } else {
+      mapFit();
+      if (typeof initMap != 'function' ) {
         setTimeout(onLoad,10);
       }
     }
