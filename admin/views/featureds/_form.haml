@@ -50,7 +50,8 @@
             %br/
             %input.i_image#image_file{:type=>'file',:name=>'image[file]'}
             %input#image_file_cache{:type=>'hidden',:name=>'image[file_cache]'}
-            %input#image_featured_id{:type=>'hidden',:name=>'image[featured_id]',:value=>"#{@featured.id}"}
+            %input#image_featured_id{:type=>'hidden',:name=>'image[attachable_id]',:value=>"#{@featured.id}"}
+            %input#image_featured_id{:type=>'hidden',:name=>'image[attachable_type]',:value=>"Featured"}
             %p
               #upload
           .modal-footer
