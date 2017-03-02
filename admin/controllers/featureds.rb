@@ -352,10 +352,8 @@ Admin.controllers :featureds do
   post :getimage do
     #self.slug.downcase!
     #puts params
-    fid = params['image']['featured_id']
-    f = Featured.find(fid)
+    f = Featured.find(params['image']['attachable_id'])
     image = Image.new(params['image'])
-    image.attachable = f
     image.prime = true if f.images.where(prime:1).empty?
     if image.save
       return {:file=>image.file.url,:thumb=>image.file.thumb_url,:n=>f.images.count,:title=>image.title}.to_json
