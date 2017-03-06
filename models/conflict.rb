@@ -318,6 +318,7 @@ class Conflict < ActiveRecord::Base
       features = JSON.parse(self.features || "{}")
       list = []
       options["data"].each do |data|
+        pp data
         dat = "#{options['id']}:#{data}"
         next unless features[dat]
         list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{features[dat]}</span>"

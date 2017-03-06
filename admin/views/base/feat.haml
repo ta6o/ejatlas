@@ -12,11 +12,12 @@
     :javascript
       vectorinfo = #{@vectors};
   :javascript
-    window.onload = onLoad;
+    $(document).ready(onLoad);
     function onLoad() {
-      mapFit();
       if (typeof initMap != 'function' ) {
         setTimeout(onLoad,10);
+      } else {
+        mapFit();
       }
     }
 
