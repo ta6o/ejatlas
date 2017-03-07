@@ -79,8 +79,11 @@
                   %a{:href=>'/credits'} Credits &amp; Collaborators
                 %li
                   %a{:href=>'/contact'} Contact
-            %li.home
-              %a{:href => "http://ejolt.org/"}= "EJOLT"
+                %li.divider
+                %li
+                  %a{:href => "http://acknowlej.org/"}= "ACKnowl-EJ"
+                %li
+                  %a{:href => "http://ejolt.org/"}= "EJOLT"
             %li.dropdown#maps
               %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#maps'}
                 = 'Maps'
@@ -157,6 +160,8 @@
 
     %footer
       .clearfix
+        %a.large.pull-left{:href=>'http://acknowlej.org/'}
+          .ack-logo
         %a.large.pull-left{:href=>'http://www.ejolt.org/'}
           .ejolt-logo
         %a.pull-left{:href=>'http://cordis.europa.eu/fp7/home_en.html',:target=>"_blank"}

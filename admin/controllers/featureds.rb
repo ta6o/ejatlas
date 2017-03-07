@@ -99,15 +99,16 @@ Admin.controllers :featureds do
         pp images
         params['images_attributes'].each do |i, v|
           img = images["n#{i}"]
-          puts v
+          #puts v
           if v['_destroy'] == "on"
             img.destroy
             next
           end
+          next unless img
           img.update_attribute :title, v['title']
           ih = {nil=>nil, "on"=>1}
           img.update_attribute :prime, ih[v['prime']] if ih[v['prime']] != img.prime
-          puts "ahoy! #{i}"
+          #puts "ahoy! #{i}"
         end
       end
       begin
