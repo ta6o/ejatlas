@@ -372,8 +372,12 @@ class Conflict < ActiveRecord::Base
             else
               val = ""
             end
-          else
-            val = v
+          elsif v
+            if v.strip.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+              val = "<a href='#{v.strip}' target='_blank'>#{v.strip}</a>"
+            else
+              val = v
+            end
           end
           next if val.nil? or val == ""
           list << "<span class='small'><strong>#{get_name k}:</strong> #{val}</span>"
