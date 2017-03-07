@@ -126,10 +126,12 @@ class Featured < ActiveRecord::Base
           else
             val = ""
           end
-        elsif v.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
-          val = "<a href='#{v}' target='_blank'>#{v}</a>"
-        else
-          val = v
+        elsif v
+          if v.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+            val = "<a href='#{v}' target='_blank'>#{v}</a>"
+          else
+            val = v
+          end
         end
         cmarker["#{self.id}:#{f}"] = val
       end
