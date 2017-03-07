@@ -321,7 +321,7 @@ class Conflict < ActiveRecord::Base
         dat = "#{options['id']}:#{data}"
         next unless features[dat]
         next unless data
-        if v.strip.match(/\s/)
+        if features[dat].strip.match(/\s/)
           vvv = features[dat].split(/\s+/).map(&:strip).map { |vv| vv and vv.length > 0 ?  "<a href='#{vv}' target='_blank'>#{vv}</a>" : nil }-[nil]
           list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{vvv.join('<br/>')}</span>"
         else
