@@ -59,14 +59,14 @@ class Featured < ActiveRecord::Base
       cmarker = JSON.parse(c.as_marker)
       JSON.parse(c.features||"{}").each do |k,v|
         if v and v.strip.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
-          if v.match(/\n/)
-            cmarker[k] = "<a href='#{v.strip}' target='_blank'>#{v.strip}</a>"
-          else
+          if v.strip.match(/\s/)
             val = ""
-            v.split(/\n/).map(&:strip).each do |vv|
+            v.split(/\s/).map(&:strip).each do |vv|
               val += "<a href='#{vv}' target='_blank'>#{vv}</a>"
             end
             cmarker[k] = val
+          else
+            cmarker[k] = "<a href='#{v.strip}' target='_blank'>#{v.strip}</a>"
           end
         elsif v
           cmarker[k] = v
