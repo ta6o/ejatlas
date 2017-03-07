@@ -415,7 +415,8 @@ class AsyncTask
         c.features = f.to_json
         c.save
       end
-      Featured.all.each do |featured|
+      Featured.all.each_with_index do |featured, index|
+        print "\r#{index+1} / #{Featured.count}"
         features = JSON.parse(featured.features || '{}')
         begin
           filter = "{}"
