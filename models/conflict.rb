@@ -321,9 +321,13 @@ class Conflict < ActiveRecord::Base
         dat = "#{options['id']}:#{data}"
         next unless features[dat]
         next unless data
-        if features[dat].strip.match(/\s/)
-          vvv = features[dat].split(/\s+/).map(&:strip).map { |vv| vv and vv.length > 0 ?  "<a href='#{vv}' target='_blank'>#{vv}</a>" : nil }-[nil]
-          list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{vvv.join('<br/>')}</span>"
+        if features[dat].strip.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
+          if features[dat].strip.match(/\s/)
+            vvv = features[dat].split(/\s+/).map(&:strip).map { |vv| vv and vv.length > 0 ?  "<a href='#{vv}' target='_blank'>#{vv}</a>" : nil }-[nil]
+            list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{vvv.join('<br/>')}</span>"
+          else
+            list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> <a href='#{features[dat]}' target='_blank'>#{features[dat]}</a></span>"
+          end
         else
           list << "<span class='small'><strong>#{UnicodeUtils::titlecase(data.gsub(/[-_]/,' '))}:</strong> #{features[dat]}</span>"
         end
