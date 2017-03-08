@@ -133,7 +133,10 @@
               %tr.block{"data-width"=>360}
                 %td.image
                   %a{:href=>"/featured/#{c.slug}"}
-                    .img{:style=>(c.images.any? ? "background:url('#{c.images.order("updated_at desc").first.file.url}');background-repeat:no-repeat;background-size:contain;" : "")}
+                    -if img = c.images.where(:prime=>true)
+                      .img{:style=>"background:url('#{img.first.file.url}');background-repeat:no-repeat;background-size:contain;"}
+                    -else
+                      .img{:style=>(c.images.any? ? "background:url('#{c.images.order("updated_at desc").first.file.url}');background-repeat:no-repeat;background-size:contain;" : "")}
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
