@@ -334,7 +334,7 @@ class AsyncTask
           end
         end
       end
-      print "\rDone.         "
+      print "\r              "
       puts
       ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
       ca.conflicts_json = ""#"["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
@@ -427,6 +427,7 @@ class AsyncTask
           featured.ping((Admin.old_filter(featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
         end
       end
+      print "\r              "
     end
 
     if params["images"] == "on"

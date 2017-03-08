@@ -294,7 +294,7 @@ Admin.controller do
     pass unless con
     ca = Cached.select(:filterdata).first
     @markerinfo = con.conflicts_marker
-    @load = con.conflicts_link.length > (2**16) ? nil : con.conflicts_link
+    @load = con.conflicts_link.length > (2**17) ? nil : con.conflicts_link
     @name = con.name
     @description = con.description
     @id = con.id
