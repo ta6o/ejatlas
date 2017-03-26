@@ -7,7 +7,7 @@ gem 'bcrypt'
 gem 'haml'
 gem 'activerecord'
 gem 'rainbow'
-gem "rmagick", "2.13.2"
+gem "rmagick"
 gem 'unicode_utils'
 gem 'carrierwave-aws'
 gem 'unf'
