@@ -1,6 +1,7 @@
 class VectorDatum < ActiveRecord::Base
   belongs_to :attachable, polymorphic: true
   belongs_to :vector_style
+  belongs_to :account
 
   before_save :set_style
 

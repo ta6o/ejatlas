@@ -2,12 +2,15 @@ Admin.controllers :vectors do
 
   before do
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account
-    #redirect back unless ["admin","editor"].include? current_account.role
     @name = "Vectors"
   end
 
   get :index do
-    @vectors = VectorDatum.select("id, name, description, url, attachable_type, attachable_id, vector_style_id")
+    if current_account and ["admin","editor"].include?(current_account.role)
+      @vectors = VectorDatum.select("id, name, description, url, attachable_type, attachable_id, vector_style_id")
+    elsif current_account
+      @vectors = current_account.vector_data.select("id, name, description, url, attachable_type, attachable_id, vector_style_id")
+    end
     @defs = VectorStyle.where("defs is not null").select("defs").map {|s| JSON.parse(s.defs)}
     render 'vector_data/index'
   end
@@ -21,14 +24,21 @@ Admin.controllers :vectors do
 
   get :new do
     @vector = VectorDatum.new
-    @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
-    @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
-    @styles = VectorStyle.all.order :name
+    if current_account and ["admin","editor"].include?(current_account.role)
+      @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
+      @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
+      @styles = VectorStyle.all.order :name
+    else
+      @countries = []
+      @featureds = current_account.featureds.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
+      @styles = VectorStyle.all.order :name
+    end
     render 'vector_data/new'
   end
 
   post :create do
     params['vector_datum']['name'] = UnicodeUtils.titlecase(params['vector_datum']['name'])
+    params['vector_datum']['account_id'] = current_account.id
     @vector = VectorDatum.new(params[:vector_datum])
     if @vector.save
       flash[:notice] = 'vector was successfully created.'
@@ -40,9 +50,16 @@ Admin.controllers :vectors do
 
   get :edit, :with => :id do
     @vector = VectorDatum.find(params[:id])
-    @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
-    @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
-    @styles = VectorStyle.all.order :name
+    pass unless @vector.account == current_account
+    if current_account and ["admin","editor"].include?(current_account.role)
+      @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
+      @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
+      @styles = VectorStyle.all.order :name
+    else
+      @countries = []
+      @featureds = current_account.featureds.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
+      @styles = VectorStyle.all.order :name
+    end
     render 'vector_data/edit'
   end
 

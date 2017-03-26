@@ -345,7 +345,11 @@ Admin.controllers :conflicts do
       }
       updated['multies'].each do |k,v|
         v.each do |l|
-          multies[k][:attr] << multies[k][:class].find(l)
+          begin
+            multies[k][:attr] << multies[k][:class].find(l)
+          rescue
+            puts "not found: #{multies[k][:class]} @#{l}"
+          end
         end
       end
       updated['impacts'].each do |k,v|

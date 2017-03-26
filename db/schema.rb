@@ -498,6 +498,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer "shown"
     t.string  "status"
     t.string  "link"
+    t.integer "account_id"
   end
 
   create_table "vector_styles", :id => false, :force => true do |t|

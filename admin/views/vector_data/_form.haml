@@ -17,15 +17,21 @@
       =f.text_field :name, :class => :text_field
 
     .group
-      %label Attached to:
-      %br/
-      %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Country', :checked=>''}
-        %strong &nbsp; Country
-      &nbsp;
-      %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Featured'}
-        %strong &nbsp; Featured Map
+      -if ["admin","editor"].include?(current_account.role)
+        %label Attached to:
+        %br/
+        %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Country', :checked=>''}
+          %strong &nbsp; Country
+        &nbsp;
+        %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Featured'}
+          %strong &nbsp; Featured Map
+      -else
+        .hide
+          %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Country'}
+          %input.attachable_type{:type=>'radio', :name=>'vector_datum[attachable_type]', :value=>'Featured', :checked=>''}
+
     .group
-      %label#vector_datum_attachable_id Country:
+      %label#vector_datum_attachable_id Featured:
       %select#vector_datum_attachable_id{:name=>'vector_datum[attachable_id]'}
     :javascript
       var attachables = {
@@ -35,6 +41,7 @@
       $("input.attachable_type[value='#{@vector.attachable_type}']").prop('checked',true);
       $('select#vector_datum_attachable_id').html(attachables[$("input.attachable_type:checked").val()]);
       $("select#vector_datum_attachable_id option[value='#{@vector.attachable_id}']").prop('selected',true);
+      $('label#vector_datum_attachable_id').text(#{@vector.attachable_type}+":");
       $('input.attachable_type').on('change',function(){
         val = $(this).val();
         $('select#vector_datum_attachable_id').html(attachables[val]);
