@@ -106,6 +106,19 @@
                         %a{:href=>'/conflicts'} My Conflicts
                       %li
                         %a{:href=>'/conflicts/new'} New Conflict
+                      %li.dropdown#models
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
+                          = 'Models'
+                          %b.caret
+                        %ul.dropdown-menu
+                          %li
+                            %a{:href=>'/featureds'} Featured maps
+                          %li.divider
+                          %li
+                            %a{:href=>'/vectors'} Vectors
+                          %li
+                            %a{:href=>'/vectors/styles'} Vector Styles
+
                     %li
                       %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
                         %input{:value=>'delete',:name=>'_method',:type=>'hidden'}

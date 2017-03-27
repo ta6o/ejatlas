@@ -132,7 +132,6 @@ Admin.controllers :vectors do
   end
 
   put :updatestyle, :with => :id do
-    #puts params
     @name = "Vector styles"
     @style = VectorStyle.find(params[:id])
     if params["pattern"].length > 0
