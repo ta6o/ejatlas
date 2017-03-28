@@ -155,7 +155,7 @@
       %em= @headline
     %br/
 
-  #conflict_summary~@summary
+  #conflict_summary=@summary.html_safe
 
   -if @related.any?
     .horipane
