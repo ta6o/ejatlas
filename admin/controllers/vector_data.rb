@@ -50,7 +50,7 @@ Admin.controllers :vectors do
 
   get :edit, :with => :id do
     @vector = VectorDatum.find(params[:id])
-    pass unless @vector.account == current_account
+    pass unless @vector.account == current_account or ["admin","editor"].include?(current_account.role)
     if current_account and ["admin","editor"].include?(current_account.role)
       @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
       @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
