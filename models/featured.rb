@@ -31,7 +31,7 @@ class Featured < ActiveRecord::Base
   end
 
   def view
-    return [0,0,1] unless self.viewport
+    return [0,0,1] if self.viewport.nil? or self.viewport == ""
     return self.viewport.split("|")
   end
 

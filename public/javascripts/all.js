@@ -4437,10 +4437,11 @@ function showVector(v) {
     return 0
   }
   vect = vect[0].vector_datum;
-  if(vect['url']==="") {
+  if(vect['url']==="" || vect.loaded) {
     //console.log('fail - no url');
     return 0
   }
+  vectorinfo[vect.rank - 1].vector_datum.loaded = true;
   vr = toSlug(vect['url']);
   ly = eval(vr);
   tl = vect['name']
@@ -4478,7 +4479,11 @@ function showVector(v) {
       }
     }
     jsons[tl]['style'] = lStyle;
-    overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+    if (vect.clickable) {
+      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+    } else {
+      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer});
+    }
   } else {
     lStyle = {};
     sl = toSlug(tl).replace(/\W/g,'');
@@ -4491,17 +4496,22 @@ function showVector(v) {
     });
     leg += '<tr class="leg last '+sl+'" '+sp+'> <td></td><td></td><td></td> </tr>';
     jsons[tl]['legend'] = leg;
-    overlayMaps[tl] = L.geoJson(ly['features'],{style: style, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+    if (vect.clickable) {
+      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+    } else {
+      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer});
+    }
   }
+  overlayMaps[tl].setZIndex(vectorinfo.length - vect.rank + 1)
   $.each(ly["features"],function(index,feature){
     feature["category"] = tl;
     feature["name"] = vr;
   });
   if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
-  addOverlay(tl,lStyle,vect['shown'])
+  addOverlay(tl,lStyle,vect)
 }
 
-function addOverlay(name,lstyle,shown){
+function addOverlay(name,lstyle,vect){
   if ($('#legendpane .vectorlegend').length == 0) {
     $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
   }
@@ -4509,18 +4519,34 @@ function addOverlay(name,lstyle,shown){
     if ($('#legendpane .vectorlegend .choropleths').length == 0) {
       $('#legendpane .vectorlegend').append('<table class="choropleths"><tbody></tbody></table>');
     }
-    html = "<tr><td class='input'><input type='radio' id='radio_"+toSlug(name).replace(/\W/g,'')+"' name='choropleth'"
-    if (shown == '1') { html += " checked='checked'" }
+    html = "<tr data-rank='"+vect["rank"]+"'><td class='input'><input type='radio' id='radio_"+toSlug(name).replace(/\W/g,'')+"' name='choropleth'"
+    if (vect['shown'] == '1') { html += " checked='checked'" }
     html += "></input></td><td class='icon'><div class='chorostyle clearfix'>"
     clength = Object.keys(choropleths[name]).length;
     $.each(choropleths[name],function(k,v){
       html += "<div style='width:"+(16/clength)+"px;background-color:#"+v.color.replace(/^#/,'')+"'>&nbsp;</div>";
     });
     html += "</div></td><td";
-    if (shown == '1') { html += " style='font-weight:bold'" }
+    if (vect['shown'] == '1') { html += " style='font-weight:bold'" }
     html += ">"+name+"</td></tr>"
     html += jsons[name].legend.replace("class=\"legend\"","class=\"legend static\"");
-    $('#legendpane .vectorlegend table.choropleths tbody').append(html);
+    ranks = $("table.choropleths tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
+    if (Math.min.apply(Math,ranks) > vect.rank) {
+      $('#legendpane .vectorlegend table.choropleths tbody').prepend(html);
+    } else {
+      var rank = 0
+      $.each(ranks,function(i,e){
+        if (e > vect.rank) {
+          rank = i-1;
+          return false
+        }
+      })
+      if (rank == 0) {
+        $('#legendpane .vectorlegend table.choropleths tbody').append(html);
+      } else {
+        $(html).insertAfter('#legendpane .vectorlegend table.choropleths tbody tr:eq('+rank+')');
+      }
+    }
   } else {
     stylestr = "{\n"
     $.each(lstyle,function(k,v){
@@ -4533,13 +4559,29 @@ function addOverlay(name,lstyle,shown){
       stylestr += k+":"+v+";\n";
     });
     stylestr += "}"
-    html = "<tr><td class='input'><input type='checkbox' id='checkbox_"+toSlug(name)+"'"
-    if (shown == '1') { html += " checked='checked'" }
+    html = "<tr data-rank='"+vect["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+toSlug(name)+"'"
+    if (vect['shown'] == '1') { html += " checked='checked'" }
     html += "></input></td><td class='icon'><svg id='icon_"+toSlug(name)+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+toSlug(name)+" > rect "+stylestr+"</style></td>"
     html += "<td";
-    if (shown == '1') { html += " style='font-weight:bold'" }
+    if (vect['shown'] == '1') { html += " style='font-weight:bold'" }
     html += ">"+name+"</td></tr>"
-    $('#legendpane .vectorlegend table.overlays tbody').append(html);
+    ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
+    if (Math.min.apply(Math,ranks) > vect.rank) {
+      $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
+    } else {
+      var rank = 0
+      $.each(ranks,function(i,e){
+        if (e > vect.rank) {
+          rank = i-1;
+          return false
+        }
+      })
+      if (rank == 0) {
+        $('#legendpane .vectorlegend table.overlays tbody').append(html);
+      } else {
+        $(html).insertAfter('#legendpane .vectorlegend table.overlays tbody tr:eq('+rank+')');
+      }
+    }
   }
 }
 
