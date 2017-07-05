@@ -1,6 +1,14 @@
 -content_for :include do
   =javascript_include_tag 'upload_iframe'
+  :css
+    #map {height: 240px;}
+-content_for :body_end do
+  =javascript_include_tag 'map-edit'
   :javascript
+    initMap(#{@featured.viewport and @featured.viewport.split("|").length == 3 ? [@featured.view[0],@featured.view[1]] : [0,0]},false)
+    $("#viewport-modal").on("shown.bs.modal",function(){map.invalidateSize();map.setZoom(#{@featured.view[2]})})
+    
+
 -content_for :outer do
   -unless @featured.new_record?
     #csv-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
@@ -23,6 +31,19 @@
                     %br/
                     .group.navform.wat-cf
                       =f.submit pat(:upload), :class => 'btn btn-warning', :style=>'width:180px;font-weight:bold'
+
+  #viewport-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+    .modal-dialog
+      .modal-content
+        .modal-header
+          %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+          %h3= "Set viewport for #{@featured.name}"
+        .modal-body
+          #map
+        .modal-footer
+          %input.pull-right.btn.btn-info#v_set{:type=>'button',:value=>'Set',:onclick=>'setViewport();'} 
+
+
   #filter-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
     .modal-dialog
       .modal-content
@@ -116,13 +137,10 @@
   .col-md-4
     .group
       =f.label :filter
+      %a.btn{:onclick=>"$('#filter-modal').modal('show');"} Edit filter options
       =f.error_message_on :filter
       ~f.text_field :filter, :class => :text_field
-      %br/
-      %br/
       #filter-info
-      %br/
-      %a.btn{:onclick=>"$('#filter-modal').modal('show');"} Edit filter options
 
     .group#tfields
       %label Tags
@@ -144,6 +162,12 @@
     .group
       %label Additional Attributes
       %textarea.feature.text_area{:name=>'data', :class => :text_area, :rows => 2}=(@features||[]).join(', ')
+
+    .group
+      =f.label :viewport
+      %a.btn{:onclick=>"$('#viewport-modal').modal('show');"} Set viewport
+      =f.error_message_on :viewport
+      =f.text_field :viewport, :class => :text_field
 
     .group#bfields
       %label Base map layers
@@ -413,4 +437,10 @@
 
   function filterFollowed(data) {
     console.log(data)
+  }
+
+  function setViewport() {
+    center = [map.getCenter().lat.toFixed(6),map.getCenter().lng.toFixed(6),map.getZoom()].join("|")
+    $('#featured_viewport').val(center);
+    $('#viewport-modal').modal('hide');
   }

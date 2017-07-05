@@ -136,7 +136,7 @@
           #map
           :javascript
             $(document).ready(function(){
-              initMap([#{@lat||0},#{@lon||0}]);
+              initMap([#{@lat||0},#{@lon||0}],true);
             });
 
     -if @conflict.general

@@ -30,6 +30,11 @@ class Featured < ActiveRecord::Base
     return self.slug
   end
 
+  def view
+    return [0,0,1] unless self.viewport
+    return self.viewport.split("|")
+  end
+
   def filterping
     filter = "{}"
     filter = self.filter if self.filter.length > 0

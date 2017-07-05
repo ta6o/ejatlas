@@ -11,15 +11,27 @@
   -if @vectors
     :javascript
       vectorinfo = #{@vectors};
-  :javascript
-    $(document).ready(onLoad);
-    function onLoad() {
-      if (typeof initMap != 'function' ) {
-        setTimeout(onLoad,10);
-      } else {
-        mapFit();
+  -if @view == [0,0,1]
+    :javascript
+      $(document).ready(onLoad);
+      function onLoad() {
+        if (typeof initMap != 'function' ) {
+          setTimeout(onLoad,10);
+        } else {
+          mapFit();
+        }
       }
-    }
+  -else
+    :javascript
+      $(document).ready(onLoad);
+      function onLoad() {
+        if (typeof initMap != 'function' ) {
+          setTimeout(onLoad,10);
+        } else {
+          console.log("xxx")
+          map.setView([#{@view[0]},#{@view[1]}],#{@view[2]});
+        }
+      }
 
 .front
   %svg{:style=>'height:0'}

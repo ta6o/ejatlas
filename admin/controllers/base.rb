@@ -316,6 +316,7 @@ Admin.controller do
     @feature = true
     @maptitle = con.slogan
     @title = con.headline
+    @view = con.view
     @baselayers = (con.baselayers != "" ? con.baselayers : "")
     begin
       @domains = []

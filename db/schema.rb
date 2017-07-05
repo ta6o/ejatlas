@@ -311,6 +311,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer "account_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.string   "viewport"
   end
 
   create_table "filters", :force => true do |t|
@@ -499,6 +500,8 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string  "status"
     t.string  "link"
     t.integer "account_id"
+    t.integer "rank"
+    t.boolean "clickable"
   end
 
   create_table "vector_styles", :id => false, :force => true do |t|
