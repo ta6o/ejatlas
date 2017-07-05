@@ -491,6 +491,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string  "url"
     t.string  "source"
     t.text    "description"
+    t.string  "geometry_type"
     t.string  "attachable_type"
     t.integer "attachable_id"
     t.text    "choropleth"

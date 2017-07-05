@@ -39,6 +39,7 @@ Admin.controllers :vectors do
   post :create do
     params['vector_datum']['name'] = UnicodeUtils.titlecase(params['vector_datum']['name'])
     params['vector_datum']['account_id'] = current_account.id
+    params['vector_datum']['clickable'] = true
     @vector = VectorDatum.new(params[:vector_datum])
     if @vector.save
       flash[:notice] = 'vector was successfully created.'

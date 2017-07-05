@@ -169,13 +169,17 @@
             %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
 
     .group#vector_order
-      %label{:style=>"margin-top:0px;"} Order vector layers
+      %label{:style=>"margin-top:0px;width: 100%;"} 
+        Order vector layers
+        %small.pull-right{:style=>"font-weight:normal;"} clickable?
       %ul#sortable.sortable
         -@featured.vector_data.order(:rank).each do |vector|
           -id = vector.id
           %li.ui-state-default.clearfix
             %span.pull-left= vector.name
             %input.pull-left{:type=>"hidden",:name=>"vectors[#{id}][name]",:value=>vector.name}
+            &nbsp;
+            %a{:style=>"color:#0380a5;", :target=>"_blank", :href=>"/vectors/edit/#{vector.id}"} edit
             %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
       :javascript
         $("ul#sortable").sortable();

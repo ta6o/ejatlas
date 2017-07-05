@@ -162,20 +162,25 @@
     .horipane.description
       .title.active Description
       .content
-        -if @feature
-          .clearfix#disclaimer
-            -if @maptitle.length > 0
+        .clearfix#disclaimer
+          -dar = @description.gsub("\n","<br />").split(/<br\s?\/?>/)
+          -if @maptitle.length > 0
+            .less
               %h2= @maptitle
-        -dar = @description.gsub("\n","<br />").split(/<br\s?\/?>/)
-        -if dar.length > 1
-          %p.description
-            .less= dar[0].html_safe
             %a.seemore{:href=>"#"} See more...
             .more{:style=>'display:none;'}
-              =dar[1..-1].join('<br />').html_safe
-              -#%a.seeless{:href=>"#"}(See less)
-        -else
-          %p.description= @description.gsub("\n","<br />").html_safe
+              =dar.join('<br />').html_safe
+              %a.seeless{:href=>"#"} (See less)
+          -else
+            -if dar.length > 1
+              %p.description
+                .less= dar[0].html_safe
+                %a.seemore{:href=>"#"} See more...
+                .more{:style=>'display:none;'}
+                  =dar[1..-1].join('<br />').html_safe
+                  %a.seeless{:href=>"#"} (See less)
+            -else
+              %p.description= @description.gsub("\n","<br />").html_safe
               
   -#.horipane
     .title.active Info

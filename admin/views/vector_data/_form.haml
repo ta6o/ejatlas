@@ -102,6 +102,16 @@
       =f.text_field :link, :class => :text_field
 
     .group
+      .required=f.error_message_on :geometry_type
+      =f.label 'geometry_type'
+      %label.checkbox.inline.gtype
+        %input.gtype{:type=>'radio',:value=>'point',:name=>'vector_datum[geometry_type]'} &nbsp;Point
+      %label.checkbox.inline.gtype
+        %input.gtype{:type=>'radio',:value=>'line',:name=>'vector_datum[geometry_type]'} &nbsp;Line
+      %label.checkbox.inline.gtype
+        %input.gtype{:type=>'radio',:value=>'polygon',:name=>'vector_datum[geometry_type]',:checked=>true} &nbsp;Polygon
+
+    .group
       .required=f.error_message_on :status
       =f.label 'Status'
       %label.checkbox.inline.apstat
@@ -119,6 +129,7 @@
       %input.shown{:type=>'radio',:value=>'0',:name=>'vector_datum[shown]'} &nbsp;No
       
       :javascript
+        $('input.gtype[value=#{@vector.geometry_type}]').prop('checked',true);
         $('input.apstat[value=#{@vector.status}]').prop('checked',true);
         $('input.shown[value=#{@vector.shown}]').prop('checked',true);
 
