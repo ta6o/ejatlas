@@ -76,6 +76,17 @@ Admin.controllers :featureds do
   end
 
   put :update, :with => :id do
+    rank = 0
+    params.delete("vectors").each do |id, data|
+      rank += 1
+      vector = VectorDatum.find(id)
+      vector.update_attribute(:rank, rank)
+      if data.has_key?("clickable") and data["clickable"] == "on"
+        vector.update_attribute(:clickable, true)
+      else
+        vector.update_attribute(:clickable, false)
+      end
+    end
     @featured = Featured.find(params[:id])
     redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
     params[:featured][:color].gsub! /#/, ''
