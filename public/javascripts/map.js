@@ -66,7 +66,6 @@ function initMap () {
 
   console.log("start vects")
   $.each(vectorinfo,function(i,v){
-    console.log(v["vector_datum"]["url"])
     loadJS(v["vector_datum"]["url"])
   });
   console.log("end vects")
@@ -986,6 +985,7 @@ function getObjectSize(obj) {
 }
 
 function vectorPing(varname) {
+  console.log(varname)
   loadQueue -= 1;
   if (varname.features.length == 0) return
   if (varname.features[0].pn) {
