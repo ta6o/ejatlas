@@ -817,6 +817,7 @@ function showVector(v) {
     return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
+  console.log(vect)
   if(vect.length == 0) {
     //console.log('fail - no vect');
     return 0
