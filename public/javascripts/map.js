@@ -64,9 +64,12 @@ function initMap () {
     zoomControl: false
   });
 
+  console.log("start vects")
   $.each(vectorinfo,function(i,v){
+    console.log(v["vector_datum"]["url"])
     loadJS(v["vector_datum"]["url"])
   });
+  console.log("end vects")
 
   if (Object.keys(baselayers).length > 1){ 
     lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
