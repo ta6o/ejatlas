@@ -4616,6 +4616,7 @@ function vectorPing(varname) {
 }
 
 function loadJS(filename){
+  console.log(filename);
   if (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(filename)) {
     loadQueue += 1;
     var fileref = document.createElement('script')
