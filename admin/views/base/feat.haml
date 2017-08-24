@@ -2,7 +2,7 @@
 -content_for :include do
   :javascript
     img = new Image(330,30);
-    img.src = 'https://file.ejatlas.org/static/ikon.png';
+    img.src = '#{$fileurl}/static/ikon.png';
     var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
     var vectorinfo = [];
     var maptitle = "#{@maptitle}";
@@ -39,7 +39,7 @@
       %defs
         -@defs.each do |d|
           %pattern{:id=>"#{d['filename']}",:patternUnits=>"userSpaceOnUse",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
-            %image{"xlink:href"=>"https://file.ejatlas.org/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
+            %image{"xlink:href"=>"#{$fileurl}/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
   .summary_header
     .clearfix#share

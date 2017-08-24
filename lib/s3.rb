@@ -27,16 +27,16 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   def url
     at = self.model.attachable 
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/#{self.file.filename}"if at.methods.include?(:old_slug)
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/#{self.file.filename}"if at.has_attribute?('slug')
-    "https://file.ejatlas.org/img/#{at.class}/#{at.id}/#{self.file.filename}"
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}"if at.methods.include?(:old_slug)
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}"if at.has_attribute?('slug')
+    "#{$fileurl}/img/#{at.class}/#{at.id}/#{self.file.filename}"
   end
 
   def thumb_url
     at = self.model.attachable 
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}"if at.methods.include?(:old_slug)
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}"if at.has_attribute?('slug')
-    "https://file.ejatlas.org/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}"if at.methods.include?(:old_slug)
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}"if at.has_attribute?('slug')
+    "#{$fileurl}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"
   end
 
   version :thumb do
@@ -51,7 +51,7 @@ class DocumentUploader < CarrierWave::Uploader::Base
   end
 
   def url
-    "https://file.ejatlas.org/docs/#{self.file.filename}"
+    "#{$fileurl}/docs/#{self.file.filename}"
   end
 
   def cache_dir
@@ -66,7 +66,7 @@ class PatternUploader < CarrierWave::Uploader::Base
   end
 
   def url
-    "https://file.ejatlas.org/patterns/#{self.file.filename}"
+    "#{$fileurl}/patterns/#{self.file.filename}"
   end
 
   def cache_dir
@@ -81,7 +81,7 @@ class GeoUploader < CarrierWave::Uploader::Base
   end
 
   def url
-    "https://file.ejatlas.org/vector/#{self.model.folder}/#{self.file.filename}"
+    "#{$fileurl}/vector/#{self.model.folder}/#{self.file.filename}"
   end
 end
 

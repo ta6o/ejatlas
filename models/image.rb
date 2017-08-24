@@ -6,16 +6,16 @@ class Image < ActiveRecord::Base
 
   def file_url
     at = self.attachable
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/#{self.file.file.filename}" if at.has_attribute?('old_slug')
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/#{self.file.file.filename}" if at.has_attribute?('slug')
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.id}/#{self.file.file.filename}"
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.file.filename}" if at.has_attribute?('old_slug')
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.file.filename}" if at.has_attribute?('slug')
+    return "#{$fileurl}/img/#{at.class}/#{at.id}/#{self.file.file.filename}"
   end
 
   def thumb_url
     at = self.attachable
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.file.filename}" if at.has_attribute?('old_slug')
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.slug}/thumb_#{self.file.file.filename}" if at.has_attribute?('slug')
-    return "https://file.ejatlas.org/img/#{at.class}/#{at.id}/thumb_#{self.file.file.filename}"
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.file.filename}" if at.has_attribute?('old_slug')
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.file.filename}" if at.has_attribute?('slug')
+    return "#{$fileurl}/img/#{at.class}/#{at.id}/thumb_#{self.file.file.filename}"
   end
 
   def attachable_type=(sType)

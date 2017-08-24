@@ -647,8 +647,8 @@ class AsyncTask
     begin
       if pat.save
         puts "#{target}: #{feats.length} of #{total} layers processed, #{('%.2f' % (FileTest.size(target).to_f / 2**10) + 'K')} total."
-        puts 'target file stored at file.ejatlas.org'
-        vector_url = "https://file.ejatlas.org/vector/#{pat.folder}/#{tfile}"
+        puts "target file stored at #{$fileurl}"
+        vector_url = "#{$fileurl}/vector/#{pat.folder}/#{tfile}"
         pat = nil
         vd.url = vector_url
         vd.choropleth = params['legend_json'].to_json if params['legend_json']

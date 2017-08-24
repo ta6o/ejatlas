@@ -31,7 +31,7 @@
     =javascript_include_tag 'jQl'
     :javascript
       img = new Image(330,30);
-      img.src = 'https://file.ejatlas.org/static/ikon.png';
+      img.src = '#{$fileurl}/static/ikon.png';
       var markerinfo = #{@markerinfo.gsub('\\"', '"').gsub('","',',').sub(/^\["/,'[').sub(/",\]$/,']')};
       var vectorinfo = [];
       var maptitle = "#{@maptitle}";

@@ -5,6 +5,6 @@ class Document < ActiveRecord::Base
   belongs_to :conflict
 
   def file_url
-    return "https://file.ejatlas.org/docs/#{self.conflict.old_slug}/#{self.file}"
+    return "#{$fileurl}/docs/#{self.conflict.old_slug}/#{self.file}"
   end
 end
