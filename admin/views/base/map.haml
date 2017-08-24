@@ -3,7 +3,7 @@
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';
-    var markerinfo = #{@markerinfo.gsub('\\"', '"').gsub('","',',').sub(/^\["/,'[').sub(/",\]$/,']')};
+    var markerinfo = #{@markerinfo.gsub('\\"', '"').gsub('","',',').sub(/^\["/,'[').sub(/",\]$/,']').html_safe};
     var vectorinfo = [];
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";
