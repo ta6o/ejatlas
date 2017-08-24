@@ -383,6 +383,7 @@ class Admin < Padrino::Application
     #filter = { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}}
     #puts JSON.pretty_generate(filter)
     #pp stored_fields
+
     result = $client.search(index: 'atlas', type: 'conflict', body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})['hits']['hits']
   end
 
