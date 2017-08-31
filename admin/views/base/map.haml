@@ -25,14 +25,13 @@
 -content_for :fb do
   #fb-root
   :javascript
-    window.fbAsyncInit = function() { FB.init({ appId: '842943955772994', xfbml: true, version: 'v2.2' }); }; 
-    (function(d, s, id){
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) {return;}
-       js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/sdk.js";
-       fjs.parentNode.insertBefore(js, fjs);
-     }(document, 'script', 'facebook-jssdk'));
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10&appId=842943955772994";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
 
 -content_for :outer do
   #welcome.modal
@@ -120,7 +119,9 @@
           !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
       .block{"data-width"=>240}
         %a.btn.btn-facebook.full{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"} Share on Facebook
-        .fb-like-box{"data-href"=>"https://www.facebook.com/ejolt", "data-width"=>"360px", "data-height"=>"540", "data-colorscheme"=>"light", "data-show-faces"=>"false", "data-header"=>"false", "data-stream"=>"true", "data-show-border"=>"false",:style=>"margin-left:-8px"}
+				.fb-page{"data-href"=>"https://www.facebook.com/ejolt","data-tabs"=>"timeline","data-small-header"=>"true","data-adapt-container-width"=>"true","data-hide-cover"=>"false","data-show-facepile"=>"true"}
+					%blockquote.fb-xfbml-parse-ignore{:cite=>"https://www.facebook.com/ejolt"}
+						%a{:href=>"https://www.facebook.com/ejolt"} Environmental Justice
 
 
   -if @feats
@@ -134,9 +135,9 @@
                 %td.image
                   %a{:href=>"/featured/#{c.slug}"}
                     -if c.images.where(:prime=>true).any?
-                      .img{:style=>"background:url('#{c.images.where(:prime=>true).first.file.url}');background-repeat:no-repeat;background-size:contain;"}
+                      .img{:style=>"background:url('#{c.images.where(:prime=>true).first.file.thumb.url}');background-repeat:no-repeat;background-size:contain;"}
                     -else
-                      .img{:style=>(c.images.any? ? "background:url('#{c.images.order("updated_at desc").first.file.url}');background-repeat:no-repeat;background-size:contain;" : "")}
+                      .img{:style=>(c.images.any? ? "background:url('#{c.images.order("updated_at desc").first.file.thumb.url}');background-repeat:no-repeat;background-size:contain;" : "")}
                 %td.exp
                   %h4
                     %a{:href=>"/featured/#{c.slug}"}= c.name
