@@ -1,4 +1,5 @@
-var markerc, info, legendpane, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide;
+var markerc, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters;
+var $msize = "mic";
 var jsons = {};
 var checkingTile = false;
 var all = 0;
@@ -7,6 +8,8 @@ var overlayMaps = { };
 var choropleths = { };
 var baselayers = { };
 var dmns = [];
+var info = $("#infopane");
+var legendpane = $("#legendpane .legend");
 var hoverStyle = {
   "fillOpacity": 0.5
 };
@@ -33,8 +36,7 @@ Array.prototype.distinct = function(){
 }
 
 function initMap () {
-  info = $("#infopane");
-  legendpane = $("#legendpane .legend");
+  console.log("map init")
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
@@ -66,7 +68,7 @@ function initMap () {
 
   console.log("start vects")
   $.each(vectorinfo,function(i,v){
-    loadJS(v["vector_datum"]["url"])
+    loadJS(v["vector_datum"]["url"],true)
   });
   console.log("end vects")
 
@@ -193,7 +195,7 @@ function initMap () {
   //oms.legColors.usual = "black";
   //oms.legColors.highlighted = "white";
 
-  map.on('zoomend', function(e) { markerSize(); });
+  map.on('zoomend', function(e) { setTimeout( markerSize, 100 ); });
 
   $("#map").on("change","input.leaflet-control-layers-selector[type='checkbox']", function (e) {
     if ($(this).prop('checked')) {
@@ -341,6 +343,7 @@ function initMap () {
   window.onresize = onResize; 
 
   updateInfo(1,disclaimer);
+  mapFit();
 }
 
 function slideAttribution () {
@@ -359,13 +362,32 @@ function slideAttribution () {
 function showMarkers(markers) {
   markerCount = markers.length;
   markerc = {};
+  cluster = true;
 
   var attrhash = {"category_id":"Category","types":"Types","other_types":"Other Types","description":"Description","country_id":"Country","province":"Province","site":"Site","accuracy_level":"Level of Accuracy","project_area":"Project Area","project_length":"Project Length","population_type":"Type of Population","products":"Commodities","other_products":"Other Commodities","companies":"Companies","supporters":"IFI's","other_supporters":"Other IFI's","ejos":"EJO's","govt_actors":"Government Actors","mobilizing_groups":"Mobilizing Groups","other_mobilizing_groups":"Other Mobilizing Groups","mobilizing_forms":"Mobilizing Forms","other_mobilizing_forms":"Other Mobilizing Forms","env_impacts":"Environmental Impacts","other_env_impacts":"Other Environmental Impacts","hlt_impacts":"Health Impacts","other_hlt_impacts":"Other Health Impacts","sec_impacts":"Socio-economic Impacts","other_sec_impacts":"Other Socio-economic Impacts","conflict_events":"Outcomes","other_outcomes":"Other Outcomes","project_details":"Project Details","investment_string":"Level of Investment","affected_people":"Potentially Affected Population","status_id":"Intensity Level","reaction_id":"Reactionary Stage","start_date":"Start Date","end_date":"End Date","project_status_id":"Project Status","suggested_alternatives":"Development of Alternatives","success_level":"Succes Level","success_reason":"Success Reason","other_comments":"Other Comments"};
   var arrr = []
 
+  if (cluster) {
+    markerClusters = {}
+    var cats = {1:"Nuclear",2:"Mineral Ores and Building Materials Extraction",3:"Waste Management",4:"Biomass and Land Conflicts (Forests, Agriculture and Livestock Management)",5:"Fossil Fuels and Climate Justice/Energy",6:"Water Management",7:"Infrastructure and Built Environment",8:"Tourism Recreation",9:"Biodiversity conservation conflicts",10:"Industrial and Utilities conflicts",11:"Other"}
+    $.each(cats,function(i,e){
+      markerClusters[i]= L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 32,
+        iconCreateFunction: function(cluster) {
+          console.log(e)
+          return new L.divIcon({ 
+            className: "map_icon cluster i_"+cluster.getAllChildMarkers()[0].cat+" "+$msize,
+            iconSize: [36,36],
+            html: '<b>'+cluster.getChildCount() + '</b>' 
+          });
+        }
+      }).addTo(map);
+    })
+  }
+
   $.each(markers, function(i,mark){
     if (!mark.a || !mark.o) {
-      //console.log(mark);
       return 0
     }
     if (markers.length == 1){
@@ -406,14 +428,16 @@ function showMarkers(markers) {
     }
     popcontent += '</div>';
 
+    pare = cluster ? markerClusters[mark.c] : markerLayer;
     var marker = L.marker([mark.a, mark.o],{
       icon: L.divIcon({ className: 'map_icon mic i_'+mark.c+' id_'+mark.i+''+cclass, }),
       riseOnHover: true,
-    }).addTo(markerLayer);
+    }).addTo(pare);
     
     $('.map_icon.id_'+mark.i).attr('data-id',mark.i);
 
     marker.id = mark.i;
+    marker.cat = mark.c;
     marker.content = popcontent;
     marker.bindPopup(L.popup({
         autoPanPaddingTopLeft: L.point(24, 96),
@@ -451,6 +475,7 @@ function showMarkers(markers) {
   map.closePopup();
 
   $(document).ready(function(){
+    $('.map_icon').addClass('mic');
     onResize();
     if($('.popover').length > 0){
       showPopovers();
@@ -585,11 +610,14 @@ function markerSize() {
   if (map.getZoom() > 9) { state ++; }
   switch (state) {
     case -1:
+      $msize = "mic";
       $('.map_icon').addClass('mic');
       break;
     case 3:
+      $msize = "";
       break;
     default:
+      $msize = "min";
       $('.map_icon').addClass('min');
   }
 }
@@ -1002,15 +1030,17 @@ function vectorPing(varname) {
   }
 }
 
-function loadJS(filename){
+function loadJS(filename,queue){
   console.log(filename);
   if (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(filename)) {
-    loadQueue += 1;
+    if (queue) { 
+      loadQueue += 1 
+      $('leaflet-control-loading').show();
+    };
     var fileref = document.createElement('script')
     fileref.setAttribute("type","text/javascript")
     fileref.setAttribute("src", filename)
     document.getElementsByTagName("head")[0].appendChild(fileref)
-    $('leaflet-control-loading').show();
   }
 }
 
@@ -1065,13 +1095,5 @@ function filterMarkers(m) {
     }
   });
   markerFit(m);
-}
-
-if (typeof markerinfo != 'undefined') {
-  if (markerinfo.length === 0) {
-    legend = "";
-  }
-  initMap();
-  showMarkers(markerinfo);
 }
 

@@ -3,7 +3,7 @@
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';
-    var markerinfo = #{@markerinfo.gsub('\\"', '"').gsub('","',',').sub(/^\["/,'[').sub(/",\]$/,']').html_safe};
+    var markerinfo;
     var vectorinfo = [];
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";
@@ -11,16 +11,6 @@
   -if @vectors
     :javascript
       vectorinfo = #{@vectors};
-  :javascript
-    window.onload = onLoad;
-    function onLoad() {
-      if (typeof initMap === 'function' ) {
-        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
-        mapFit();
-      } else {
-        setTimeout(onLoad,10);
-      }
-    }
 
 -content_for :fb do
   #fb-root
@@ -112,11 +102,13 @@
   .horipane
     .title Get Involved
     .content.social{:style=>'display:none;'}
+
       .block{"data-width"=>240}
         %a.btn.btn-twitter.full{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas, mapping environmental justice:")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"} Tweet about EJAtlas
         %a.twitter-timeline{'data-dnt'=>"true",:href=>"https://twitter.com/EnvJustice",'data-widget-id'=>"498025848931246080",'data-chrome'=>'nofooter noborders',:height=>490} 
         :javascript
           !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
       .block{"data-width"=>240}
         %a.btn.btn-facebook.full{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"} Share on Facebook
         .fb-page{"data-href"=>"https://www.facebook.com/ejolt","data-tabs"=>"timeline","data-small-header"=>"true","data-adapt-container-width"=>"true","data-hide-cover"=>"false","data-show-facepile"=>"true"}
@@ -190,7 +182,17 @@
           ask();
         }
       });
+      onLoad();
     });
+    function onLoad() {
+      if (typeof initMap === 'function' ) {
+        initMap();
+        loadJS("#{$siteurl}/data/markers.js");
+        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+      } else {
+        setTimeout(onLoad,10);
+      }
+    }
     function fillWithCases() {
       if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
         $('body').css('cursor','wait');

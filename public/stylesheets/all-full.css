@@ -5411,6 +5411,50 @@ ul.sidelink li.active {
   margin: -3px 0 0 -3px !important;
   background-image: none !important;
 }
+.map_icon.cluster {
+  border-radius: 20px;
+  border: 0;
+  width: 40px !important;
+  height: 40px !important;
+  margin: -20px 0 0 -20px !important;
+  background-image: none !important;
+  position: relative;
+}
+.map_icon.cluster b {
+  position: absolute;
+  font-size: 9px;
+  margin: -2px 1.5px 0 0;
+  color: white;
+}
+.map_icon.cluster.min {
+  border-radius: 10px;
+  border: 0;
+  width: 20px !important;
+  height: 20px !important;
+  margin: -10px 0 0 -10px !important;
+  background-image: none !important;
+  position: relative;
+}
+.map_icon.cluster.min b {
+  font-size: 12px;
+  margin: 2px 0 0 6.5px;
+}
+.map_icon.cluster.mic {
+  border-radius: 5px;
+  border: 0;
+  width: 10px !important;
+  height: 10px !important;
+  margin: -5px 0 0 -5px !important;
+  background-image: none !important;
+  position: relative;
+}
+.map_icon.cluster.mic b {
+  font-size: 9px;
+  margin: -2px 0 0 1.5px;
+}
+.map_icon.cluster.i_1 b {
+  color: black;
+}
 .map_icon.i_ {
   background: red;
 }

@@ -338,6 +338,7 @@ class AsyncTask
       puts
       ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
       ca.conflicts_json = ""#"["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
+      open("#{PADRINO_ROOT}/public/data/markers.js","w") {|f| f.puts("markerinfo = ["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",").gsub('\\"', '"').gsub('"','')+"];initMap();showMarkers(markerinfo);")}
     end
 
 

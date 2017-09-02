@@ -58,7 +58,6 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     @markercount = Conflict.where(approval_status: 'approved').count
-    @markerinfo = ca.conflicts_marker
     countries = JSON.parse(ca.countries)
     companies = JSON.parse(ca.companies)[0..100]
     commodities = JSON.parse(ca.commodities)
