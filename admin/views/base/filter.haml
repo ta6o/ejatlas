@@ -184,132 +184,41 @@
             .root.dropbox.or{"data-section"=>"box","data-value"=>'or'}
               %icon.glyphicon.glyphicon-chevron-down.op
 
-
-
-:javascript
-  window.onload = onFilterLoad;
-  function onFilterLoad() {
-    if (typeof createContainer === 'function' && typeof $().sortable() === 'object') {
-      var sortHash = {
-        hoverClass: 'drop-hover',
-        connectWith: ".dropbox",
-        placeholder: "placeholder",
-        containment: ".root.dropbox",
-        forceHelperSize: true,
-        start: function (e, t) {
-          if (t.item.prop('tagName') == "DIV") { helper = t.helper.find('div'); } 
-          else if (t.item.prop('tagName') == "SPAN") { helper = t.item.clone()}
-          $(t.placeholder).css('background',helper.css('background'));
-        },
-        stop: function (e, t) {
-          $(t.item).replaceWith(createContainer(t.item));
-          $(".dropbox").sortable(sortHash).disableSelection();
-          $.each($('.canvas .dropbox'), function(i,it) {
-            $(it).prepend($(it).children('icon.glyphicon.op'));
-          });
-        }
-      }
-
-      $('.show-filter-content').on('click',function (e) {
-        $('.show-filter-content').css('font-weight','normal');
-        $('.show-filter-content').css('color','#0380A5');
-        $(this).css('font-weight','bold');
-        $(this).css('color','black');
-        id = $(this).attr('data-id');
-        $('#conflict_filter .options .data').hide();
-        $("#"+id).show();
-      })
-
-      $('.drag, .idrag').draggable({
-        connectToSortable: ".root.dropbox",
-        placeholder: "placeholder",
-        revert: "invalid",
-        helper: "clone",
-        containment: ".canvas",
-      }).disableSelection();
-
-      $('.dropbox').sortable(sortHash).disableSelection();
-
-      $(".root.dropbox").on("mouseenter", "icon.glyphicon.op", function(e) { 
-        div = $('<div class="drop"></div>');
-        p = $(this).parent()
-        $.each(['and','or','not'],function(i,el){
-          if (!p.hasClass(el)) {div.append($('<div class="'+el+'">&nbsp;</div>'));}
-        });
-        if (!p.hasClass('root')) {div.append($('<icon class="glyphicon glyphicon-remove"></icon>'));}
-        $(this).append(div);
-      });
-
-      $(".root.dropbox").on("mouseleave", "icon.glyphicon.op", function(e) { $(this).find('div').detach(); });
-      
-      $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().parent().detach() });
-      
-      $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and'); p.attr('data-value','and'); });
-      $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or'); p.attr('data-value','or'); });
-      $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
-      $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
-
-      $('.options').on('click','.flat .create',function (e) {
-        me = $(e.target).closest('col-xs-3').find('.create');
-        me = $(this);
-        field = me.attr('data-field');
-        name = me.attr('data-name');
-        row = me.closest('.row');
-        that = row.find('input');
-        text = that.val().substr(0,1).toUpperCase() + that.val().substr(1);
-        drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
-        //console.log(drag.html())
-        row.nextAll('ul').append(drag);
-
-        $('.drag, .idrag').draggable({
-          connectToSortable: ".root.dropbox",
-          placeholder: "placeholder",
-          revert: "invalid",
-          helper: "clone",
-          containment: ".canvas",
-        }).disableSelection();
-      });
-
-      (function( $ ) {
-        $.ui.autocomplete.prototype.options.autoSelect = true;
-        $( "body" ).on( "blur", ".autocomplete", function( event ) {
-          var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
-          if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
-          var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
-          autocomplete.widget().children( ".ui-menu-item" ).each(function() {
-            var item = $( this )
-            if ( matcher.test( item.value || item ) ) {
-              autocomplete.selectedItem = item;
-              return false;
-            } else {
-              $('.autocomplete').val('');
-              return false
+-content_for :body_end do
+  :javascript
+    $(document).ready(function(){
+      function onFilterLoad() {
+        if (typeof createContainer === 'function' && typeof $().sortable() === 'object') {
+          var sortHash = {
+            hoverClass: 'drop-hover',
+            connectWith: ".dropbox",
+            placeholder: "placeholder",
+            containment: ".root.dropbox",
+            forceHelperSize: true,
+            start: function (e, t) {
+              if (t.item.prop('tagName') == "DIV") { helper = t.helper.find('div'); } 
+              else if (t.item.prop('tagName') == "SPAN") { helper = t.item.clone()}
+              $(t.placeholder).css('background',helper.css('background'));
+            },
+            stop: function (e, t) {
+              $(t.item).replaceWith(createContainer(t.item));
+              $(".dropbox").sortable(sortHash).disableSelection();
+              $.each($('.canvas .dropbox'), function(i,it) {
+                $(it).prepend($(it).children('icon.glyphicon.op'));
+              });
             }
-          });
-          if ( autocomplete.selectedItem ) {
-            autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
           }
-        });
 
-      }( jQuery ));
-      $( ".autocomplete" ).autocomplete({
-        minLength: 3,
-        position: { my : "left top", at: "left bottom" },
-        source: function( request, response ) {
-          $source = "/ac_json/"+$(".autocomplete:focus").attr("data-source");
-          $.ajax({
-            type: "GET",
-            url: $source+'?token='+request.term,
-            success: function(data){ response( JSON.parse(data) ); }
+          $('.show-filter-content').on('click',function (e) {
+            $('.show-filter-content').css('font-weight','normal');
+            $('.show-filter-content').css('color','#0380A5');
+            $(this).css('font-weight','bold');
+            $(this).css('color','black');
+            id = $(this).attr('data-id');
+            $('#conflict_filter .options .data').hide();
+            $("#"+id).show();
           })
-        },
-        select: function( event, ui ) {
-          $item = $('.autocomplete:focus');
-          $item.val( "" );
-          $id = $item.attr('id');
-          $ul = $item.nextAll('ul')
-          $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='"+$item.attr('data-section')+"' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
-          $($ul).append($('<li>', {html: $html}));
+
           $('.drag, .idrag').draggable({
             connectToSortable: ".root.dropbox",
             placeholder: "placeholder",
@@ -318,114 +227,205 @@
             containment: ".canvas",
           }).disableSelection();
 
-          return false;
-        }
-      });
+          $('.dropbox').sortable(sortHash).disableSelection();
 
-    } else {
-      setTimeout(onFilterLoad,10);
-    }
-  }
+          $(".root.dropbox").on("mouseenter", "icon.glyphicon.op", function(e) { 
+            div = $('<div class="drop"></div>');
+            p = $(this).parent()
+            $.each(['and','or','not'],function(i,el){
+              if (!p.hasClass(el)) {div.append($('<div class="'+el+'">&nbsp;</div>'));}
+            });
+            if (!p.hasClass('root')) {div.append($('<icon class="glyphicon glyphicon-remove"></icon>'));}
+            $(this).append(div);
+          });
 
-  var createContainer = function (that) {
-    //console.log(that.prop('tagName'));
-    if (that.prop('tagName')=='SPAN') {
-      $(that).find('strong').detach()
-      text = $(that).text();
-      return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text)+'</span>');
-    } else if ($(that).prop('tagName')=='DIV') {
-      if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
-        that = $(that).find('div')
-        return $('<div><div data-value="'+that.attr('data-value')+'" data-section="box" class="dropbox '+that.attr('data-value')+'"><icon class="glyphicon glyphicon-chevron-down op"></icon></div></div>');
-      } else {
-        return $(that).clone()
-      }
-    }
-  };
+          $(".root.dropbox").on("mouseleave", "icon.glyphicon.op", function(e) { $(this).find('div').detach(); });
+          
+          $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().parent().detach() });
+          
+          $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and'); p.attr('data-value','and'); });
+          $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or'); p.attr('data-value','or'); });
+          $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
+          $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
 
-  function clearFilter(){
-    $('.root.dropbox *').not('icon').detach();
-    if (typeof map != 'undefined') {
-      $('.map_icon').show();
-      map.fitBounds(markerLayer.getBounds());
-    }
-    $('#head p strong').text($('.map_icon').length+" cases reported");
-  };
+          $('.options').on('click','.flat .create',function (e) {
+            me = $(e.target).closest('col-xs-3').find('.create');
+            me = $(this);
+            field = me.attr('data-field');
+            name = me.attr('data-name');
+            row = me.closest('.row');
+            that = row.find('input');
+            text = that.val().substr(0,1).toUpperCase() + that.val().substr(1);
+            drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
+            //console.log(drag.html())
+            row.nextAll('ul').append(drag);
 
-  function serializeFilter(page_type){
-    function dive(el,ro){
-      $.each(el.children().not('icon'),function(i,e){
-        e = $(e);
-        if (e.prop('tagName')=="SPAN") {
-          key = e.attr('data-name');
-          val = e.attr('data-value').toLowerCase().replace(/^\s+/,'').replace(/\s+$/,'');
-          if (e.attr('data-section') == 'prefix' && val.split(/\s/).length > 1) {
-            terms = ""
-            $.each(val.split(/\s/),function(i,e){
-              terms += "<term><"+key+">"+e+"</"+key+"></term>";
-            })
-            $('<must>'+terms+'</must>').appendTo($('<bool></bool>').appendTo(ro));
-          } else {
-            $('<'+key+'>'+val+'</'+key+'>').appendTo($('<term></term>').appendTo(ro));
-          }
-        } else if (e.prop('tagName')=="DIV") {
-          e = $(e.find('div'))
-          if (e.find('div, span').length == 0) return true
-          filter = {"or":"should","and":"must","not":"must_not"}[e.attr("data-value")]
-          dive(e,$('<'+filter+'></'+filter+'>').appendTo($('<bool></bool>').appendTo(ro)));
+            $('.drag, .idrag').draggable({
+              connectToSortable: ".root.dropbox",
+              placeholder: "placeholder",
+              revert: "invalid",
+              helper: "clone",
+              containment: ".canvas",
+            }).disableSelection();
+          });
+
+          (function( $ ) {
+            $.ui.autocomplete.prototype.options.autoSelect = true;
+            $( "body" ).on( "blur", ".autocomplete", function( event ) {
+              var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
+              if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
+              var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
+              autocomplete.widget().children( ".ui-menu-item" ).each(function() {
+                var item = $( this )
+                if ( matcher.test( item.value || item ) ) {
+                  autocomplete.selectedItem = item;
+                  return false;
+                } else {
+                  $('.autocomplete').val('');
+                  return false
+                }
+              });
+              if ( autocomplete.selectedItem ) {
+                autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
+              }
+            });
+
+          }( jQuery ));
+          $( ".autocomplete" ).autocomplete({
+            minLength: 3,
+            position: { my : "left top", at: "left bottom" },
+            source: function( request, response ) {
+              $source = "/ac_json/"+$(".autocomplete:focus").attr("data-source");
+              $.ajax({
+                type: "GET",
+                url: $source+'?token='+request.term,
+                success: function(data){ response( JSON.parse(data) ); }
+              })
+            },
+            select: function( event, ui ) {
+              $item = $('.autocomplete:focus');
+              $item.val( "" );
+              $id = $item.attr('id');
+              $ul = $item.nextAll('ul')
+              $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='"+$item.attr('data-section')+"' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
+              $($ul).append($('<li>', {html: $html}));
+              $('.drag, .idrag').draggable({
+                connectToSortable: ".root.dropbox",
+                placeholder: "placeholder",
+                revert: "invalid",
+                helper: "clone",
+                containment: ".canvas",
+              }).disableSelection();
+
+              return false;
+            }
+          });
+
         } else {
-          //console.log (e)
-        }
-      });
-    }
-    var root = $('<query><bool></bool></query>')
-    log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
-    dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find("bool")));
-    //if (root.html() == "<bool><should></should></bool>") {root.html("<bool><should><match_all>{}</match_all></should></bool>")};
-    query = JSON.stringify($.xml2json(root.html()));
-    if (query.match(/{"(should|must|must_not)":""}/)) query = '{"should":{"match_all":{}}}';
-    console.log(query)
-    fields = [];
-    $("input.field:checked").each(function(i,e){ fields.push($(e).val())})
-    url = "/filter"
-    data = 'filter='+query.replace('{\"match_all\":\"{}\"}}','{\"match_all\":{}}}')+"&page_type="+page_type+"&fields="+fields.join(",")+"&limit="+$("input.limit").val();
-    if (page_type == "network") {
-      data += "&name="+$(".nname").val()+"&subtitle="+$(".nsubtitle").val()+"&desc="+$(".ndesc").val();
-    } 
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: data,
-      success: function(data){
-        data = JSON.parse(data);
-        $('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
-        if (page_type == 'feat') {
-          filterFollowed(data);
-          $('#featured_filter').val(query);
-          $('#filter-modal').modal('hide');
-        } else if (page_type == 'network' || page_type == 'graph') {
-          console.log(data)
-
-          count = data._count;
-          names = data._names;
-
-          delete data._count;
-          delete data._names;
-
-          if (page_type=="network") {
-            $("iframe.gc").attr("src",params["url"]+"/embed?auto=true&show=Graph")
-            $("iframe.gc").slideDown();
-          } else {
-            $(".count").text(" "+count+" cases filtered.")
-            updateGraph(data)
-          }
-        } else {
-          filterMarkers(data);
+          setTimeout(onFilterLoad,10);
         }
       }
     })
-  }
-  function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-  }
+
+    var createContainer = function (that) {
+      //console.log(that.prop('tagName'));
+      if (that.prop('tagName')=='SPAN') {
+        $(that).find('strong').detach()
+        text = $(that).text();
+        return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text)+'</span>');
+      } else if ($(that).prop('tagName')=='DIV') {
+        if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
+          that = $(that).find('div')
+          return $('<div><div data-value="'+that.attr('data-value')+'" data-section="box" class="dropbox '+that.attr('data-value')+'"><icon class="glyphicon glyphicon-chevron-down op"></icon></div></div>');
+        } else {
+          return $(that).clone()
+        }
+      }
+    };
+
+    function clearFilter(){
+      $('.root.dropbox *').not('icon').detach();
+      if (typeof map != 'undefined') {
+        $('.map_icon').show();
+        map.fitBounds(markerLayer.getBounds());
+      }
+      $('#head p strong').text($('.map_icon').length+" cases reported");
+    };
+
+    function serializeFilter(page_type){
+      function dive(el,ro){
+        $.each(el.children().not('icon'),function(i,e){
+          e = $(e);
+          if (e.prop('tagName')=="SPAN") {
+            key = e.attr('data-name');
+            val = e.attr('data-value').toLowerCase().replace(/^\s+/,'').replace(/\s+$/,'');
+            if (e.attr('data-section') == 'prefix' && val.split(/\s/).length > 1) {
+              terms = ""
+              $.each(val.split(/\s/),function(i,e){
+                terms += "<term><"+key+">"+e+"</"+key+"></term>";
+              })
+              $('<must>'+terms+'</must>').appendTo($('<bool></bool>').appendTo(ro));
+            } else {
+              $('<'+key+'>'+val+'</'+key+'>').appendTo($('<term></term>').appendTo(ro));
+            }
+          } else if (e.prop('tagName')=="DIV") {
+            e = $(e.find('div'))
+            if (e.find('div, span').length == 0) return true
+            filter = {"or":"should","and":"must","not":"must_not"}[e.attr("data-value")]
+            dive(e,$('<'+filter+'></'+filter+'>').appendTo($('<bool></bool>').appendTo(ro)));
+          } else {
+            //console.log (e)
+          }
+        });
+      }
+      var root = $('<query><bool></bool></query>')
+      log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
+      dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find("bool")));
+      //if (root.html() == "<bool><should></should></bool>") {root.html("<bool><should><match_all>{}</match_all></should></bool>")};
+      query = JSON.stringify($.xml2json(root.html()));
+      if (query.match(/{"(should|must|must_not)":""}/)) query = '{"should":{"match_all":{}}}';
+      console.log(query)
+      fields = [];
+      $("input.field:checked").each(function(i,e){ fields.push($(e).val())})
+      url = "/filter"
+      data = 'filter='+query.replace('{\"match_all\":\"{}\"}}','{\"match_all\":{}}}')+"&page_type="+page_type+"&fields="+fields.join(",")+"&limit="+$("input.limit").val();
+      if (page_type == "network") {
+        data += "&name="+$(".nname").val()+"&subtitle="+$(".nsubtitle").val()+"&desc="+$(".ndesc").val();
+      } 
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        success: function(data){
+          data = JSON.parse(data);
+          $('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
+          if (page_type == 'feat') {
+            filterFollowed(data);
+            $('#featured_filter').val(query);
+            $('#filter-modal').modal('hide');
+          } else if (page_type == 'network' || page_type == 'graph') {
+            console.log(data)
+
+            count = data._count;
+            names = data._names;
+
+            delete data._count;
+            delete data._names;
+
+            if (page_type=="network") {
+              $("iframe.gc").attr("src",params["url"]+"/embed?auto=true&show=Graph")
+              $("iframe.gc").slideDown();
+            } else {
+              $(".count").text(" "+count+" cases filtered.")
+              updateGraph(data)
+            }
+          } else {
+            filterMarkers(data);
+          }
+        }
+      })
+    }
+    function toTitleCase(str) {
+      return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
 

@@ -195,7 +195,9 @@ function initMap () {
   //oms.legColors.usual = "black";
   //oms.legColors.highlighted = "white";
 
-  map.on('zoomend', function(e) { setTimeout( markerSize, 100 ); });
+  map.on('zoomend', function(e) { i
+    markerSize();
+  });
 
   $("#map").on("change","input.leaflet-control-layers-selector[type='checkbox']", function (e) {
     if ($(this).prop('checked')) {
@@ -373,12 +375,11 @@ function showMarkers(markers) {
     $.each(cats,function(i,e){
       markerClusters[i]= L.markerClusterGroup({
         showCoverageOnHover: false,
-        maxClusterRadius: 32,
+        maxClusterRadius: 64,
         iconCreateFunction: function(cluster) {
-          console.log(e)
           return new L.divIcon({ 
-            className: "map_icon cluster i_"+cluster.getAllChildMarkers()[0].cat+" "+$msize,
-            iconSize: [36,36],
+            className: "map_icon cluster i_"+i+" "+$msize,
+            //iconSize: [36,36],
             html: '<b>'+cluster.getChildCount() + '</b>' 
           });
         }

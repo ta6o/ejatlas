@@ -1,6 +1,6 @@
 -# coding: utf-8
 !!!
-%html{:lang => "en"}
+%html{:lang => "en", :dir => "ltr", :manifest=>"#{request.path == "/" ? "" : request.path}/manifest.txt"}
   %head
     %meta{:charset => "utf-8"}/
     %title= @name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"
@@ -28,8 +28,8 @@
     %meta{:content => (@headline || $pagedesc), :name => "twitter:description"}/
     %meta{:content => (@ogimage || $siteurl + '/images/ejatlas-fb.jpg'), :name => "twitter:image"}/
 
-    =stylesheet_link_tag 'main-full'
-    =javascript_include_tag 'jQl'
+    %link{:href=>"/stylesheets/main-full.css",:rel=>"stylesheet",:type=>"text/css"}
+    %script{:src=>"/javascripts/jQl.js",:type=>"text/javascript"}
     =yield_content :include
 
     /[if lt IE 9]
@@ -169,7 +169,7 @@
         %a.pull-left{:href=>'http://envjustice.org/',:target=>"_blank"}
           %img{:src=>'/images/envjustice.png',:title=>'Environmental Justice',:style=>"max-height:40px; margin-top:-12px;"}
         %a.pull-left{:href=>'http://europa.eu/',:target=>"_blank"}
-          %img{:src=>'/images/eu.gif',:title=>'European Union'}
+          %img{:src=>'/images/eu.jpg',:title=>'European Union'}
         %a.pull-left{:href=>'https://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>"_blank"}
           %img{:src=>'/images/cc.png',:title=>'CC Attribution NonCommercial ShareAlike'}
         -#
@@ -220,12 +220,12 @@
       :javascript
         conflict = false;
         $full = true;
-        jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js?az'); 
+        jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
     -else
       :javascript
         conflict = false;
         $full = true;
-        jQl.loadjQ('/javascripts/main.js?12'); 
+        jQl.loadjQ('/javascripts/main.js'); 
         $(document).ready(function(){
           window.onerror = function(message, url, lineNumber) {  
             $.ajax({

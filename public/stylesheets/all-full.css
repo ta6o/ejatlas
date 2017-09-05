@@ -5395,6 +5395,7 @@ ul.sidelink li.active {
   width: 32px !important;
   height: 32px !important;
   margin: -16px 0 0 -16px !important;
+  position: absolute;
 }
 .map_icon.min {
   border-radius: 8px;
@@ -5418,7 +5419,6 @@ ul.sidelink li.active {
   height: 40px !important;
   margin: -20px 0 0 -20px !important;
   background-image: none !important;
-  position: relative;
 }
 .map_icon.cluster b {
   position: absolute;
@@ -5433,7 +5433,6 @@ ul.sidelink li.active {
   height: 20px !important;
   margin: -10px 0 0 -10px !important;
   background-image: none !important;
-  position: relative;
 }
 .map_icon.cluster.min b {
   font-size: 12px;
@@ -5446,7 +5445,6 @@ ul.sidelink li.active {
   height: 10px !important;
   margin: -5px 0 0 -5px !important;
   background-image: none !important;
-  position: relative;
 }
 .map_icon.cluster.mic b {
   font-size: 9px;
@@ -6193,7 +6191,7 @@ ul.sidelink li.active {
   width: 96px;
   height: 36px;
   margin: -9px 12px 0 0;
-  background: url('/images/ejolt_logo.gif');
+  background: url('/images/ejolt_logo.png');
   background-size: contain;
   background-repeat: no-repeat;
 }

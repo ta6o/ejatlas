@@ -29,4 +29,5 @@ cat app.css leaflet.css leaflet-loading.css jquery-ui.min.css > all.css
 cat app-full.css leaflet.css leaflet-loading.css jquery-ui.min.css > all-full.css
 java -jar ../../lib/yui.jar --type css ./all.css > ./main.css
 java -jar ../../lib/yui.jar --type css ./all-full.css > ./main-full.css
+echo `date` > ../../lib/stamp
 date

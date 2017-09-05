@@ -52,6 +52,39 @@ Admin.controller do
     render "base/mailsent", :layout => :application
   end
 
+  get "/manifest.txt" do
+    content_type :manifest
+    man = "CACHE MANIFEST\n# #{File.read("./lib/stamp").strip}\n\nCACHE:\n"
+    man += "/\n"
+    man += "/stylesheets/main-full.css\n"
+    man += "https://fonts.googleapis.com/css?family=Ubuntu:400,700\n"
+    man += "/fonts/glyphicons-halflings-regular.woff\n"
+    man += "/fonts/glyphicons-halflings-regular.ttf\n"
+    man += "/javascripts/jQl.js\n"
+    if ENV["RACK_ENV"] == "production"
+      man += "/javascripts/main.js\n"
+    else
+      man += "/javascripts/main-dev.js\n"
+    end
+    man += "/data/markers.js\n"
+    man += "/images/tw.png\n"
+    man += "/images/fb.png\n"
+    man += "/images/eu.jpg\n"
+    man += "/images/cc.png\n"
+    man += "/images/bg.png\n"
+    man += "/images/ack.png\n"
+    man += "/images/move.png\n"
+    man += "/images/ejolt_logo.png\n"
+    man += "/images/envjustice.png\n"
+    man += "/images/ejatlas-logo.png\n"
+    man += "/stylesheets/images/layers.png\n"
+    man += "/stylesheets/images/ui-bg_highlight-soft_100_eeeeee_1x100.png\n"
+    man += "#{$fileurl}/static/ikon.png\n"
+    man += "/images/favicon.ico\n"
+    man += "\nNETWORK:\n*\n"
+    man
+  end
+
   get :index do
     ca = Cached.first
     #last_modified ca.updated_at
