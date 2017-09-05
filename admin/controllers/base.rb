@@ -85,6 +85,13 @@ Admin.controller do
     man
   end
 
+  get "/:slug/manifest.txt" do
+    content_type :manifest
+    man = "CACHE MANIFEST\n# #{File.read("./lib/stamp").strip}\n\nNETWORK:\n"
+    man += "*\n"
+    man
+  end
+
   get :index do
     ca = Cached.first
     #last_modified ca.updated_at
