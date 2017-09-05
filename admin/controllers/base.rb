@@ -55,7 +55,7 @@ Admin.controller do
   get "/manifest.txt" do
     content_type :manifest
     man = "CACHE MANIFEST\n# #{File.read("./lib/stamp").strip}\n\nCACHE:\n"
-    man += "/\n"
+    #man += "/\n"
     man += "/stylesheets/main-full.css\n"
     man += "https://fonts.googleapis.com/css?family=Ubuntu:400,700\n"
     man += "/fonts/glyphicons-halflings-regular.woff\n"
