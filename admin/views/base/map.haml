@@ -189,6 +189,7 @@
         initMap();
         loadJS("#{$siteurl}/data/markers.js");
         updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+        console.log("figure")
       } else {
         setTimeout(onLoad,10);
       }
