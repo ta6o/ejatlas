@@ -1,10 +1,11 @@
-browse maps: toggle option for sorting by name / freq
-easy to find search box that goes through name, description and maybe project details
-save the filter
-references saved in wrong order
-conflict description loses line breaks
-clever search box for quick access
-landing to scroll animation 
+  browse maps: toggle option for sorting by name / freq
+  easy to find search box that goes through name, description and maybe project details
+> save the filter
+  references saved in wrong order
+  conflict description loses line breaks
+  clever search box for quick access
+  landing to scroll animation 
 
-prepare docs for routine command line jobs for Esteve
+  prepare docs for routine command line jobs for Esteve
+  create ejatlas account on cloudflare and share the auth info
 
