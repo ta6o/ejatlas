@@ -3987,7 +3987,7 @@ function slideAttribution () {
 function showMarkers(markers) {
   markerCount = markers.length;
   markerc = {};
-  cluster = true;
+  cluster = false;
 
   var attrhash = {"category_id":"Category","types":"Types","other_types":"Other Types","description":"Description","country_id":"Country","province":"Province","site":"Site","accuracy_level":"Level of Accuracy","project_area":"Project Area","project_length":"Project Length","population_type":"Type of Population","products":"Commodities","other_products":"Other Commodities","companies":"Companies","supporters":"IFI's","other_supporters":"Other IFI's","ejos":"EJO's","govt_actors":"Government Actors","mobilizing_groups":"Mobilizing Groups","other_mobilizing_groups":"Other Mobilizing Groups","mobilizing_forms":"Mobilizing Forms","other_mobilizing_forms":"Other Mobilizing Forms","env_impacts":"Environmental Impacts","other_env_impacts":"Other Environmental Impacts","hlt_impacts":"Health Impacts","other_hlt_impacts":"Other Health Impacts","sec_impacts":"Socio-economic Impacts","other_sec_impacts":"Other Socio-economic Impacts","conflict_events":"Outcomes","other_outcomes":"Other Outcomes","project_details":"Project Details","investment_string":"Level of Investment","affected_people":"Potentially Affected Population","status_id":"Intensity Level","reaction_id":"Reactionary Stage","start_date":"Start Date","end_date":"End Date","project_status_id":"Project Status","suggested_alternatives":"Development of Alternatives","success_level":"Succes Level","success_reason":"Success Reason","other_comments":"Other Comments"};
   var arrr = []
@@ -4117,7 +4117,7 @@ function showMarkers(markers) {
       m.attr('src',"/")
     })
 
-    if (markerinfo.length == 0) {
+    if (markerinfo && markerinfo.length == 0) {
       legendpane.hide();
     }
   });
@@ -4425,17 +4425,39 @@ function onEachFeature(feature, layer) {
   ia = []
   if (layer.feature.properties && layer.feature.properties.data) {
     titled = false;
-    $.each(layer.feature.properties.data,function(k,v){
-      if (v) {
-        if (k.match(/country/) && !titled) {
-          ia.push("<h3>"+v+"</h3>");
-          titled = true;
-        } else {
-          ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v.replace(/\n+/g,'<br /><br />')+"<br />");
-        }
+    if (pn == "Gas Pipelines (Pci 2015)") {
+      console.log("pip")
+      console.log(Object.keys(layer.feature.properties.data).length)
+      console.log(Object.keys(layer.feature.properties.data))
+      console.log(Object.values(layer.feature.properties.data))
+      for ( i = 0; i < Object.keys(layer.feature.properties.data).length; i += 1 ) {
+        k = Object.keys(layer.feature.properties.data)[i];
+        console.log(k)
+        v = layer.feature.properties.data[k]
+        console.log(v)
+        if (v) {
+          if (k.match(/country/) && !titled) {
+            ia.push("<h3>"+v+"</h3>");
+            titled = true;
+          } else {
+            ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v.replace(/\n+/g,'<br /><br />')+"<br />");
+          }
+        } 
       }
-    });
+    } else {
+      $.each(layer.feature.properties.data,function(k,v){
+        if (v) {
+          if (k.match(/country/) && !titled) {
+            ia.push("<h3>"+v+"</h3>");
+            titled = true;
+          } else {
+            ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v.replace(/\n+/g,'<br /><br />')+"<br />");
+          }
+        } 
+      });
+    }
   }
+  if (pn == "Gas Pipelines (Pci 2015)") {console.log(ia)}
   inf += ia.join("<br />");
   if (jsons[pn].desc){ 
     inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>"; 
@@ -4655,17 +4677,19 @@ function vectorPing(varname) {
 }
 
 function loadJS(filename,queue){
-  console.log(filename);
-  if (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(filename)) {
-    if (queue) { 
-      loadQueue += 1 
-      $('leaflet-control-loading').show();
-    };
-    var fileref = document.createElement('script')
-    fileref.setAttribute("type","text/javascript")
-    fileref.setAttribute("src", filename)
-    document.getElementsByTagName("head")[0].appendChild(fileref)
-  }
+  $.ajax({
+    url: filename,
+    type: "GET",
+    dataType: 'json',
+    cache: true,
+    success: function (data, status, error) {
+      console.log('success', data);
+      vectorPing(data);
+    },
+    error: function (data, status, error) {
+      console.log('error', data, status, error);
+    }
+  });
 }
 
 function pausecomp(millis) {
