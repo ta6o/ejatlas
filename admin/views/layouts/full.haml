@@ -1,6 +1,7 @@
 -# coding: utf-8
 !!!
-%html{:lang => "en", :dir => "ltr", :manifest=>"#{request.path == "/" ? "" : request.path}/manifest.txt"}
+-#%html{:lang => "en", :dir => "ltr", :manifest=>"#{request.path == "/" ? "" : request.path}/manifest.txt"}
+%html{:lang => "en", :dir => "ltr"}
   %head
     %meta{:charset => "utf-8"}/
     %title= @name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"
@@ -228,25 +229,6 @@
         conflict = false;
         $full = true;
         jQl.loadjQ('/javascripts/main.js'); 
-        $(document).ready(function(){
-          window.onerror = function(message, url, lineNumber) {  
-            $.ajax({
-              type: 'POST',
-              url: '/error',
-              data: "message="+message+"&url="+window.location.href+"&file="+url+"&line="+lineNumber,  
-              success: function(data,ts){
-                //console.log('error reported:');
-                //console.log(message, url, lineNumber);
-              },
-              error: function(data,ts,error){
-                //console.log('error report failed:');
-                //console.log(error);
-                //console.log("!",message, url, lineNumber);
-              }
-            });
-            return true;
-          };  
-        });
     -if @color and @color.length > 1
       :javascript
         $(document).ready(function(){

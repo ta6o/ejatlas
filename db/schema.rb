@@ -319,6 +319,10 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string  "name"
     t.text    "query"
     t.integer "account_id"
+    t.text    "description"
+    t.text    "query_json"
+    t.text    "query_html"
+    t.boolean "public"
   end
 
   create_table "government_actors", :force => true do |t|

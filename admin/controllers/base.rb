@@ -81,11 +81,12 @@ Admin.controller do
     man += "/stylesheets/images/ui-bg_highlight-soft_100_eeeeee_1x100.png\n"
     man += "#{$fileurl}/static/ikon.png\n"
     man += "/images/favicon.ico\n"
-    man += "\nNETWORK:\n*\n"
+    man += "\nNETWORK:\n/\n*\n"
     man
   end
 
   get "/:slug/manifest.txt" do
+    puts params[:slug]
     content_type :manifest
     man = "CACHE MANIFEST\n# #{File.read("./lib/stamp").strip}\n\nNETWORK:\n"
     man += "*\n"
@@ -480,6 +481,8 @@ Admin.controller do
   end
 
   get :cache do
+    puts current_account.email
+    puts current_account.role
     redirect to "/sessions/login?return=cache" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     render 'base/cache', :layout => :application
