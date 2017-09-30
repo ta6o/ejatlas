@@ -2,9 +2,10 @@
   easy to find search box that goes through name, description and maybe project details
 > save the filter
   references saved in wrong order
-  conflict description loses line breaks
+  conflict description loses line breaks, links in the description
   clever search box for quick access
   landing to scroll animation 
+  notes to moderator section to improve
 
   prepare docs for routine command line jobs for Esteve
   create ejatlas account on cloudflare and share the auth info
