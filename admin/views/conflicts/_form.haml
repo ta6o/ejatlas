@@ -259,9 +259,9 @@
           %span.required.large *
           .required=f.error_message_on :description
           %p.description Please describe the project and the point of conflict here in ~500 words.
-          ~f.text_area :description, :class => 'text_area basic_input', :rows => 17
-          -#.well
-            %p İhtilafın konusunu, ihtilafın sebebi bir proje ise bu projeyi ve ilgili çevre hareketini yaklaşık 200 kelime ile yazınız.
+          -#~f.text_area :description, :class => 'text_area basic_input', :rows => 17
+          %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{@conflict.description.gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
+
       .col-md-8
         .group
           =f.label 'Specific Commodities'
