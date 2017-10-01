@@ -15,7 +15,7 @@
     window.onload = onLoad;
     function onLoad() {
       if (typeof initMap === 'function' ) {
-        getInfo (#{@cid},"#{@name}",#{@pos},#{@zoom},true)
+        getInfo (#{@cid},"#{@name}",#{@pos.html_safe},#{@zoom},true)
       } else {
         setTimeout(onLoad,10);
       }
