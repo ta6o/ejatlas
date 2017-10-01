@@ -581,6 +581,7 @@ class Conflict < ActiveRecord::Base
       end
     end
 
+
     return tab.gsub(/\r\n/,'<br />').gsub('\n','<br />')
   end
 
