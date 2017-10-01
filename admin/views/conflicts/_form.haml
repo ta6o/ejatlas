@@ -195,9 +195,9 @@
       :javascript
         $(document).ready(function(){
           $('#category option[value=11]').remove();
-          types = #{@types.to_json}
-          alltypes = #{@alltypes.to_json}
-          categories = #{@categories.to_json}
+          types = #{@types.to_json.html_safe}
+          alltypes = #{@alltypes.to_json.html_safe}
+          categories = #{@categories.to_json.html_safe}
           cats = {};
           $.each(categories, function(i,v){
             cats[v['category']['id']] = {name: v['category']['name'], types: []};
