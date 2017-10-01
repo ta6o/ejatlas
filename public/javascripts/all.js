@@ -4054,7 +4054,7 @@ function showMarkers(markers) {
 
     pare = cluster ? markerClusters[mark.c] : markerLayer;
     var marker = L.marker([mark.a, mark.o],{
-      icon: L.divIcon({ className: 'map_icon mic i_'+mark.c+' id_'+mark.i+''+cclass, }),
+      icon: L.divIcon({ className: 'map_icon i_'+mark.c+' id_'+mark.i+''+cclass, }),
       riseOnHover: true,
     }).addTo(pare);
     

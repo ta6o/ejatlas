@@ -539,7 +539,7 @@ class Conflict < ActiveRecord::Base
             tit = m.title if m.has_attribute?('title') and m.title and m.title.length > 2
             tit = m.name if m.has_attribute?('name') and m.name and m.name.length > 2
             tit = "<strong>#{tit}</strong>" if tit.length > 0
-            dsc = CGI.unescapeHTML(m.description).gsub(/<br\/>/,"<br/><br/>").gsub(/\n+/,"<br/><br/>") if m.has_attribute?('description') and m.description and m.description.length > 2
+            dsc = CGI.unescapeHTML(m.description).gsub(/(<br\/>)+/,"<br/><br/>").gsub(/\n+/,"<br/><br/>") if m.has_attribute?('description') and m.description and m.description.length > 2
             sep = ''
             sep = '<br/>' if (tit.length > 0 or dsc.length > 0) and url
             arr << '<td><p>'+tit+' '+dsc+''+sep+''+url+'</p></td>'

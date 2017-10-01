@@ -5872,11 +5872,11 @@ ul.sidelink li.active {
 .summary_header #disclaimer small {
   color: #0380A5;
 }
-.rightpane #disclaimer h2 {
-  font-size: 16px;
-  line-height: 22px;
+/*.rightpane #disclaimer h2 {
+  font-size: 16px; 
+  line-height: 22px; 
   font-weight: normal;
-}
+}*/
 #conflict_summary h2 {
   margin-bottom: 4px;
 }
