@@ -134,10 +134,6 @@
             %strong -125.139646
         .group
           #map
-          :javascript
-            $(document).ready(function(){
-              initMap([#{@lat||0},#{@lon||0}],true);
-            });
 
     -if @conflict.general
       :javascript
@@ -1301,6 +1297,7 @@
     }
   })
   $(document).ready(function(){
+    initMap([#{@lat||0},#{@lon||0}],true);
     wlh = $('#conflict-tabs > li > a[href='+window.location.hash.replace('#_','#')+']');
     if (wlh.length > 0) {
       wlh.tab('show',function(){
