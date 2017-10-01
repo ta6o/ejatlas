@@ -15,6 +15,8 @@
     window.onload = onLoad;
     function onLoad() {
       if (typeof initMap === 'function' ) {
+        initMap();
+        showMarkers(markerinfo);
         getInfo (#{@cid},"#{@name}",#{@pos.html_safe},#{@zoom},true)
       } else {
         setTimeout(onLoad,10);
