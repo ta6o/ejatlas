@@ -17,7 +17,7 @@
       if (typeof initMap === 'function' ) {
         initMap();
         showMarkers(markerinfo);
-        getInfo (#{@cid},"#{@name}",#{@pos.html_safe},#{@zoom},true)
+        getInfo (#{@cid},"#{@name}",#{@pos.to_s.html_safe},#{@zoom},true);
       } else {
         setTimeout(onLoad,10);
       }
