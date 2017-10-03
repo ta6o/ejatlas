@@ -440,14 +440,14 @@ class Conflict < ActiveRecord::Base
           cnt = cnt.to_s
           cnt.gsub!(/\r/,"\n")
           cnt.gsub!(/\n\n/,"\n")
-          cna = cnt.split(/\n/)
+          cna = cnt.split(/<\/p>\s*<p>/)
           if cna.length == 0
             ta += ''
           elsif cna.length == 1 or options[:print] == true
             ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns">'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
           else
-            cn1 = cna[0]
-            cn2 = cna[1..-1].join("<br/><br/>")
+            cn1 = "#{cna[0]}</p>"
+            cn2 = cna[1..-1].join("</p><p>")
             ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">See more...</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
           end
         when :name

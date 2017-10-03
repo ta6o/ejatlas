@@ -311,6 +311,7 @@ class AsyncTask
   handle_asynchronously :backup
 
   def setcache params
+    puts "Starting cache update;"
     ca = Cached.new unless ca = Cached.first
     client = Elasticsearch::Client.new log: false
 

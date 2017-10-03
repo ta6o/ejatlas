@@ -50,6 +50,8 @@ class Admin < Padrino::Application
 
   $client = Elasticsearch::Client.new log:false
 
+  Delayed::Worker.destroy_failed_jobs = false
+
   configure :development do
     $consurl = 'http://0.0.0.0:3000'
   end
