@@ -218,7 +218,7 @@
           sel = document.createElement('select');
           $(sel).attr('id', 'type_'+id);
           $(sel).attr('class', 'type basic_input');
-          $(sel).html("#{@alltypeoptions}");
+          $(sel).html("#{@alltypeoptions.html_safe}");
           $('.types').append(sel);
           $('.types').append('<br/><br/>');
         }
