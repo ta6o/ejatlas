@@ -39,6 +39,7 @@ class Admin < Padrino::Application
     $siteurl = 'http://localhost:3000'
   end
   $fileurl = 'https://file.ejatlas.org'
+  $filedir = '/mnt/data/ejatlas-static'
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'

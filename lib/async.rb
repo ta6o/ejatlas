@@ -229,7 +229,7 @@ class AsyncTask
       end
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
-    Zip::ZipOutputStream.open("#{Dir.home}/exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
+    Zip::ZipOutputStream.open("#{$filedir}/../exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
       csvs.each do |c|
         zio.put_next_entry(c)
         zio.write File.read("/tmp/export/#{c.split('/')[-1]}")
@@ -297,10 +297,10 @@ class AsyncTask
 
   def backup params
     now = Time.now.strftime('%y%m%d%H%M')
-    `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://root:***REMOVED***@0.0.0.0:5432/ejatlas > #{Dir.home}/backup/ej-#{now}.dump`
+    `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://root:***REMOVED***@0.0.0.0:5432/ejatlas > #{$filedir}/,,/backup/ej-#{now}.dump`
     bak = Backup.new
-    bak.file = File.open("#{Dir.home}/backup/ej-#{now}.dump","rb")
-    puts "#{Dir.home}/backup/ej-#{now}.dump"
+    bak.file = File.open("#{$filedir}/../backup/ej-#{now}.dump","rb")
+    puts "#{$filedir}/../backup/ej-#{now}.dump"
     if bak.save
       bak = nil
     else
