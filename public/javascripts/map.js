@@ -476,7 +476,6 @@ function showMarkers(markers) {
   map.closePopup();
 
   $(document).ready(function(){
-    $('.map_icon').addClass('mic');
     onResize();
     if($('.popover').length > 0){
       showPopovers();
@@ -497,8 +496,9 @@ function showMarkers(markers) {
     if (markerinfo && markerinfo.length == 0) {
       legendpane.hide();
     }
+    setTimeout( markerSize, 200);
   });
-  markerSize();
+  $('.map_icon').addClass('mic');
 }
 
 
