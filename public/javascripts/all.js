@@ -4099,7 +4099,6 @@ function showMarkers(markers) {
   map.closePopup();
 
   $(document).ready(function(){
-    $('.map_icon').addClass('mic');
     onResize();
     if($('.popover').length > 0){
       showPopovers();
@@ -4120,8 +4119,9 @@ function showMarkers(markers) {
     if (markerinfo && markerinfo.length == 0) {
       legendpane.hide();
     }
+    setTimeout( markerSize, 200);
   });
-  markerSize();
+  $('.map_icon').addClass('mic');
 }
 
 
@@ -4426,10 +4426,6 @@ function onEachFeature(feature, layer) {
   if (layer.feature.properties && layer.feature.properties.data) {
     titled = false;
     if (pn == "Gas Pipelines (Pci 2015)") {
-      console.log("pip")
-      console.log(Object.keys(layer.feature.properties.data).length)
-      console.log(Object.keys(layer.feature.properties.data))
-      console.log(Object.values(layer.feature.properties.data))
       for ( i = 0; i < Object.keys(layer.feature.properties.data).length; i += 1 ) {
         k = Object.keys(layer.feature.properties.data)[i];
         console.log(k)
@@ -4676,6 +4672,17 @@ function vectorPing(varname) {
   }
 }
 
+function loadJS(filename){
+  if (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(filename)) {
+    loadQueue += 1;
+    var fileref = document.createElement('script')
+    fileref.setAttribute("type","text/javascript")
+    fileref.setAttribute("src", filename)
+    document.getElementsByTagName("head")[0].appendChild(fileref)
+    $('leaflet-control-loading').show();
+  }
+}
+/*
 function loadJS(filename,queue){
   $.ajax({
     url: filename,
@@ -4691,6 +4698,7 @@ function loadJS(filename,queue){
     }
   });
 }
+*/
 
 function pausecomp(millis) {
   var date = new Date();
