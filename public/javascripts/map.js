@@ -766,6 +766,7 @@ function featurePopup(e) {
 }
 
 function highlightFeature(e) {
+  console.log("cengel")
   var layer = e.target;
   layer.setStyle({
     fillOpacity: 1
@@ -805,9 +806,7 @@ function onEachFeature(feature, layer) {
     if (pn == "Gas Pipelines (Pci 2015)") {
       for ( i = 0; i < Object.keys(layer.feature.properties.data).length; i += 1 ) {
         k = Object.keys(layer.feature.properties.data)[i];
-        console.log(k)
         v = layer.feature.properties.data[k]
-        console.log(v)
         if (v) {
           if (k.match(/country/) && !titled) {
             ia.push("<h3>"+v+"</h3>");
