@@ -185,39 +185,83 @@
               %icon.glyphicon.glyphicon-chevron-down.op
 
 -content_for :body_end do
+  %script{:src=>"/javascripts/filter.js",:type=>"text/javascript"}
   :javascript
     $(document).ready(function(){
-      function onFilterLoad() {
-        if (typeof createContainer === 'function' && typeof $().sortable() === 'object') {
-          var sortHash = {
-            hoverClass: 'drop-hover',
-            connectWith: ".dropbox",
-            placeholder: "placeholder",
-            containment: ".root.dropbox",
-            forceHelperSize: true,
-            start: function (e, t) {
-              if (t.item.prop('tagName') == "DIV") { helper = t.helper.find('div'); } 
-              else if (t.item.prop('tagName') == "SPAN") { helper = t.item.clone()}
-              $(t.placeholder).css('background',helper.css('background'));
-            },
-            stop: function (e, t) {
-              $(t.item).replaceWith(createContainer(t.item));
-              $(".dropbox").sortable(sortHash).disableSelection();
-              $.each($('.canvas .dropbox'), function(i,it) {
-                $(it).prepend($(it).children('icon.glyphicon.op'));
-              });
-            }
+      onFilterLoad();
+    });
+    function onFilterLoad() {
+      if (typeof createContainer === 'function' && typeof $().sortable() === 'object') {
+        var sortHash = {
+          hoverClass: 'drop-hover',
+          connectWith: ".dropbox",
+          placeholder: "placeholder",
+          containment: ".root.dropbox",
+          forceHelperSize: true,
+          start: function (e, t) {
+            if (t.item.prop('tagName') == "DIV") { helper = t.helper.find('div'); } 
+            else if (t.item.prop('tagName') == "SPAN") { helper = t.item.clone()}
+            $(t.placeholder).css('background',helper.css('background'));
+          },
+          stop: function (e, t) {
+            $(t.item).replaceWith(createContainer(t.item));
+            $(".dropbox").sortable(sortHash).disableSelection();
+            $.each($('.canvas .dropbox'), function(i,it) {
+              $(it).prepend($(it).children('icon.glyphicon.op'));
+            });
           }
+        }
 
-          $('.show-filter-content').on('click',function (e) {
-            $('.show-filter-content').css('font-weight','normal');
-            $('.show-filter-content').css('color','#0380A5');
-            $(this).css('font-weight','bold');
-            $(this).css('color','black');
-            id = $(this).attr('data-id');
-            $('#conflict_filter .options .data').hide();
-            $("#"+id).show();
-          })
+        $('.show-filter-content').on('click',function (e) {
+          $('.show-filter-content').css('font-weight','normal');
+          $('.show-filter-content').css('color','#0380A5');
+          $(this).css('font-weight','bold');
+          $(this).css('color','black');
+          id = $(this).attr('data-id');
+          $('#conflict_filter .options .data').hide();
+          $("#"+id).show();
+        })
+
+        $('.drag, .idrag').draggable({
+          connectToSortable: ".root.dropbox",
+          placeholder: "placeholder",
+          revert: "invalid",
+          helper: "clone",
+          containment: ".canvas",
+        }).disableSelection();
+
+        $('.dropbox').sortable(sortHash).disableSelection();
+
+        $(".root.dropbox").on("mouseenter", "icon.glyphicon.op", function(e) { 
+          div = $('<div class="drop"></div>');
+          p = $(this).parent()
+          $.each(['and','or','not'],function(i,el){
+            if (!p.hasClass(el)) {div.append($('<div class="'+el+'">&nbsp;</div>'));}
+          });
+          if (!p.hasClass('root')) {div.append($('<icon class="glyphicon glyphicon-remove"></icon>'));}
+          $(this).append(div);
+        });
+
+        $(".root.dropbox").on("mouseleave", "icon.glyphicon.op", function(e) { $(this).find('div').detach(); });
+        
+        $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().parent().detach() });
+        
+        $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and'); p.attr('data-value','and'); });
+        $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or'); p.attr('data-value','or'); });
+        $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
+        $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
+
+        $('.options').on('click','.flat .create',function (e) {
+          me = $(e.target).closest('col-xs-3').find('.create');
+          me = $(this);
+          field = me.attr('data-field');
+          name = me.attr('data-name');
+          row = me.closest('.row');
+          that = row.find('input');
+          text = that.val().substr(0,1).toUpperCase() + that.val().substr(1);
+          drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
+          //console.log(drag.html())
+          row.nextAll('ul').append(drag);
 
           $('.drag, .idrag').draggable({
             connectToSortable: ".root.dropbox",
@@ -226,40 +270,48 @@
             helper: "clone",
             containment: ".canvas",
           }).disableSelection();
+        });
 
-          $('.dropbox').sortable(sortHash).disableSelection();
-
-          $(".root.dropbox").on("mouseenter", "icon.glyphicon.op", function(e) { 
-            div = $('<div class="drop"></div>');
-            p = $(this).parent()
-            $.each(['and','or','not'],function(i,el){
-              if (!p.hasClass(el)) {div.append($('<div class="'+el+'">&nbsp;</div>'));}
+        (function( $ ) {
+          $.ui.autocomplete.prototype.options.autoSelect = true;
+          $( "body" ).on( "blur", ".autocomplete", function( event ) {
+            var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
+            if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
+            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
+            autocomplete.widget().children( ".ui-menu-item" ).each(function() {
+              var item = $( this )
+              if ( matcher.test( item.value || item ) ) {
+                autocomplete.selectedItem = item;
+                return false;
+              } else {
+                $('.autocomplete').val('');
+                return false
+              }
             });
-            if (!p.hasClass('root')) {div.append($('<icon class="glyphicon glyphicon-remove"></icon>'));}
-            $(this).append(div);
+            if ( autocomplete.selectedItem ) {
+              autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
+            }
           });
 
-          $(".root.dropbox").on("mouseleave", "icon.glyphicon.op", function(e) { $(this).find('div').detach(); });
-          
-          $(".root.dropbox").on("click", "icon.op icon.glyphicon-remove", function(e) { $(this).parent().parent().parent().parent().detach() });
-          
-          $(".root.dropbox").on("click", "icon.op .drop .and", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('and'); p.attr('data-value','and'); });
-          $(".root.dropbox").on("click", "icon.op .drop .or", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('or'); p.attr('data-value','or'); });
-          $(".root.dropbox").on("click", "icon.op .drop .not", function(e) { p = $(this).parent().parent().parent(); p.removeClass('and or not'); p.addClass('not'); p.attr('data-value','not'); });
-          $(".root.dropbox").on("click", "icon.ag", function(e) { $(this).parent().detach() });
-
-          $('.options').on('click','.flat .create',function (e) {
-            me = $(e.target).closest('col-xs-3').find('.create');
-            me = $(this);
-            field = me.attr('data-field');
-            name = me.attr('data-name');
-            row = me.closest('.row');
-            that = row.find('input');
-            text = that.val().substr(0,1).toUpperCase() + that.val().substr(1);
-            drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
-            //console.log(drag.html())
-            row.nextAll('ul').append(drag);
-
+        }( jQuery ));
+        $( ".autocomplete" ).autocomplete({
+          minLength: 3,
+          position: { my : "left top", at: "left bottom" },
+          source: function( request, response ) {
+            $source = "/ac_json/"+$(".autocomplete:focus").attr("data-source");
+            $.ajax({
+              type: "GET",
+              url: $source+'?token='+request.term,
+              success: function(data){ response( JSON.parse(data) ); }
+            })
+          },
+          select: function( event, ui ) {
+            $item = $('.autocomplete:focus');
+            $item.val( "" );
+            $id = $item.attr('id');
+            $ul = $item.nextAll('ul')
+            $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='"+$item.attr('data-section')+"' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
+            $($ul).append($('<li>', {html: $html}));
             $('.drag, .idrag').draggable({
               connectToSortable: ".root.dropbox",
               placeholder: "placeholder",
@@ -267,65 +319,15 @@
               helper: "clone",
               containment: ".canvas",
             }).disableSelection();
-          });
 
-          (function( $ ) {
-            $.ui.autocomplete.prototype.options.autoSelect = true;
-            $( "body" ).on( "blur", ".autocomplete", function( event ) {
-              var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
-              if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
-              var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
-              autocomplete.widget().children( ".ui-menu-item" ).each(function() {
-                var item = $( this )
-                if ( matcher.test( item.value || item ) ) {
-                  autocomplete.selectedItem = item;
-                  return false;
-                } else {
-                  $('.autocomplete').val('');
-                  return false
-                }
-              });
-              if ( autocomplete.selectedItem ) {
-                autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
-              }
-            });
+            return false;
+          }
+        });
 
-          }( jQuery ));
-          $( ".autocomplete" ).autocomplete({
-            minLength: 3,
-            position: { my : "left top", at: "left bottom" },
-            source: function( request, response ) {
-              $source = "/ac_json/"+$(".autocomplete:focus").attr("data-source");
-              $.ajax({
-                type: "GET",
-                url: $source+'?token='+request.term,
-                success: function(data){ response( JSON.parse(data) ); }
-              })
-            },
-            select: function( event, ui ) {
-              $item = $('.autocomplete:focus');
-              $item.val( "" );
-              $id = $item.attr('id');
-              $ul = $item.nextAll('ul')
-              $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='"+$item.attr('data-section')+"' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
-              $($ul).append($('<li>', {html: $html}));
-              $('.drag, .idrag').draggable({
-                connectToSortable: ".root.dropbox",
-                placeholder: "placeholder",
-                revert: "invalid",
-                helper: "clone",
-                containment: ".canvas",
-              }).disableSelection();
-
-              return false;
-            }
-          });
-
-        } else {
-          setTimeout(onFilterLoad,10);
-        }
+      } else {
+        setTimeout(onFilterLoad,10);
       }
-    })
+    }
 
     var createContainer = function (that) {
       //console.log(that.prop('tagName'));
