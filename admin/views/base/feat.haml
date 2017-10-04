@@ -3,7 +3,7 @@
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';
-    var markerinfo = eval("["+#{@markerinfo}.join(',')+"]");
+    var markerinfo = eval("["+#{@markerinfo.html_safe}.join(',')+"]");
     var vectorinfo = [];
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";
@@ -15,9 +15,14 @@
     :javascript
       $(document).ready(onLoad);
       function onLoad() {
-        if (typeof initMap != 'function' ) {
+        if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
           setTimeout(onLoad,10);
         } else {
+          if (markerinfo.length === 0) {
+            legend = "";
+          }
+          initMap();
+          showMarkers(markerinfo);
           mapFit();
         }
       }
@@ -25,10 +30,14 @@
     :javascript
       $(document).ready(onLoad);
       function onLoad() {
-        if (typeof initMap != 'function' ) {
+        if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
           setTimeout(onLoad,10);
         } else {
-          console.log("xxx")
+          if (markerinfo.length === 0) {
+            legend = "";
+          }
+          initMap();
+          showMarkers(markerinfo);
           map.setView([#{@view[0]},#{@view[1]}],#{@view[2]});
         }
       }
