@@ -1,5 +1,10 @@
 -# coding: utf-8
 -content_for :include do
+  :css
+    .leaflet-overlay-pane svg path:hover,
+    .leaflet-overlay-pane svg circle:hover {
+      cursor: pointer;
+    }
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';

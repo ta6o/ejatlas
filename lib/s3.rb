@@ -12,7 +12,7 @@ CarrierWave.configure do |config|
 end
 
 class ImageUploader < CarrierWave::Uploader::Base
-  include CarrierWave::RMagick
+  #include CarrierWave::RMagick
   storage :file
   def store_dir
     at = self.model.attachable 

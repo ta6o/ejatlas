@@ -17287,7 +17287,8 @@ function initMap () {
     zoom: 2,
     minZoom: 2,
     layers: initLayers,
-    zoomControl: false
+    zoomControl: false,
+    renderer: L.canvas()
   });
 
   console.log("start vects")
@@ -18136,9 +18137,10 @@ function showVector(v) {
     }
     jsons[tl]['style'] = lStyle;
     if (vect.clickable) {
-      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+      console.log(vect)
+      overlayMaps[tl] = L.geoJson(ly['features'],{interactive: true, style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
     } else {
-      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer});
+      overlayMaps[tl] = L.geoJson(ly['features'],{interactive: true, style: lStyle, pointToLayer: pToLayer});
     }
   } else {
     lStyle = {};
