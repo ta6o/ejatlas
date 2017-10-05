@@ -175,7 +175,7 @@
           -dar = @description.gsub("\n","<br />").split(/<br\s?\/?>/)
           -if @maptitle.length > 0
             .less
-              %h2= @maptitle
+              %p.description= @maptitle
             %a.seemore{:href=>"#"} See more...
             .more{:style=>'display:none;'}
               =dar.join('<br />').html_safe
