@@ -1,4 +1,4 @@
-var markerc, markerLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters;
+var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters;
 var $msize = "mic";
 var jsons = {};
 var checkingTile = false;
@@ -44,6 +44,7 @@ function initMap () {
   })
 
   markerLayer = L.featureGroup();
+  featureLayer = L.featureGroup({interactive:true});
   initLayers = [];
 
   maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
@@ -53,6 +54,7 @@ function initMap () {
     initLayers.push( baselayers[(Object.keys(baselayers)[0])]);
   }
   initLayers.push(markerLayer)
+  initLayers.push(featureLayer)
   map = L.map('map',{
     scrollWheelZoom: $('#map').css('position') == "fixed",
     worldCopyJump: true,
@@ -64,7 +66,7 @@ function initMap () {
     minZoom: 2,
     layers: initLayers,
     zoomControl: false,
-    renderer: L.canvas()
+    //renderer: L.canvas()
   });
 
   console.log("start vects")
@@ -767,11 +769,12 @@ function featurePopup(e) {
 }
 
 function highlightFeature(e) {
-  console.log("cengel")
   var layer = e.target;
   layer.setStyle({
     fillOpacity: 1
   });
+
+  $("#map").css("cursor","pointer");
 
   if (!L.Browser.ie && !L.Browser.opera) {
       layer.bringToFront();
@@ -785,6 +788,8 @@ function resetHighlight(e) {
   } else {
     layer.setStyle(jsons[layer.feature.category]['style']);
   }
+  $("#map").css("cursor","");
+
   if (!L.Browser.ie && !L.Browser.opera) {
     layer.bringToFront();
   }
@@ -941,7 +946,7 @@ function showVector(v) {
     feature["category"] = tl;
     feature["name"] = vr;
   });
-  if (vect["shown"] == '1') { overlayMaps[tl].addTo(map);}
+  if (vect["shown"] == '1') { overlayMaps[tl].addTo(featureLayer);}
   addOverlay(tl,lStyle,vect)
 }
 

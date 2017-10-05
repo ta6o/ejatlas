@@ -1,9 +1,8 @@
 -# coding: utf-8
 -content_for :include do
   :css
-    .leaflet-overlay-pane svg path:hover,
-    .leaflet-overlay-pane svg circle:hover {
-      cursor: pointer;
+    svg {
+      pointer-events: visible;
     }
   :javascript
     img = new Image(330,30);
