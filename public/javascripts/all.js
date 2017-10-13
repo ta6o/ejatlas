@@ -17293,11 +17293,9 @@ function initMap () {
     //renderer: L.canvas()
   });
 
-  console.log("start vects")
   $.each(vectorinfo,function(i,v){
     loadJS(v["vector_datum"]["url"],true)
   });
-  console.log("end vects")
 
   if (Object.keys(baselayers).length > 1){ 
     lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
@@ -18096,7 +18094,7 @@ function showVector(v) {
     return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
-  console.log(vect)
+  //console.log(vect)
   if(vect.length == 0) {
     //console.log('fail - no vect');
     return 0
@@ -18128,6 +18126,10 @@ function showVector(v) {
   jsons[tl]['desc'] = vect['description']
   jsons[tl]['source'] = vect['source']
   jsons[tl]['link'] = vect['link']
+  $.each(ly["features"],function(index,feature){
+    feature["category"] = tl;
+    feature["name"] = vr;
+  });
   if (vect['choropleth'] == null || vect['choropleth'] === "") {
     if (vect["style"] && vect["style"].length > 0) {
       lStyle = JSON.parse(vect["style"])
@@ -18145,7 +18147,6 @@ function showVector(v) {
     }
     jsons[tl]['style'] = lStyle;
     if (vect.clickable) {
-      console.log(vect)
       overlayMaps[tl] = L.geoJson(ly['features'],{interactive: true, style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
     } else {
       overlayMaps[tl] = L.geoJson(ly['features'],{interactive: true, style: lStyle, pointToLayer: pToLayer});
@@ -18182,10 +18183,6 @@ function showVector(v) {
     }
   }
   overlayMaps[tl].setZIndex(vectorinfo.length - vect.rank + 1)
-  $.each(ly["features"],function(index,feature){
-    feature["category"] = tl;
-    feature["name"] = vr;
-  });
   if (vect["shown"] == '1') { overlayMaps[tl].addTo(featureLayer);}
   addOverlay(tl,lStyle,vect)
 }
@@ -18279,7 +18276,7 @@ function getObjectSize(obj) {
 }
 
 function vectorPing(varname) {
-  console.log(varname)
+  //console.log(varname)
   loadQueue -= 1;
   if (varname.features.length == 0) return
   if (varname.features[0].pn) {
