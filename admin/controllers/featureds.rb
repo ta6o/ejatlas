@@ -77,7 +77,7 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     rank = 0
-    params.delete("vectors").each do |id, data|
+    (params.delete("vectors") || []).each do |id, data|
       rank += 1
       vector = VectorDatum.find(id)
       vector.update_attribute(:rank, rank)

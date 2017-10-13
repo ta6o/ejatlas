@@ -18031,6 +18031,9 @@ function onEachFeature(feature, layer) {
   }
   inf = "<div class='maplink darkred'><p><strong>"+pn+"</strong></p></div><div class='scrollme'>";
   ia = []
+  if (Object.keys(choropleths).indexOf(layer.feature.category) >= 0) {
+    layer.setStyle(style(layer.feature));
+  }
   if (layer.feature.properties && layer.feature.properties.data) {
     titled = false;
     if (pn == "Gas Pipelines (Pci 2015)") {
@@ -18159,10 +18162,23 @@ function showVector(v) {
     });
     leg += '<tr class="leg last '+sl+'" '+sp+'> <td></td><td></td><td></td> </tr>';
     jsons[tl]['legend'] = leg;
-    if (vect.clickable) {
-      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer, onEachFeature:onEachFeature});
+    if (vect["style"] && vect["style"].length > 0) {
+      lStyle = JSON.parse(vect["style"])
     } else {
-      overlayMaps[tl] = L.geoJson(ly['features'],{style: lStyle, pointToLayer: pToLayer});
+      lStyle = vectorStyles[tl];
+      if (!lStyle) {
+        lStyle = {
+          "color": "#06c",
+          "fillcolor": "#06c",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.4
+        }
+      }
+    }
+    jsons[tl]['style'] = lStyle;
+    if (vect.clickable) {
+      overlayMaps[tl] = L.geoJson(ly['features'],{pointToLayer: pToLayer, onEachFeature:onEachFeature});
     }
   }
   overlayMaps[tl].setZIndex(vectorinfo.length - vect.rank + 1)
