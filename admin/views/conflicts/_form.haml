@@ -1235,16 +1235,17 @@
 
         .group
           %br/
-          %label Other contributing users
-          %ul{:style=>"list-style-type: none; padding: 0;"}
-            -@conflict.conflict_accounts.each do |ca|
-              %li
-                .pull-left= ca.account.email
-                -if ["admin","editor"].include? current_account.role
-                  .pull-left
-                    &nbsp;
-                    %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"} Revoke
-                %br/
+          -if @conflict.conflict_accounts.any?
+            %label Other contributing users
+            %ul{:style=>"list-style-type: none; padding: 0;"}
+              -@conflict.conflict_accounts.each do |ca|
+                %li
+                  .pull-left= ca.account.email
+                  -if ["admin","editor"].include? current_account.role
+                    .pull-left
+                      &nbsp;
+                      %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"} Revoke
+                  %br/
 
           -if ["admin","editor"].include? current_account.role
             %br/
