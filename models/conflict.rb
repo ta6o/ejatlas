@@ -3,6 +3,7 @@ class Conflict < ActiveRecord::Base
 
   #validates_presence_of :name, :province, :category, :description
 
+  has_many :conflict_accounts
   belongs_to :country
 
   belongs_to :category

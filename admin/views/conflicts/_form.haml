@@ -1233,6 +1233,50 @@
           %p.description Fill in your name, organization and contact email, as you want it to appear on the map (this data will be visible to the public)
           =f.text_field :contributor, :class => 'text_field basic_input'
 
+        .group
+          %br/
+          %label Other contributing users
+          %ul{:style=>"list-style-type: none; padding: 0;"}
+            -@conflict.conflict_accounts.each do |ca|
+              %li
+                .pull-left= ca.account.email
+                -if ["admin","editor"].include? current_account.role
+                  .pull-left
+                    &nbsp;
+                    %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"} Revoke
+                %br/
+
+          -if ["admin","editor"].include? current_account.role
+            %br/
+            %label Invite users to contribute
+            .clearfix
+              .pull-left
+                %input#invite{:type=>"email",:style=>"width:240px;",:placeholder=>"Paste email address"}
+              .pull-left
+                &nbsp;
+                &nbsp;
+              .pull-left
+                %button.btn#invite-btn{:style=>"padding: 2px 12px;"} INVITE
+            %p#invite-err.error
+            :javascript
+              $("#invite-btn").on("click",function(e){
+                e.preventDefault();
+                if (!$("#invite").hasClass("error")) {
+                  $.post("/conflicts/ca_create",
+                    {aid:$("#invite").val(),cid:#{@conflict.id}},
+                    function(data){
+                      console.log(data)
+                      if (data === "ok") {
+                        window.location.reload();
+                      } else {
+                        $("#invite-err").text(data);
+                      }
+                    }
+                  ); 
+                } 
+              });
+
+
 
 :javascript
   function valPage(page){

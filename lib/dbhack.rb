@@ -24,3 +24,14 @@ def resetPWs
   end
 end
 
+
+def create_ca
+  ActiveRecord::Migration.class_eval do |t|
+    create_table "conflict_accounts", :force => true do |t|
+      t.integer "conflict_id"
+      t.integer "account_id"
+      t.datetime "created_at"
+      t.datetime "updated_at"
+    end
+  end
+end

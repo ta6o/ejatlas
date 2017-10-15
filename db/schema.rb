@@ -166,6 +166,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text    "conflicts_link"
   end
 
+  create_table "conflict_accounts", :force => true do |t|
+    t.integer "conflict_id"
+    t.integer "account_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "conflict_events", :force => true do |t|
     t.string "name"
   end

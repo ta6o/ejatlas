@@ -2,6 +2,7 @@ class Account < ActiveRecord::Base
   attr_accessor :password, :password_confirmation
 
   has_many :conflicts
+  has_many :conflict_accounts
   has_many :filters
   has_many :featureds
   has_many :vector_data
@@ -46,4 +47,9 @@ class Account < ActiveRecord::Base
     def password_required
       crypted_password.blank? || password.present?
     end
+end
+
+class ConflictAccount < ActiveRecord::Base
+  belongs_to :conflict
+  belongs_to :account
 end

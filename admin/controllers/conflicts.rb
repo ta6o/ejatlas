@@ -208,7 +208,10 @@ Admin.controllers :conflicts do
         @conflicts.sort_by! {|c| ( c.modified_at || Time.now ) }
         @conflicts.reverse!
       else
-        @conflicts = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id).order('modified_at desc')
+        proper = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id)
+        other =  Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(id: current_account.conflict_accounts.map(&:conflict_id))
+        @conflicts = proper.or(other).order('modified_at desc')
+        pp @conflicts.class
       end
     end
     render 'conflicts/index'
@@ -298,13 +301,50 @@ Admin.controllers :conflicts do
   get :edit, :with => :id do
     if current_account
       @conflict = Conflict.find(params[:id])
-      if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id
+      if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id)
         @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
         @lat = @conflict.lat == "" ? nil : @conflict.lat
         @lon = @conflict.lon == "" ? nil : @conflict.lon
         render 'conflicts/edit'
       else
         redirect to '/sessions/login'
+      end
+    else
+      redirect to '/sessions/login'
+    end
+  end
+
+  get :conflict_account_revoke, :with => :id do
+    if current_account and ["admin","editor"].include?(current_account.role)
+      ca = ConflictAccount.find(params[:id])
+      cid = ca.conflict_id
+      ca.delete
+      redirect to "/conflicts/edit/#{cid}#_meta"
+    else
+      redirect to '/sessions/login'
+    end
+  end
+
+  get :conflict_account_create, :map => "/conflicts/conflict_account_create/:cid/:aid" do
+    if current_account and ["admin","editor"].include?(current_account.role)
+      ConflictAccount.create :conflict_id => params["cid"], :account_id => params["aid"]
+      redirect to "/conflicts/edit/#{params["cid"]}#_meta"
+    else
+      redirect to '/sessions/login'
+    end
+  end
+
+  post :ca_create do
+    if current_account and ["admin","editor"].include?(current_account.role)
+      if acc = Account.find_by_email(params["aid"])
+        if ConflictAccount.where(:conflict_id => params["cid"], :account_id => acc.id).any?
+          return "Error: contributor exists"
+        else
+          ConflictAccount.create :conflict_id => params["cid"], :account_id => acc.id
+          return "ok"
+        end
+      else
+        return "Error: account not found"
       end
     else
       redirect to '/sessions/login'
@@ -322,6 +362,7 @@ Admin.controllers :conflicts do
 =end
 
   post :create do
+    pass unless current_account
     #params.each {|kk,vv| #puts; #puts kk; if vv.is_a? Hash then vv.each {|k,v| #puts "#{k.to_s}: #{v.to_s}"} else #puts vv end }
     updated = Admin.correctForm(params)
     @conflict = Conflict.new(updated[:conflict])
@@ -407,6 +448,7 @@ Admin.controllers :conflicts do
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
+    pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
     ##puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     oldstat = @conflict.approval_status
     if @conflict.save :validate=>false
