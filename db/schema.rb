@@ -177,6 +177,14 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string "name"
   end
 
+  create_table "conflict_messages", :force => true do |t|
+    t.integer  "conflict_id"
+    t.integer  "account_id"
+    t.text     "content"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "conflict_relations", :id => false, :force => true do |t|
     t.integer "id", :null => false
     t.integer "to_id", :null => false

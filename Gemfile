@@ -7,7 +7,6 @@ gem 'bcrypt'
 gem 'haml'
 gem 'activerecord'
 gem 'rainbow'
-gem "rmagick"
 gem 'unicode_utils'
 gem 'carrierwave-aws'
 gem 'unf'
@@ -26,5 +25,8 @@ gem 'padrino'
 if ENV["RACK_ENV"] == "production"
   gem 'gdal'
   gem 'puma'
+  gem "rmagick"
+else
+  gem "rmagick", "2.13.2"
 end
 

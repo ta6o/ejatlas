@@ -24,7 +24,6 @@ def resetPWs
   end
 end
 
-
 def create_ca
   ActiveRecord::Migration.class_eval do |t|
     create_table "conflict_accounts", :force => true do |t|
@@ -35,3 +34,29 @@ def create_ca
     end
   end
 end
+
+def create_messaging
+  ActiveRecord::Migration.class_eval do |t|
+    create_table "conflict_messages", :force => true do |t|
+      t.integer  "conflict_id"
+      t.integer  "account_id"
+      t.text     "content"
+      t.datetime "created_at"
+      t.datetime "updated_at"
+    end
+  end
+end
+
+def fix_descs
+  Conflict.all.each_with_index do |con,ind|
+    print "\r#{ind+1} / #{Conflict.count}"
+    next unless con.description
+    desc = (con.description.split(/((<\/p><p>)|\n|\s\s+)+/) - [nil, "", " ", "</p><p>"]).map{|pa| pa.sub(/\.\s*$/,".</p><p>").sub(/[”"]\s*$/,"”</p><p>").sub(/[’']\s*$/,"’</p><p>")}.join(" ").sub(/^\s*(<p>)?\s*/,"<p>").sub(/\s*(<\/p>)?\s*$/,"</p>").gsub(/\s+/," ")
+    con.update_attribute :description, desc
+    con.ping
+    con.save
+  end
+  puts
+  "Done."
+end
+
