@@ -1218,6 +1218,66 @@
 
       .col-md-8
         .group
+          %label Internal updates
+          .row
+            .col-md-4
+              .clearfix
+                .pull-left
+                  %textarea#message{:rows=>2,:style=>"width:240px;",:placeholder=>"Type a new message"}
+              .clearfix
+                .pull-left
+                  %button.btn#message-btn{:style=>"width:240px;padding: 2px 12px;"} SEND
+              %p#message-err.error
+
+            .col-md-8
+              -if @conflict.conflict_messages.any?
+                :css
+                  .messages li .msg {}
+                  .messages li .msg .well {  max-width: 80%; min-height: 0; background-color: #fff; padding: 8px 16px; border-radius: 6px; margin-top:6px; }
+                  .messages li .msg .well.pull-right {  background-color: #eee; }
+                  .messages li .msg .well p {  font-size: 14px; margin-bottom: -4px; }
+                  .messages li .msg small { font-size: 11px; color: #999; display: block; }
+                  .messages li .msg small.black { color: #000; }
+                %ul.messages{:style=>"list-style-type: none; padding: 0;"}
+                  -@conflict.conflict_messages.order("created_at desc").each do |msg|
+                    %li.clearfix
+                      -pull = msg.account == current_account ? "pull-right" : "pull-left"
+                      .msg{:class => pull }
+                        .clearfix
+                          -if msg.account != current_account
+                            %small.black.pull-left{:title => msg.account.email }
+                              %b= msg.account.name
+                              wrote
+                          -else
+                            %small.black.pull-left You wrote 
+                          %small.pull-left &nbsp;
+                          %small{:class => pull }= msg.created_at.strftime "on %B %d, %Y - %H:%M"
+                        .well{:class => pull}
+                          %p= msg.content
+              %hr/
+
+              :javascript
+                $("#message-btn").on("click",function(e){
+                  e.preventDefault();
+                  if ($("#message").val().length > 0 ) {
+                    $.post("/conflicts/msg_create",
+                      {aid:#{current_account.id},cid:#{@conflict.id}, content: $("#message").val()},
+                      function(data){
+                        console.log(data)
+                        if (data === "ok") {
+                          window.location.reload();
+                        } else {
+                          $("#message-err").text(data);
+                        }
+                      }
+                    ); 
+                  } else {
+                    $("#message-err").text("Can't send empty message!");
+                  }
+                });
+
+
+        .group
           =f.label 'Notes to moderator'
           .required=f.error_message_on :notes
           %p.description Please indicate the changes you have made as well as other relevant information
