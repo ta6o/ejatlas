@@ -27,7 +27,7 @@ ActiveRecord::Base.configurations[:development] = {
 
 ActiveRecord::Base.configurations[:production] = {
   adapter:      'postgresql',
-  host:         '178.62.205.134',
+  host:         '127.0.0.1',
   username:     'root',
   port:         '5432',
   password:     '***REMOVED***',

@@ -78,8 +78,9 @@ Admin.controllers :featureds do
   put :update, :with => :id do
     rank = 0
     (params.delete("vectors") || []).each do |id, data|
-      rank += 1
       vector = VectorDatum.find(id)
+      next unless vector.status == "published"
+      rank += 1
       vector.update_attribute(:rank, rank)
       if data.has_key?("clickable") and data["clickable"] == "on"
         vector.update_attribute(:clickable, true)
