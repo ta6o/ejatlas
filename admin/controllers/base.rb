@@ -683,7 +683,18 @@ Admin.controller do
     redirect to "/sessions/login?return=jobs" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     @jobs = Delayed::Job.all
+    if ENV["RACK_ENV"] == "production"
+      @exports = Dir.foreach("/mnt/data/exports")
+    else
+      @exports = []
+    end
     render 'base/jobs', :layout => :application
+  end
+
+  get "/exports/:fn/?" do
+    redirect to "/sessions/login?return=exports" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
+    return params.to_json
   end
 
   not_found do
