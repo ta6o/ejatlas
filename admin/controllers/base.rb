@@ -686,17 +686,17 @@ Admin.controller do
     if ENV["RACK_ENV"] == "production"
       @exports = Dir.foreach("/mnt/data/exports").to_a - [".",".."]
     else
-      @exports = []
+      @exports = Dir.foreach("#{Dir.pwd}/public/data").to_a - [".",".."]
     end
     render 'base/jobs', :layout => :application
   end
 
-  get "/exports/:fn/?" do
+  get :exports, :with => :fn do
     pp params
     redirect back unless ENV["RACK_ENV"] === "production"
     redirect to "/sessions/login?return=jobs" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    file = "/mnt/data/exports/#{params[:fn]}"
+    file = "/mnt/data/exports/#{params["fn"]}"
     redirect back unless File.exists?(file)
     return send_file( file, :type=>"text/csv; charset=utf-9", :filename=>"#{file.split(/\//)[-1]}.zip")
   end
