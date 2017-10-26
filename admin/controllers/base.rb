@@ -684,7 +684,7 @@ Admin.controller do
     redirect back unless ["admin","editor"].include? current_account.role
     @jobs = Delayed::Job.all
     if ENV["RACK_ENV"] == "production"
-      @exports = Dir.foreach("/mnt/data/exports") - [".",".."]
+      @exports = Dir.foreach("/mnt/data/exports").to_a - [".",".."]
     else
       @exports = []
     end
