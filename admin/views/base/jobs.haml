@@ -54,8 +54,8 @@
       
 -if @exports.any?
   .content
-    %h2 Exports
-    %ul
+    %h3 Exports
+    %ul{:style=>"list-style-type:none;padding:0;"}
       -@exports.each do |exp|
         %li
           %a{:href=>"/exports/#{exp}"}= exp

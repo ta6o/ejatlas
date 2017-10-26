@@ -694,6 +694,7 @@ Admin.controller do
   get "/exports/:fn/?" do
     redirect to "/sessions/login?return=exports" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
+    pp params
     return params.to_json
   end
 
