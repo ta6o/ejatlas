@@ -684,7 +684,7 @@ Admin.controller do
     redirect back unless ["admin","editor"].include? current_account.role
     @jobs = Delayed::Job.all
     if ENV["RACK_ENV"] == "production"
-      @exports = Dir.foreach("/mnt/data/exports")
+      @exports = Dir.foreach("/mnt/data/exports") - [".",".."]
     else
       @exports = []
     end
@@ -692,13 +692,13 @@ Admin.controller do
   end
 
   get "/exports/:fn/?" do
-    redirect back unless ENV["RACK_ENV"] === "production"
-    redirect to "/sessions/login?return=exports" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
     pp params
+    redirect back unless ENV["RACK_ENV"] === "production"
+    redirect to "/sessions/login?return=jobs" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
     file = "/mnt/data/exports/#{params[:fn]}"
     redirect back unless File.exists?(file)
-    return send_file( file, :type=>"text/csv; charset=utf-9", :filename=>"#{file.split(/\//)[-1]}.csv")
+    return send_file( file, :type=>"text/csv; charset=utf-9", :filename=>"#{file.split(/\//)[-1]}.zip")
   end
 
   not_found do
