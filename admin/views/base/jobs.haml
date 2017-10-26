@@ -55,8 +55,8 @@
 -if @exports.any?
   .content
     %h2 Exports
-      %ul
-        -@exports.each do |exp|
-          %li
-            %a{:href=>"/exports/#{exp}"}= exp
+    %ul
+      -@exports.each do |exp|
+        %li
+          %a{:href=>"/exports/#{exp}"}= exp
 
