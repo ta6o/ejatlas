@@ -77,8 +77,10 @@ class Featured < ActiveRecord::Base
         cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain} || ""
         cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
       else
-        cmarker[:dmn] = []
-        cmarker[:tags] = []
+        # cmarker[:dmn] = []
+        # cmarker[:tags] = []
+        cmarker[:dmn] = ["0380A5"]
+        cmarker[:tags] = [""]
       end
       (Conflict.attribute_names & feats).each do |f|
         v = eval("c.#{f}")
