@@ -313,6 +313,7 @@ Admin.controllers :featureds do
       next unless row[0]
       conflict = Conflict.find(row[0].to_i)
       features = JSON.parse(conflict.features || "{}")
+      features.reject! {|k| k.match(/^#{feat.id}:/)}
       row.each_with_index do |cell,index|
         next if ['id','name'].include? header[index]
         next if Conflict.attribute_names.include? cell
