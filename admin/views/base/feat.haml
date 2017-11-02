@@ -203,7 +203,7 @@
 
   .horipane
     .title{:class=> @feature ? "" : "active"} Legend
-    .content{:style=> @feature ? "overflow: hidden; display: none;" : ""}
+    .content{:style=> (@feature and @feature.id != 69) ? "overflow: hidden; display: none;" : ""}
       #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
         .legend.noselect.block{'data-width'=>220}
 
