@@ -76,11 +76,12 @@ class Featured < ActiveRecord::Base
       if (ftags & c.tags).length >= 1
         cmarker[:dmn] = (ftags & c.tags).map {|t| t.domain} || ""
         cmarker[:tags] = (ftags & c.tags).map {|t| t.name}
-      else
-        # cmarker[:dmn] = []
-        # cmarker[:tags] = []
-        cmarker[:dmn] = ["0380A5"]
+      elsif self.id == 69
+        cmarker[:dmn] = ["000000"]
         cmarker[:tags] = [""]
+      else
+        cmarker[:dmn] = []
+        cmarker[:tags] = []
       end
       (Conflict.attribute_names & feats).each do |f|
         v = eval("c.#{f}")

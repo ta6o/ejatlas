@@ -205,7 +205,8 @@
     .title{:class=> @feature ? "" : "active"} Legend
     .content{:style=> (@feature and @id != 69) ? "overflow: hidden; display: none;" : ""}
       #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
-        .legend.noselect.block{'data-width'=>220}
+        -unless @id == 69
+          .legend.noselect.block{'data-width'=>220}
 
   -if @load and @load.length > 0
     .horipane
