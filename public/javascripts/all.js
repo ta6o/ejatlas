@@ -17635,6 +17635,7 @@ function showMarkers(markers) {
       popcontent += "<div class='features'>";
       $.each(Object.keys(mark),function(i,n){
         if (isNaN(n[0])) return 0
+        if (n.match(/^\d+:id$/i)) return 0
         id = parseInt(n.split(':')[0]);
         if (id == fid && mark[n]) {
           if (Object.keys(attrhash).indexOf(n.split(':')[1]) >= 0){
