@@ -152,7 +152,7 @@ Admin.controllers :accounts do
   end
 
   post :getimage do
-    aid = params['image']['account_id']
+    aid = params['image'].delete('account_id')
     a = Account.find(aid)
     image = Image.new(params['image'])
     image.attachable = a
