@@ -1230,14 +1230,14 @@
               %p#message-err.error
 
             .col-md-8
+              :css
+                .messages li .msg {}
+                .messages li .msg .well {  max-width: 80%; min-height: 0; background-color: #fff; padding: 8px 16px; border-radius: 6px; margin-top:6px; }
+                .messages li .msg .well.pull-right {  background-color: #eee; }
+                .messages li .msg .well p {  font-size: 14px; margin-bottom: -4px; }
+                .messages li .msg small { font-size: 11px; color: #999; display: block; }
+                .messages li .msg small.black { color: #000; }
               -if @conflict.conflict_messages.any?
-                :css
-                  .messages li .msg {}
-                  .messages li .msg .well {  max-width: 80%; min-height: 0; background-color: #fff; padding: 8px 16px; border-radius: 6px; margin-top:6px; }
-                  .messages li .msg .well.pull-right {  background-color: #eee; }
-                  .messages li .msg .well p {  font-size: 14px; margin-bottom: -4px; }
-                  .messages li .msg small { font-size: 11px; color: #999; display: block; }
-                  .messages li .msg small.black { color: #000; }
                 %ul.messages{:style=>"list-style-type: none; padding: 0;"}
                   -@conflict.conflict_messages.order("created_at desc").each do |msg|
                     %li.clearfix
@@ -1263,16 +1263,8 @@
                     $.post("/conflicts/msg_create",
                       {aid:#{current_account.id},cid:#{@conflict.id}, content: $("#message").val()},
                       function(data){
-                        console.log(data)
                         if (data === "ok") {
-                          date = new Date();
-                          var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-
-                          var day = date.getDate();
-                          var monthIndex = date.getMonth();
-                          var year = date.getFullYear();
-
-                          html = '<li class="clearfix"> <div class="msg pull-right"> <div class="clearfix"> <small class="black pull-left">You wrote</small> <small class="pull-left">&nbsp;</small> <small class="pull-right">just now<small> </div> <div class="pull-right well"> <p>'+$("#message").val()+'</p> </div> </div> </li>'
+                          html = '<li class="clearfix"> <div class="msg pull-right"> <div class="clearfix"> <small class="black pull-left">You wrote</small> <small class="pull-left">&nbsp;</small> <small class="pull-right">just now<small> </div> <div class="pull-right well"> <p>'+$("#message").val()+'</p> </div> </div> </li>';
                           $("ul.messages").prepend(html)
                           $("#message-err").text("");
                         } else {
