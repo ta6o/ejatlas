@@ -1237,8 +1237,8 @@
                 .messages li .msg .well p {  font-size: 14px; margin-bottom: -4px; }
                 .messages li .msg small { font-size: 11px; color: #999; display: block; }
                 .messages li .msg small.black { color: #000; }
-              -if @conflict.conflict_messages.any?
-                %ul.messages{:style=>"list-style-type: none; padding: 0;"}
+              %ul.messages{:style=>"list-style-type: none; padding: 0;"}
+                -if @conflict.conflict_messages.any?
                   -@conflict.conflict_messages.order("created_at desc").each do |msg|
                     %li.clearfix
                       -pull = msg.account == current_account ? "pull-right" : "pull-left"
