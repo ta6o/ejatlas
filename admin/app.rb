@@ -153,10 +153,10 @@ class Admin < Padrino::Application
   end
 
   def self.notify_mod_msg(m)
-    @msg = m
+    @msg = m.content
     @account = m.account
-    return unless @account
     @conflict = m.conflict
+    return unless @account
     if ["admin","editor"].include?(@account.role)
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
       Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
