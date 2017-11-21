@@ -352,11 +352,12 @@ Admin.controllers :conflicts do
   end
 
   post :msg_create do
+    @conflict = Conflict.find(params["cid"])
     if current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
       ConflictMessage.create :conflict_id => params["cid"], :account_id => params["aid"], :content => params["content"]
       return "ok"
     else
-      redirect to '/sessions/login'
+      pass
     end
   end
 
