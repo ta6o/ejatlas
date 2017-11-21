@@ -11,7 +11,12 @@
         = "Dear #{@account.name},"
         %br/
         %br/
-        = "The moderators have finished moderating the case <a href='http://console.ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>."
+        = "Please note that the EJAtlas editors have reviewed the case you submitted:"
+        %br/
+        = "<a href='http://console.ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>"
+        %br/
+        %br/
+        =" They have left the following message(s): ."
         %br/
         %br/
         -if @conflict.notes and @conflict.notes.length > 1

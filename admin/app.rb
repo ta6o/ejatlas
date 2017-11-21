@@ -76,52 +76,13 @@ class Admin < Padrino::Application
     return res
   end
 
-
-=begin
-  def self.send_mail account, subject, message
-    require 'sendgrid-ruby'
-
-    stamp = Time.now.to_i.to_s
-    from = "EJOLT Project"  
-
-    client = SendGrid::Client.new do |c|
-      c.api_key = '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'
-    end
-    p [account.name, account.email]
-    email = {
-      :to => [account.email],
-      :toname => [account.name],
-      :from => "info@ejatlas.org", #$sitemail,
-      :fromname => from,
-      :subject => subject,
-      :html => message,
-      "x-smtpapi" => {
-        "asm_group_id" => 743,
-      }.to_json
-    }
-
-
-    if ENV['RACK_ENV'] == "development" and false
-      puts "SENDGRID omitting mail =>\n#{pp message}"
-      return
-    end
-    begin
-      sending = client.send(email)
-      puts "SENDGRID #{sending.code} #{sending.body.to_json}"
-    rescue => exc
-      sending = exc
-      puts "SENDGRID #{sending}"
-    end
-  end
-=end
-
   def self.send_mail user, subject, message
     require 'sendgrid-ruby'
     include SendGrid
 
     stamp = Time.now.to_i.to_s
 
-    sg = SendGrid::API.new(api_key:'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')
+    sg = SendGrid::API.new(api_key:'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')
 
     from = Email.new(email: "info@ejatlas.org", name: "EJOLT Project"  )
     to = Email.new(email: user.email, name: user.name)
@@ -157,33 +118,6 @@ class Admin < Padrino::Application
     end
   end
 
-  def self.send_mail_obsolete account, subject, message
-    require 'mandrill'
-    from = "EJOLT Project"  
-    mandrill = Mandrill::API.new '1y8hsGaQBCSLuFhJ0I8dsA'
-    message = {  
-     :subject=> subject,
-     :to=>[{  
-       :email=> (account.id == 1 ? "ejoltmap@gmail.com" : account.email),
-       :name=> account.name  
-     }],  
-     :html=> message,
-     :from_email=>$sitemail,
-     :from_name=> from
-    }  
-    if ENV['RACK_ENV'] == "development"
-      puts "MANDRILL omitting mail =>\n#{pp message}"
-      return
-    end
-    begin
-      sending = mandrill.messages.send message  
-    rescue => exc
-      sending = exc
-    end
-    sending[0][:subject] = subject
-    puts "MANDRILL #{sending}"
-  end
-
   def self.new_account(a)
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/confirm.haml").render(self)
@@ -215,6 +149,16 @@ class Admin < Padrino::Application
     @conflict = c
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
     Admin.send_mail(@account, (c.approval_status == "approved" ? "#{c.name} approved on EJAtlas" : "Moderation update for #{c.name}"), html)
+  end
+
+  def self.notify_mod_msg(m)
+    @msg = m
+    @account = m.account
+    return unless @account
+    return if ["admin","editor"].include?(@accound.role)
+    @conflict = m.conflict
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
+    Admin.send_mail(Account.find(1), "New message from #{@account.name}"), html)
   end
 
   def self.newsletter(a)
