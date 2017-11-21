@@ -79,12 +79,12 @@
       #legendpane
         .legend.noselect
 
-  -if current_account
-    .horipane#filter-container
-      .title Filter
-      .content{:style=>'display:none;'}
-        #filter-row.block{'data-width'=>500}
-          #filter= @filter
+  -#if current_account
+  .horipane#filter-container
+    .title Filter
+    .content{:style=>'display:none;'}
+      #filter-row.block{'data-width'=>500}
+        #filter= @filter
 
   .horipane
     .title Browse maps

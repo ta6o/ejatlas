@@ -1218,7 +1218,7 @@
 
       .col-md-8
         .group
-          %label Internal updates
+          %label Send a message to the moderator
           .row
             .col-md-4
               .clearfix
@@ -1278,15 +1278,16 @@
                 });
 
 
-        .group
-          =f.label 'Notes to moderator'
-          .required=f.error_message_on :notes
-          %p.description Please indicate the changes you have made as well as other relevant information
-          ~f.text_area :notes, :class => :text_area, :rows=>4
-          -if ["admin","editor"].include? current_account.role and @conflict.account
-            %p
-              By
-              %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
+        -if ["admin","editor"].include? current_account.role and @conflict.account
+          .group
+            =f.label 'Internal Notes'
+            .required=f.error_message_on :notes
+            %p.description Please indicate the changes you have made as well as other relevant information
+            ~f.text_area :notes, :class => :text_area, :rows=>4
+            -if ["admin","editor"].include? current_account.role and @conflict.account
+              %p
+                By
+                %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
 
         .group
           =f.label 'Contributor'
