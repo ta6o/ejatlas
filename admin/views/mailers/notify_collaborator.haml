@@ -8,7 +8,7 @@
   %body{:style=>'background:#fff'}
     %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
       %p
-        = "Dear #{@account.name},"
+        = "Dear #{@collab.name},"
         %br/
         %br/
         = "Please note that the EJAtlas editors have reviewed the case you submitted:"
@@ -16,16 +16,15 @@
         = "<a href='http://console.ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>"
         %br/
         %br/
-        =" They have left the following message(s): ."
+        ="They have left the following message(s):"
+        %br/
+        %blockquote
+          %em= @msg.gsub(/\n/,'<br />')
+        %br/
+        Thank you very much for your valuable contribution, which makes possible the making of the largest and rich database on socio-environmental conflicts in the world.
         %br/
         %br/
-        -if @conflict.notes and @conflict.notes.length > 1
-          They left a message for you too:
-          %br/
-          %blockquote
-            %em= @conflict.notes.gsub(/\n/,'<br />')
-          %br/
-        Best wishes,
+        In solidarity, 
         %br/
-        EJatlas editors
+        the EJatlas editors
         %br/

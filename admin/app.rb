@@ -144,6 +144,7 @@ class Admin < Padrino::Application
   end
 
   def self.notify_collaborator(c)
+    return
     @account = c.account
     return unless @account
     @conflict = c
@@ -155,10 +156,15 @@ class Admin < Padrino::Application
     @msg = m
     @account = m.account
     return unless @account
-    return if ["admin","editor"].include?(@accound.role)
     @conflict = m.conflict
-    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
-    Admin.send_mail(Account.find(1), "New message from #{@account.name}"), html)
+    if ["admin","editor"].include?(@accound.role)
+      html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
+      Admin.send_mail(Account.find(1), "New message from #{@account.name}"), html)
+    else
+      @collab = @conflict.account
+      html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
+      Admin.send_mail(Account.find(1), (c.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
+    end
   end
 
   def self.newsletter(a)
