@@ -159,7 +159,7 @@ class Admin < Padrino::Application
     @conflict = m.conflict
     if ["admin","editor"].include?(@accound.role)
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
-      Admin.send_mail(Account.find(1), "New message from #{@account.name}"), html)
+      Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
     else
       @collab = @conflict.account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
