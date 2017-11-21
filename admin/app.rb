@@ -157,7 +157,7 @@ class Admin < Padrino::Application
     @account = m.account
     return unless @account
     @conflict = m.conflict
-    if ["admin","editor"].include?(@accound.role)
+    if ["admin","editor"].include?(@account.role)
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
       Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
     else
