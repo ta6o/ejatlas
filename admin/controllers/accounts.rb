@@ -101,6 +101,7 @@ Admin.controllers :accounts do
           params['images_attributes'].each{|i,v| images["n#{i}"] = @account.images[i.to_i]}
           params['images_attributes'].each do |i, v|
             img = images["n#{i}"]
+            next unless img
             #puts i
             #puts img
             if v['_destroy'] == "on"

@@ -358,7 +358,7 @@ Admin.controllers :conflicts do
       Admin.notify_mod_msg msg
       return "ok"
     else
-      pass
+      return "You are logged out. Please log in again, and be sure to copy the message otherwise it will be lost!"
     end
   end
 

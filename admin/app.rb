@@ -87,11 +87,12 @@ class Admin < Padrino::Application
     from = Email.new(email: "info@ejatlas.org", name: "EJOLT Project"  )
     to = Email.new(email: user.email, name: user.name)
     content = Content.new(type: 'text/html', value: message)
+    email = user.id == 1 ? "ejoltmap@gmail.com" : user.email
 
     mail = Mail.new(from, subject, to, content)
     puts mail.to_json
     email = {
-      :to => [user.email],
+      :to => [email],
       :toname => [user.name],
       :from => "info@ejatlas.org",
       :fromname => from,
