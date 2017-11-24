@@ -362,6 +362,15 @@ Admin.controllers :conflicts do
     end
   end
 
+  post :msg_delete do
+    if current_account and ["admin","editor"].include?(current_account.role)
+      ConflictMessage.find(params["id"]).delete
+      return "ok"
+    else
+      return "error"
+    end
+  end
+
 =begin
   get :edit, :with => :slug do
     @conflict = Conflict.find_by_slug(params[:slug])

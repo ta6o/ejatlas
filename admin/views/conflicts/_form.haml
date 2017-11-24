@@ -1252,13 +1252,35 @@
                             %small.black.pull-left You wrote 
                           %small.pull-left &nbsp;
                           %small{:class => pull }= msg.created_at.strftime "on %B %d, %Y - %H:%M"
+                        -if ["admin","editor"].include?(current_account.role)
+                          %a.delete{:class=>pull,:id=>"del-#{msg.id}"} &nbsp;X&nbsp;
                         .well{:class => pull}
                           %p= msg.content
               %hr/
 
+              :css
+                a.delete {
+                  color: #c00;
+                  font-weight: bold;
+                  cursor: pointer;
+                }
               :javascript
+                $("a.delete").on("click",function(e){
+                  id = $(this).attr("id").replace(/^del-/,"");
+                  li = $(this).closest("li");
+                  console.log(id)
+                  $.post("/conflicts/msg_delete",
+                    {id:id},
+                    function(data){
+                      if (data === "ok") {
+                        li.remove();
+                      }
+                    }
+                  ); 
+                });
                 $("#message-btn").on("click",function(e){
                   e.preventDefault();
+                  $(this).prop("disabled",true);
                   if ($("#message").val().length > 0 ) {
                     $.post("/conflicts/msg_create",
                       {aid:#{current_account.id},cid:#{@conflict.id}, content: $("#message").val()},

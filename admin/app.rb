@@ -80,17 +80,16 @@ class Admin < Padrino::Application
     require 'sendgrid-ruby'
     include SendGrid
 
+    email = (user.id == 1 ? "ejoltmap@gmail.com" : user.email)
     stamp = Time.now.to_i.to_s
 
     sg = SendGrid::API.new(api_key:'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')
 
     from = Email.new(email: "info@ejatlas.org", name: "EJOLT Project"  )
-    to = Email.new(email: user.email, name: user.name)
+    to = Email.new(email: email, name: user.name)
     content = Content.new(type: 'text/html', value: message)
-    email = user.id == 1 ? "ejoltmap@gmail.com" : user.email
 
     mail = Mail.new(from, subject, to, content)
-    puts mail.to_json
     email = {
       :to => [email],
       :toname => [user.name],
@@ -158,13 +157,15 @@ class Admin < Padrino::Application
     @account = m.account
     @conflict = m.conflict
     return unless @account
+    pp m.attributes
+    puts
     if ["admin","editor"].include?(@account.role)
-      html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
-      Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
-    else
       @collab = @conflict.account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
-      Admin.send_mail(Account.find(1), (c.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
+      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
+    else
+      html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
+      Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
     end
   end
 
