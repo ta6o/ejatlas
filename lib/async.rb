@@ -512,6 +512,7 @@ class AsyncTask
       filterdata["impacts"]["socio-economical_impacts"] = {:content=>SecImpact.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"sec_impacts"}
 
       filterdata["outcomes"] = {}
+      filterdata["outcomes"]["suggested_alternatives"] = {:content=>'flat'}
       filterdata["outcomes"]["project_status"] =  {:content=>ProjectStatus.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"project_status_id"}
       filterdata["outcomes"]["outcome"] =  {:content=>ConflictEvent.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"conflict_events"}
 

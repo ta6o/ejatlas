@@ -157,8 +157,6 @@ class Admin < Padrino::Application
     @account = m.account
     @conflict = m.conflict
     return unless @account
-    pp m.attributes
-    puts
     if ["admin","editor"].include?(@account.role)
       @collab = @conflict.account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
@@ -166,6 +164,12 @@ class Admin < Padrino::Application
     else
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
       Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
+    end
+    @conflict.conflict_accounts.each do |ca|
+      @collab = ca.account
+      next if @collab == @account
+      html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
+      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
     end
   end
 
