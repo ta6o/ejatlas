@@ -85,7 +85,7 @@ class Admin < Padrino::Application
 
     sg = SendGrid::API.new(api_key:'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')
 
-    from = Email.new(email: "info@ejatlas.org", name: "EJOLT Project"  )
+    from = Email.new(email: "no-reply@ejatlas.org", name: "EJOLT Project"  )
     to = Email.new(email: email, name: user.name)
     content = Content.new(type: 'text/html', value: message)
 
@@ -93,7 +93,7 @@ class Admin < Padrino::Application
     email = {
       :to => [email],
       :toname => [user.name],
-      :from => "info@ejatlas.org",
+      :from => "no-reply@ejatlas.org",
       :fromname => from,
       :subject => subject,
       :html => message,
