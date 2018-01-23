@@ -59,7 +59,7 @@ function initMap () {
     scrollWheelZoom: $('#map').css('position') == "fixed",
     worldCopyJump: true,
     //maxBounds: maxBounds,
-    maxBounds: [[-90,-270],[90,270]],
+    //maxBounds: [[-90,-270],[90,270]],
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
     zoom: 2,

@@ -481,9 +481,9 @@ Admin.controller do
   end
 
   get :cache do
+    redirect to "/sessions/login?return=cache" unless current_account
     puts current_account.email
     puts current_account.role
-    redirect to "/sessions/login?return=cache" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     render 'base/cache', :layout => :application
   end

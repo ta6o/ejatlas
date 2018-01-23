@@ -17283,7 +17283,7 @@ function initMap () {
     scrollWheelZoom: $('#map').css('position') == "fixed",
     worldCopyJump: true,
     //maxBounds: maxBounds,
-    maxBounds: [[-83,-210],[83,210]],
+    //maxBounds: [[-90,-270],[90,270]],
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
     zoom: 2,
@@ -17667,8 +17667,8 @@ function showMarkers(markers) {
     marker.cat = mark.c;
     marker.content = popcontent;
     marker.bindPopup(L.popup({
-        autoPanPaddingTopLeft: L.point(24, 96),
-        autoPanPaddingBottomRight: L.point(72, 64),
+        autoPanPaddingTopLeft: L.point(24, -90),
+        autoPanPaddingBottomRight: L.point(72, 82),
         keepInView: true
       }).setContent('<img src="/images/loading-bg.gif" class="loading"/>'));
     marker.on('mouseover', function(e){
