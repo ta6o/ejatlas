@@ -15,7 +15,7 @@
 -content_for :body_end do
   =javascript_include_tag 'map-edit'
   :javascript
-    initMap(#{[@featured.view[0],@featured.view[1]]},false)
+    initMap(#{[@featured.view[0].to_f,@featured.view[1].to_f]},false)
     $("#viewport-modal").on("shown.bs.modal",function(){map.invalidateSize();map.setZoom(#{@featured.view[2]})})
     
 
