@@ -19,6 +19,8 @@ gem 'unidecoder'
 gem 'elasticsearch'
 gem 'graphcommons'
 gem 'sanitize'
+gem 'roo'
+gem 'rodf'
 
 gem 'padrino'
 

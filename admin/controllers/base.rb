@@ -657,9 +657,14 @@ Admin.controller do
   end
 
   post :export do
+    pp params
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    AsyncTask.new.csvexport params
+    if params.delete("filetype") == "csv"
+      AsyncTask.new.csvexport params
+    else
+      AsyncTask.new.odsexport params
+    end
     redirect to 'jobs'
   end
 
@@ -686,7 +691,7 @@ Admin.controller do
     if ENV["RACK_ENV"] == "production"
       @exports = Dir.foreach("/mnt/data/exports").to_a - [".",".."]
     else
-      @exports = Dir.foreach("#{Dir.pwd}/public/data").to_a - [".",".."]
+      @exports = Dir.foreach("/tmp/export").to_a - [".",".."]
     end
     render 'base/jobs', :layout => :application
   end

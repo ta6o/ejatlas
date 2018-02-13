@@ -1,4 +1,260 @@
 class AsyncTask
+  def odsexport params
+    puts require 'rodf'
+    limit = params.delete("limit").to_i
+    order = params.delete("order")
+    ascdsc = params.delete("ascdsc")
+    stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
+    stack = stack[0..(limit-1)] if limit > 0
+    puts "#{stack.length} cases to be exported."
+    #return stack.map(&:name).to_s
+    mania = {Type=>[],Product=>[],ConflictEvent=>[],ConflictEvent=>[],MobilizingGroup=>[],MobilizingForm=>[]}
+    imps = {EnvImpact=>[],HltImpact=>[],SecImpact=>[]}
+    actors = {Company=>{},Supporter=>{},:ids=>[]}
+    numfields = []
+    lines = []
+    header = []
+    stack.each_with_index do |conf,index|
+      nfields = 0
+      line = []
+      #puts "#{conf.id} #{conf.name}"
+      print "\r #{(index/stack.length.to_f*100).to_i}% done."
+      conf.attributes.each do |k,v|
+        next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
+        if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
+          begin
+            ass = eval "conf."+k.to_s[0...-3]
+          rescue
+            next
+          end
+          header << k.to_s[0...-3].gsub("_"," ").titlecase if index == 0
+          if ass.nil?
+            line << ""
+          elsif ass.name
+            line << ass.name
+          else
+            line << ass.attributes
+          end
+        elsif k == "reaction_id"
+          header << "When did the mobilization begin" if index == 0
+          if v
+            line << Reaction.find(v).name
+          else
+            line << ""
+          end
+        elsif k == "status_id"
+          header << "Intensity of Conflict" if index == 0
+          if v
+            line << Status.find(v).name
+          else
+            line << ""
+          end
+        elsif k == "population_type"
+          header << "Type of Population" if index == 0
+          if v
+            line << ['Unknown','Urban','Semi-urban','Rural'][v]
+          else
+            line << ""
+          end
+        elsif k == "accuracy_level"
+          header << "Accuracy of location" if index == 0
+          if v
+            line << ['','LOW country/state level','MEDIUM regional level','HIGH local level'][v]
+          else
+            line << ""
+          end
+        else
+          header << k.to_s.gsub("_"," ").titlecase if index == 0
+          line << v.to_s
+        end
+        nfields += 1
+      end
+      mania.each do |many, val|
+        va = [conf.id]
+        header << "#{many.to_s}" if index == 0
+        at = []
+        many.order(:id).each do |m|
+          if m.conflicts.include? conf
+            at << m.name
+            va << "1"
+          else
+            va << "0"
+          end
+        end
+        val << va
+        line << at.join(":::")
+        nfields += 1
+      end
+      [Company,Supporter].each do |mod|
+        rel = mod.to_s.downcase
+        if mod == Company
+          rels = conf.companies
+        else
+          rels = conf.supporters
+        end
+        header << rel.titlecase if index == 0
+        lin = ""
+        rels.each do |m|
+          acr = m.acronym and m.acronym.length > 0 ? " [#{m.acronym}]" : ""
+          cnt = m.country ? " (#{m.country.name})" : ""
+          if mod == Company
+            cm = eval("m.c_companies.find_by_conflict_id(#{conf.id})")
+          else
+            cm = eval("m.c_supporters.find_by_conflict_id(#{conf.id})")
+          end
+          inv = cm.involvement and cm.involvement.length > 0 ? ":#{cm.involvement}" : ""
+          lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
+          unless actors[mod].has_key? m.id
+            actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil],
+                                  :invs => {}} 
+          end
+          inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
+          actors[mod][m.id][:invs][conf.id] = inv
+        end
+        line << lin
+        nfields += 1
+      end
+      imps.each do |imp,val|
+        va = [conf.id]
+        header << imp.to_s if index == 0
+        at = []
+        imp.order(:id).each do |m|
+          if m.conflicts.include? conf
+            cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+            if cm.visible
+              at << "#{m.name} (V)"
+              va << "V"
+            else
+              at << "#{m.name} (P)"
+              va << "P"
+            end
+          else
+            va << ""
+          end
+        end
+        val << va
+        line << at.join(":::")
+        nfields += 1
+      end
+      ['references','legislations','weblinks','medialinks'].each do |rel|
+        #puts 
+        rels = eval("conf.#{rel}")
+        header << rel.titlecase if index == 0
+        at = "#{rel.titlecase} "
+        lin = ""
+        rels.each do |m|
+          dsc = m.description ? "#{m.description}\n" : ""
+          url = m.url ? "#{m.url}\n" : ""
+          at += "#{dsc}#{url}\n"
+          lin += "#{dsc}#{url}\n"
+        end
+        #puts at
+        line << lin
+        nfields += 1
+      end
+      ['documents','images'].each do |rel|
+        #puts 
+        rels = eval("conf.#{rel}")
+        header << rel.titlecase if index == 0
+        at = "#{rel.titlecase} "
+        lin = ""
+        rels.each do |m|
+          ttl = m.title ? "#{m.title}\n" : ""
+          dsc = m.description ? "#{m.description}\n" : ""
+          url = m.file.url ? "#{m.file.url}\n" : ""
+          at += "#{ttl}#{dsc}#{url}\n"
+          lin += "#{ttl}#{dsc}#{url}\n"
+        end
+        #puts at
+        line << lin
+        nfields += 1
+      end
+      actors[:ids] << conf.id
+      numfields << nfields
+      lines << line
+      #puts
+    end
+    Dir.mkdir "/tmp/export" unless File.directory? "/tmp/export"
+    tata = Time.now
+    odsname = "/tmp/export/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.ods"
+    RODF::Spreadsheet.file(odsname) do
+      table 'conflicts' do
+        row do
+          header.each {|x| cell x }
+        end
+        lines.each do |line|
+          row do
+            line.each {|x| cell x }
+          end
+        end
+      end
+      mania.each do |many,lines|
+        header = ["id"]
+        many.order(:id).each {|h| header << h.name}
+        table many.to_s.downcase do
+          row do
+            header.each {|x| cell x }
+          end
+          lines.each do |line|
+            row do
+              line.each {|x| cell x }
+            end
+          end
+        end
+      end
+      imps.each do |many,lines|
+        header = ["id"]
+        many.order(:id).each {|h| header << h.name}
+        table many.to_s.downcase do
+          row do
+            header.each {|x| cell x }
+          end
+          lines.each do |line|
+            row do
+              line.each {|x| cell x }
+            end
+          end
+        end
+      end
+      actors.each do |many,lines|
+        next if many == :ids
+        header = ["id", "name", "slug", "description", "url", "acronym", "country"]
+        actors[:ids].uniq.each {|c| header << c}
+        table many.to_s.downcase do
+          row do
+            header.each {|x| cell x }
+          end
+          lines.each do |line|
+            row do
+              line.each {|x| cell x }
+            end
+          end
+        end
+=begin
+        ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
+          output << header
+          lines.each do |id, comp|
+            line = comp[:attrs]
+            step = 7
+            pp comp[:invs]
+            comp[:invs].each do |conf, inv|
+              (header.index(conf)-step).times { line << nil }
+              inv ||= '-'
+              line << inv
+              step = header.index(conf)
+            end
+            output << line
+          end
+        end
+        csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
+=end
+      end
+    end
+    puts "Done."
+    GC.start
+  end
+  handle_asynchronously :odsexport
+
   def csvexport params
     puts require 'csv'
     limit = params.delete("limit").to_i
