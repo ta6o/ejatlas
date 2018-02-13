@@ -176,7 +176,7 @@ class AsyncTask
     end
     Dir.mkdir "/tmp/export" unless File.directory? "/tmp/export"
     tata = Time.now
-    odsname = "/tmp/export/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.ods"
+    odsname = "#{$filedir}/../exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.ods"
     RODF::Spreadsheet.file(odsname) do
       table 'conflicts' do
         row do
@@ -478,7 +478,7 @@ class AsyncTask
             (header.index(conf)-step).times { line << nil }
             inv ||= '-'
             line << inv
-            step = header.index(conf)
+            step = header.index#{$filedir}/../exports(conf)
           end
           output << line
         end
