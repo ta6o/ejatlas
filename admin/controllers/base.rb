@@ -703,7 +703,7 @@ Admin.controller do
     redirect back unless ["admin","editor"].include? current_account.role
     file = "/mnt/data/exports/#{params["fn"]}"
     redirect back unless File.exists?(file)
-    return send_file( file, :type=>"text/csv; charset=utf-9", :filename=>"#{file.split(/\//)[-1]}.zip")
+    return send_file( file )
   end
 
   not_found do
