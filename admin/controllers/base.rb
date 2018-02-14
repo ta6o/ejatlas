@@ -116,7 +116,7 @@ Admin.controller do
   get :conflict, :with => :slug do
     c = Conflict.find_slug(params[:slug])
     if c.approval_status != "approved"
-      if current_account and ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id)
+      if current_account and (["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
       else
         pass
       end
