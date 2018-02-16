@@ -35,11 +35,13 @@ class Admin < Padrino::Application
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
   if ENV["RACK_ENV"] == "production"
     $siteurl = 'https://ejatlas.org'
+    $filedir = '/mnt/data/ejatlas-static'
+    $fileurl = 'https://file.ejatlas.org'
   else
     $siteurl = 'http://localhost:3000'
+    $filedir = Dir.pwd
+    $fileurl = 'https://file.ejatlas.org'
   end
-  $fileurl = 'https://file.ejatlas.org'
-  $filedir = '/mnt/data/ejatlas-static'
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
