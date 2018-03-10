@@ -263,6 +263,7 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Product.find_slug(params[:slug])
+    pass unless con
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     #puts @markerinfo
@@ -283,6 +284,7 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Type.find_slug(params[:slug])
+    pass unless con
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     #puts @markerinfo
