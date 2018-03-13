@@ -11,7 +11,7 @@
         Dear Editor,
         %br/
         %br/
-        = "The user <a href='mailto:#{@account.email}'>#{@account.name}</a> has sent a message to you concerning the case <a href='http://console.ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>:"
+        = "The user <a href='mailto:#{@account.email}'>#{@account.name}</a> has sent a message to you concerning the case <a href='http://ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>:"
         %br/
         %blockquote
           %em= @msg.gsub(/\n/,'<br />')
