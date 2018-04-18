@@ -89,7 +89,7 @@ Admin.controllers :companies do
     key = []
     modifier = -1
     slugz.scan(/[^,]*#{token}[^,]*/).to_set.to_a.each do |slug,index|
-      Company.find_all_by_slug(slug).each do |comp|
+      Company.where(:slug=>slug).each do |comp|
         country = ""
         country = comp.country.name if comp.country
         key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id}) [#{c.approval_status}]"}.join("\n"), :country => country}

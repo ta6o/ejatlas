@@ -118,7 +118,7 @@ Admin.controller do
     #last_modified c.updated_at
     pass unless c
     if c.approval_status != "approved"
-      if current_account and (["admin","editor"].include?(current_account.role) or account_id == current_account.id or c.conflict_accounts.map(&:account_id).include?(current_account.id))
+      if current_account and (["admin","editor"].include?(current_account.role) or c.account_id == current_account.id or c.conflict_accounts.map(&:account_id).include?(current_account.id))
       else
         pass
       end
