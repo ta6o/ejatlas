@@ -15109,7 +15109,8 @@ exports.map = createMap;
       }
     },
     Thunderforest: {
-      url: 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png',
+      //url: 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png',
+      url: 'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=819dee1c8f874141ad1f7cec78d2efc5',
       options: {
         attribution:
           '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, {attribution.OpenStreetMap}',
@@ -18091,18 +18092,18 @@ function showVector(v) {
   } else if (v.features[0].properties.pn) {
     pn = v.features[0].properties.pn;
   } else {
-    console.log('fail - no pn');
+    //console.log('fail - no pn');
     return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
-  console.log(vect)
+  //console.log(vect)
   if(vect.length == 0) {
-    console.log('fail - no vect');
+    //console.log('fail - no vect');
     return 0
   }
   vect = vect[0].vector_datum;
   if(vect['url']==="" || vect.loaded) {
-    console.log('fail - no url');
+    //console.log('fail - no url');
     return 0
   }
   vectorinfo[vect.rank - 1].vector_datum.loaded = true;

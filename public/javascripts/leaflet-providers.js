@@ -97,7 +97,8 @@
       }
     },
     Thunderforest: {
-      url: 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png',
+      //url: 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png',
+      url: 'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=819dee1c8f874141ad1f7cec78d2efc5',
       options: {
         attribution:
           '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, {attribution.OpenStreetMap}',
