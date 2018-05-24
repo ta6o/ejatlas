@@ -48,6 +48,12 @@
           =f.text_field :name, :class => 'text_field basic_input'
             
         .group
+          =f.label 'Name visible on address bar'
+          %span.required.large *
+          .required=f.error_message_on :name
+          =f.text_field :slug, :class => 'text_field basic_input'
+            
+        .group
           =f.label 'Country'
           %span.required.large *
           .required=f.error_message_on :country_id
