@@ -479,7 +479,7 @@ class AsyncTask
             (header.index(conf)-step).times { line << nil }
             inv ||= '-'
             line << inv
-            step = header.index#{$filedir}/../exports(conf)
+            #step = header.index#{$filedir}/../exports(conf)
           end
           output << line
         end
