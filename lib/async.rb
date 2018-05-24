@@ -475,7 +475,7 @@ class AsyncTask
           step = 7
           pp comp[:invs]
           comp[:invs].each do |conf, inv|
-            next unless header.has_key?(conf)
+            next unless header.include?(conf)
             (header.index(conf)-step).times { line << nil }
             inv ||= '-'
             line << inv
