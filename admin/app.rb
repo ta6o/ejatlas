@@ -438,3 +438,14 @@ class Admin < Padrino::Application
   end
 
 end
+
+=begin
+class String
+  def url
+    return self
+  end
+  def thumb
+    return self
+  end
+end
+=end

@@ -168,8 +168,9 @@
           -if @page_type == "graph"
             %span.count &nbsp;
           .ready
-            .btn.btn-default{:onclick=>"serializeFilter('#{@page_type}');"} Apply
+            .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"} Apply
             .btn.btn-default{:onclick=>'clearFilter()'} Clear
+            .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"} Save
             -if @page_type == "graph"
               .btn.btn-default{'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
             -#
@@ -386,18 +387,29 @@
       //if (root.html() == "<bool><should></should></bool>") {root.html("<bool><should><match_all>{}</match_all></should></bool>")};
       query = JSON.stringify($.xml2json(root.html()));
       if (query.match(/{"(should|must|must_not)":""}/)) query = '{"should":{"match_all":{}}}';
-      console.log(query)
       fields = [];
       $("input.field:checked").each(function(i,e){ fields.push($(e).val())})
-      url = "/filter"
       data = 'filter='+query.replace('{\"match_all\":\"{}\"}}','{\"match_all\":{}}}')+"&page_type="+page_type+"&fields="+fields.join(",")+"&limit="+$("input.limit").val();
       if (page_type == "network") {
         data += "&name="+$(".nname").val()+"&subtitle="+$(".nsubtitle").val()+"&desc="+$(".ndesc").val();
       } 
+      return {data:data,query:query}
+    }
+    function saveFilter(data){
       $.ajax({
         type: "POST",
-        url: url,
-        data: data,
+        url: "/savefilter",
+        data: {data: data.query},
+        success: function(uid){
+          alert(window.location.origin+"/embed/filter/"+uid)
+        }
+      })
+    }
+    function sendFilter(data,page_type) {
+      $.ajax({
+        type: "POST",
+        url: "/filter",
+        data: data.data,
         success: function(data){
           data = JSON.parse(data);
           $('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")

@@ -378,14 +378,6 @@ Admin.controller do
     render "base/feat", :layout => @layout
   end
 
-  get :embed do
-    ca = Cached.first
-    @markercount = Conflict.where(approval_status: 'approved').count
-    @markerinfo = ca.conflicts_marker
-    headers({ 'X-Frame-Options' => 'ALLOWALL' })
-    render "base/embed", :layout => false
-  end
-
   get "/761317/?" do
     @markercount = 176
     @markerinfo = Conflict.select("lat, lon, id, category_id").where(:id=>[181,158,346,464,795,804,1016,1092,1026,1140,1196,1522,1749,1820,1839,1869,1953,1958,1969,2007,2089,2386,2387,2307,2299,2287,2461,2435,2586,35,455,509,477,677,682,674,695,725,727,811,809,1165,1168,1276,1223,1194,1464,1629,1742,1712,1758,1804,1911,1942,1983,2005,2026,2091,2229,2462,2432,2524,2779,2773,833,160,224,344,471,445,694,683,702,781,813,927,1042,1157,1213,1195,1569,1895,1919,2002,2003,1976,2146,2070,2196,2248,2364,2402,2518,2474,2566,2568,2593,2526,2574,99,123,206,240,222,227,452,486,468,478,520,708,672,782,784,785,752,792,803,1185,1359,1591,1620,1740,1724,1838,1878,1915,2006,2134,2139,2217,2279,2373,2573,2591,2579,165,194,291,325,504,510,680,686,706,783,812,807,1024,1062,1065,1068,1086,1148,1149,1218,1260,1193,1368,1504,1747,1748,1753,1767,1798,1967,1938,2199,2343,2345,2408,2450,2559,2523,2679,2587]).map do |c| 
@@ -401,6 +393,14 @@ Admin.controller do
     @baselayers = "Stamen.TonerBackground"
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/reuters", :layout => false
+  end
+
+  get :embed do
+    ca = Cached.first
+    @markercount = Conflict.where(approval_status: 'approved').count
+    @markerinfo = ca.conflicts_marker.gsub('\\"', '"').gsub('","',',').sub(/^\["/,'[').sub(/",\]$/,']').html_safe
+    headers({ 'X-Frame-Options' => 'ALLOWALL' })
+    render "base/embed", :layout => false
   end
 
   get :embed, :with => :slug do
@@ -441,6 +441,29 @@ Admin.controller do
     @color = "##{con.color}"
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/feat_embed", :layout => :embed
+  end
+
+  get :embed_filter, :with => :uid do
+    ca = Cached.select(:filterdata).first
+    fil = Filter.find_by_uid(params["uid"])
+    pass unless fil
+    dmap = {"id"=>"i","category_id"=>"c","lat"=>"a","lon"=>"o"}
+    data = []
+    Admin.filter(fil.query, true, ["id","lat","lon","category_id"]).map{|x| x["_source"]}.each do |h|
+      data << {:c=>h["category_id"],"i"=>h["id"],"a"=>h["lat"],"o"=>h["lon"]}
+    end
+    pp data
+    @markerinfo = data.to_json.html_safe
+    @name = fil.name
+    @description = fil.description
+    @id = fil.id
+    @desc = fil.description
+    @markercount = JSON.parse(@markerinfo || "[]").count
+    @maptitle = fil.name
+    @title = fil.name
+    @fid = fil.uid
+    headers({ 'X-Frame-Options' => 'ALLOWALL' })
+    render "base/embed", :layout => false
   end
 
   get :company_list do
@@ -503,6 +526,14 @@ Admin.controller do
     redirect to 'jobs'
   end
 
+
+  post :savefilter do
+    pass unless current_account
+    unless filter = Filter.find_by_query(params["data"])
+      filter = Filter.create(query: params["data"], account_id: current_account.id)
+    end
+    return filter.uid
+  end
 
   post :filter do
     if params['page_type'] == "feat"

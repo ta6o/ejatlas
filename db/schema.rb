@@ -337,7 +337,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text    "description"
     t.text    "query_json"
     t.text    "query_html"
-    t.boolean "public"
+    t.boolean "public", :default => true
   end
 
   create_table "government_actors", :force => true do |t|
