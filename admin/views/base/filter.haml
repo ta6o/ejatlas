@@ -170,7 +170,8 @@
           .ready
             .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"} Apply
             .btn.btn-default{:onclick=>'clearFilter()'} Clear
-            .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"} Save
+            -if current_account
+              .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"} Save
             -if @page_type == "graph"
               .btn.btn-default{'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
             -#
