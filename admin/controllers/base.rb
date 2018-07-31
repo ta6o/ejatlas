@@ -462,6 +462,7 @@ Admin.controller do
     @maptitle = fil.name
     @title = fil.name
     @fid = fil.uid
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/embed", :layout => false
   end
