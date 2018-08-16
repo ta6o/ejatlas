@@ -38,6 +38,7 @@ ActiveRecord::Base.configurations[:production] = {
   reaping_frequency: ENV['DB_REAP_FREQ'] || 10
 }
 
+
 # Setup our logger
 ActiveRecord::Base.logger = logger
 
