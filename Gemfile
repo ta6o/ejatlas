@@ -21,14 +21,12 @@ gem 'graphcommons'
 gem 'sanitize'
 gem 'roo'
 gem 'rodf'
+gem "rmagick"
 
 gem 'padrino'
 
 if ENV["RACK_ENV"] == "production"
   gem 'gdal'
   gem 'puma'
-  gem "rmagick"
-else
-  gem "rmagick", "2.13.2"
 end
 

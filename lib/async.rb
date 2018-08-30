@@ -741,6 +741,7 @@ class AsyncTask
       filterdata["category"] = {}
       filterdata["category"]["category"] = {:content=>Category.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"category_id"}
       filterdata["category"]["type"] = {:content=>Type.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"types"}
+      filterdata["category"]["other_types"] = {:content=>'flat'}
       
       filterdata["project"] = {}
       filterdata["project"]["commodity"] = {:content=>Product.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"products"}
