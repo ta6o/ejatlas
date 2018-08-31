@@ -268,7 +268,7 @@
 	color: #bbb;
 	}
 
-.leaflet-touch .leaflet-control-zoom a {
+.leaflet-touch .leaflet-control a .leaflet-control span {
 	width: 30px;
 	height: 30px;
 	}
