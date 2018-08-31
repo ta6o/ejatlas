@@ -62,13 +62,6 @@
     / %link{:href => "assets/ico/apple-touch-icon-57-precomposed.png", :rel => "apple-touch-icon-precomposed"}/
 
   %body.embed{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
-    #top{:onclick=>'window.location = "http://ejatlas.org/"'}
-      .navbar.navbar-fixed-top
-        .navbar-inner
-          .tagline
-            %p Environmental Justice Atlas
-          .ejatlas-logo#eja-logo
-
     #map.map
     -if ENV['RACK_ENV'] == 'development'
       :javascript
@@ -106,3 +99,10 @@
         });
     :javascript
       function resetColumns(){}
+    #top{:onclick=>'window.location = "http://ejatlas.org/"'}
+      .navbar.navbar-fixed-top
+        .navbar-inner
+          .tagline
+            %p Environmental Justice Atlas
+          .ejatlas-logo#eja-logo
+

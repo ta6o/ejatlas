@@ -452,7 +452,6 @@ Admin.controller do
     Admin.filter(fil.query, true, ["id","lat","lon","category_id"]).map{|x| x["_source"]}.each do |h|
       data << {:c=>h["category_id"],"i"=>h["id"],"a"=>h["lat"],"o"=>h["lon"]}
     end
-    pp data
     @markerinfo = data.to_json.html_safe
     @name = fil.name
     @description = fil.description
