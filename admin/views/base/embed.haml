@@ -99,10 +99,11 @@
         });
     :javascript
       function resetColumns(){}
-    #top{:onclick=>'window.location = "http://ejatlas.org/"'}
-      .navbar.navbar-fixed-top
-        .navbar-inner
-          .tagline
-            %p Environmental Justice Atlas
-          .ejatlas-logo#eja-logo
+    #top
+      %a{:href=>"https://ejatlas.org",:target=>"_blank"}
+        .navbar.navbar-fixed-top
+          .navbar-inner
+            .tagline
+              %p Environmental Justice Atlas
+            .ejatlas-logo#eja-logo
 
