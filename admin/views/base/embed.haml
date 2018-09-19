@@ -60,6 +60,12 @@
     / %link{:href => "assets/ico/apple-touch-icon-114-precomposed.png", :rel => "apple-touch-icon-precomposed", :sizes => "114x114"}/
     / %link{:href => "assets/ico/apple-touch-icon-72-precomposed.png", :rel => "apple-touch-icon-precomposed", :sizes => "72x72"}/
     / %link{:href => "assets/ico/apple-touch-icon-57-precomposed.png", :rel => "apple-touch-icon-precomposed"}/
+  -if @filter
+    :css
+      #top {
+        bottom: 30px;
+      }
+
 
   %body.embed{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
     #map.map
@@ -104,10 +110,4 @@
             .tagline
               %p Environmental Justice Atlas
             .ejatlas-logo#eja-logo
-
--if @filter
-  :css
-    #top {
-      bottom: 30px;
-    }
 
