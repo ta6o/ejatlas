@@ -17838,8 +17838,13 @@ function markerSize() {
   if (map.getZoom() > 9) { state ++; }
   switch (state) {
     case -1:
-      $msize = "mic";
-      $('.map_icon').addClass('mic');
+      if (nomicmark) {
+        $msize = "min";
+        $('.map_icon').addClass('min');
+      } else {
+        $msize = "mic";
+        $('.map_icon').addClass('mic');
+      }
       break;
     case 3:
       $msize = "";
