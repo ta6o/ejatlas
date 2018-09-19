@@ -97,8 +97,6 @@
         $(document).ready(function(){
           $('#map').css('background','#{@color}')
         });
-    :javascript
-      function resetColumns(){}
     #top
       %a{:href=>"https://ejatlas.org",:target=>"_blank"}
         .navbar.navbar-fixed-top
@@ -106,4 +104,10 @@
             .tagline
               %p Environmental Justice Atlas
             .ejatlas-logo#eja-logo
+
+-if @filter
+  :css
+    #top {
+      bottom: 30px;
+    }
 
