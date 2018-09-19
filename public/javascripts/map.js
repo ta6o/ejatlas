@@ -614,7 +614,7 @@ function markerSize() {
   if (map.getZoom() > 9) { state ++; }
   switch (state) {
     case -1:
-      if ($nomicmark) {
+      if (typeof $nomicmark != "undefined") {
         $msize = "min";
         $('.map_icon').addClass('min');
       } else {
