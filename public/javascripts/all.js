@@ -17405,7 +17405,7 @@ function initMap () {
   var HomeButton = L.Control.extend({
     options: { position: 'topright' }, 
     onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'home-button');
+      var container = L.DomUtil.create('div', 'home-button leaflet-control-layers');
       L.DomEvent.addListener(container, 'click', getBack);
       return container;
     }
