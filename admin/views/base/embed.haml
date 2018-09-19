@@ -107,7 +107,8 @@
       %a{:href=>"https://ejatlas.org",:target=>"_blank"}
         .navbar.navbar-fixed-top
           .navbar-inner
-            .tagline
-              %p Environmental Justice Atlas
+            -unless @filter
+              .tagline
+                %p Environmental Justice Atlas
             .ejatlas-logo#eja-logo
 
