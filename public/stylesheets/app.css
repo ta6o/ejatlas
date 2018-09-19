@@ -5431,21 +5431,7 @@ ul.sidelink li.active {
   max-width: none;
 }
 .front #map .home-button {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-  border: 1px solid #888;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-  text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.8);
-  color: black;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  display: block;
-  margin-left: 13px;
-  margin-top: 12px;
+  padding: 0 5px 5px;
   cursor: pointer;
 }
 .front #map .home-button:hover {
