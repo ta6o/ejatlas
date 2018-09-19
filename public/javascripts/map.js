@@ -500,7 +500,8 @@ function showMarkers(markers) {
     }
     setTimeout( markerSize, 200);
   });
-  $('.map_icon').addClass('mic');
+  //$('.map_icon').addClass('mic');
+  markerSize();
 }
 
 
