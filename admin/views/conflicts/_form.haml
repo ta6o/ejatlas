@@ -1097,10 +1097,27 @@
                 %p.description
                   %strong Please Save the form after uploading each photo.
           #current_documents
-            -@conflict.documents.each do |d|
+            -@conflict.images.each do |d|
               .document
                 %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1])
+                .row{:style=>'margin-top:8px;background:#aaa;'}
+                  .col-md-3
+                    %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                  .col-md-9
+                    .row
+                      .col-md-9
+                        %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                        %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
+                      .col-md-3
+                        %a.d_image.pull-right.btn Remove
+                        -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
+                    %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+
+            -@conflict.documents.each do |d|
+              -next if d.copied?
+              .document
+                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
                   .row{:style=>'margin-top:8px;'}
                     .col-md-3
                       %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
@@ -1120,6 +1137,7 @@
                     .col-md-2
                       %a.d_document.pull-right.btn Remove
                   %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+
           :javascript
             var uploading = false;
             function uploadResponse (resp) {
@@ -1155,6 +1173,12 @@
                 par = $(this).closest('.document');
                 id = par.find('input').attr('name').split('_')[2];
                 html = '<input name="document_remove_'+id+'" type="hidden"></input>';
+                par.html(html);
+              });
+              $('.d_image').live('click', function(e){
+                par = $(this).closest('.document');
+                id = par.find('input').attr('name').split('_')[2];
+                html = '<input name="image_remove_'+id+'" type="hidden"></input>';
                 par.html(html);
               });
               $('#b_document').click(function(e){

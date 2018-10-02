@@ -302,6 +302,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer  "conflict_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.boolean  "copied?",      :default => false
   end
 
   create_table "env_impacts", :force => true do |t|

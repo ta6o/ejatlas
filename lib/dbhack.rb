@@ -1,3 +1,20 @@
+def trimdocs
+  # ActiveRecord::Migration.add_column :documents, "copied?", :boolean
+  Conflict.all.find_in_batches do |batch|
+    batch.each do |con|
+      next if con.documents.count == 0
+      print "#{con.id}\r"
+      docs = con.documents.map{|x| [x.file.file.filename,x]}.to_h
+      imgs = con.images.map{|x| x.file.file.filename}
+      imgs.each do |img|
+        if o = docs.keys.index(img) 
+          docs[img].update_attribute :copied?, true
+        end
+      end
+    end
+  end
+end
+
 def hackDB
   ActiveRecord::Migration.class_eval do |t|
     create_table "requests", :force => true do |t|

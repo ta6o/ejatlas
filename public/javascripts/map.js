@@ -1,4 +1,6 @@
+
 var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters;
+
 var $msize = "mic";
 var jsons = {};
 var checkingTile = false;
@@ -10,9 +12,11 @@ var baselayers = { };
 var dmns = [];
 var info = $("#infopane");
 var legendpane = $("#legendpane .legend");
+
 var hoverStyle = {
   "fillOpacity": 0.5
 };
+
 function pToLayer(obj, latlng, color) {
   point = obj["category"];
   return new L.CircleMarker(latlng, {

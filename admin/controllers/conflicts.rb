@@ -51,6 +51,7 @@ Admin.controllers :conflicts do
       'weblink'=>{},
       'medialink'=>{},
       'document'=>{},
+      'image'=>{},
       'related'=>{},
     }
     def stripDate prop, params
@@ -488,6 +489,7 @@ Admin.controllers :conflicts do
         'weblink'=>{:attr=>@conflict.weblinks,:class=>Weblink},
         'medialink'=>{:attr=>@conflict.medialinks,:class=>Medialink},
         'document'=>{:attr=>@conflict.documents,:class=>Document},
+        'image'=>{:attr=>@conflict.images,:class=>Image},
       }
       multies.each do |k,v|
         #v[:join].clear if v[:join]
