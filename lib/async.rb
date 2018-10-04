@@ -4,7 +4,11 @@ class AsyncTask
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
-    stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
+    if params.has_key?("idset")
+      stack = Conflict.order("#{order} #{ascdsc}").find(params["idset"])
+    else
+      stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
+    end
     stack = stack[0..(limit-1)] if limit > 0
     puts "#{stack.length} cases to be exported."
     #return stack.map(&:name).to_s
@@ -260,7 +264,11 @@ class AsyncTask
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
-    stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
+    if params.has_key?("idset")
+      stack = Conflict.order("#{order} #{ascdsc}").find(params["idset"])
+    else
+      stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
+    end
     puts "#{stack.length} cases to be exported."
     puts ::CSV
     if limit > 0

@@ -260,7 +260,8 @@
           name = me.attr('data-name');
           row = me.closest('.row');
           that = row.find('input');
-          text = that.val().substr(0,1).toUpperCase() + that.val().substr(1);
+          thatval = that.val().replace(/[^\w\d\s]/g,"")
+          text = thatval.substr(0,1).toUpperCase() + thatval.substr(1);
           drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
           //console.log(drag.html())
           row.nextAll('ul').append(drag);

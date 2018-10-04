@@ -6,7 +6,12 @@ class Filter < ActiveRecord::Base
   validate :unique
 
   def inspect
-    self.name
+    puts JSON.pretty_generate(JSON.parse(Filter.last.query))
+    self.uid
+  end
+
+  def to_html
+    JSON.pretty_generate(JSON.parse(Filter.last.query)).gsub(/\n/,"<br/>")
   end
 
   def self.recurse obj

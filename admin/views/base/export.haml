@@ -19,7 +19,7 @@
           .col-md-4
             %label Order
             %select{:name=>'order'}
-              -{"id"=>"ID", "slug"=>"Name", "created_at"=>"Date of creation", "updated_at"=>"Date of modification", "start_datestamp"=>"Start date", "end_datestamp"=>"End date", "approval_status"=>"Approval status", "contributor"=>"Contributor", "status_id"=>"Intensity of conflict", "reaction_id"=>"Reactionary stage", "project_status_id"=>"Project status", "success_level"=>"Success level", "accuracy_level"=>"Accuracy of location", "project_area"=>"Project area", "investment_sum"=>"Level of investment", "affected_people"=>"Affected population"}.each do |k,v|
+              -{"id"=>"ID", "slug"=>"Slug", "created_at"=>"Date of creation", "updated_at"=>"Date of modification", "start_datestamp"=>"Start date", "end_datestamp"=>"End date", "approval_status"=>"Approval status", "contributor"=>"Contributor", "status_id"=>"Intensity of conflict", "reaction_id"=>"Reactionary stage", "project_status_id"=>"Project status", "success_level"=>"Success level", "accuracy_level"=>"Accuracy of location", "project_area"=>"Project area", "investment_sum"=>"Level of investment", "affected_people"=>"Affected population"}.each do |k,v|
                 %option{:value=>k}= v
             %br/
             %br/
@@ -29,6 +29,10 @@
             %br/
             %label Limit
             %input{:type=>'number',:name=>'limit',:style=>'width:40px !important'}
+            %br/
+            %br/
+            %label Filter
+            %input{:type=>'text',:name=>'filter',:style=>'width:40px !important',:maxlength=>6}
             %br/
             %br/
             %label File type

@@ -1,3 +1,7 @@
+def newColumn
+  # ActiveRecord::Migration.add_column :filters, "result_length", :integer
+end
+
 def trimdocs
   # ActiveRecord::Migration.add_column :documents, "copied?", :boolean
   Conflict.all.find_in_batches do |batch|

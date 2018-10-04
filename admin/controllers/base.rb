@@ -528,6 +528,27 @@ Admin.controller do
   end
 
 
+  get :filters do
+    pass unless current_account
+    if ["admin","editor"].include?(current_account.role)
+      @filters = Filter.all
+    else
+      @filters = Filter.where(:account_id => current_account.id)
+    end
+    render "base/filters", :layout => "application"
+  end
+
+  get :editfilter, :with => :uid do
+    pass unless current_account
+    filter = Filter.find_by_uid(params["uid"])
+    if filter and filter.account == current_account or ["admin","editor"].include?(current_account.role)
+      @filter = filter
+    else
+      redirect to "/filters"
+    end
+    render "base/editfilter", :layout => "application"
+  end
+
   post :savefilter do
     pass unless current_account
     unless filter = Filter.find_by_query(params["data"])
@@ -700,6 +721,11 @@ Admin.controller do
     pp params
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
+    if params.has_key?("filter") and params["filter"].length == 6 and flt = Filter.find_by_uid(params.delete("filter"))
+      params["idset"] = Admin.filter(flt.query).map {|x| x["_id"]}
+    end
+    puts params
+    params.delete("filter")
     if params.delete("filetype") == "csv"
       AsyncTask.new.csvexport params
     else

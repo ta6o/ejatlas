@@ -339,6 +339,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text    "query_json"
     t.text    "query_html"
     t.boolean "public", :default => true
+    t.integer "reult_length"
   end
 
   create_table "government_actors", :force => true do |t|

@@ -1,0 +1,10 @@
+%h3 Edit filter
+%span
+  UID:
+  %b= @filter.uid
+%pre#query{:style=>"font-family:sans-serif, sans; line-height:16px;"}
+
+:javascript
+  data = #{@filter.query.html_safe};
+  console.log(data)
+  $("pre#query").html(JSON.stringify(data, undefined, 2))
