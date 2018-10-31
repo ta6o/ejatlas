@@ -202,7 +202,6 @@ Admin.controllers :conflicts do
     if current_account
       if ["admin","editor"].include? current_account.role
         @conflictos = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),false).map{|x| x["_source"]}
-        pp @conflictos[0]
         @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
         @conflictos.sort_by! {|c| ( c["modified_at"] || Time.now ) }
@@ -220,7 +219,11 @@ Admin.controllers :conflicts do
   get :approved do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'approved').order('modified_at desc').select('id,name,slug,account_id,category_id,modified_at,approval_status')
+        @conflictos = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),true).map{|x| x["_source"]}
+        @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
+        @categories = Category.all.map {|c| [c.id,c.name]}.to_h
+        @conflictos.sort_by! {|c| ( c["modified_at"] || Time.now ) }
+        @conflictos.reverse!
       else
         @conflicts = Conflict.where(approval_status: 'approved').where(account_id: current_account.id).order('modified_at desc').select('id,name,slug,account_id,approval_status,category_id,modified_at')
       end
