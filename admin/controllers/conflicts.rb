@@ -201,12 +201,10 @@ Admin.controllers :conflicts do
   get :index do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = []
-        Conflict.select('id,name,slug,account_id,category_id,modified_at,approval_status').find_in_batches(batch_size: 64) do |batch|
-          @conflicts << batch
-        end
-        @conflicts.flatten!
-        @conflicts.sort_by! {|c| ( c.modified_at || Time.now ) }
+        @conflicts = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),false)
+        @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').to_h
+        @categories = Category.all.map {|c| [c.id,c.name]}.to_h
+        @conflicts.sort_by! {|c| ( c["modified_at"] || Time.now ) }
         @conflicts.reverse!
       else
         proper = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id)

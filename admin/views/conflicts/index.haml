@@ -19,41 +19,68 @@
             %th.last
               %form#filter-form
                 %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
-        %tbody
-          -@conflicts.each do |conflict|
-            -if conflict.approval_status == 'approved'
-              %tr
-                %td.first=conflict.name
-                %td
-                  %span=conflict.category.name if conflict.category
-                %td
-                  %span
-                    -if conflict.account
-                      %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
-                %td
-                  -if conflict.modified_at
-                    %span=conflict.modified_at.strftime '%Y-%m-%d'
-                  -else
-                    %span &nbsp;
-                %td
-                  %span=conflict.approval_status
-                %td.last
-                  =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
-                  |
-                  =link_to pat('View'), url(:conflict, :slug => conflict.slug), :method => :get
-                  -if ["admin","editor"].include? current_account.role
-                    %br/
-                    =link_to pat('Disapprove'), url(:conflicts, :disapprove, :id => conflict.id), :method => :get
 
-            -else
-              -unless current_account.nil?
-                %tr{:style=>'color:#bbb'}
+        %tbody
+          -if @conflictos
+            -@conflictos.each do |conflict|
+              -if conflict["approval_status"] == 'approved'
+                %tr
+                  %td.first=conflict["name"]
+                  %td
+                    %span=@categories[conflict["category_id"]]
+                  %td
+                    %span
+                      -if conflict["account"]
+                        %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
+                  %td
+                    -if conflict["modified_at"]
+                      %span=conflict["modified_at"].strftime '%Y-%m-%d'
+                    -else
+                      %span &nbsp;
+                  %td
+                    %span=conflict["approval_status"]
+                  %td.last
+                    =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
+                    |
+                    =link_to pat('View'), url(:conflict, :slug => conflict["slug"]), :method => :get
+                    -if ["admin","editor"].include? current_account.role
+                      %br/
+                      =link_to pat('Disapprove'), url(:conflicts, :disapprove, :id => conflict["id"]), :method => :get
+              -else
+                -unless current_account.nil?
+                  %tr{:style=>'color:#bbb'}
+                    %td.first=conflict["name"]
+                    %td
+                      %span=@categories[conflict["category_id"]] if conflict["category_id"]
+                    %td
+                      -if conflict["account"]
+                        %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
+                    %td
+                      -if conflict["modified_at"]
+                        %span=conflict["modified_at"].strftime '%Y-%m-%d'
+                      -else
+                        %span &nbsp;
+                    %td
+                      %span=conflict["approval_status"]
+                    %td.last
+                      =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
+                      |
+                      =link_to pat('View'), url(:conflict, :slug => conflict["slug"]), :method => :get
+                      -if ["admin","editor"].include? current_account.role
+                        %br/
+                        =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
+
+          -else
+            -@conflicts.each do |conflict|
+              -if conflict.approval_status == 'approved'
+                %tr
                   %td.first=conflict.name
                   %td
                     %span=conflict.category.name if conflict.category
                   %td
-                    -if conflict.account
-                      %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
+                    %span
+                      -if conflict.account
+                        %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
                   %td
                     -if conflict.modified_at
                       %span=conflict.modified_at.strftime '%Y-%m-%d'
@@ -67,7 +94,30 @@
                     =link_to pat('View'), url(:conflict, :slug => conflict.slug), :method => :get
                     -if ["admin","editor"].include? current_account.role
                       %br/
-                      =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict.id), :method => :get
+                      =link_to pat('Disapprove'), url(:conflicts, :disapprove, :id => conflict.id), :method => :get
+              -else
+                -unless current_account.nil?
+                  %tr{:style=>'color:#bbb'}
+                    %td.first=conflict.name
+                    %td
+                      %span=conflict.category.name if conflict.category
+                    %td
+                      -if conflict.account
+                        %a{:href=>"/accounts/edit/#{conflict.account.id}"}=conflict.account.name 
+                    %td
+                      -if conflict.modified_at
+                        %span=conflict.modified_at.strftime '%Y-%m-%d'
+                      -else
+                        %span &nbsp;
+                    %td
+                      %span=conflict.approval_status
+                    %td.last
+                      =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
+                      |
+                      =link_to pat('View'), url(:conflict, :slug => conflict.slug), :method => :get
+                      -if ["admin","editor"].include? current_account.role
+                        %br/
+                        =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict.id), :method => :get
       -unless current_account.nil?
         -if ["admin","editor"].include? current_account.role
           :javascript
