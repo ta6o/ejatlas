@@ -34,7 +34,7 @@
                         %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
                   %td
                     -if conflict["modified_at"]
-                      %span=conflict["modified_at"].strftime '%Y-%m-%d'
+                      %span=Time.parse(conflict["modified_at"]).strftime '%Y-%m-%d'
                     -else
                       %span &nbsp;
                   %td
@@ -57,7 +57,7 @@
                         %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
                     %td
                       -if conflict["modified_at"]
-                        %span=conflict["modified_at"].strftime '%Y-%m-%d'
+                        %span=Time.parse(conflict["modified_at"]).strftime '%Y-%m-%d'
                       -else
                         %span &nbsp;
                     %td
