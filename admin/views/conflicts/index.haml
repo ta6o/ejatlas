@@ -65,7 +65,7 @@
                     %td.last
                       =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                       |
-                      =link_to pat('View'), url(:conflict, :slug => conflict["slug"]), :method => :get
+                      =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
                       -if ["admin","editor"].include? current_account.role
                         %br/
                         =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
