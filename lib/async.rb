@@ -593,10 +593,10 @@ class AsyncTask
         batch.each do |c|
           c.ping
           c.save
+          client.index index: 'atlas', type: 'conflict', id: c.id, body: c.elastic
           if c.approval_status == "approved"
             open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
             #open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
-            client.index index: 'atlas', type: 'conflict', id: c.id, body: c.elastic
           end
         end
       end
