@@ -213,7 +213,6 @@ Admin.controllers :conflicts do
         pp @conflicts.class
       end
     end
-    pp @conflictos
     render 'conflicts/index'
   end
 
