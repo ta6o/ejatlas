@@ -213,6 +213,7 @@ Admin.controllers :conflicts do
         pp @conflicts.class
       end
     end
+    pp @conflictos
     render 'conflicts/index'
   end
 
@@ -474,6 +475,7 @@ Admin.controllers :conflicts do
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
     ##puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     oldstat = @conflict.approval_status
+
     if @conflict.save :validate=>false
       multies = {
         'company'=>{:attr=>@conflict.companies,:class=>Company,:join=>@conflict.c_companies},
@@ -602,13 +604,15 @@ Admin.controllers :conflicts do
 
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
+        if ['admin','editor'].include?(current_account.role)
+          $client.index index: 'atlas', type: 'conflict', id: @conflict.id, body: @conflict.elastic
+        end
+
         if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
           if ['admin','editor'].include?(current_account.role)
             Admin.notify_collaborator @conflict
-            p "notified collaborator"
           elsif ["queued","modified"].include?(@conflict.approval_status)
             Admin.notify_moderator @conflict
-            p "notified moderator"
           end
         end
         redirect "/conflicts/edit/#{@conflict.id}#{hash}"
