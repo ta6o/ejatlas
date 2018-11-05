@@ -23,6 +23,7 @@ class Account < ActiveRecord::Base
 
   # Callbacks
   before_save :encrypt_password, :if => :password_required
+  after_save :index
 
   #
   # This method is for authentication purpose
@@ -38,6 +39,10 @@ class Account < ActiveRecord::Base
 
   def full_name
     return self.name
+  end
+
+  def index
+    $client.index index: 'atlas', type: 'account', id: self.id, body:{:id=>self.id, :name=>self.name}
   end
 
   private
