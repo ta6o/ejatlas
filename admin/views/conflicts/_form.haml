@@ -1100,9 +1100,11 @@
             -@conflict.images.each do |d|
               .document
                 %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;background:#aaa;'}
+                .row{:style=>'margin-top:8px;'}
                   .col-md-3
                     %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                    .center-text
+                      [[IMAGE]]
                   .col-md-9
                     .row
                       .col-md-9
@@ -1118,7 +1120,7 @@
               .document
                 %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
                 -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
-                  .row{:style=>'margin-top:8px;'}
+                  .row{:style=>'margin-top:8px;background:#aaa;'}
                     .col-md-3
                       %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
                     .col-md-9

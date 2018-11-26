@@ -726,6 +726,7 @@ class AsyncTask
         begin
           img.save!
           puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
+          doc.update_attribute :copied?, true
         rescue => e
           puts "  problem saving image at: \n#{doc.file.url}\n"
           p e
