@@ -114,7 +114,7 @@ Admin.controller do
   end
 
   get :conflict, :with => :slug do
-    c = Conflict.find_slug(params[:slug])
+    c = Conflict.find_slug(params[:slug].downcase)
     #last_modified c.updated_at
     pass unless c
     if c.approval_status != "approved"
