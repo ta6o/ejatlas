@@ -85,7 +85,7 @@ class Admin < Padrino::Application
     email = (user.id == 1 ? "ejoltmap@gmail.com" : user.email)
     stamp = Time.now.to_i.to_s
 
-    sg = SendGrid::API.new(api_key:'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')
+    sg = SendGrid::API.new(api_key:'***REMOVED***')
 
     from = Email.new(email: "no-reply@ejatlas.org", name: "EJOLT Project"  )
     to = Email.new(email: email, name: user.name)

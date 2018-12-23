@@ -589,7 +589,7 @@ Admin.controllers :conflicts do
         end
       end
 
-      puts "general: #{general}"
+      # puts "general: #{general}"
       if general
         capital = Country.find(updated['conflict']['country_id']).capital.gsub(',','.').split('|')
         @conflict.lat = capital[1]
