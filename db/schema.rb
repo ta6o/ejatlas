@@ -173,6 +173,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "updated_at"
   end
 
+  # outcome
   create_table "conflict_events", :force => true do |t|
     t.string "name"
   end
@@ -407,6 +408,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer "product_id"
   end
 
+  # specific_commodity
   create_table "products", :force => true do |t|
     t.string  "name"
     t.string  "slug"
@@ -474,6 +476,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string "name"
   end
 
+  # intensity
   create_table "statuses", :force => true do |t|
     t.string "name"
   end
