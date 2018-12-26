@@ -37,7 +37,7 @@
             %strong Please click the markers on the map for more information.
           .clearfix
             .pull-right
-              %input{:type=>'checkbox'} &nbsp; Do not show this information again
+              %input{:type=>'checkbox',:checked=>true} &nbsp; Do not show this information again
 
 .front
   -if @defs
@@ -64,54 +64,58 @@
     #head
       %br/
       %h3
-        %strong=@maptitle
+        %strong= t "v.index.#{@maptitle.shorten_en}"
       %p
-        %strong="#{@markercount} cases reported"
+        %strong= t "v.index.var_cases_reported", num_cases: @markercount
       %h4{:style=>'padding:12px 0;font-weight:bold'}
-        You&nbsp;can
-        %a{:href=>'/accounts/new'}contribute&nbsp;to&nbsp;EJ&nbsp;Atlas
-        and&nbsp;/&nbsp;or
-        %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}fill&nbsp;out&nbsp;our&nbsp;survey.
+        =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
+        %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
+        =t("v.index.and_or").gsub(/\s+/,"&nbsp;").html_safe
+        %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}=t("v.index.fill_out_our_survey").gsub(/\s+/,"&nbsp;").html_safe
 
   .horipane{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>"Drop down each pane"}
-    .title Legend
+    .title= t "v.index.legend"
     .content{:style=>'display:none'}
       #legendpane
         .legend.noselect
 
   -#if current_account
   .horipane#filter-container
-    .title Filter
+    .title= t "v.filter.filter"
     .content{:style=>'display:none;'}
       #filter-row.block{'data-width'=>500}
         #filter= @filter
 
   .horipane
-    .title Browse maps
+    .title= t "v.index.browse_maps"
     .content{:style=>'display:none;'}
       -@browseinfo.each do |k,v|
         .horipane.browse
-          .title{:style=>'background:transparent'}= "by #{k.titlecase}"
+          .title{:style=>'background:transparent'}= t "v.index.by_#{k.slug}"
           .content{:style=>'display:none;'}
             %div{:id=>"browse#{k}"}
               %ul.columns
                 -v.each do |c|
                   -j = JSON.parse c[0]
-                  %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                  -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
+                  -if k == "company"
+                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                  -else
+                    %li="<a href='/#{k}/#{j['slug']}'>#{t "#{scope}.#{j['name'].slug('_')}"}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
 
   .horipane
-    .title Get Involved
+    .title= t "v.index.get_involved"
     .content.social{:style=>'display:none;'}
 
       .block{"data-width"=>240}
-        %a.btn.btn-twitter.full{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas, mapping environmental justice:")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"} Tweet about EJAtlas
+        %a.btn.btn-twitter.full{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas, mapping environmental justice:")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"}= t "v.index.tweet_about_ej_atlas"
         %a.twitter-timeline{'data-dnt'=>"true",:href=>"https://twitter.com/EnvJustice",'data-widget-id'=>"498025848931246080",'data-chrome'=>'nofooter noborders',:height=>490} 
         :javascript
           !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 
       .block{"data-width"=>240}
-        %a.btn.btn-facebook.full{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"} Share on Facebook
+        %a.btn.btn-facebook.full{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"}= t "v.index.share_on_facebook"
         .fb-page{"data-href"=>"https://www.facebook.com/ejolt","data-tabs"=>"timeline","data-small-header"=>"true","data-adapt-container-width"=>"true","data-hide-cover"=>"false","data-show-facepile"=>"true"}
           %blockquote.fb-xfbml-parse-ignore{:cite=>"https://www.facebook.com/ejolt"}
             %a{:href=>"https://www.facebook.com/ejolt"} Environmental Justice
@@ -119,7 +123,7 @@
 
   -if @feats
     .horipane
-      .title.active Featured Maps
+      .title.active= t "v.index.featured_maps"
       .content
         %table
           %tbody.feats
@@ -137,7 +141,7 @@
                   =c.headline
   -if @recent
     .horipane
-      .title.active Recently Updated Conflicts
+      .title.active= t "v.index.recently_updated_conflicts"
       .content
         %table
           %tbody.recent
@@ -202,7 +206,7 @@
             console.log('error', data, status, error);
           }
         });
-        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{t("index.var_cases_reported", num_cases:@markercount)}</p>")
         console.log("figure")
       } else {
         setTimeout(onLoad,10);

@@ -22,6 +22,7 @@ gem 'sanitize'
 gem 'roo'
 gem 'rodf'
 gem "rmagick"
+gem 'google_drive'
 
 gem 'padrino'
 

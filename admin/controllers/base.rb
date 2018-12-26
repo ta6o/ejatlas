@@ -13,42 +13,55 @@ Admin.controller do
 
   get :about do
     @name = "About"   
-    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/about.haml")
-    render "base/about", :layout => :application
+    if File.exists? "#{Dir.pwd}/admin/views/base/about_#{I18n.locale}.haml"
+      render "base/about_#{I18n.locale}", :layout => :application
+    else
+      render "base/about_en", :layout => :application
+    end
   end
   get :faq do
     @name = "Frequently Asked Questions"   
-    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/faq.haml")
-    render "base/faq", :layout => :application
+    if File.exists? "#{Dir.pwd}/admin/views/base/faq_#{I18n.locale}.haml"
+      render "base/faq_#{I18n.locale}", :layout => :application
+    else
+      render "base/faq_en", :layout => :application
+    end
   end
   get :disclaimer do
     @name = "Disclaimer"   
-    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/disclaimer.haml")
-    render "base/disclaimer", :layout => :application
+    if File.exists? "#{Dir.pwd}/admin/views/base/disclaimer_#{I18n.locale}.haml"
+      render "base/disclaimer_#{I18n.locale}", :layout => :application
+    else
+      render "base/disclaimer_en", :layout => :application
+    end
   end
 
   get :contact do
     @name = "Contact"   
-    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/contect.haml")
-    render "base/contact", :layout => :application
+    if File.exists? "#{Dir.pwd}/admin/views/base/contact_#{I18n.locale}.haml"
+      render "base/contact_#{I18n.locale}", :layout => :application
+    else
+      render "base/contact_en", :layout => :application
+    end
   end
 
   get :credits do
     @name = "Credits & Collaborators"   
-    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/credits.haml")
-    render "base/credits", :layout => :application
+    if File.exists? "#{Dir.pwd}/admin/views/base/credits_#{I18n.locale}.haml"
+      render "base/credits_#{I18n.locale}", :layout => :application
+    else
+      render "base/credits_en", :layout => :application
+    end
   end
 
   get :welcome do
     @name = "Welcome"   
-    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
-    render "base/welcome", :layout => :application
+    render "base/welcome_#{I18n.locale}", :layout => :application
   end
 
   get :mailsent do
     @name = "You'll receive an email..."   
     @account = current_account || nil
-    #last_modified File.mtime("#{PADRINO_ROOT}/admin/views/base/welcome.haml")
     render "base/mailsent", :layout => :application
   end
 

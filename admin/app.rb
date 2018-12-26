@@ -30,6 +30,10 @@ class Admin < Padrino::Application
 
   set :login_page, "/sessions/login"
 
+  I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
+  I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
+  I18n.backend.load_translations
+
   $title = 'EJAtlas'
 
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
@@ -63,19 +67,30 @@ class Admin < Padrino::Application
     $consurl = 'http://ejatlas.org'
   end
 
+  before do
+    unless ["localhost","ejatlas"].include? (locale = request.host.split(".")[0])
+      I18n.locale = locale
+    end
+  end
+
   after do
     ActiveRecord::Base.connection.close
   end
 
+  get :i18n do
+    if params.has_key? "dl"
+      Admin.fetch_translations
+    end
+    I18n.backend.reload!
+    if params.has_key? "path"
+      "Updated at #{l Time.now}<br/><br/>#{I18n.load_path.join("<br/>")}"
+    else
+      "Updated at #{l Time.now}"
+    end
+  end
+
   def self.slugify str
-    return str if str.nil?
-    res = str.to_ascii
-      .downcase
-      .strip
-      .gsub(/[-_\s\/]+/, '-')
-      .gsub(/[^\w-]/, '')
-      .gsub(/-+/,'-')
-    return res
+    str.slug
   end
 
   def self.send_mail user, subject, message
@@ -441,15 +456,92 @@ class Admin < Padrino::Application
     (Country.all.map(&:capital)-[nil]).sort
   end
 
+  def self.fetch_translations download=true
+    if download
+      print "\rFetching..."
+      require "google_drive"
+      api_id = "***REMOVED***.apps.googleusercontent.com"
+      api_key = "***REMOVED***"
+      $session = GoogleDrive.saved_session("./stored_token.json", nil, api_id, api_key)
+      file = $session.spreadsheet_by_key("***REMOVED***")
+      file.worksheets.each do |ws|
+        next if ws.title.downcase == "legend"
+        CSV.open("#{Dir.pwd}/lib/sheets/#{ws.title.downcase}.csv","w") do |csv|
+          ws.rows.each do |row|
+            csv << row
+          end
+        end
+      end
+    end
+    print "\rParsing..."
+    locales = {}
+    locs = []
+    keys = []
+    Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
+      next if file.match /^\./
+      next unless file.match /\.csv$/
+      file = file.strip
+      CSV.read("#{Dir.pwd}/lib/sheets/#{file}").each_with_index do |row,ind|
+        domain = "models,views,forms".split(",").include?(file.sub(/\.csv$/,"").slug) ? file[0].slug : file.sub(/\.csv$/,"").slug("_")
+        if ind == 0
+          locs = row.map{|loc| loc.slug("_")}
+          locs[1..-1].each do |loc| 
+            if locales.has_key?(loc)
+              locales[loc][domain] = {} unless locales[loc].has_key?(domain)
+            else
+              locales[loc] = {domain=>{}} 
+            end
+          end
+        else
+          scope = row[0].strip.split(/\./)
+          if ["m","c"].include? domain
+            key = row[locs.index("en")].slug("_")
+          else
+            key = row[locs.index("en")].shorten_en
+          end
+          keys << key
+          row.each_with_index do |c,i|
+            next if i == 0
+            next if c.nil? or c.length == 0
+            loc = locs[i]
+            point = locales[loc][domain]
+            scope.length.times do |t|
+              point[scope[t]] = {} unless point.has_key? scope[t]
+              point = point[scope[t]]
+            end
+            #puts "duplicate key: #{c}" if point[key]
+            point[key] = c.strip
+          end
+        end
+      end
+    end
+    locales.each do |k,v|
+      next if v.empty?
+      File.open("#{Dir.pwd}/lib/locales/#{k}.yml","w") do |file|
+        file << {k => v}.to_yaml
+      end
+    end
+    print "\rReloading"
+    I18n.backend.reload!
+    print "\rDone."
+  end
+
 end
 
-=begin
 class String
-  def url
-    return self
+  def slug fill="-"
+    return self if self.nil?
+    self.to_ascii
+      .downcase
+      .strip
+      .gsub(/[-_\s\/]+/, '-')
+      .gsub(/[^\w-]/, '')
+      .gsub(/-+/,fill)
   end
-  def thumb
-    return self
+  def shorten_en
+    words = self.gsub(/%{[^}]+}/,"var").strip.slug.split(/-/)
+    ["a","and","of","the"].each{|d| words.delete(d)} if words.length > 3
+    words[0..4].join("_")
   end
 end
-=end
+

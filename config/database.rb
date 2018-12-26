@@ -19,7 +19,7 @@ $gc_api_key = "***REMOVED***"
 ActiveRecord::Base.configurations[:development] = {
   :adapter  => 'postgresql',
   :encoding => 'utf8',
-  :database => 'ejatlas',
+  :database => 'ejatlas_staging',
   :username => 'yakup',
   :password => '***REMOVED***',
   :host     => '127.0.0.1'
@@ -31,7 +31,7 @@ ActiveRecord::Base.configurations[:production] = {
   username:     'root',
   port:         '5432',
   password:     '***REMOVED***',
-  database:     'ejatlas',
+  database:     'ejatlas_staging',
   encoding:     'utf8',
   pool:         ENV['DB_POOL'] || 6,
   connections:  ENV['DB_CONNECTIONS'] || 20,

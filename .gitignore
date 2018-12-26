@@ -20,4 +20,8 @@ db/*.db
 .rvmrc*
 Gemfile.lock
 public/data/*
+stored_token.json
+lib/sheets/*
+lib/locales/*
+
 

@@ -39,94 +39,94 @@
                   %li.first
                     %a &nbsp;
                   %li.home
-                    %a{:href => "/"}= "Home"
+                    %a{:href => "/"}= t "v.menu.home"
                   -if current_account
                     -if ['admin','editor'].include? current_account.role
                       %li.dropdown#conflicts
                         %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#conflicts'}
-                          = 'Conflicts'
+                          = t "f.menu.conflicts"
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>'/conflicts/new'} Add new
+                            %a{:href=>'/conflicts/new'}= t "f.menu.add_new"
                           %li.divider
                           %li
-                            %a{:href=>'/conflicts/approved'} Approved
+                            %a{:href=>'/conflicts/approved'}= t "f.conflict.approved"
                           %li
-                            %a{:href=>'/conflicts/modified'} Modified
+                            %a{:href=>'/conflicts/modified'}= t "f.conflict.modified"
                           %li
-                            %a{:href=>'/conflicts/queued'} Queued
+                            %a{:href=>'/conflicts/queued'}= t "f.conflict.queued"
                           %li
-                            %a{:href=>'/conflicts/draft'} Draft
+                            %a{:href=>'/conflicts/draft'}= t "f.conflict.draft"
                           %li
-                            %a{:href=>'/conflicts/deleted'} Deleted
+                            %a{:href=>'/conflicts/deleted'}= t "f.conflict.deleted"
                           %li.divider
                           %li
-                            %a{:href=>'/conflicts'} All cases
+                            %a{:href=>'/conflicts'}= t "f.menu.all_cases"
 
                       %li.dropdown#editor
                         %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#editor'}
-                          = 'Moderation'
+                          = t "f.menu.moderation"
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>'/cache'} Update cache
+                            %a{:href=>'/cache'}= t "f.menu.update_cache"
                           %li
-                            %a{:href=>'/export'} Export cases
+                            %a{:href=>'/export'}= t "f.menu.export_cases"
                           %li
-                            %a{:href=>'/jobs'}= "Jobs"
+                            %a{:href=>'/jobs'}= t "f.menu.jobs"
 
                       %li.dropdown#models
                         %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
-                          = 'Models'
+                          = t 'f.menu.models'
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>'/filters'} Filters
+                            %a{:href=>'/filters'}= t "f.menu.filters"
                           %li
-                            %a{:href=>'/featureds'} Featured maps
+                            %a{:href=>'/featureds'}= t "f.menu.featured_maps"
                           %li
-                            %a{:href=>'/types'} Categories
+                            %a{:href=>'/types'}= t "f.menu.categories"
                           %li
-                            %a{:href=>'/countries'} Countries
+                            %a{:href=>'/countries'}= t "f.menu.countries"
                           %li
-                            %a{:href=>'/companies'} Companies
+                            %a{:href=>'/companies'}= t "f.menu.companies"
                           %li
-                            %a{:href=>'/ifis'} IFI's
+                            %a{:href=>'/ifis'}= t "f.menu.ifis"
                           %li
-                            %a{:href=>'/accounts'} Collaborators
+                            %a{:href=>'/accounts'}= t "f.menu.collaborators"
                           %li.divider
                           %li
-                            %a{:href=>'/vectors'} Vectors
+                            %a{:href=>'/vectors'}= t "f.menu.vectors"
                           %li
-                            %a{:href=>'/vectors/styles'} Vector Styles
+                            %a{:href=>'/vectors/styles'}= t "f.menu.vector_styles"
 
                     -else
                       %li
-                        %a{:href=>"/accounts/edit/#{current_account.id}"} My Profile
+                        %a{:href=>"/accounts/edit/#{current_account.id}"}= t "v.menu.my_profile"
                       %li
-                        %a{:href=>'/conflicts'} My Conflicts
+                        %a{:href=>'/conflicts'}= t "v.menu.my_conflicts"
                       %li
-                        %a{:href=>'/conflicts/new'} New Conflict
+                        %a{:href=>'/conflicts/new'}= t "v.menu.new_conflict"
                       %li.dropdown#models
                         %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
                           = 'Models'
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>'/filters'} Filters
+                            %a{:href=>'/filters'}= t "f.menu.filters"
                           %li.divider
                           %li
-                            %a{:href=>'/featureds'} Featured maps
+                            %a{:href=>'/featureds'}= t "f.menu.featured_maps"
                           %li
-                            %a{:href=>'/vectors'} Vectors
+                            %a{:href=>'/vectors'}= t "f.menu.vectors"
                           %li
-                            %a{:href=>'/vectors/styles'} Vector Styles
+                            %a{:href=>'/vectors/styles'}= t "f.menu.vector_styles"
 
                     %li
                       %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
                         %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-                      %a{:href=>'#',:onclick=>'$("#signout").submit()'} Logout
+                      %a{:href=>'#',:onclick=>'$("#signout").submit()'}= t "v.menu.logout"
                   -else
                     %li.dropdown#ejolt
                       %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#ejolt'}
@@ -176,7 +176,7 @@
                                 %a{:href=>"/sessions/login"} Help!
 
                 .tagline
-                  %p Environmental Justice Atlas
+                  %p= t "v.menu.environmental_justice_atlas"
                 .ejatlas-logo
       %header
         .container

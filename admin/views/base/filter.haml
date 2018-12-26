@@ -7,13 +7,13 @@
           .panel-heading{:role=>"tab",:id=>"h_#{page}"}
             %h5.panel-title
               %a.collapsed{"data-toggle"=>"collapse","data-parent"=>"#accordion","href"=>"#c_#{page}","aria-expanded"=>(page=="basic_data" ? "true" : "false"),"aria-controls"=>"c_#{page}"}
-                =page.gsub("_"," ").titlecase
+                =t "v.filter.#{page.slug '_'}"
           .panel-collapse.collapse{:id=>"c_#{page}",:class=>(page=="basic_data" ? "in" : ""),:role=>"tabpanel","aria-labelledby"=>"h_#{page}"}
             .panel-body
               %ul
                 -content.each do |field,options|
                   %li
-                    %a.show-filter-content{"data-id"=>"#{field}",:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= field.gsub("_"," ").titlecase
+                    %a.show-filter-content{"data-id"=>"#{field}",:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= t "v.filter.#{field.slug '_'}"
     #filterInfo{:style=>'margin-top:8px;'}
       %p.small{:style=>'line-height:16px;padding:4px;'}
         Please pick from the
@@ -26,11 +26,11 @@
       %ul
         %li{:style=>'color:white;font-weight:bold;text-align:center;'}
           %div.idrag
-            .dropbox.and{"data-section"=>"box","data-value"=>'and'} AND
+            .dropbox.and{"data-section"=>"box","data-value"=>'and'}=t "v.filter.and"
           %div.idrag
-            .dropbox.or{"data-section"=>"box","data-value"=>'or'} OR
+            .dropbox.or{"data-section"=>"box","data-value"=>'or'}=t "v.filter.or"
           %div.idrag
-            .dropbox.not{"data-section"=>"box","data-value"=>'not'} NOT
+            .dropbox.not{"data-section"=>"box","data-value"=>'not'}=t "v.filter.not"
 
   .col-sm-9.canvas
     .row
@@ -43,29 +43,29 @@
                 -if options.has_key? 'model' then  model = options['model'] else model = field end
                 -if options['content'].is_a? Array
                   .body
-                    %h4= field.gsub("_"," ").titlecase
+                    %h4= "#{t "v.filter.#{field.slug("_")}"}"
                     %ul
                       -options['content'].each do |c|
                         %li
-                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-value"=>c.keys.first}=c.values.first
+                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-field"=>field,"data-value"=>c.keys.first}= t "m.#{name.slug('_')}.#{c.values.first.slug('_')}"
                 -elsif options['content'] == 'auto'
                   .body.auto
-                    %h4= field.gsub("_"," ").titlecase
-                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>model,"data-name"=>name,"data-field"=>field,"data-section"=>"field",:style=>'width:100%'}
+                    %h4= "#{t "v.filter.#{field.slug("_")}"}"
+                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>model,"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-section"=>"field",:style=>'width:100%'}
                     %ul
                 -elsif options['content'] == 'flat'
                   .body.flat
-                    %h4= field.gsub("_"," ").titlecase
+                    %h4= "#{t "v.filter.#{field.slug("_")}"}"
                     .row
                       .col-xs-9
                         %input.token{:id=>"#{field}-input",:type=>'text',:style=>'width:100%'}
                       .col-xs-3
-                        .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-section"=>"prefix"}
+                        .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-section"=>"prefix"}
                           %icon.glyphicon.glyphicon-arrow-right
                     %ul
                 -elsif options['content'].match(/\d+:\d+/)
                   -range = options['content'].split(':')
-                  %h4= field.gsub("_"," ").titlecase
+                  %h4= "#{t "v.filter.#{field.slug("_")}"}"
                   .slider{:id=>"#{field}-slider"}
                   .clearfix{:style=>'width:100%'}
                     -if name == 'investment_sum'
@@ -76,8 +76,8 @@
                       %input.lte{:type=>'number',:id=>"#{field}-lte",:value=>range[1]}
                   %ul
                     %li
-                      %span.drag.graybg{:id=>"#{field}-drag","data-section"=>"field","data-name"=>name,"data-field"=>field,"data-value"=>"#{range[0]}:#{range[1]}"}
-                        %strong= "#{field.gsub("_"," ").titlecase}:"
+                      %span.drag.graybg{:id=>"#{field}-drag","data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-value"=>"#{range[0]}:#{range[1]}"}
+                        %strong= "#{t "v.filter.#{field.slug("_")}"}:"
                         ="#{range[0]} - #{range[1]}"
                   -if name == 'investment_sum'
                     :javascript
@@ -128,7 +128,7 @@
                             $(".options ##{field}-gte").val(range[0]);
                             $(".options ##{field}-lte").val(range[1]);
                             $(".options ##{field}-drag").attr('data-value',range[ 0 ]+":"+range[ 1 ]);
-                            $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+range[ 0 ]+" - "+range[ 1 ]);
+                            $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+range[ 0 ]+" - "+range[ 1 ]);
                           }
                         });
                         $(".options ##{field}-gte, .options ##{field}-lte").on('change',function(e){
@@ -136,7 +136,7 @@
                           comms = [commify($(".options ##{field}-gte").val()),commify($(".options ##{field}-lte").val())]
                           $("##{field}-slider").slider({values:range})
                           $(".options ##{field}-drag").attr('data-value',comms[0]+":"+comms[1]);
-                          $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+comms[0]+" - "+comms[1]);
+                          $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+comms[0]+" - "+comms[1]);
                         });
                       });
 
@@ -152,14 +152,14 @@
                             $(".options ##{field}-gte").val(ui.values[0]);
                             $(".options ##{field}-lte").val(ui.values[1]);
                             $(".options ##{field}-drag").attr('data-value',ui.values[ 0 ]+":"+ui.values[ 1 ]);
-                            $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+ui.values[ 0 ]+" - "+ui.values[ 1 ]);
+                            $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+ui.values[ 0 ]+" - "+ui.values[ 1 ]);
                           }
                         });
                         $(".options ##{field}-gte, .options ##{field}-lte").on('change',function(e){
                           range = [$(".options ##{field}-gte").val(),$(".options ##{field}-lte").val()]
                           $("##{field}-slider").slider({values:range})
                           $(".options ##{field}-drag").attr('data-value',range[0]+":"+range[1]);
-                          $(".options ##{field}-drag").html("<strong>#{field.gsub("_"," ").titlecase}:</strong> "+range[0]+" - "+range[1]);
+                          $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+range[0]+" - "+range[1]);
                         });
                       });
 
@@ -168,10 +168,10 @@
           -if @page_type == "graph"
             %span.count &nbsp;
           .ready
-            .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"} Apply
-            .btn.btn-default{:onclick=>'clearFilter()'} Clear
+            .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"}= t "v.filter.apply"
+            .btn.btn-default{:onclick=>'clearFilter()'}= t "v.filter.clear"
             -if current_account
-              .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"} Save
+              .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"}= t "v.filter.save"
             -if @page_type == "graph"
               .btn.btn-default{'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
             -#
@@ -256,13 +256,14 @@
         $('.options').on('click','.flat .create',function (e) {
           me = $(e.target).closest('col-xs-3').find('.create');
           me = $(this);
+          flocal = me.attr('data-field-local');
           field = me.attr('data-field');
           name = me.attr('data-name');
           row = me.closest('.row');
           that = row.find('input');
           thatval = that.val().replace(/[^\w\d\s]/g,"")
           text = thatval.substr(0,1).toUpperCase() + thatval.substr(1);
-          drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+toTitleCase('name'.replace(/_/g,' '))+':</strong> '+(text)+'</span></li>');
+          drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-field-local="'+flocal+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+flocal+':</strong> '+(text)+'</span></li>');
           //console.log(drag.html())
           row.nextAll('ul').append(drag);
 
@@ -337,7 +338,7 @@
       if (that.prop('tagName')=='SPAN') {
         $(that).find('strong').detach()
         text = $(that).text();
-        return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+':</strong> '+(text)+'</span>');
+        return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+$(that).attr('data-field-local')+':</strong> '+(text)+'</span>');
       } else if ($(that).prop('tagName')=='DIV') {
         if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
           that = $(that).find('div')
@@ -414,7 +415,14 @@
         data: data.data,
         success: function(data){
           data = JSON.parse(data);
-          $('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
+          //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
+          if (data.length == 0) {
+            $('#head p strong').text("#{t 'v.filter.no_cases_found'}")
+          } else if (data.length == 1) {
+            $('#head p strong').text("#{t 'v.filter.one_case_filtered'}")
+          } else {
+            $('#head p strong').text("#{t 'v.filter.var_cases_filtered',num_cases:'data_length'}".replace("data_length",data.length))
+          }
           if (page_type == 'feat') {
             filterFollowed(data);
             $('#featured_filter').val(query);
