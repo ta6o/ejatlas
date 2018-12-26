@@ -477,6 +477,7 @@ class Admin < Padrino::Application
     locales = {}
     locs = []
     keys = []
+
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./
       next unless file.match /\.csv$/
