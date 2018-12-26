@@ -473,6 +473,7 @@ class Admin < Padrino::Application
         end
       end
     end
+
     print "\rParsing..."
     locales = {}
     locs = []
