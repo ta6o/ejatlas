@@ -16,8 +16,11 @@ module I18n
           backend.translate(locale, key, options)
         end
       end
-      result.is_a?(MissingTranslation) ? handle_exception(handling, result, locale, key, options) : result
-      result = result.sub(/^-$/,"")
+      if result.is_a?(MissingTranslation)
+        handle_exception(handling, result, locale, key, options) 
+      else
+        result.sub(/^-$/,"")
+      end
     end
     alias :t :translate
   end
