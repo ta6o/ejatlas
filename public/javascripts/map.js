@@ -11,7 +11,11 @@ var choropleths = { };
 var baselayers = { };
 var dmns = [];
 var info = $("#infopane");
-var legendpane = $("#legendpane .legend");
+var legendpane = $("#legendpane > .legend");
+var rtlegend = legendpane.html();
+var legend = rtlegend;
+console.log("legend:")
+console.log(legend)
 
 var hoverStyle = {
   "fillOpacity": 0.5
@@ -24,8 +28,6 @@ function pToLayer(obj, latlng, color) {
   });
 }
 
-var rtlegend = '<table> <tbody><tr> <td class="icon"> <div class="vis map-icon i_1"></div> </td> <td class="desc i_1">Nuclear</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_2"></div> </td> <td class="desc i_2">Mineral Ores and Building Extractions</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_3"></div> </td> <td class="desc i_3">Waste Management</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_4"></div> </td> <td class="desc i_4">Biomass and Land Conflicts</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_5"></div> </td> <td class="desc i_5">Fossil Fuels and Climate Justice</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_6"></div> </td> <td class="desc i_6">Water Management</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_7"></div> </td> <td class="desc i_7">Infrastructure and Built Environment</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_8"></div> </td> <td class="desc i_8">Tourism Recreation</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_9"></div> </td> <td class="desc i_9">Biodiversity Conservation Conflicts</td> </tr> <tr> <td class="icon"> <div class="vis map-icon i_10"></div> </td> <td class="desc i_10">Industrial and Utilities Conflicts</td> </tr></tbody></table>';
-legend = rtlegend;
 
 Array.prototype.distinct = function(){
    var u = {}, a = [];

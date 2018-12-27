@@ -78,6 +78,48 @@
     .content{:style=>'display:none'}
       #legendpane
         .legend.noselect
+          %table
+            %tbody
+              %tr
+                %td.icon
+                  .vis.map-icon.i_1
+                    %td.desc.i_1= t("m.category_id.nuclear").gsub(/\([^\)]\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_2
+                %td.desc.i_2= t("m.category_id.mineral_ores_and_building_materials_extraction").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_3
+                %td.desc.i_3= t("m.category_id.waste_management").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_4
+                %td.desc.i_4= t("m.category_id.biomass_and_land_conflicts_forests_agriculture_fisheries_and_livestock_management").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_5
+                %td.desc.i_5= t("m.category_id.fossil_fuels_and_climate_justice_energy").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_6
+                %td.desc.i_6= t("m.category_id.water_management").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_7
+                %td.desc.i_7= t("m.category_id.infrastructure_and_built_environment").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_8
+                %td.desc.i_8= t("m.category_id.tourism_recreation").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_9
+                %td.desc.i_9= t("m.category_id.biodiversity_conservation_conflicts").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_10
+                %td.desc.i_10= t("m.category_id.industrial_and_utilities_conflicts").gsub(/\([^\)]+\)/,"").strip
 
   -#if current_account
   .horipane#filter-container
@@ -202,7 +244,6 @@
             showMarkers(data);
           },
           error: function (data, status, error) {
-          console.log("hi dude")
             console.log('error', data, status, error);
           }
         });

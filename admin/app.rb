@@ -25,10 +25,12 @@ class Admin < Padrino::Application
   #
 
   require 'pp'
-  enable  :sessions
+  enable :sessions
   enable :store_location
 
   set :login_page, "/sessions/login"
+
+  require "./lib/i18n-translate-override.rb"
 
   I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
   I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
