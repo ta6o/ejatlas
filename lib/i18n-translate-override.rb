@@ -18,8 +18,10 @@ module I18n
       end
       if result.is_a?(MissingTranslation)
         handle_exception(handling, result, locale, key, options) 
-      else
+      elsif result.is_a? String
         result.sub(/^-$/,"")
+      else
+        result
       end
     end
     alias :t :translate

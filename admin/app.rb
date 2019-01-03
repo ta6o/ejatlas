@@ -85,9 +85,9 @@ class Admin < Padrino::Application
     end
     I18n.backend.reload!
     if params.has_key? "path"
-      "Updated at #{l Time.now}<br/><br/>#{I18n.load_path.join("<br/>")}"
+      "Translation dictionaries updated at #{l Time.now}<br/><br/>#{I18n.load_path.join("<br/>")}"
     else
-      "Updated at #{l Time.now}"
+      "Translation dictionaries updated at #{l Time.now}"
     end
   end
 
@@ -373,7 +373,7 @@ class Admin < Padrino::Application
     #puts JSON.pretty_generate(filter)
     #pp stored_fields
 
-    result = $client.search(index: 'atlas', type: type, body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})['hits']['hits']
+    result = $client.search(index: 'staging', type: type, body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})['hits']['hits']
   end
 
   def self.old_filter options

@@ -593,7 +593,7 @@ class AsyncTask
         batch.each do |c|
           c.ping
           c.save
-          client.index index: 'atlas', type: 'conflict', id: c.id, body: c.elastic
+          client.index index: 'staging', type: 'conflict', id: c.id, body: c.elastic
           if c.approval_status == "approved"
             open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
             #open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
@@ -615,7 +615,7 @@ class AsyncTask
       Country.includes(:conflicts).each do |c| 
         countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1
         c.save
-        client.index index: 'atlas', type: 'country', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: 'staging', type: 'country', id: c.id, body: {id:c.id,name:c.name}
       end
       countries.sort_by! {|c| c[1]}
       countries.reverse!
@@ -628,7 +628,7 @@ class AsyncTask
       Company.includes(:conflicts).each do |c|
         companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1
         c.save
-        client.index index: 'atlas', type: 'company', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: 'staging', type: 'company', id: c.id, body: {id:c.id,name:c.name}
       end
       companies.sort_by! {|c| c[1]}
       companies.reverse!
@@ -641,7 +641,7 @@ class AsyncTask
       Supporter.includes(:conflicts).each do |c|
         supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1
         c.save
-        client.index index: 'atlas', type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: 'staging', type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
       end
       supporters.sort_by! {|c| c[1]}
       supporters.reverse!
@@ -736,8 +736,8 @@ class AsyncTask
 
     if params["filter"] == "on"
       puts "Updating filter..."
-      Tag.all.each {|c| client.index index: 'atlas', type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
-      Account.where(public:true).each {|c| client.index index: 'atlas', type: 'account', id: c.id, body: {id:c.id,name:c.name}}
+      Tag.all.each {|c| client.index index: 'staging', type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
+      Account.where(public:true).each {|c| client.index index: 'staging', type: 'account', id: c.id, body: {id:c.id,name:c.name}}
       filterdata = {}
 
       filterdata["basic_data"] = {}

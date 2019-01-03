@@ -604,7 +604,7 @@ Admin.controllers :conflicts do
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
         if ['admin','editor'].include?(current_account.role)
-          $client.index index: 'atlas', type: 'conflict', id: @conflict.id, body: @conflict.elastic
+          $client.index index: 'staging', type: 'conflict', id: @conflict.id, body: @conflict.elastic
         end
 
         if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
