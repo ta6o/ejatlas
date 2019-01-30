@@ -79,6 +79,12 @@ class Admin < Padrino::Application
     ActiveRecord::Base.connection.close
   end
 
+  get :translate do
+    Admin.fetch_translations
+    I18n.backend.reload!
+    "Translation dictionaries updated at #{l Time.now}"
+  end
+
   get :i18n do
     if params.has_key? "dl"
       Admin.fetch_translations
