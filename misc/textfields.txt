@@ -1,0 +1,139 @@
+c_companies:
+  t:  involvement
+c_legislations:
+  t:  notes
+c_supporters:
+  t:  involvement
+c_weblinks:
+  t:  notes
+categories:
+  s:  name
+  t:  description
+murders:
+  s:  name
+  t:  description
+companies:
+  s:  name
+  s:  slug
+  t:  description
+  s:  acronym
+  t:  other_products
+conflict_events:
+  s:  name
+conflicts:
+  s:  name
+  s:  site
+  s:  province
+  t:  other_types
+  t:  description
+  t:  other_products
+  t:  project_details
+  s:  investment_string
+  s:  affected_people
+  t:  other_supporters
+  t:  other_mobilizing_groups
+  t:  other_mobilizing_forms
+  t:  other_env_impacts
+  t:  other_hlt_impacts
+  t:  other_sec_impacts
+  t:  other_outcomes
+  t:  suggested_alternatives
+  t:  success_reason
+  t:  other_comments
+  s:  licence
+  t:  ejos
+  t:  govt_actors
+  s:  headline
+contact_people:
+  s:  name
+  t:  description
+countries:
+  s:  name
+  s:  slug
+  t:  description
+  s:  capital
+documents:
+  s:  title
+  t:  description
+env_impacts:
+  s:  name
+featureds:
+  s:  name
+  s:  slug
+  s:  slogan
+  t:  description
+  s:  headline
+filters:
+  s:  name
+  t:  description
+government_actors:
+  s:  name
+hlt_impacts:
+  s:  name
+images:
+  s:  title
+  t:  description
+  s:  credit
+justice_parties:
+  s:  name
+  s:  slug
+  t:  description
+legislations:
+  t:  description
+medialinks:
+  t:  description
+mobilizing_forms:
+  s:  name
+mobilizing_groups:
+  s:  name
+old_slugs:
+  s:  name
+  s:  attachable_type
+products:
+  s:  name
+  s:  slug
+  t:  description
+  t:  main_producers
+  s:  global_production
+  s:  price
+project_statuses:
+  s:  name
+provinces:
+  s:  name
+reactions:
+  s:  name
+references:
+  t:  description
+regions:
+  s:  name
+  s:  slug
+  t:  description
+requests:
+  t:  description
+  t:  rejection_note
+sec_impacts:
+  s:  name
+statuses:
+  s:  name
+supporters:
+  s:  name
+  s:  slug
+  s:  acronym
+  t:  description
+tags:
+  s:  name
+  s:  slug
+  t:  description
+types:
+  s:  name
+  s:  slug
+  t:  description
+vector_data:
+  s:  name
+  t:  description
+videos:
+  s:  title
+  t:  description
+  s:  credit
+weblinks:
+  t:  description
