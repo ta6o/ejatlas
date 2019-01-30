@@ -223,6 +223,50 @@
         }
       };
 
+    :javascript
+      var attributeHash = { "category_id": #{ t "v.filter.category"},
+        "types": #{ t "v.filter.type"},
+        "other_types": #{ t "m.types.other"},
+        "description": #{ t "v.filter.description"},
+        "country_id": #{ t "v.filter.country"},
+        "province": #{ t "v.filter.province"},
+        "site": #{ t "v.filter.site"},
+        "accuracy_level": #{ t "m..Level of Accuracy"},
+        "project_area": #{ t "m..Project Area"},
+        "project_length": #{ t "m..Project Length"},
+        "population_type": #{ t "m..Type of Population"},
+        "products": #{ t "m..Commodities"},
+        "other_products": #{ t "m..Other Commodities"},
+        "companies": #{ t "m..Companies"},
+        "supporters": #{ t "m..IFI's"},
+        "other_supporters": #{ t "m..Other IFI's"},
+        "ejos": #{ t "m..EJO's"},
+        "govt_actors": #{ t "m..Government Actors"},
+        "mobilizing_groups": #{ t "m..Mobilizing Groups"},
+        "other_mobilizing_groups": #{ t "m..Other Mobilizing Groups"},
+        "mobilizing_forms": #{ t "m..Mobilizing Forms"},
+        "other_mobilizing_forms": #{ t "m..Other Mobilizing Forms"},
+        "env_impacts": #{ t "m..Environmental Impacts"},
+        "other_env_impacts": #{ t "m..Other Environmental Impacts"},
+        "hlt_impacts": #{ t "m..Health Impacts"},
+        "other_hlt_impacts": #{ t "m..Other Health Impacts"},
+        "sec_impacts": #{ t "m..Socio-economic Impacts"},
+        "other_sec_impacts": #{ t "m..Other Socio-economic Impacts"},
+        "conflict_events": #{ t "m..Outcomes"},
+        "other_outcomes": #{ t "m..Other Outcomes"},
+        "project_details": #{ t "m..Project Details"},
+        "investment_string": #{ t "m..Level of Investment"},
+        "affected_people": #{ t "m..Potentially Affected Population"},
+        "status_id": #{ t "m..Intensity Level"},
+        "reaction_id": #{ t "m..Reactionary Stage"},
+        "start_date": #{ t "m..Start Date"},
+        "end_date": #{ t "m..End Date"},
+        "project_status_id": #{ t "m..Project Status"},
+        "suggested_alternatives": #{ t "m..Development of Alternatives"},
+        "success_level": #{ t "m..Succes Level"},
+        "success_reason": #{ t "m..Success Reason"},
+        "other_comments": #{ t "m..Other Comments"};
+
     -if ENV['RACK_ENV'] == 'development'
       :javascript
         conflict = false;

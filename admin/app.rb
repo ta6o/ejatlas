@@ -454,6 +454,10 @@ class Admin < Padrino::Application
     return 200
   end
 
+  def self.find_fields model, field, index = 0
+    model.where("#{field} is not ?",nil).where("#{field} is not ?","").map{|m| m.attributes[field]}[index]
+  end
+
   def self.dump_capitals
     (Country.all.map(&:capital)-[nil]).sort
   end

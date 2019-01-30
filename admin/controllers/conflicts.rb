@@ -201,7 +201,7 @@ Admin.controllers :conflicts do
   get :index do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflictos = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),false).map{|x| x["_source"]}
+        @conflictos = Admin.filter("{\"must_not\":{\"term\":{\"approval_status\":\"deleted\"}}}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),false).map{|x| x["_source"]}
         @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
         @conflictos.sort_by! {|c| ( c["modified_at"] || Time.now ) }
@@ -219,7 +219,7 @@ Admin.controllers :conflicts do
   get :approved do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflictos = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),true).map{|x| x["_source"]}
+        @conflictos = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(",")).map{|x| x["_source"]}
         @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
         @conflictos.sort_by! {|c| ( c["modified_at"] || Time.now ) }
