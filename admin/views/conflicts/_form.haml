@@ -1116,7 +1116,7 @@
                     %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
 
             -@conflict.documents.each do |d|
-              -next if d.copied?
+              -next if d and d.copied?
               .document
                 %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
                 -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
@@ -1359,6 +1359,7 @@
             %label Other contributing users
             %ul{:style=>"list-style-type: none; padding: 0;"}
               -@conflict.conflict_accounts.each do |ca|
+                -next unless ca.account
                 %li
                   .pull-left= ca.account.email
                   -if ["admin","editor"].include? current_account.role
