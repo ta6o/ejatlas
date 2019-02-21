@@ -269,8 +269,8 @@
           %span.required.large *
           .required=f.error_message_on :description
           %p.description Please describe the project and the point of conflict here in ~500 words.
-          -#~f.text_area :description, :class => 'text_area basic_input', :rows => 17
-          %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
+          -#%textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}~ "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
+          %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}~ @conflict.description || ""
 
       .col-md-8
         .group
@@ -299,12 +299,12 @@
                 $('#other_products').val('');
               }
             });
-            bkLib.onDomLoaded(function() {
+            /*bkLib.onDomLoaded(function() {
               nicEditors.editors.push(
                 new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
               );
               window.setTimeout(niceWidth,1000);
-            });
+            });*/
             function niceWidth(){
               ta_width = $(".tab-pane.active .row").width() / 3 - 15;
               console.log(ta_width)
@@ -1319,7 +1319,7 @@
                   $(this).prop("disabled",true);
                   if ($("#message").val().length > 0 ) {
                     $.post("/conflicts/msg_create",
-                      {aid:#{current_account.id},cid:#{@conflict.id}, content: $("#message").val()},
+                      {aid:#{current_account.id},cid:#{@conflict.new_record? ? 0 : @conflict.id}, content: $("#message").val()},
                       function(data){
                         if (data === "ok") {
                           html = '<li class="clearfix"> <div class="msg pull-right"> <div class="clearfix"> <small class="black pull-left">You wrote</small> <small class="pull-left">&nbsp;</small> <small class="pull-right">just now<small> </div> <div class="pull-right well"> <p>'+$("#message").val()+'</p> </div> </div> </li>';
@@ -1384,7 +1384,7 @@
                 e.preventDefault();
                 if (!$("#invite").hasClass("error")) {
                   $.post("/conflicts/ca_create",
-                    {aid:$("#invite").val(),cid:#{@conflict.id}},
+                    {aid:$("#invite").val(),cid:#{@conflict.new_record? ? 0 : @conflict.id}},
                     function(data){
                       console.log(data)
                       if (data === "ok") {
