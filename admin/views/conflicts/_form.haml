@@ -269,8 +269,8 @@
           %span.required.large *
           .required=f.error_message_on :description
           %p.description Please describe the project and the point of conflict here in ~500 words.
-          -#%textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}~ "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
-          %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}~ @conflict.description || ""
+          -#~f.text_area :description, :class => 'text_area basic_input', :rows => 17
+          %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
 
       .col-md-8
         .group
@@ -299,12 +299,12 @@
                 $('#other_products').val('');
               }
             });
-            /*bkLib.onDomLoaded(function() {
+            bkLib.onDomLoaded(function() {
               nicEditors.editors.push(
                 new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
               );
               window.setTimeout(niceWidth,1000);
-            });*/
+            });
             function niceWidth(){
               ta_width = $(".tab-pane.active .row").width() / 3 - 15;
               console.log(ta_width)
