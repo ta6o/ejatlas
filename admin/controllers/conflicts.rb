@@ -391,6 +391,9 @@ Admin.controllers :conflicts do
     @conflict = Conflict.new(updated[:conflict])
     ##puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     if @conflict.save :validate => false
+      File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
+        file << "NEW,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
+      end
       multies = {
         'company'=>{:attr=>@conflict.companies,:class=>Company},
         'mobilizing_group'=>{:attr=>@conflict.mobilizing_groups,:class=>MobilizingGroup},
@@ -476,6 +479,9 @@ Admin.controllers :conflicts do
     oldstat = @conflict.approval_status
 
     if @conflict.save :validate=>false
+      File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
+        file << "UPD,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
+      end
       multies = {
         'company'=>{:attr=>@conflict.companies,:class=>Company,:join=>@conflict.c_companies},
         'supporter'=>{:attr=>@conflict.supporters,:class=>Supporter,:join=>@conflict.supporters},
