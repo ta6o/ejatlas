@@ -20,4 +20,5 @@ db/*.db
 .rvmrc*
 Gemfile.lock
 public/data/*
+misc/saves.csv
 

@@ -1250,6 +1250,21 @@
             %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
               %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
               %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
+
+        %br/
+
+        -if @saves.length > 0
+          .group
+            %label Save history:
+            %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
+              %tdata
+                -@saves.reverse.each do |save|
+                  %tr
+                    %td=save[4]
+                    %td
+                      %small=Account.find(save[3].to_i).name
+
+
         %br/
 
       .col-md-8

@@ -308,6 +308,11 @@ Admin.controllers :conflicts do
         @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
         @lat = @conflict.lat == "" ? nil : @conflict.lat
         @lon = @conflict.lon == "" ? nil : @conflict.lon
+        @saves = []
+        CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
+          @saves << row if row[2] == @conflict.id.to_s
+        end
+        pp @saves
         render 'conflicts/edit'
       else
         redirect to '/sessions/login'
