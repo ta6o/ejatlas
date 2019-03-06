@@ -392,7 +392,7 @@ Admin.controllers :conflicts do
     ##puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     if @conflict.save :validate => false
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
-        file << "NEW,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
+        file << "NEW,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},new\n"
       end
       multies = {
         'company'=>{:attr=>@conflict.companies,:class=>Company},
