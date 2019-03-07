@@ -312,7 +312,6 @@ Admin.controllers :conflicts do
         CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
           @saves << row if row[2] == @conflict.id.to_s
         end
-        pp @saves
         render 'conflicts/edit'
       else
         redirect to '/sessions/login'
@@ -475,6 +474,7 @@ Admin.controllers :conflicts do
   end
 
   put :update, :with => :id do
+    pp params.keys
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     updated = Admin.correctForm(params)
@@ -483,7 +483,7 @@ Admin.controllers :conflicts do
     ##puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     oldstat = @conflict.approval_status
 
-    if @conflict.save :validate=>false
+    if  @conflict.save :validate=>false
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
         file << "UPD,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
       end
