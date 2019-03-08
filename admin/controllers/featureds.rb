@@ -142,6 +142,14 @@ Admin.controllers :featureds do
         @error = e
         redirect url(:featureds, :edit, :id => @featured.id)
       end
+      features = JSON.parse(@featured.features || '{}')
+      begin
+        filter = "{}"
+        filter = @featured.filter if @featured.filter.length > 0
+        @featured.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
+      rescue => e
+        @featured.ping((Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
+      end
       redirect url(:featureds, :edit, :id => @featured.id)
     else
       redirect url(:featureds, :edit, :id => @featured.id)
