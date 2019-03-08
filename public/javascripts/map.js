@@ -1,5 +1,5 @@
 
-var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters;
+var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap;
 
 var $msize = "mic";
 var jsons = {};
@@ -407,11 +407,9 @@ function showMarkers(markers) {
       return false
     }
     popcontent = '<div>';
-
     cclass = "";
-    if ('dmn' in mark && mark.dmn.length > 0) {
-      dmns.push(mark.dmn[0])
-      cclass = " c_"+mark.dmn[0];
+
+    if (featureMap) {
       popcontent += "<div class='features'>";
       $.each(Object.keys(mark),function(i,n){
         if (isNaN(n[0])) return 0
@@ -428,9 +426,14 @@ function showMarkers(markers) {
         }
       })
       popcontent += "<br /><br />"
-      $.each(mark.tags,function(i,n){
-        popcontent += "<span class='badge' style='background-color:#"+mark.dmn[i]+"'>"+n+"</span> &nbsp; "
-      })
+
+      if ('dmn' in mark && mark.dmn.length > 0) {
+        dmns.push(mark.dmn[0])
+        cclass = " c_"+mark.dmn[0];
+        $.each(mark.tags,function(i,n){
+          popcontent += "<span class='badge' style='background-color:#"+mark.dmn[i]+"'>"+n+"</span> &nbsp; "
+        })
+      }
       popcontent += "</div>";
     }
     popcontent += '</div>';
