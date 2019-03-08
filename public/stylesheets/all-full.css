@@ -6620,7 +6620,7 @@ ul.sidelink li.active {
   z-index: 7 !important;
   border-radius: 4px;
 }
-.features {
+.leaflet-popup-pane .features {
   max-height: 240px;
   overflow-y: auto;
 }
