@@ -6620,6 +6620,10 @@ ul.sidelink li.active {
   z-index: 7 !important;
   border-radius: 4px;
 }
+.features {
+  max-height: 240px;
+  overflow-y: auto;
+}
 .navbar {
   min-height: 0px !important;
 }
