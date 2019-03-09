@@ -393,75 +393,12 @@ Admin.controllers :conflicts do
     #params.each {|kk,vv| #puts; #puts kk; if vv.is_a? Hash then vv.each {|k,v| #puts "#{k.to_s}: #{v.to_s}"} else #puts vv end }
     updated = Admin.correctForm(params)
     @conflict = Conflict.new(updated[:conflict])
-    ##puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
+    #puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     if @conflict.save :validate => false
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
         file << "NEW,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},new\n"
       end
-      multies = {
-        'company'=>{:attr=>@conflict.companies,:class=>Company},
-        'mobilizing_group'=>{:attr=>@conflict.mobilizing_groups,:class=>MobilizingGroup},
-        'mobilizing_form'=>{:attr=>@conflict.mobilizing_forms,:class=>MobilizingForm},
-        'conflict_event'=>{:attr=>@conflict.conflict_events,:class=>ConflictEvent},
-        'product'=>{:attr=>@conflict.products,:class=>Product},
-        'type'=>{:attr=>@conflict.types,:class=>Type},
-        'env_radio'=>{:attr=>@conflict.env_impacts,:class=>EnvImpact,:join=>@conflict.c_env_impacts},
-        'hlt_radio'=>{:attr=>@conflict.hlt_impacts,:class=>HltImpact,:join=>@conflict.c_hlt_impacts},
-        'sec_radio'=>{:attr=>@conflict.sec_impacts,:class=>SecImpact,:join=>@conflict.c_sec_impacts},
-        'reference'=>{:attr=>@conflict.references,:class=>Reference},
-        'legislation'=>{:attr=>@conflict.legislations,:class=>Legislation},
-        'weblink'=>{:attr=>@conflict.weblinks,:class=>Weblink},
-        'medialink'=>{:attr=>@conflict.medialinks,:class=>Medialink},
-        #'contactperson'=>{:attr=>@conflict.contact_people,:class=>ContactPerson},
-      }
-      updated['multies'].each do |k,v|
-        v.each do |l|
-          begin
-            multies[k][:attr] << multies[k][:class].find(l)
-          rescue
-            puts "not found: #{multies[k][:class]} @#{l}"
-          end
-        end
-      end
-      updated['impacts'].each do |k,v|
-        v['g'].each do |l|
-          multies[k][:attr] << multies[k][:class].find(l)
-          ##puts multies[k][:join].to_s
-          multies[k][:join].last.visible = true
-          multies[k][:join].last.save
-        end
-        v['p'].each do |l|
-          multies[k][:attr] << multies[k][:class].find(l)
-          ##puts multies[k][:join].to_s
-          multies[k][:join].last.visible = false
-          multies[k][:join].last.save
-        end
-      end
-      updated['refs'].each do |k,v|
-        v.each do |l,w|
-          ref = multies[k][:class].find(l)
-          if w['remove']
-            multies[k][:attr].delete ref
-            next 
-          end
-          ref.name = w['name'] if w['name']
-          ref.title = w['title'] if w['title']
-          ref.description = w['description'] if w['description']
-          ref.url = w['url'] if w['url']
-          #ref.conflict = @conflict
-          begin
-            multies[k][:attr] << ref
-          rescue
-            ##puts "#{k} been taken!"
-          end
-          ref.save
-        end
-      end
-      updated['conflict'].each do |k,v|
-        @conflict.update_attribute k, v
-      end
       @conflict.account = current_account
-      #clearDups @conflict.id
       @conflict.ping
       @conflict.modified_at = Time.now
       if @conflict.save :validate=>false
@@ -477,6 +414,7 @@ Admin.controllers :conflicts do
     pp params.keys
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
+    return {:status=>"error",:errors=>["Request was not completed, omitting save"]}.to_json unless params['conflict'].has_key?("approval_status")
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
@@ -625,11 +563,14 @@ Admin.controllers :conflicts do
             Admin.notify_moderator @conflict
           end
         end
-        redirect "/conflicts/edit/#{@conflict.id}#{hash}"
+        #redirect "/conflicts/edit/#{@conflict.id}#{hash}"
+        response = {:status=>"success"}
       end
     else
-      render 'conflicts/edit'
+      #render 'conflicts/edit'
+      response = {:status=>"error",:errors=>["Conflict could not be saved."]}
     end
+    response.to_json
   end
 
   get :approve, :with => :id do

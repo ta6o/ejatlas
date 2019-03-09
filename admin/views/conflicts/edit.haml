@@ -8,5 +8,5 @@
         %small
           %a{:target=>'_blank',:href=>"/conflict/#{@conflict.slug}"} view
     .inner
-      =form_for :conflict, url(:conflicts, :update, :id => @conflict.id), :method => :put, :class => :form, :style => "margin:0 -15px" do |f|
+      =form_for :conflict, url(:conflicts, :update, :id => @conflict.id), :method => :put, :class => :form, :id=>:conflict_form, :style => "margin:0 -15px" do |f|
         =partial "conflicts/form", :locals => { :f => f }
