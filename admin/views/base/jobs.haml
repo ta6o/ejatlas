@@ -52,11 +52,11 @@
   -else
     %p There are no pending jobs at the moment.
       
--if @exports.any?
+-if @exports and @exports.any?
   .content
     %h3 Exports
     %ul{:style=>"list-style-type:none;padding:0;"}
-      -@exports.each do |exp|
+      -@exports.sort.reverse.each do |exp|
         %li
           %a{:href=>"/exports/#{exp}"}= exp
 

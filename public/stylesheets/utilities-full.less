@@ -1509,12 +1509,15 @@ position: relative;
 .leaflet-popup-pane {
   z-index: 7 !important;
   border-radius:4px;
+  .features {
+    max-height: 240px;
+    overflow-y: auto;
+  }
   .leaflet-popup {
     a.leaflet-popup-close-button {
     }
   }
 }
-
 .navbar { 
   min-height: 0px !important; 
   }

@@ -5,23 +5,35 @@
   -#<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRWYWYBQyJTaXMVbcu1M9b_TKOTJVcp0w"></script>
   =javascript_include_tag 'map-edit'
 
+#fixed{:style=>"position:fixed; top: 24px; right:24px; transition:250;"}
+  -#alert-success.alert.alert-success.alert-dismissable.fade.in{:role=>"alert"}
+    %button.close{:type=>"button","data-dismiss"=>"alert","aria-label"=>"Close"}
+      %span{"aria-hidden"=>true} x
+    Conflict saved successfully. &nbsp; &nbsp;
+
+  -#alert-error.alert.alert-danger.alert-dismissable.fade.in{:role=>"alert"}
+    %button.close{:type=>"button","data-dismiss"=>"alert","aria-label"=>"Close"}
+      %span{"aria-hidden"=>true} x
+    Conflict could not be saved. Please try again. &nbsp; &nbsp;
+
 %ul#conflict-tabs.nav.nav-tabs{:style=>'margin-bottom:0'}
   %li.active
     %a{:href=>'#basic'}BASIC DATA
-  %li
-    %a{:href=>'#source'}SOURCE OF CONFLICT
-  %li
-    %a{:href=>'#project'}PROJECT DETAILS
-  %li
-    %a{:href=>'#conflict'}CONFLICT AND MOBILIZATION
-  %li
-    %a{:href=>'#impacts'}IMPACTS
-  %li
-    %a{:href=>'#outcome'}OUTCOME
-  %li
-    %a{:href=>'#materials'}SOURCES AND MATERIALS
-  %li
-    %a{:href=>'#meta'}META
+  -unless @conflict.new_record?
+    %li
+      %a{:href=>'#source'}SOURCE OF CONFLICT
+    %li
+      %a{:href=>'#project'}PROJECT DETAILS
+    %li
+      %a{:href=>'#conflict'}CONFLICT AND MOBILIZATION
+    %li
+      %a{:href=>'#impacts'}IMPACTS
+    %li
+      %a{:href=>'#outcome'}OUTCOME
+    %li
+      %a{:href=>'#materials'}SOURCES AND MATERIALS
+    %li
+      %a{:href=>'#meta'}META
 
 
 .tab-content.whitebox
@@ -31,7 +43,8 @@
         %p.lead Basic Data
       .col-md-2
         .pull-right.btn-group.png
-          %button.btn.pn.next Next
+          -unless @conflict.new_record?
+            %button.btn.pn.next Next
           %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
           %br/
 
@@ -157,933 +170,869 @@
         %p &nbsp;
       .col-md-2
         .pull-right.btn-group.png
-          %button.btn.pn.next Next
+          -unless @conflict.new_record?
+            %button.btn.pn.next Next
           %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
           %br/
 
-  #source.tab-pane
-    .row
-      .col-md-9
-        %p.lead Source of Conflict
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
+  -unless @conflict.new_record?
+    #source.tab-pane
+      .row
+        .col-md-9
+          %p.lead Source of Conflict
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
 
-    .row
-      .col-md-5
-        .group
-          =f.label 'Type of Conflict: 1st level'
-          %span.required.large *
-          %p.description (Pick one based on the activity most responsible for environmental disturbance)
-          .required=f.error_message_on :category_id
-          =f.select :category_id, :collection => @categories, :fields => [:name, :id], :include_blank => true, :id => 'category', :class => 'basic_input'
+      .row
+        .col-md-5
+          .group
+            =f.label 'Type of Conflict: 1st level'
+            %span.required.large *
+            %p.description (Pick one based on the activity most responsible for environmental disturbance)
+            .required=f.error_message_on :category_id
+            =f.select :category_id, :collection => @categories, :fields => [:name, :id], :include_blank => true, :id => 'category', :class => 'basic_input'
 
-      .col-md-6
-        .group
-          =f.label 'Type of Conflict: 2nd level '
-          %span.required.large *
-          %p.description Select all relevant (does not need to correspond to main category)
-          .types
-            -if @conflict.types.any?
-              .required=f.error_message_on "type_#{@conflict.c_types.order('ordering').first.type_id}"
-              -@conflict.c_types.order('ordering').each_with_index do |type,i|
-                %select.type.basic_input{:name=>"type_#{type.type_id}",:id=>"type_#{i}"}= @alltypeoptions.html_safe
-                %br/
-                %br/
-          %a#add_type{:style=>'cursor:pointer',:onclick=>'addType()'} Add another type
-          %br/
-          %br/
-          =f.label 'Other Types of Conflict'
-          %p.description Please insert other types of conflict which are not in the list above
-          ~f.text_area :other_types, :class => 'text_area', :rows=>1, :id => 'other_types'
-      :javascript
-        $(document).ready(function(){
-          $('#category option[value=11]').remove();
-          types = #{@types.to_json.html_safe}
-          alltypes = #{@alltypes.to_json.html_safe}
-          categories = #{@categories.to_json.html_safe}
-          cats = {};
-          $.each(categories, function(i,v){
-            cats[v['category']['id']] = {name: v['category']['name'], types: []};
-          });
-          $.each(alltypes, function(i,v){
-            type = v['type'];
-            cats[type['category_id']]['types'].push([type['id'],type['name']])
-          });
-          if ($('#product_57').prop('checked')==false) {
-            $('#other_products').hide();
-          }
-          if ($('#mobilizing_group_21').prop('checked')==false) {
-            $('#other_mobilizing_groups').hide();
-          }
-          if ($('#mobilizing_form_28').prop('checked')==false) {
-            $('#other_mobilizing_forms').hide();
-          }
-        });
-        function addType () {
-          id = $('.types select').length;
-          sel = document.createElement('select');
-          $(sel).attr('id', 'type_'+id);
-          $(sel).attr('class', 'type basic_input');
-          $(sel).html("#{@alltypeoptions.html_safe}");
-          $('.types').append(sel);
-          $('.types').append('<br/><br/>');
-        }
-        function setMainType () {
-          chosen = $("#category option:selected").val();
-          if (chosen == '' ) { 
-            chosen = 0; 
-          }
-          typeoptions = '<option value="0">&nbsp;</option>\n';
-          $.each(types[chosen], function(i,v){
-            type = v['type'];
-            typeoptions += '<option value="'+type['id']+'">'+type['name']+'</option>\n';
-          });
-          $('#type_0').html(typeoptions);
-        }
-        $('#category').change(function () {
-        //setMainType();
-        });
-        $('.types').on('change','.type',function () {
-          $(this).attr('name','type_'+$(this).val());
-        });
-    -#if @conflict.category
-      :javascript
-        $(document).ready(function(){
-          setMainType();
-        });
-    -@conflict.c_types.order('ordering').each_with_index do |ct,i|
-      :javascript
-        $(document).ready(function(){
-          $('.type').eq(#{i}).val(#{ct.type_id})
-        });
-
-
-    .row
-      .col-md-4
-        .group
-          =f.label 'Description'
-          %span.required.large *
-          .required=f.error_message_on :description
-          %p.description Please describe the project and the point of conflict here in ~500 words.
-          -#~f.text_area :description, :class => 'text_area basic_input', :rows => 17
-          %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
-
-      .col-md-8
-        .group
-          =f.label 'Specific Commodities'
-          %span.required.large *
-          .required=f.error_message_on :product_id
-          %br/
-          %p.description Check multiple if necessary
-          %table{:style=>'width:100%'}
-            %tbody
-              -@products.each_with_index do |p,i|
-                -if i%4 == 0
-                  %tr
-                %td.quart
-                  %input{:type=>'checkbox',:name=>'product_'+p.id.to_s,:id=>'product_'+p.id.to_s,:class=>'mustcheck product_cb'}
-                  %label= p.name
-          ~f.text_area :other_products, :class => 'text_area', :rows=>1, :id => 'other_products'
-          - pids = @conflict.products.map &:id
-          :javascript
-            var ta_width;
-            $('#product_57').change(function(){
-              if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
-                $('#other_products').slideDown(100,function(){this.focus()});
-              } else {
-                $('#other_products').slideUp(200);
-                $('#other_products').val('');
-              }
+        .col-md-6
+          .group
+            =f.label 'Type of Conflict: 2nd level '
+            %span.required.large *
+            %p.description Select all relevant (does not need to correspond to main category)
+            .types
+              -if @conflict.types.any?
+                .required=f.error_message_on "type_#{@conflict.c_types.order('ordering').first.type_id}"
+                -@conflict.c_types.order('ordering').each_with_index do |type,i|
+                  %select.type.basic_input{:name=>"type_#{type.type_id}",:id=>"type_#{i}"}= @alltypeoptions.html_safe
+                  %br/
+                  %br/
+            %a#add_type{:style=>'cursor:pointer',:onclick=>'addType()'} Add another type
+            %br/
+            %br/
+            =f.label 'Other Types of Conflict'
+            %p.description Please insert other types of conflict which are not in the list above
+            ~f.text_area :other_types, :class => 'text_area', :rows=>1, :id => 'other_types'
+        :javascript
+          $(document).ready(function(){
+            $('#category option[value=11]').remove();
+            types = #{@types.to_json.html_safe}
+            alltypes = #{@alltypes.to_json.html_safe}
+            categories = #{@categories.to_json.html_safe}
+            cats = {};
+            $.each(categories, function(i,v){
+              cats[v['category']['id']] = {name: v['category']['name'], types: []};
             });
-            bkLib.onDomLoaded(function() {
-              nicEditors.editors.push(
-                new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
-              );
-              window.setTimeout(niceWidth,1000);
+            $.each(alltypes, function(i,v){
+              type = v['type'];
+              cats[type['category_id']]['types'].push([type['id'],type['name']])
             });
-            function niceWidth(){
-              ta_width = $(".tab-pane.active .row").width() / 3 - 15;
-              console.log(ta_width)
-              $("ul#conflict-tabs li a").on('shown.bs.tab',function(e){
-                console.log(ta_width)
-                item = $($(e.target).attr('href')).find(".group textarea#conflict_description").parent();
-                item.find("div").not(".nicEdit-buttonContain,.nicEdit-button,.nicEdit-button-undefined,.nicEdit-panel>div").css("width",ta_width);
-                item.find("div.nicEdit-main").css("width",ta_width-8).css("min-height",114);
-                item.find("div.nicEdit-panelContain").css("width",ta_width);
-              })
+            if ($('#product_57').prop('checked')==false) {
+              $('#other_products').hide();
             }
-            pids = #{pids}
-            $.each(pids, function(i,pid){
-              $('#product_'+pid).attr('checked','checked');
-            })
+            if ($('#mobilizing_group_21').prop('checked')==false) {
+              $('#other_mobilizing_groups').hide();
+            }
+            if ($('#mobilizing_form_28').prop('checked')==false) {
+              $('#other_mobilizing_forms').hide();
+            }
+          });
+          function addType () {
+            id = $('.types select').length;
+            sel = document.createElement('select');
+            $(sel).attr('id', 'type_'+id);
+            $(sel).attr('class', 'type basic_input');
+            $(sel).html("#{@alltypeoptions.html_safe}");
+            $('.types').append(sel);
+            $('.types').append('<br/><br/>');
+          }
+          function setMainType () {
+            chosen = $("#category option:selected").val();
+            if (chosen == '' ) { 
+              chosen = 0; 
+            }
+            typeoptions = '<option value="0">&nbsp;</option>\n';
+            $.each(types[chosen], function(i,v){
+              type = v['type'];
+              typeoptions += '<option value="'+type['id']+'">'+type['name']+'</option>\n';
+            });
+            $('#type_0').html(typeoptions);
+          }
+          $('#category').change(function () {
+          //setMainType();
+          });
+          $('.types').on('change','.type',function () {
+            $(this).attr('name','type_'+$(this).val());
+          });
+      -#if @conflict.category
+        :javascript
+          $(document).ready(function(){
+            setMainType();
+          });
+      -@conflict.c_types.order('ordering').each_with_index do |ct,i|
+        :javascript
+          $(document).ready(function(){
+            $('.type').eq(#{i}).val(#{ct.type_id})
+          });
 
 
-    .row
-      .col-md-9
-        %p &nbsp;
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+      .row
+        .col-md-4
+          .group
+            =f.label 'Description'
+            %span.required.large *
+            .required=f.error_message_on :description
+            %p.description Please describe the project and the point of conflict here in ~500 words.
+            -#~f.text_area :description, :class => 'text_area basic_input', :rows => 17
+            %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
+
+        .col-md-8
+          .group
+            =f.label 'Specific Commodities'
+            %span.required.large *
+            .required=f.error_message_on :product_id
+            %br/
+            %p.description Check multiple if necessary
+            %table{:style=>'width:100%'}
+              %tbody
+                -@products.each_with_index do |p,i|
+                  -if i%4 == 0
+                    %tr
+                  %td.quart
+                    %input{:type=>'checkbox',:name=>'product_'+p.id.to_s,:id=>'product_'+p.id.to_s,:class=>'mustcheck product_cb'}
+                    %label= p.name
+            ~f.text_area :other_products, :class => 'text_area', :rows=>1, :id => 'other_products'
+            - pids = @conflict.products.map &:id
+            :javascript
+              var ta_width;
+              $('#product_57').change(function(){
+                if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
+                  $('#other_products').slideDown(100,function(){this.focus()});
+                } else {
+                  $('#other_products').slideUp(200);
+                  $('#other_products').val('');
+                }
+              });
+              bkLib.onDomLoaded(function() {
+                nicEditors.editors.push(
+                  new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
+                );
+                window.setTimeout(niceWidth,1000);
+              });
+              function niceWidth(){
+                ta_width = $(".tab-pane.active .row").width() / 3 - 15;
+                console.log(ta_width)
+                $("ul#conflict-tabs li a").on('shown.bs.tab',function(e){
+                  console.log(ta_width)
+                  item = $($(e.target).attr('href')).find(".group textarea#conflict_description").parent();
+                  item.find("div").not(".nicEdit-buttonContain,.nicEdit-button,.nicEdit-button-undefined,.nicEdit-panel>div").css("width",ta_width);
+                  item.find("div.nicEdit-main").css("width",ta_width-8).css("min-height",114);
+                  item.find("div.nicEdit-panelContain").css("width",ta_width);
+                })
+              }
+              pids = #{pids}
+              $.each(pids, function(i,pid){
+                $('#product_'+pid).attr('checked','checked');
+              })
+
+
+      .row
+        .col-md-9
+          %p &nbsp;
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
+
+
+    #project.tab-pane
+      .row
+        .col-md-9
+          %p.lead Project Details and Actors
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
+
+      .row
+        .col-md-5
+          .group
+            =f.label 'Project details'
+            .required=f.error_message_on :project_details
+            %p.description (Please insert specific details on the relevant quantitative data eg tons of mineral extracted per year, kwh of electricity, etc...)
+            ~f.text_area :project_details, :class => :text_area, :rows=>17
+
+        .col-md-4
+          .group
+            %label Level of Investment:
+            .required=f.error_message_on :investment_string
+            %p.description (Please enter in USD and in this format: 1,000,000,000.00)
+            =f.text_field :investment_string, :class => :text_field
+
+        .col-md-4
+          .group
+            %label Affected Population:
+            %p.description (It may also be a range)
+            .required=f.error_message_on :affected_people
+            =f.text_field :affected_people, :class => :text_field, :maxlength => 255
+          %br/
           %br/
 
+      -content_for :outer do
+        #actor.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+      .row
+        .col-md-5
+          .group
+            %label Company names or state enterprises:
+            .row
+              .col-md-10
+                %p.description Please use the button on the right to add new companies. If the company exists already, it will appear in the list and selecting it will refresh the form.
+              .col-md-2
+                %button#n_company.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company"} Add
+            %br/
+            .company_list
+              -@conflict.companies.each do |l|
+                .actor
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-8
+                      %h5="#{l.name}"
+                    .col-md-2
+                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company/#{l.id}"} Edit
+                    .col-md-2
+                      %input{:type=>'hidden',:value=>l.id}
+                      %a.d_actor.pull-right.btn Remove
+            %hr/
 
-  #project.tab-pane
-    .row
-      .col-md-9
-        %p.lead Project Details and Actors
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+          .group
+            %br/
+            =f.label 'Relevant government actors'
+            .required=f.error_message_on :government_actor_id
+            %br/
+            %textarea#conflict_govt_actors.text-area{:rows=>4,:name=>'conflict[govt_actors]'}=@conflict.govt_actors
+
+        .col-md-5
+          .group
+            %label International and Finance Institutions
+            .row
+              .col-md-10
+                %p.description Please use the button on the right to add new institutions. If the institution exists already, it will appear in the list and selecting it will refresh the form.
+              .col-md-2
+                %button#n_supporter.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter"} Add
+            %br/
+            .supporter_list
+              -@conflict.supporters.each do |l|
+                .actor
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-8
+                      %h5="#{l.name}"
+                    .col-md-2
+                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter/#{l.id}"} Edit
+                    .col-md-2
+                      %input{:type=>'hidden',:value=>l.id}
+                      %a.d_actor.pull-right.btn Remove
+            %hr/
+
+            :javascript
+              $(document).ready(function(){
+                $('.d_actor').live('click', function(e){
+                  par = $(this).closest('.actor');
+                  id = par.children('div').children('div').children('input').val();
+                  model = par.parent().attr('class').replace('_list','')
+                  html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
+                  par.html(html);
+                });
+              });
+
+
+          .group
+            %br/
+            =f.label 'Environmental justice organizations (and other supporters) and their websites, if available'
+            .required=f.error_message_on :justice_party_id
+            %br/
+            %textarea#conflict_ejos.text-area{:rows=>4,:name=>'conflict[ejos]'}=@conflict.ejos
+
+      .row
+        .col-md-9
+          %p &nbsp;
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
+
+
+    #conflict.tab-pane
+      .row
+        .col-md-9
+          %p.lead Conflict and Mobilization
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
+      .row
+        .col-md-9
+          .group
+            =f.label 'Intensity of conflict'
+            .required=f.error_message_on :status_id
+            %p.description (at highest level)
+            =f.select :status_id, :collection => @statuses, :fields=>[:name, :id], :include_blank => true, :id => 'status_id', :class => 'basic_input'
+
+          .group
+            =f.label 'When did the mobilization begin?'
+            .required=f.error_message_on :reaction_id
+            =f.select :reaction_id, :collection => @reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
+
+          -unless @conflict.new_record?
+            .group
+              %label= 'Is this conflict directly related to any other EJOLT ecological conflict?'
+              .required=f.error_message_on :related_conflict_id
+              %p.description Please enter the name of the conflict as per the Ejolt inventory
+              %input#related.autocomplete{:type=>'text','data-source'=>'relateds'}
+              %br/
+              %ul.autoc
+                -@conflict.related.each do |rel|
+                  %li{:id=>"related_#{rel.id}"}
+                    %span= rel.name
+                    %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
+                    &nbsp;
+                    %input{:type=>"hidden",:name=>"related_add_#{rel.id}"}
+              :javascript
+                var relateds = #{@cjson.html_safe};
+
+
+        .col-md-3
+          .group
+            =f.label 'Start of the conflict'
+            %span.required.large *
+            .required=f.error_message_on :start_date
+            =f.text_field :start_date, :class => 'text_field conflict_input datemask', :value => ( @conflict.get_start_date if @conflict.start_date )
+
+          .group
+            =f.label 'End of the conflict'
+            %p.description (leave blank if ongoing)
+            =f.text_field :end_date, :class => 'text_field datemask', :value => ( @conflict.get_end_date if @conflict.end_date )
+
+
+      .row
+        .col-md-12
+          .group
+            %br/
+            =f.label 'Groups mobilizing'
+            %p.description (check all that apply)
+            %table{:style=>'width:100%'}
+              %tbody
+                -@mobgroups.each_with_index do |p,i|
+                  -if i%3 == 0
+                    %tr
+                  %td.third
+                    %input{:type=>'checkbox',:name=>'mobilizing_group_'+p.id.to_s,:id=>'mobilizing_group_'+p.id.to_s,:class=>'mustcheck mobilizing_group_cb'}
+                    %label= p.name
+            =f.text_area :other_mobilizing_groups, :class => 'text_area', :rows=>1, :id => :other_mobilizing_groups
+            :javascript
+              $('#mobilizing_group_21').change(function(){
+                if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
+                  $('#other_mobilizing_groups').slideDown(100,function(){this.focus()});
+                } else {
+                  $('#other_mobilizing_groups').slideUp(200);
+                  $('#other_mobilizing_groups').val('');
+                }
+              });
+            -@conflict.mobilizing_groups.each do |m|
+              :javascript
+                $('#mobilizing_group_#{m.id}').attr('checked','checked');
+            %br/
+            %br/
+
+          .group
+            =f.label 'Forms of Mobilization'
+            %p.description (check all that apply)
+            %table#mobform{:style=>'width:100%'}
+              %tbody
+                -@mobforms.each_with_index do |p,i|
+                  -if i%3 == 0
+                    %tr
+                  %td.third
+                    %input{:type=>'checkbox',:name=>'mobilizing_form_'+p.id.to_s,:id=>'mobilizing_form_'+p.id.to_s,:class=>'mustcheck mobilizing_form_cb'}
+                    %label= p.name
+            =f.text_area :other_mobilizing_forms, :class => 'text_area', :rows=>1, :id => :other_mobilizing_forms
+            :javascript
+              $('#mobilizing_form_28').change(function(){
+                if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
+                  $('#other_mobilizing_forms').slideDown(100,function(){this.focus()});
+                } else {
+                  $('#other_mobilizing_forms').slideUp(200);
+                  $('#other_mobilizing_forms').val('');
+                }
+              });
+            -@conflict.mobilizing_forms.each do |m|
+              :javascript
+                $('#mobilizing_form_#{m.id}').attr('checked','checked');
+            %br/
+            %br/
+
+      .row
+        .col-md-9
+          %p &nbsp;
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
+
+    #impacts.tab-pane
+      .row
+        .col-md-9 &nbsp;
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
+      .row
+        .col-md-12
+          %p.lead Impacts of the project
+          .group.row
+            .col-md-3
+              =f.label 'Environmental Impacts'
+              .required=f.error_message_on :env_impact_id
+            .col-md-9
+              %table.imptab{:style=>'width:100%'}
+                %thead
+                  -3.times do |i|
+                    %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
+                      -if i==0
+                        %span.small Visible / Potential
+                      &nbsp;
+                    %th.imprad{:valign=>'bottom'}
+                      V
+                    %th.imprad{:valign=>'bottom'}
+                      P
+                %tbody
+                  -@impacts[0].each_with_index do |p,i|
+                    -if i%3 == 0
+                      %tr
+                    %td.implab{:valign=>'bottom'}
+                      %label= p.name
+                    %td.imprad{:valign=>'bottom'}
+                      %input.desrad{:type=>'radio',:name=>'env_radio_'+p.id.to_s,:id=>'env_radio_'+p.id.to_s+'_g',:value=>'g'}
+                    %td.imprad{:valign=>'bottom'}
+                      %input.desrad{:type=>'radio',:name=>'env_radio_'+p.id.to_s,:id=>'env_radio_'+p.id.to_s+'_p',:value=>'p'}
+                -@conflict.c_env_impacts.each do |m|
+                  -m.visible ? s='_g' : s='_p'
+                  :javascript
+                    $('#env_radio_#{m.env_impact_id.to_s+s}').attr('checked',true);
           %br/
-
-    .row
-      .col-md-5
-        .group
-          =f.label 'Project details'
-          .required=f.error_message_on :project_details
-          %p.description (Please insert specific details on the relevant quantitative data eg tons of mineral extracted per year, kwh of electricity, etc...)
-          ~f.text_area :project_details, :class => :text_area, :rows=>17
-
-      .col-md-4
-        .group
-          %label Level of Investment:
-          .required=f.error_message_on :investment_string
-          %p.description (Please enter in USD and in this format: 1,000,000,000.00)
-          =f.text_field :investment_string, :class => :text_field
-
-      .col-md-4
-        .group
-          %label Affected Population:
-          %p.description (It may also be a range)
-          .required=f.error_message_on :affected_people
-          =f.text_field :affected_people, :class => :text_field, :maxlength => 255
-        %br/
-        %br/
-
-    -content_for :outer do
-      #actor.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-    .row
-      .col-md-5
-        .group
-          %label Company names or state enterprises:
-          .row
-            .col-md-10
-              %p.description Please use the button on the right to add new companies. If the company exists already, it will appear in the list and selecting it will refresh the form.
-            .col-md-2
-              %button#n_company.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company"} Add
-          %br/
-          .company_list
-            -@conflict.companies.each do |l|
-              .actor
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-8
-                    %h5="#{l.name}"
-                  .col-md-2
-                    %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company/#{l.id}"} Edit
-                  .col-md-2
-                    %input{:type=>'hidden',:value=>l.id}
-                    %a.d_actor.pull-right.btn Remove
+          .group.row
+            .col-md-3 &nbsp;
+            .col-md-9
+              =f.label 'Other Environmental Impacts'
+              .required=f.error_message_on :other_env_impacts
+              ~f.text_area :other_env_impacts, :class => :text_area
           %hr/
 
-        .group
+          .group.row
+            .col-md-3
+              =f.label 'Health Impacts'
+              .required=f.error_message_on :hlt_impact_id
+            .col-md-9
+              %table.imptab{:style=>'width:100%'}
+                %thead
+                  -3.times do |i|
+                    %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
+                      -if i==0
+                        %span.small Visible / Potential
+                      &nbsp;
+                    %th.imprad{:valign=>'bottom'}
+                      V
+                    %th.imprad{:valign=>'bottom'}
+                      P
+                %tbody
+                  -@impacts[1].each_with_index do |p,i|
+                    -if i%3 == 0
+                      %tr
+                    %td.implab{:valign=>'bottom'}
+                      %label= p.name
+                    %td.imprad{:valign=>'bottom'}
+                      %input.desrad{:type=>'radio',:name=>'hlt_radio_'+p.id.to_s,:id=>'hlt_radio_'+p.id.to_s+'_g',:value=>'g'}
+                    %td.imprad{:valign=>'bottom'}
+                      %input.desrad{:type=>'radio',:name=>'hlt_radio_'+p.id.to_s,:id=>'hlt_radio_'+p.id.to_s+'_p',:value=>'p'}
+                -@conflict.c_hlt_impacts.each do |m|
+                  -m.visible ? s='_g' : s='_p'
+                  :javascript
+                    $('#hlt_radio_#{m.hlt_impact_id.to_s+s}').attr('checked',true);
           %br/
-          =f.label 'Relevant government actors'
-          .required=f.error_message_on :government_actor_id
-          %br/
-          %textarea#conflict_govt_actors.text-area{:rows=>4,:name=>'conflict[govt_actors]'}=@conflict.govt_actors
-
-      .col-md-5
-        .group
-          %label International and Finance Institutions
-          .row
-            .col-md-10
-              %p.description Please use the button on the right to add new institutions. If the institution exists already, it will appear in the list and selecting it will refresh the form.
-            .col-md-2
-              %button#n_supporter.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter"} Add
-          %br/
-          .supporter_list
-            -@conflict.supporters.each do |l|
-              .actor
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-8
-                    %h5="#{l.name}"
-                  .col-md-2
-                    %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter/#{l.id}"} Edit
-                  .col-md-2
-                    %input{:type=>'hidden',:value=>l.id}
-                    %a.d_actor.pull-right.btn Remove
+          .group.row
+            .col-md-3 &nbsp;
+            .col-md-9
+              =f.label 'Other Health Impacts'
+              .required=f.error_message_on :other_hlt_impacts
+              ~f.text_area :other_hlt_impacts, :class => :text_area
           %hr/
+
+          .group.row
+            .col-md-3
+              =f.label 'Socio-economic Impacts'
+              .required=f.error_message_on :sec_impact_id
+            .col-md-9
+              %table.imptab{:style=>'width:100%'}
+                %thead
+                  -3.times do |i|
+                    %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
+                      -if i==0
+                        %span.small Visible / Potential
+                      &nbsp;
+                    %th.imprad{:valign=>'bottom'}
+                      V
+                    %th.imprad{:valign=>'bottom'}
+                      P
+                %tbody
+                  -@impacts[2].each_with_index do |p,i|
+                    -if i%3 == 0
+                      %tr
+                    %td.implab{:valign=>'bottom'}
+                      %label= p.name
+                    %td.imprad{:valign=>'bottom'}
+                      %input.desrad{:type=>'radio',:name=>'sec_radio_'+p.id.to_s,:id=>'sec_radio_'+p.id.to_s+'_g',:value=>'g'}
+                    %td.imprad{:valign=>'bottom'}
+                      %input.desrad{:type=>'radio',:name=>'sec_radio_'+p.id.to_s,:id=>'sec_radio_'+p.id.to_s+'_p',:value=>'p'}
+                -@conflict.c_sec_impacts.each do |m|
+                  -m.visible ? s='_g' : s='_p'
+                  :javascript
+                    $('#sec_radio_#{m.sec_impact_id.to_s+s}').attr('checked',true);
+          %br/
+          .group.row
+            .col-md-3 &nbsp;
+            .col-md-9
+              =f.label 'Other Socio-economic Impacts'
+              .required=f.error_message_on :other_sec_impacts
+              ~f.text_area :other_sec_impacts, :class => :text_area
+          %br/
+
+      .row
+        .col-md-9
+          %p &nbsp;
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
 
           :javascript
             $(document).ready(function(){
-              $('.d_actor').live('click', function(e){
-                par = $(this).closest('.actor');
-                id = par.children('div').children('div').children('input').val();
-                model = par.parent().attr('class').replace('_list','')
-                html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
-                par.html(html);
+              $('.desrad').live('click', function() { 
+                var previousValue = $(this).attr('previousValue');
+                if(previousValue == 'true'){
+                  $(this).prop('checked', false)
+                }
+                $('input[name='+$(this).attr('name')+']').attr('previousValue', false)
+                $(this).attr('previousValue', $(this).prop('checked'));
               });
             });
 
-
-        .group
-          %br/
-          =f.label 'Environmental justice organizations (and other supporters) and their websites, if available'
-          .required=f.error_message_on :justice_party_id
-          %br/
-          %textarea#conflict_ejos.text-area{:rows=>4,:name=>'conflict[ejos]'}=@conflict.ejos
-
-    .row
-      .col-md-9
-        %p &nbsp;
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
-
-
-  #conflict.tab-pane
-    .row
-      .col-md-9
-        %p.lead Conflict and Mobilization
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
-    .row
-      .col-md-9
-        .group
-          =f.label 'Intensity of conflict'
-          .required=f.error_message_on :status_id
-          %p.description (at highest level)
-          =f.select :status_id, :collection => @statuses, :fields=>[:name, :id], :include_blank => true, :id => 'status_id', :class => 'basic_input'
-
-        .group
-          =f.label 'When did the mobilization begin?'
-          .required=f.error_message_on :reaction_id
-          =f.select :reaction_id, :collection => @reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
-
-        -unless @conflict.new_record?
-          .group
-            %label= 'Is this conflict directly related to any other EJOLT ecological conflict?'
-            .required=f.error_message_on :related_conflict_id
-            %p.description Please enter the name of the conflict as per the Ejolt inventory
-            %input#related.autocomplete{:type=>'text','data-source'=>'relateds'}
+    #outcome.tab-pane
+      .row
+        .col-md-9
+          %p.lead Outcome
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
             %br/
-            %ul.autoc
-              -@conflict.related.each do |rel|
-                %li{:id=>"related_#{rel.id}"}
-                  %span= rel.name
-                  %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
-                  &nbsp;
-                  %input{:type=>"hidden",:name=>"related_add_#{rel.id}"}
-            :javascript
-              var relateds = #{@cjson.html_safe};
-
-
-      .col-md-3
-        .group
-          =f.label 'Start of the conflict'
-          %span.required.large *
-          .required=f.error_message_on :start_date
-          =f.text_field :start_date, :class => 'text_field conflict_input datemask', :value => ( @conflict.get_start_date if @conflict.start_date )
-
-        .group
-          =f.label 'End of the conflict'
-          %p.description (leave blank if ongoing)
-          =f.text_field :end_date, :class => 'text_field datemask', :value => ( @conflict.get_end_date if @conflict.end_date )
-
-
-    .row
-      .col-md-12
-        .group
-          %br/
-          =f.label 'Groups mobilizing'
-          %p.description (check all that apply)
-          %table{:style=>'width:100%'}
-            %tbody
-              -@mobgroups.each_with_index do |p,i|
-                -if i%3 == 0
+      .row
+        .col-md-4
+          .group
+            %br/
+            =f.label 'Current status of the project development'
+            .required=f.error_message_on :project_status
+            %table{:style=>'width:100%'}
+              %tbody
+                -ps = @conflict.project_status.id unless @conflict.project_status.nil?
+                -@project_statuses.each_with_index do |p,i|
                   %tr
-                %td.third
-                  %input{:type=>'checkbox',:name=>'mobilizing_group_'+p.id.to_s,:id=>'mobilizing_group_'+p.id.to_s,:class=>'mustcheck mobilizing_group_cb'}
-                  %label= p.name
-          =f.text_area :other_mobilizing_groups, :class => 'text_area', :rows=>1, :id => :other_mobilizing_groups
-          :javascript
-            $('#mobilizing_group_21').change(function(){
-              if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
-                $('#other_mobilizing_groups').slideDown(100,function(){this.focus()});
-              } else {
-                $('#other_mobilizing_groups').slideUp(200);
-                $('#other_mobilizing_groups').val('');
-              }
-            });
-          -@conflict.mobilizing_groups.each do |m|
-            :javascript
-              $('#mobilizing_group_#{m.id}').attr('checked','checked');
-          %br/
-          %br/
+                    %td
+                      %input{:type=>'radio',:name=>'project_status',:id=>'project_status_'+p.id.to_s,:value=>p.id.to_s, :checked=>('checked' if ps and i==ps-1)}
+                      %label= p.name
+            %br/
+            %br/
 
-        .group
-          =f.label 'Forms of Mobilization'
-          %p.description (check all that apply)
-          %table#mobform{:style=>'width:100%'}
-            %tbody
-              -@mobforms.each_with_index do |p,i|
-                -if i%3 == 0
-                  %tr
-                %td.third
-                  %input{:type=>'checkbox',:name=>'mobilizing_form_'+p.id.to_s,:id=>'mobilizing_form_'+p.id.to_s,:class=>'mustcheck mobilizing_form_cb'}
-                  %label= p.name
-          =f.text_area :other_mobilizing_forms, :class => 'text_area', :rows=>1, :id => :other_mobilizing_forms
-          :javascript
-            $('#mobilizing_form_28').change(function(){
-              if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
-                $('#other_mobilizing_forms').slideDown(100,function(){this.focus()});
-              } else {
-                $('#other_mobilizing_forms').slideUp(200);
-                $('#other_mobilizing_forms').val('');
-              }
-            });
-          -@conflict.mobilizing_forms.each do |m|
-            :javascript
-              $('#mobilizing_form_#{m.id}').attr('checked','checked');
-          %br/
-          %br/
+          .group
+            =f.label 'Development of Alternatives'
+            %p.description (What are the proposals being brought forward and by what ejos)
+            ~f.text_area :suggested_alternatives, :class => :text_area, :rows=>9
+            %br/
+            %br/
 
-    .row
-      .col-md-9
-        %p &nbsp;
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
-
-  #impacts.tab-pane
-    .row
-      .col-md-9 &nbsp;
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
-    .row
-      .col-md-12
-        %p.lead Impacts of the project
-        .group.row
-          .col-md-3
-            =f.label 'Environmental Impacts'
-            .required=f.error_message_on :env_impact_id
-          .col-md-9
-            %table.imptab{:style=>'width:100%'}
-              %thead
-                -3.times do |i|
-                  %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
-                    -if i==0
-                      %span.small Visible / Potential
-                    &nbsp;
-                  %th.imprad{:valign=>'bottom'}
-                    V
-                  %th.imprad{:valign=>'bottom'}
-                    P
+          .group
+            .required=f.error_message_on :success_level
+            .required=f.error_message_on :success_level
+            =f.label 'Do you consider this an Environmental Justice success? Was environmental justice served?'
+            %br/
+            %table{:style=>'width:100%'}
               %tbody
-                -@impacts[0].each_with_index do |p,i|
-                  -if i%3 == 0
-                    %tr
-                  %td.implab{:valign=>'bottom'}
-                    %label= p.name
-                  %td.imprad{:valign=>'bottom'}
-                    %input.desrad{:type=>'radio',:name=>'env_radio_'+p.id.to_s,:id=>'env_radio_'+p.id.to_s+'_g',:value=>'g'}
-                  %td.imprad{:valign=>'bottom'}
-                    %input.desrad{:type=>'radio',:name=>'env_radio_'+p.id.to_s,:id=>'env_radio_'+p.id.to_s+'_p',:value=>'p'}
-              -@conflict.c_env_impacts.each do |m|
-                -m.visible ? s='_g' : s='_p'
-                :javascript
-                  $('#env_radio_#{m.env_impact_id.to_s+s}').attr('checked',true);
-        %br/
-        .group.row
-          .col-md-3 &nbsp;
-          .col-md-9
-            =f.label 'Other Environmental Impacts'
-            .required=f.error_message_on :other_env_impacts
-            ~f.text_area :other_env_impacts, :class => :text_area
-        %hr/
-
-        .group.row
-          .col-md-3
-            =f.label 'Health Impacts'
-            .required=f.error_message_on :hlt_impact_id
-          .col-md-9
-            %table.imptab{:style=>'width:100%'}
-              %thead
-                -3.times do |i|
-                  %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
-                    -if i==0
-                      %span.small Visible / Potential
-                    &nbsp;
-                  %th.imprad{:valign=>'bottom'}
-                    V
-                  %th.imprad{:valign=>'bottom'}
-                    P
-              %tbody
-                -@impacts[1].each_with_index do |p,i|
-                  -if i%3 == 0
-                    %tr
-                  %td.implab{:valign=>'bottom'}
-                    %label= p.name
-                  %td.imprad{:valign=>'bottom'}
-                    %input.desrad{:type=>'radio',:name=>'hlt_radio_'+p.id.to_s,:id=>'hlt_radio_'+p.id.to_s+'_g',:value=>'g'}
-                  %td.imprad{:valign=>'bottom'}
-                    %input.desrad{:type=>'radio',:name=>'hlt_radio_'+p.id.to_s,:id=>'hlt_radio_'+p.id.to_s+'_p',:value=>'p'}
-              -@conflict.c_hlt_impacts.each do |m|
-                -m.visible ? s='_g' : s='_p'
-                :javascript
-                  $('#hlt_radio_#{m.hlt_impact_id.to_s+s}').attr('checked',true);
-        %br/
-        .group.row
-          .col-md-3 &nbsp;
-          .col-md-9
-            =f.label 'Other Health Impacts'
-            .required=f.error_message_on :other_hlt_impacts
-            ~f.text_area :other_hlt_impacts, :class => :text_area
-        %hr/
-
-        .group.row
-          .col-md-3
-            =f.label 'Socio-economic Impacts'
-            .required=f.error_message_on :sec_impact_id
-          .col-md-9
-            %table.imptab{:style=>'width:100%'}
-              %thead
-                -3.times do |i|
-                  %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
-                    -if i==0
-                      %span.small Visible / Potential
-                    &nbsp;
-                  %th.imprad{:valign=>'bottom'}
-                    V
-                  %th.imprad{:valign=>'bottom'}
-                    P
-              %tbody
-                -@impacts[2].each_with_index do |p,i|
-                  -if i%3 == 0
-                    %tr
-                  %td.implab{:valign=>'bottom'}
-                    %label= p.name
-                  %td.imprad{:valign=>'bottom'}
-                    %input.desrad{:type=>'radio',:name=>'sec_radio_'+p.id.to_s,:id=>'sec_radio_'+p.id.to_s+'_g',:value=>'g'}
-                  %td.imprad{:valign=>'bottom'}
-                    %input.desrad{:type=>'radio',:name=>'sec_radio_'+p.id.to_s,:id=>'sec_radio_'+p.id.to_s+'_p',:value=>'p'}
-              -@conflict.c_sec_impacts.each do |m|
-                -m.visible ? s='_g' : s='_p'
-                :javascript
-                  $('#sec_radio_#{m.sec_impact_id.to_s+s}').attr('checked',true);
-        %br/
-        .group.row
-          .col-md-3 &nbsp;
-          .col-md-9
-            =f.label 'Other Socio-economic Impacts'
-            .required=f.error_message_on :other_sec_impacts
-            ~f.text_area :other_sec_impacts, :class => :text_area
-        %br/
-
-    .row
-      .col-md-9
-        %p &nbsp;
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
-
-        :javascript
-          $(document).ready(function(){
-            $('.desrad').live('click', function() { 
-              var previousValue = $(this).attr('previousValue');
-              if(previousValue == 'true'){
-                $(this).prop('checked', false)
-              }
-              $('input[name='+$(this).attr('name')+']').attr('previousValue', false)
-              $(this).attr('previousValue', $(this).prop('checked'));
-            });
-          });
-
-  #outcome.tab-pane
-    .row
-      .col-md-9
-        %p.lead Outcome
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
-    .row
-      .col-md-4
-        .group
-          %br/
-          =f.label 'Current status of the project development'
-          .required=f.error_message_on :project_status
-          %table{:style=>'width:100%'}
-            %tbody
-              -ps = @conflict.project_status.id unless @conflict.project_status.nil?
-              -@project_statuses.each_with_index do |p,i|
                 %tr
                   %td
-                    %input{:type=>'radio',:name=>'project_status',:id=>'project_status_'+p.id.to_s,:value=>p.id.to_s, :checked=>('checked' if ps and i==ps-1)}
+                    %label.inline.suc_lvl
+                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'0',:name=>'conflict[success_level]'} &nbsp;Yes
+                %tr
+                  %td
+                    %label.inline.suc_lvl
+                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'2',:name=>'conflict[success_level]'} &nbsp;No
+                %tr
+                  %td
+                    %label.inline.suc_lvl
+                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'1',:name=>'conflict[success_level]'} &nbsp;Not Sure
+            -if suclvl = @conflict.success_level
+              :javascript
+                $('input.suclvl[value=#{suclvl}]').prop('checked',true);
+          %br/
+
+          .group
+            =f.label 'Briefly explain'
+            .required=f.error_message_on :success_reason
+            ~f.text_area :success_reason, :class => :text_area, :rows=>6
+
+
+        .col-md-8
+          .group
+            %br/
+            =f.label 'Conflict outcome / response'
+            %p.description (check all the outcomes that apply)
+            %table{:style=>'width:100%'}
+              %tbody
+                -@conflict_events.each_with_index do |p,i|
+                  -if i%2 == 0
+                    %tr
+                  %td.half
+                    %input{:type=>'checkbox',:name=>'conflict_event_'+p.id.to_s,:id=>'conflict_event_'+p.id.to_s,:class=>'mustcheck conflict_event_cb'}
                     %label= p.name
-          %br/
-          %br/
-
-        .group
-          =f.label 'Development of Alternatives'
-          %p.description (What are the proposals being brought forward and by what ejos)
-          ~f.text_area :suggested_alternatives, :class => :text_area, :rows=>9
-          %br/
-          %br/
-
-        .group
-          .required=f.error_message_on :success_level
-          .required=f.error_message_on :success_level
-          =f.label 'Do you consider this an Environmental Justice success? Was environmental justice served?'
-          %br/
-          %table{:style=>'width:100%'}
-            %tbody
-              %tr
-                %td
-                  %label.inline.suc_lvl
-                    %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'0',:name=>'conflict[success_level]'} &nbsp;Yes
-              %tr
-                %td
-                  %label.inline.suc_lvl
-                    %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'2',:name=>'conflict[success_level]'} &nbsp;No
-              %tr
-                %td
-                  %label.inline.suc_lvl
-                    %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'1',:name=>'conflict[success_level]'} &nbsp;Not Sure
-          -if suclvl = @conflict.success_level
+            ~f.text_area :other_outcomes, :class => 'text_area', :rows=>1, :id => 'other_outcomes'
             :javascript
-              $('input.suclvl[value=#{suclvl}]').prop('checked',true);
-        %br/
-
-        .group
-          =f.label 'Briefly explain'
-          .required=f.error_message_on :success_reason
-          ~f.text_area :success_reason, :class => :text_area, :rows=>6
-
-
-      .col-md-8
-        .group
-          %br/
-          =f.label 'Conflict outcome / response'
-          %p.description (check all the outcomes that apply)
-          %table{:style=>'width:100%'}
-            %tbody
-              -@conflict_events.each_with_index do |p,i|
-                -if i%2 == 0
-                  %tr
-                %td.half
-                  %input{:type=>'checkbox',:name=>'conflict_event_'+p.id.to_s,:id=>'conflict_event_'+p.id.to_s,:class=>'mustcheck conflict_event_cb'}
-                  %label= p.name
-          ~f.text_area :other_outcomes, :class => 'text_area', :rows=>1, :id => 'other_outcomes'
-          :javascript
-            $('#conflict_event_26').change(function(){
-              if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
-                $('#other_outcomes').slideDown(100,function(){this.focus()});
-              } else {
-                $('#other_outcomes').slideUp('slow');
-                $('#other_outcomes').val('');
-              }
-            });
-          -@conflict.conflict_events.each do |m|
-            :javascript
-              $('#conflict_event_#{m.id}').attr('checked','checked');
-          %br/
+              $('#conflict_event_26').change(function(){
+                if ($(this).prop('checked')=='checked' || $(this).prop('checked')==true) {
+                  $('#other_outcomes').slideDown(100,function(){this.focus()});
+                } else {
+                  $('#other_outcomes').slideUp('slow');
+                  $('#other_outcomes').val('');
+                }
+              });
+            -@conflict.conflict_events.each do |m|
+              :javascript
+                $('#conflict_event_#{m.id}').attr('checked','checked');
+            %br/
 
 
-    .row
-      .col-md-9
-        %p &nbsp;
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
+      .row
+        .col-md-9
+          %p &nbsp;
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
 
 
 
-  #materials.tab-pane
-    :javascript
-      function handleModal(model) {
-        $('#m_'+model).on('hidden.bs.modal', function () {
-          $('.i_'+model).val('');
-          $('#b_'+model).removeClass('disabled');
-        })
-        $('#m_'+model).on('shown.bs.modal', function() {
-          $('#'+model+'_description').focus();
-        });
-        $('.d_'+model).live('click', function(e){
-          par = $(this).closest('.'+model);
-          id = par.find('textarea').attr('name').split('_')[2];
-          html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
-          par.html(html);
-        });
-        $('#b_'+model).click(function(e){
-          if ($('#'+model+'_description').val()=='') {
-            $('#'+model+'_description').focus();
-            return
-          }
-          $('#b_'+model).addClass('disabled');
-          e.preventDefault();
-          modeldata = {
-            'description': $('#'+model+'_description').val(),
-            'url': $('#'+model+'_url').val(),
-            'conflict_id': '#{@conflict.id.to_s}'
-          }
-          if ('#{@example}') {
-            html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+'+model+'['id']+'">'+'+model+'['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+'+model+'['id']+'" placeholder="http://" style="width:98%" type="text" value="'+'+model+'['url']+'"> </div> ';
-            $('#current_'+model+'s').append(html);
+    #materials.tab-pane
+      :javascript
+        function handleModal(model) {
+          $('#m_'+model).on('hidden.bs.modal', function () {
+            $('.i_'+model).val('');
             $('#b_'+model).removeClass('disabled');
-            $('#m_'+model).modal('hide');
-          } else {
-            $.ajax({
-              type: 'POST',
-              url: '/conflicts/'+model, 
-              data: modeldata, 
-              success: function(data,ts){
-                dat = JSON.parse(data)[''+model];
-                //console.log(dat)
-                html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+dat['id']+'">'+dat['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+dat['id']+'" placeholder="http://" style="width:98%" type="text" value="'+dat['url']+'"> </div> ';
-                $('#current_'+model+'s').append(html);
-                $('#b_'+model).removeClass('disabled');
-                $('#m_'+model).modal('hide');
-              },
-              error: function(data,ts,error){
-                alert(ts+' '+error)
-              }
-            });
-          }
-        });
-      }
-    .row
-      .col-md-9
-        %p.lead Sources and Materials
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button.btn.pn.next Next
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
-          %br/
+          })
+          $('#m_'+model).on('shown.bs.modal', function() {
+            $('#'+model+'_description').focus();
+          });
+          $('.d_'+model).live('click', function(e){
+            par = $(this).closest('.'+model);
+            id = par.find('textarea').attr('name').split('_')[2];
+            html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
+            par.html(html);
+          });
+          $('#b_'+model).click(function(e){
+            if ($('#'+model+'_description').val()=='') {
+              $('#'+model+'_description').focus();
+              return
+            }
+            $('#b_'+model).addClass('disabled');
+            e.preventDefault();
+            modeldata = {
+              'description': $('#'+model+'_description').val(),
+              'url': $('#'+model+'_url').val(),
+              'conflict_id': '#{@conflict.id.to_s}'
+            }
+            if ('#{@example}') {
+              html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+'+model+'['id']+'">'+'+model+'['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+'+model+'['id']+'" placeholder="http://" style="width:98%" type="text" value="'+'+model+'['url']+'"> </div> ';
+              $('#current_'+model+'s').append(html);
+              $('#b_'+model).removeClass('disabled');
+              $('#m_'+model).modal('hide');
+            } else {
+              $.ajax({
+                type: 'POST',
+                url: '/conflicts/'+model, 
+                data: modeldata, 
+                success: function(data,ts){
+                  dat = JSON.parse(data)[''+model];
+                  //console.log(dat)
+                  html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+dat['id']+'">'+dat['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+dat['id']+'" placeholder="http://" style="width:98%" type="text" value="'+dat['url']+'"> </div> ';
+                  $('#current_'+model+'s').append(html);
+                  $('#b_'+model).removeClass('disabled');
+                  $('#m_'+model).modal('hide');
+                },
+                error: function(data,ts,error){
+                  alert(ts+' '+error)
+                }
+              });
+            }
+          });
+        }
+      .row
+        .col-md-9
+          %p.lead Sources and Materials
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button.btn.pn.next Next
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
 
-    .row
-      .col-md-6
-        #m_legislation.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-          .modal-dialog
-            .modal-content
-              %form
-                .modal-header
-                  %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                  %h3 Related Legislation
-                .modal-body
-                  %label Name and description of the legislation
-                  %textarea.i_legislation#legislation_description{:type=>'text',:name=>'legislation_description'}
-                  %br/
-                  %label Address
-                  %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://'}
-                  %br/
-                  %br/
-                .modal-footer
-                  %a.btn#b_legislation Create
-        .group
-          .row
-            .col-md-12
-              %label Related laws and legislations
-              %span.description - Juridical texts related to the conflict
-              %a#n_legislation.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_legislation'} Add
-          #current_legislations
-            -@conflict.legislations.each do |l|
-              .legislation
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-10
-                    %textarea{:name=>'legislation_description_'+l.id.to_s}= l.description
-                  .col-md-2
-                    %a.d_legislation.pull-right.btn Remove
-                %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-          :javascript
-            $(document).ready(function(){
-              handleModal('legislation');
-            });
-          %hr/
-
-        #m_weblink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-          .modal-dialog
-            .modal-content
-              %form
-                .modal-header
-                  %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                  %h3 Related Web Link
-                .modal-body
-                  %label Name and description of the link
-                  %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
-                  %br/
-                  %label Address
-                  %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://'}
-                  %br/
-                  %br/
-                .modal-footer
-                  %a.btn#b_weblink Create
-        .group
-          .row
-            .col-md-12
-              %label Links
-              %span.description - to general newspaper articles, blogs or other websites
-              %a#n_weblink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_weblink'} Add
-          #current_weblinks
-            -@conflict.weblinks.each do |l|
-              .weblink
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-10
-                    %textarea{:name=>'weblink_description_'+l.id.to_s}= l.description
-                  .col-md-2
-                    %a.d_weblink.pull-right.btn Remove
-                %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-          :javascript
-            $(document).ready(function(){
-              handleModal('weblink');
-            });
-          %hr/
-
-        .group
-          =f.label 'Other Comments'
-          .required=f.error_message_on :other_comments
-          ~f.text_area :other_comments, :class => :text_area, :rows=>4
-
-      .col-md-6
-        #m_reference.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-          .modal-dialog
-            .modal-content
-              %form
-                .modal-header
-                  %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                  %h3 Related Reference
-                .modal-body
-                  %label Name and description of source material
-                  %textarea.i_reference#reference_description{:type=>'text',:name=>'reference_description'}
-                  %br/
-                  %label Address
-                  %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://'}
-                  %br/
-                  %br/
-                .modal-footer
-                  %a.btn#b_reference Create
-        .group
-          .row
-            .col-md-12
-              %label References
-              %span.description - to published books, academic articles, movies or published documentaries
-              %a#n_reference.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_reference'} Add
-          #current_references
-            -@conflict.references.each do |l|
-              .reference
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-10
-                    %textarea{:name=>'reference_description_'+l.id.to_s}= l.description
-                  .col-md-2
-                    %a.d_reference.pull-right.btn Remove
-                %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-          :javascript
-            $(document).ready(function(){
-              handleModal('reference');
-            });
-          %hr/
-
-        #m_medialink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-          .modal-dialog
-            .modal-content
-              %form
-                .modal-header
-                  %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                  %h3 Related Media
-                .modal-body
-                  %label Description about the media
-                  %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
-                  %br/
-                  %label Address
-                  %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
-                  %br/
-                  %br/
-                .modal-footer
-                  %a.btn#b_medialink Add
-        .group
-          .row
-            .col-md-12
-              %label Related Media
-              %span.description - links to videos, campaigns, social networks
-              %a#n_medialink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_medialink'} Add
-          #current_medialinks
-            -@conflict.medialinks.each do |l|
-              .medialink
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-10
-                    %textarea{:name=>'medialink_description_'+l.id.to_s}= l.description
-                  .col-md-2
-                    %a.d_medialink.pull-right.btn Remove
-                %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-          :javascript
-            $(document).ready(function(){
-              handleModal('medialink');
-            });
-          %hr/
-
-        -content_for :include do
-          =javascript_include_tag 'upload_iframe'
-        -content_for :outer do
-          #m_document.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+      .row
+        .col-md-6
+          #m_legislation.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
             .modal-dialog
               .modal-content
                 %form
                   .modal-header
                     %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3 Another Document
+                    %h3 Related Legislation
                   .modal-body
-                    %label Name:
-                    %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
+                    %label Name and description of the legislation
+                    %textarea.i_legislation#legislation_description{:type=>'text',:name=>'legislation_description'}
                     %br/
-                    %label Description:
-                    %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
+                    %label Address
+                    %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://'}
                     %br/
-                    %label File:
                     %br/
-                    %input.i_document#document_file{:type=>'file',:name=>'document[file]'}
-                    %input#document_file_cache{:type=>'hidden',:name=>'document[file_cache]'}
-                    %input#document_conflict_id{:type=>'hidden',:name=>'document[conflict_id]',:value=>"#{@conflict.id}"}
-                    %p
-                      #upload
                   .modal-footer
-                    %input.btn#b_document{:type=>'button',:onclick=>"fileUpload(this.form,'index.php','upload'); return false;",:value=>'Send'} 
+                    %a.btn#b_legislation Create
+          .group
+            .row
+              .col-md-12
+                %label Related laws and legislations
+                %span.description - Juridical texts related to the conflict
+                %a#n_legislation.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_legislation'} Add
+            #current_legislations
+              -@conflict.legislations.each do |l|
+                .legislation
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-10
+                      %textarea{:name=>'legislation_description_'+l.id.to_s}= l.description
+                    .col-md-2
+                      %a.d_legislation.pull-right.btn Remove
+                  %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+            :javascript
+              $(document).ready(function(){
+                handleModal('legislation');
+              });
+            %hr/
+
+          #m_weblink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+            .modal-dialog
+              .modal-content
+                %form
+                  .modal-header
+                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                    %h3 Related Web Link
+                  .modal-body
+                    %label Name and description of the link
+                    %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
+                    %br/
+                    %label Address
+                    %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://'}
+                    %br/
+                    %br/
+                  .modal-footer
+                    %a.btn#b_weblink Create
+          .group
+            .row
+              .col-md-12
+                %label Links
+                %span.description - to general newspaper articles, blogs or other websites
+                %a#n_weblink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_weblink'} Add
+            #current_weblinks
+              -@conflict.weblinks.each do |l|
+                .weblink
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-10
+                      %textarea{:name=>'weblink_description_'+l.id.to_s}= l.description
+                    .col-md-2
+                      %a.d_weblink.pull-right.btn Remove
+                  %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+            :javascript
+              $(document).ready(function(){
+                handleModal('weblink');
+              });
+            %hr/
+
+          .group
+            =f.label 'Other Comments'
+            .required=f.error_message_on :other_comments
+            ~f.text_area :other_comments, :class => :text_area, :rows=>4
+
+        .col-md-6
+          #m_reference.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+            .modal-dialog
+              .modal-content
+                %form
+                  .modal-header
+                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                    %h3 Related Reference
+                  .modal-body
+                    %label Name and description of source material
+                    %textarea.i_reference#reference_description{:type=>'text',:name=>'reference_description'}
+                    %br/
+                    %label Address
+                    %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://'}
+                    %br/
+                    %br/
+                  .modal-footer
+                    %a.btn#b_reference Create
+          .group
+            .row
+              .col-md-12
+                %label References
+                %span.description - to published books, academic articles, movies or published documentaries
+                %a#n_reference.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_reference'} Add
+            #current_references
+              -@conflict.references.each do |l|
+                .reference
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-10
+                      %textarea{:name=>'reference_description_'+l.id.to_s}= l.description
+                    .col-md-2
+                      %a.d_reference.pull-right.btn Remove
+                  %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+            :javascript
+              $(document).ready(function(){
+                handleModal('reference');
+              });
+            %hr/
 
         .group
           .row
@@ -1121,218 +1070,398 @@
                 %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
                 -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
                   .row{:style=>'margin-top:8px;background:#aaa;'}
+
+          #m_medialink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+            .modal-dialog
+              .modal-content
+                %form
+                  .modal-header
+                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                    %h3 Related Media
+                  .modal-body
+                    %label Description about the media
+                    %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
+                    %br/
+                    %label Address
+                    %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
+                    %br/
+                    %br/
+                  .modal-footer
+                    %a.btn#b_medialink Add
+          .group
+            .row
+              .col-md-12
+                %label Related Media
+                %span.description - links to videos, campaigns, social networks
+                %a#n_medialink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_medialink'} Add
+            #current_medialinks
+              -@conflict.medialinks.each do |l|
+                .medialink
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-10
+                      %textarea{:name=>'medialink_description_'+l.id.to_s}= l.description
+                    .col-md-2
+                      %a.d_medialink.pull-right.btn Remove
+                  %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+            :javascript
+              $(document).ready(function(){
+                handleModal('medialink');
+              });
+            %hr/
+
+          -content_for :include do
+            =javascript_include_tag 'upload_iframe'
+          -content_for :outer do
+            #m_document.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+              .modal-dialog
+                .modal-content
+                  %form
+                    .modal-header
+                      %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                      %h3 Another Document
+                    .modal-body
+                      %label Name:
+                      %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
+                      %br/
+                      %label Description:
+                      %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
+                      %br/
+                      %label File:
+                      %br/
+                      %input.i_document#document_file{:type=>'file',:name=>'document[file]'}
+                      %input#document_file_cache{:type=>'hidden',:name=>'document[file_cache]'}
+                      %input#document_conflict_id{:type=>'hidden',:name=>'document[conflict_id]',:value=>"#{@conflict.id}"}
+                      %p
+                        #upload
+                    .modal-footer
+                      %input.btn#b_document{:type=>'button',:onclick=>"fileUpload(this.form,'index.php','upload'); return false;",:value=>'Send'} 
+
+          .group
+            .row
+              .col-md-12
+                %label Upload a picture here
+                %span.description - you can also upload pdf documents
+                -unless @conflict.new_record?
+                  %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'} Add
+                -if @conflict.new_record?
+                  %p &nbsp;
+                  %p.description
+                    %strong Please Save the form after uploading each photo.
+            #current_documents
+              -@conflict.images.each do |d|
+                .document
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
                     .col-md-3
                       %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                      .center-text
+                        [[IMAGE]]
                     .col-md-9
                       .row
                         .col-md-9
                           %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                          %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
                         .col-md-3
-                          %a.d_document.pull-right.btn Remove
-                      %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
-                -else
-                  .row{:style=>'margin-top:8px;'}
-                    .col-md-10
-                      %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                      %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
-                    .col-md-2
-                      %a.d_document.pull-right.btn Remove
-                  %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+                          %a.d_image.pull-right.btn Remove
+                          -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
+                      %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
 
-          :javascript
-            var uploading = false;
-            function uploadResponse (resp) {
-              if (uploading){
-                return 
-              }
-              uploading = true;
-              //$('iframe#upload_iframe').remove();
-              //console.log(resp);
-              if (resp === 'no') {
-                alert ('A problem occured uploading the file.');
-                return
-              }
-              dat = JSON.parse(resp)['document'];
-              console.log(dat)
-              filare = dat['file']['url'].split('/');
-              filename = filare[filare.length-1];
-              html = '<div class="document"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <a href="'+dat['file']['url']+'" target="_blank">'+filename+'</a> <input name="document_title_'+dat['id']+'" type="text" value="'+dat['title']+'"> </div> <div class="col-md-2"> <a class="d_document pull-right btn">Remove</a> </div> </div> <textarea name="document_description_'+dat['id']+'" style="width:98%">'+dat['description']+'</textarea> </div>'
-              $('#current_documents').append(html);
-              $('#m_document').modal('hide');
-            }
-            $(document).ready(function(){
-              $('#m_document').on('hidden.bs.modal', function () {
-                $('.i_document').val('');
-                $('#b_document').removeClass('disabled');
-                uploading = false;
-              })
-              $('#m_document').on('shown.bs.modal', function() {
-                $('#document_title').focus();
-                $('#b_document').removeClass('disabled');
-              });
-              $('.d_document').live('click', function(e){
-                par = $(this).closest('.document');
-                id = par.find('input').attr('name').split('_')[2];
-                html = '<input name="document_remove_'+id+'" type="hidden"></input>';
-                par.html(html);
-              });
-              $('.d_image').live('click', function(e){
-                par = $(this).closest('.document');
-                id = par.find('input').attr('name').split('_')[2];
-                html = '<input name="image_remove_'+id+'" type="hidden"></input>';
-                par.html(html);
-              });
-              $('#b_document').click(function(e){
-                if ($('#document_file').val()=='') {
-                  $('#document_file').focus();
+              -@conflict.documents.each do |d|
+                -next if d.copied?
+                .document
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
+                    .row{:style=>'margin-top:8px;background:#aaa;'}
+                      .col-md-3
+                        %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                      .col-md-9
+                        .row
+                          .col-md-9
+                            %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                            %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                          .col-md-3
+                            %a.d_document.pull-right.btn Remove
+                        %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+                  -else
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-10
+                        %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                        %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                      .col-md-2
+                        %a.d_document.pull-right.btn Remove
+                    %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+
+            :javascript
+              var uploading = false;
+              function uploadResponse (resp) {
+                if (uploading){
+                  return 
+                }
+                uploading = true;
+                //$('iframe#upload_iframe').remove();
+                //console.log(resp);
+                if (resp === 'no') {
+                  alert ('A problem occured uploading the file.');
                   return
                 }
-                $('#b_document').addClass('disabled');
-                e.preventDefault();
-                if ('#{@example}') {
-                  $('#m_document').modal('hide');
-                } else {
-                  fileUpload(this.form,'/conflicts/getfile','upload');
-                }
+                dat = JSON.parse(resp)['document'];
+                console.log(dat)
+                filare = dat['file']['url'].split('/');
+                filename = filare[filare.length-1];
+                html = '<div class="document"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <a href="'+dat['file']['url']+'" target="_blank">'+filename+'</a> <input name="document_title_'+dat['id']+'" type="text" value="'+dat['title']+'"> </div> <div class="col-md-2"> <a class="d_document pull-right btn">Remove</a> </div> </div> <textarea name="document_description_'+dat['id']+'" style="width:98%">'+dat['description']+'</textarea> </div>'
+                $('#current_documents').append(html);
+                $('#m_document').modal('hide');
+              }
+              $(document).ready(function(){
+                $('#m_document').on('hidden.bs.modal', function () {
+                  $('.i_document').val('');
+                  $('#b_document').removeClass('disabled');
+                  uploading = false;
+                })
+                $('#m_document').on('shown.bs.modal', function() {
+                  $('#document_title').focus();
+                  $('#b_document').removeClass('disabled');
+                });
+                $('.d_document').live('click', function(e){
+                  par = $(this).closest('.document');
+                  id = par.find('input').attr('name').split('_')[2];
+                  html = '<input name="document_remove_'+id+'" type="hidden"></input>';
+                  par.html(html);
+                });
+                $('.d_image').live('click', function(e){
+                  par = $(this).closest('.document');
+                  id = par.find('input').attr('name').split('_')[2];
+                  html = '<input name="image_remove_'+id+'" type="hidden"></input>';
+                  par.html(html);
+                });
+                $('#b_document').click(function(e){
+                  if ($('#document_file').val()=='') {
+                    $('#document_file').focus();
+                    return
+                  }
+                  $('#b_document').addClass('disabled');
+                  e.preventDefault();
+                  if ('#{@example}') {
+                    $('#m_document').modal('hide');
+                  } else {
+                    fileUpload(this.form,'/conflicts/getfile','upload');
+                  }
+                });
               });
-            });
-          %hr/
-        %input#activetab{:name=>'activetab',:type=>'hidden'}
+            %hr/
+          %input#activetab{:name=>'activetab',:type=>'hidden'}
 
 
-  #meta.tab-pane
-    .row
-      .col-md-9
-        %p.lead Meta information
-      .col-md-3
-        .pull-right.btn-group.png
-          %button.btn.pn.prev Previous
-          %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+    #meta.tab-pane
+      .row
+        .col-md-9
+          %p.lead Meta information
+        .col-md-3
+          .pull-right.btn-group.png
+            %button.btn.pn.prev Previous
+            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")} Save
+            %br/
+
+      .row
+        .col-md-4
+          -unless @conflict.new_record?
+            .group
+              %label= "Conflict ID: #{@conflict.id}"
+
+          .group
+            =f.label 'Headline text'
+            .required=f.error_message_on :headline
+            %p.description 
+              Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences, 
+              %strong 255 
+              characters maximum.
+            ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255
+
+          .group
+            .required=f.error_message_on :approval_status
+            =f.label 'Approval status'
+            %label.checkbox.inline.apstat
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'} &nbsp;Deleted
+            %label.checkbox.inline.apstat
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'} &nbsp;Draft
+            %label.checkbox.inline.apstat
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'} &nbsp;Submit for moderation
+            %label.checkbox.inline.apstat
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'} &nbsp;Modified
+            -if ["admin","editor"].include? current_account.role
+              %label.checkbox.inline.apstat
+                %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'} &nbsp;Approved
+            -if apstat = @conflict.approval_status
+              -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
+            -else
+              -apstat = 'draft'
+            :javascript
+              $('input.apstat[value=#{apstat}]').prop('checked',true);
+            -if ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
+              %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
+                %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
+
           %br/
 
-    .row
-      .col-md-4
-        -unless @conflict.new_record?
+          -if @saves and @saves.length > 0
+            .group
+              %label Save history:
+              %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
+                %tdata
+                  -@saves.reverse.each do |save|
+                    %tr
+                      %td=save[4]
+                      %td
+                        %small=Account.find(save[3].to_i).name
+
+
+          %br/
+
+        .col-md-8
           .group
-            %label= "Conflict ID: #{@conflict.id}"
+            %label Send a message to the moderator
+            .row
+              .col-md-4
+                .clearfix
+                  .pull-left
+                    %textarea#message{:rows=>2,:style=>"width:240px;",:placeholder=>"Type a new message"}
+                .clearfix
+                  .pull-left
+                    %button.btn#message-btn{:style=>"width:240px;padding: 2px 12px;"} SEND
+                %p#message-err.error
 
-        .group
-          =f.label 'Headline text'
-          .required=f.error_message_on :headline
-          %p.description 
-            Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences, 
-            %strong 255 
-            characters maximum.
-          ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255
+              .col-md-8
+                :css
+                  .messages li .msg {}
+                  .messages li .msg .well {  max-width: 80%; min-height: 0; background-color: #fff; padding: 8px 16px; border-radius: 6px; margin-top:6px; }
+                  .messages li .msg .well.pull-right {  background-color: #eee; }
+                  .messages li .msg .well p {  font-size: 14px; margin-bottom: -4px; }
+                  .messages li .msg small { font-size: 11px; color: #999; display: block; }
+                  .messages li .msg small.black { color: #000; }
+                %ul.messages{:style=>"list-style-type: none; padding: 0;"}
+                  -if @conflict.conflict_messages.any?
+                    -@conflict.conflict_messages.order("created_at desc").each do |msg|
+                      %li.clearfix
+                        -pull = msg.account == current_account ? "pull-right" : "pull-left"
+                        .msg{:class => pull }
+                          .clearfix
+                            -if msg.account != current_account
+                              %small.black.pull-left{:title => msg.account.email }
+                                %b= msg.account.name
+                                wrote
+                            -else
+                              %small.black.pull-left You wrote 
+                            %small.pull-left &nbsp;
+                            %small{:class => pull }= msg.created_at.strftime "on %B %d, %Y - %H:%M"
+                          -if ["admin","editor"].include?(current_account.role)
+                            %a.delete{:class=>pull,:id=>"del-#{msg.id}"} &nbsp;X&nbsp;
+                          .well{:class => pull}
+                            %p= msg.content
+                %hr/
 
-        .group
-          .required=f.error_message_on :approval_status
-          =f.label 'Approval status'
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'} &nbsp;Deleted
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'} &nbsp;Draft
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'} &nbsp;Submit for moderation
-          %label.checkbox.inline.apstat
-            %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'} &nbsp;Modified
-          -if ["admin","editor"].include? current_account.role
-            %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'} &nbsp;Approved
-          -if apstat = @conflict.approval_status
-            -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
-          -else
-            -apstat = 'draft'
-          :javascript
-            $('input.apstat[value=#{apstat}]').prop('checked',true);
-          -if ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
-            %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
-              %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
-              %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
-        %br/
-
-      .col-md-8
-        .group
-          %label Send a message to the moderator
-          .row
-            .col-md-4
-              .clearfix
-                .pull-left
-                  %textarea#message{:rows=>2,:style=>"width:240px;",:placeholder=>"Type a new message"}
-              .clearfix
-                .pull-left
-                  %button.btn#message-btn{:style=>"width:240px;padding: 2px 12px;"} SEND
-              %p#message-err.error
-
-            .col-md-8
-              :css
-                .messages li .msg {}
-                .messages li .msg .well {  max-width: 80%; min-height: 0; background-color: #fff; padding: 8px 16px; border-radius: 6px; margin-top:6px; }
-                .messages li .msg .well.pull-right {  background-color: #eee; }
-                .messages li .msg .well p {  font-size: 14px; margin-bottom: -4px; }
-                .messages li .msg small { font-size: 11px; color: #999; display: block; }
-                .messages li .msg small.black { color: #000; }
-              %ul.messages{:style=>"list-style-type: none; padding: 0;"}
-                -if @conflict.conflict_messages.any?
-                  -@conflict.conflict_messages.order("created_at desc").each do |msg|
-                    %li.clearfix
-                      -pull = msg.account == current_account ? "pull-right" : "pull-left"
-                      .msg{:class => pull }
-                        .clearfix
-                          -if msg.account != current_account
-                            %small.black.pull-left{:title => msg.account.email }
-                              %b= msg.account.name
-                              wrote
-                          -else
-                            %small.black.pull-left You wrote 
-                          %small.pull-left &nbsp;
-                          %small{:class => pull }= msg.created_at.strftime "on %B %d, %Y - %H:%M"
-                        -if ["admin","editor"].include?(current_account.role)
-                          %a.delete{:class=>pull,:id=>"del-#{msg.id}"} &nbsp;X&nbsp;
-                        .well{:class => pull}
-                          %p= msg.content
-              %hr/
-
-              :css
-                a.delete {
-                  color: #c00;
-                  font-weight: bold;
-                  cursor: pointer;
-                }
-              :javascript
-                $("a.delete").on("click",function(e){
-                  id = $(this).attr("id").replace(/^del-/,"");
-                  li = $(this).closest("li");
-                  console.log(id)
-                  $.post("/conflicts/msg_delete",
-                    {id:id},
-                    function(data){
-                      if (data === "ok") {
-                        li.remove();
-                      }
-                    }
-                  ); 
-                });
-                $("#message-btn").on("click",function(e){
-                  e.preventDefault();
-                  $(this).prop("disabled",true);
-                  if ($("#message").val().length > 0 ) {
-                    $.post("/conflicts/msg_create",
-                      {aid:#{current_account.id},cid:#{@conflict.id}, content: $("#message").val()},
+                :css
+                  a.delete {
+                    color: #c00;
+                    font-weight: bold;
+                    cursor: pointer;
+                  }
+                :javascript
+                  $("a.delete").on("click",function(e){
+                    id = $(this).attr("id").replace(/^del-/,"");
+                    li = $(this).closest("li");
+                    console.log(id)
+                    $.post("/conflicts/msg_delete",
+                      {id:id},
                       function(data){
                         if (data === "ok") {
-                          html = '<li class="clearfix"> <div class="msg pull-right"> <div class="clearfix"> <small class="black pull-left">You wrote</small> <small class="pull-left">&nbsp;</small> <small class="pull-right">just now<small> </div> <div class="pull-right well"> <p>'+$("#message").val()+'</p> </div> </div> </li>';
-                          $("ul.messages").prepend(html)
-                          $("#message-err").text("");
-                        } else {
-                          $("#message-err").text(data);
+                          li.remove();
                         }
                       }
                     ); 
-                  } else {
-                    $("#message-err").text("Can't send empty message!");
-                  }
+                  });
+                  $("#message-btn").on("click",function(e){
+                    e.preventDefault();
+                    $(this).prop("disabled",true);
+                    if ($("#message").val().length > 0 ) {
+                      $.post("/conflicts/msg_create",
+                        {aid:#{current_account.id},cid:#{@conflict.new_record? ? 0 : @conflict.id}, content: $("#message").val()},
+                        function(data){
+                          if (data === "ok") {
+                            html = '<li class="clearfix"> <div class="msg pull-right"> <div class="clearfix"> <small class="black pull-left">You wrote</small> <small class="pull-left">&nbsp;</small> <small class="pull-right">just now<small> </div> <div class="pull-right well"> <p>'+$("#message").val()+'</p> </div> </div> </li>';
+                            $("ul.messages").prepend(html)
+                            $("#message-err").text("");
+                          } else {
+                            $("#message-err").text(data);
+                          }
+                        }
+                      ); 
+                    } else {
+                      $("#message-err").text("Can't send empty message!");
+                    }
+                  });
+
+
+          -if ["admin","editor"].include? current_account.role and @conflict.account
+            .group
+              =f.label 'Internal Notes'
+              .required=f.error_message_on :notes
+              %p.description Please indicate the changes you have made as well as other relevant information
+              ~f.text_area :notes, :class => :text_area, :rows=>4
+              -if ["admin","editor"].include? current_account.role and @conflict.account
+                %p
+                  By
+                  %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
+
+          .group
+            =f.label 'Contributor'
+            .required=f.error_message_on :notes
+            %p.description Fill in your name, organization and contact email, as you want it to appear on the map (this data will be visible to the public)
+            =f.text_field :contributor, :class => 'text_field basic_input'
+
+          .group
+            %br/
+            -if @conflict.conflict_accounts.any?
+              %label Other contributing users
+              %ul{:style=>"list-style-type: none; padding: 0;"}
+                -@conflict.conflict_accounts.each do |ca|
+                  %li
+                    .pull-left= ca.account.email
+                    -if ["admin","editor"].include? current_account.role
+                      .pull-left
+                        &nbsp;
+                        %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"} Revoke
+                    %br/
+
+            -if ["admin","editor"].include? current_account.role
+              %br/
+              %label Invite users to contribute
+              .clearfix
+                .pull-left
+                  %input#invite{:type=>"email",:style=>"width:240px;",:placeholder=>"Paste email address"}
+                .pull-left
+                  &nbsp;
+                  &nbsp;
+                .pull-left
+                  %button.btn#invite-btn{:style=>"padding: 2px 12px;"} INVITE
+              %p#invite-err.error
+              :javascript
+                $("#invite-btn").on("click",function(e){
+                  e.preventDefault();
+                  if (!$("#invite").hasClass("error")) {
+                    $.post("/conflicts/ca_create",
+                      {aid:$("#invite").val(),cid:#{@conflict.new_record? ? 0 : @conflict.id}},
+                      function(data){
+                        console.log(data)
+                        if (data === "ok") {
+                          window.location.reload();
+                        } else {
+                          $("#invite-err").text(data);
+                        }
+                      }
+                    ); 
+                  } 
                 });
 
 
@@ -1401,6 +1530,25 @@
 
 
 :javascript
+  var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict saved successfully. &nbsp; &nbsp; </div>"
+  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved for the following reason: &nbsp; &nbsp;<br/><b></b><br/> &nbsp; &nbsp; &nbsp; Please try again.</div>"
+  function to_json() {
+    formdata = $("form#conflict_form").serializeArray();
+    var data = {};
+    $(formdata ).each(function(index, obj){
+      if (obj.name.match(/\[\w+\]/)) {
+        parnt = obj.name.split("[")[0];
+        child = obj.name.split("[")[1].replace(/\]$/,"");
+        if (Object.keys(data).indexOf(parnt) == -1) {
+          data[parnt] = {};
+        }
+        data[parnt][child] = obj.value;
+      } else {
+        data[obj.name] = obj.value;
+      }
+    });
+    return data
+  }
   function valPage(page){
     if ('#{@example}') {return true}
     pageName = $(page['selector']).children('a').attr('href').replace('#','');
@@ -1579,4 +1727,29 @@
 -if @conflict.new_record? 
   :javascript
     $('#conflict-tabs > li').not('.active').addClass('closed');
-      
+-else
+  :javascript
+    $(document).ready(function(){
+      $(document).on("submit","form#conflict_form",function(e){
+        e.preventDefault();
+        $.ajax({
+          url : $("form#conflict_form").attr("action"),
+          type : "PUT", //$("form#contact_form").attr("method"),
+          dataType: "json",
+          data : to_json(),
+          success: function(data){
+            if (data.status == "success") {
+              $("#fixed").css("opacity",0);
+              $("#fixed").html(asuccess);
+              $("#fixed").css("opacity",1);
+            } else if (data.status == "error") {
+              $("#fixed").css("opacity",0);
+              $("#fixed").html(alerror);
+              $("#fixed #alert-error b").text(data.errors.join("<br/>"));
+              $("#fixed").css("opacity",1);
+            }
+          }
+        })
+      })
+    })
+        

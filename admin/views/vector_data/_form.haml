@@ -41,7 +41,7 @@
       $("input.attachable_type[value='#{@vector.attachable_type}']").prop('checked',true);
       $('select#vector_datum_attachable_id').html(attachables[$("input.attachable_type:checked").val()]);
       $("select#vector_datum_attachable_id option[value='#{@vector.attachable_id}']").prop('selected',true);
-      $('label#vector_datum_attachable_id').text(#{@vector.attachable_type}+":");
+      $('label#vector_datum_attachable_id').text("#{@vector.attachable_type}:");
       $('input.attachable_type').on('change',function(){
         val = $(this).val();
         $('select#vector_datum_attachable_id').html(attachables[val]);

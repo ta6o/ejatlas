@@ -682,16 +682,18 @@ class AsyncTask
         c.features = f.to_json
         c.save
       end
-      Featured.all.each_with_index do |featured, index|
-        print "\r#{index+1} / #{Featured.count}"
-        features = JSON.parse(featured.features || '{}')
-        begin
-          filter = "{}"
-          filter = featured.filter if featured.filter.length > 0
-          featured.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
-        rescue => e
-          #puts "#{featured.name} | #{e}"
-          featured.ping((Admin.old_filter(featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
+      if false
+        Featured.all.each_with_index do |featured, index|
+          print "\r#{index+1} / #{Featured.count}"
+          features = JSON.parse(featured.features || '{}')
+          begin
+            filter = "{}"
+            filter = featured.filter if featured.filter.length > 0
+            featured.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
+          rescue => e
+            #puts "#{featured.name} | #{e}"
+            featured.ping((Admin.old_filter(featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
+          end
         end
       end
       print "\r              "

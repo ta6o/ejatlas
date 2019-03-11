@@ -23,5 +23,5 @@ public/data/*
 stored_token.json
 lib/sheets/*
 lib/locales/*
-
+misc/saves.csv
 

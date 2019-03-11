@@ -13,7 +13,7 @@ cat jquery.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
   oms.js noui.js ascii.js jquery-ui.min.js devhelper.js xml2json.js > all-dev.js
 
 cat jquery.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
-  leaflet.js leaflet-providers.js noui.js ascii.js jquery.validate.js \
+  alert.js leaflet.js leaflet-providers.js noui.js ascii.js jquery.validate.js \
   jquery-ui.min.js maskedinput.js Google.js raphael.js colorwheel.js \
   xml2json.js nicedit.js > backall.js
 

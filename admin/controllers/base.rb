@@ -769,7 +769,7 @@ Admin.controller do
     @jobs = Delayed::Job.all
     if ENV["RACK_ENV"] == "production"
       @exports = Dir.foreach("/mnt/data/exports").to_a - [".",".."]
-    else
+    elsif File.directory? "/tmp/export"
       @exports = Dir.foreach("/tmp/export").to_a - [".",".."]
     end
     render 'base/jobs', :layout => :application
