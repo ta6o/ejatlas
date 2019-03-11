@@ -5,7 +5,7 @@
   -#<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRWYWYBQyJTaXMVbcu1M9b_TKOTJVcp0w"></script>
   =javascript_include_tag 'map-edit'
 
-#fixed{:style=>"position:fixed; top: 24px; right:24px; transition:250;"}
+#fixed{:style=>"position:fixed; top: 24px; right:24px; transition:250; z-index: 9999"}
   -#alert-success.alert.alert-success.alert-dismissable.fade.in{:role=>"alert"}
     %button.close{:type=>"button","data-dismiss"=>"alert","aria-label"=>"Close"}
       %span{"aria-hidden"=>true} x

@@ -410,15 +410,21 @@ Admin.controllers :conflicts do
     end
   end
 
-  put :update, :with => :id do
+   put :update, :with => :id do
     pp params.keys
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
-    return {:status=>"error",:errors=>["Request was not completed, omitting save"]}.to_json unless params['conflict'].has_key?("approval_status")
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
-    ##puts "CONFLICT UPDATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
+
+    unless params['conflict'].has_key?("approval_status")
+      File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
+        file << "ERR,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
+      end
+      return {:status=>"error",:errors=>["Request was not completed, omitting save"]}.to_json 
+    end
+
     oldstat = @conflict.approval_status
 
     if  @conflict.save :validate=>false
