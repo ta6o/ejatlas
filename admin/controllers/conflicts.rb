@@ -419,7 +419,7 @@ Admin.controllers :conflicts do
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
     sameslug = Conflict.where(:slug=>params["conflict"]["slug"]).map(&:id) - [params["id"].to_i]
-    if sameslug.length
+    if sameslug.any?
       return {:status=>"error",:errors=>["Name on address bar has been taken by conflict ##{sameslug.first}"]}.to_json 
     end
     unless params['conflict'].has_key?("approval_status")
@@ -583,7 +583,7 @@ Admin.controllers :conflicts do
           response = {:status=>"success"}
         end
       rescue => e
-        return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.message]}.to_json]]
+        return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[e.message]}.to_json]]
       end
     else
       #render 'conflicts/edit'
