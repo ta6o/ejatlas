@@ -1431,7 +1431,7 @@
 
 :javascript
   var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict saved successfully. &nbsp; &nbsp; </div>"
-  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved for the following reason: &nbsp; &nbsp;<br/><b></b><br/> &nbsp; &nbsp; &nbsp; Please try again.</div>"
+  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved: &nbsp; &nbsp;<br/><br/><b></b></div>"
   function to_json() {
     formdata = $("form#conflict_form").serializeArray();
     var data = {};
@@ -1645,7 +1645,7 @@
             } else if (data.status == "error") {
               $("#fixed").css("opacity",0);
               $("#fixed").html(alerror);
-              $("#fixed #alert-error b").text(data.errors.join("<br/>"));
+              $("#fixed #alert-error b").html(data.errors.join("<br/><br/>"));
               $("#fixed").css("opacity",1);
             }
           }
