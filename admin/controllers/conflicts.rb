@@ -418,6 +418,9 @@ Admin.controllers :conflicts do
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
+
+    oldstat = @conflict.approval_status
+
     sameslug = Conflict.where(:slug=>params["conflict"]["slug"]).map(&:id) - [params["id"].to_i]
     if sameslug.any?
       return {:status=>"error",:errors=>["Name on address bar has been taken by conflict ##{sameslug.first}"]}.to_json 
@@ -428,8 +431,6 @@ Admin.controllers :conflicts do
       end
       return {:status=>"error",:errors=>["Request was not completed, omitting save.<br/><br/>Please try again."]}.to_json 
     end
-
-    oldstat = @conflict.approval_status
 
     if  @conflict.save :validate=>false
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
