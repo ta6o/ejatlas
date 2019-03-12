@@ -410,19 +410,24 @@ Admin.controllers :conflicts do
     end
   end
 
-  put :update, :with => :id do
-    pp params.keys
+   put :update, :with => :id do
+    pp params["id"]
+    pp params["conflict"]["slug"]
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     updated = Admin.correctForm(params)
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
+    sameslug = Conflict.where(:slug=>params["conflict"]["slug"]).map(&:id) - [params["id"].to_i]
+    if sameslug.length
+      return {:status=>"error",:errors=>["Name on address bar has been taken by conflict ##{sameslug.first}"]}.to_json 
+    end
     unless params['conflict'].has_key?("approval_status")
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
         file << "ERR,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
       end
-      return {:status=>"error",:errors=>["Request was not completed, omitting save"]}.to_json 
+      return {:status=>"error",:errors=>["Request was not completed, omitting save.<br/><br/>Please try again."]}.to_json 
     end
 
     oldstat = @conflict.approval_status
@@ -540,7 +545,12 @@ Admin.controllers :conflicts do
           next
         end
         unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
-          @conflict.update_attribute k, v 
+          begin
+            @conflict.update_attribute k, v 
+          rescue => e
+            p e.methods
+            return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
+          end
         end
       end
 
@@ -556,21 +566,25 @@ Admin.controllers :conflicts do
       @conflict.modified_at = Time.now
       @conflict.commented = false;
 
-      if @conflict.save :validate=>false
-        flash[:notice] = 'Conflict was successfully created.'
-        if ['admin','editor'].include?(current_account.role)
-          $client.index index: 'staging', type: 'conflict', id: @conflict.id, body: @conflict.elastic
-        end
-
-        if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
+      begin
+        if @conflict.save :validate=>false
+          flash[:notice] = 'Conflict was successfully created.'
           if ['admin','editor'].include?(current_account.role)
-            Admin.notify_collaborator @conflict
-          elsif ["queued","modified"].include?(@conflict.approval_status)
-            Admin.notify_moderator @conflict
+            $client.index index: 'atlas', type: 'conflict', id: @conflict.id, body: @conflict.elastic
           end
+
+          if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
+            if ['admin','editor'].include?(current_account.role)
+              Admin.notify_collaborator @conflict
+            elsif ["queued","modified"].include?(@conflict.approval_status)
+              Admin.notify_moderator @conflict
+            end
+          end
+          #redirect "/conflicts/edit/#{@conflict.id}#{hash}"
+          response = {:status=>"success"}
         end
-        #redirect "/conflicts/edit/#{@conflict.id}#{hash}"
-        response = {:status=>"success"}
+      rescue => e
+        return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.message]}.to_json]]
       end
     else
       #render 'conflicts/edit'
