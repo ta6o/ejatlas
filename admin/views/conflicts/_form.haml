@@ -60,14 +60,14 @@
           %span.required.large *
           %p.description Eg: Company or Community Name, Country
           .required=f.error_message_on :name
-          =f.text_field :name, :class => 'text_field basic_input'
+          =f.text_field :name, :class => 'text_field basic_input', :maxlength=>255, :validate=>true
 
         -if ["admin","editor"].include? current_account.role
           .group
             =f.label 'Name visible on address bar'
             %span.required.large *
             .required=f.error_message_on :name
-            =f.text_field :slug, :class => 'text_field basic_input'
+            =f.text_field :slug, :class => 'text_field basic_input', :maxlength=>255, :validate=>true
 
         .group
           =f.label 'Country'
@@ -94,12 +94,12 @@
           =f.label 'Location of conflict'
           %p.description (municipality or city/town)
           .required=f.error_message_on :site
-          =f.text_field :site, :class => 'text_field'
+          =f.text_field :site, :class => 'text_field', :maxlength=>255, :validate=>true
 
         .group.local_fade
           =f.label 'State or Province'
           .required=f.error_message_on :province
-          =f.text_field :province, :class => 'text_field'
+          =f.text_field :province, :class => 'text_field', :maxlength=>255, :validate=>true
 
           .col-md-4
             .group
@@ -146,10 +146,10 @@
         .group.local_fade
           %span Latitude:
           %span#maplat.large.hide
-          =f.text_field :lat, :class => 'text_field', :id => :imaplat
+          =f.text_field :lat, :class => 'text_field', :id => :imaplat, :maxlength=>255, :validate=>true
           %span Longitude:
           %span#maplon.large.hide
-          =f.text_field :lon, :class => 'text_field', :id => :imaplon
+          =f.text_field :lon, :class => 'text_field', :id => :imaplon, :maxlength=>255, :validate=>true
           %br/
           %p.description 
             Please point to the location of conflict with the red marker or use the fields above to enter coordinates in a decimal format, like
@@ -372,14 +372,14 @@
             %label Level of Investment:
             .required=f.error_message_on :investment_string
             %p.description (Please enter in USD and in this format: 1,000,000,000.00)
-            =f.text_field :investment_string, :class => :text_field
+            =f.text_field :investment_string, :class => :text_field, :maxlength=>255, :validate=>true
 
         .col-md-4
           .group
             %label Affected Population:
             %p.description (It may also be a range)
             .required=f.error_message_on :affected_people
-            =f.text_field :affected_people, :class => :text_field, :maxlength => 255
+            =f.text_field :affected_people, :class => :text_field, :maxlength=>255, :validate=>true
           %br/
           %br/
 
@@ -923,7 +923,7 @@
                     %textarea.i_legislation#legislation_description{:type=>'text',:name=>'legislation_description'}
                     %br/
                     %label Address
-                    %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://'}
+                    %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
                     %br/
                     %br/
                   .modal-footer
@@ -943,7 +943,7 @@
                       %textarea{:name=>'legislation_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_legislation.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
             :javascript
               $(document).ready(function(){
                 handleModal('legislation');
@@ -962,7 +962,7 @@
                     %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
                     %br/
                     %label Address
-                    %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://'}
+                    %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
                     %br/
                     %br/
                   .modal-footer
@@ -982,7 +982,7 @@
                       %textarea{:name=>'weblink_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_weblink.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
             :javascript
               $(document).ready(function(){
                 handleModal('weblink');
@@ -1007,7 +1007,7 @@
                     %textarea.i_reference#reference_description{:type=>'text',:name=>'reference_description'}
                     %br/
                     %label Address
-                    %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://'}
+                    %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
                     %br/
                     %br/
                   .modal-footer
@@ -1027,7 +1027,7 @@
                       %textarea{:name=>'reference_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_reference.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
             :javascript
               $(document).ready(function(){
                 handleModal('reference');
@@ -1046,7 +1046,7 @@
                     %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
                     %br/
                     %label Address
-                    %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
+                    %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
                     %br/
                     %br/
                   .modal-footer
@@ -1066,7 +1066,7 @@
                       %textarea{:name=>'medialink_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_medialink.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
             :javascript
               $(document).ready(function(){
                 handleModal('medialink');
@@ -1085,7 +1085,7 @@
                       %h3 Another Document
                     .modal-body
                       %label Name:
-                      %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
+                      %input.i_document#document_title{:type=>'text',:name=>'document[title]', :maxlength=>255, :validate=>true}
                       %br/
                       %label Description:
                       %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
@@ -1124,7 +1124,7 @@
                       .row
                         .col-md-9
                           %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
+                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title, :maxlength=>255, :validate=>true}
                         .col-md-3
                           %a.d_image.pull-right.btn Remove
                           -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
@@ -1142,7 +1142,7 @@
                         .row
                           .col-md-9
                             %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                            %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                            %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title, :maxlength=>255, :validate=>true}
                           .col-md-3
                             %a.d_document.pull-right.btn Remove
                         %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
@@ -1150,7 +1150,7 @@
                     .row{:style=>'margin-top:8px;'}
                       .col-md-10
                         %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                        %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                        %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title, :maxlength=>255, :validate=>true}
                       .col-md-2
                         %a.d_document.pull-right.btn Remove
                     %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
@@ -1239,7 +1239,7 @@
               Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences, 
               %strong 255 
               characters maximum.
-            ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255
+            ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255, :validate=>true
 
           .group
             .required=f.error_message_on :approval_status
@@ -1369,287 +1369,3 @@
           -if ["admin","editor"].include? current_account.role and @conflict.account
             .group
               =f.label 'Internal Notes'
-              .required=f.error_message_on :notes
-              %p.description Please indicate the changes you have made as well as other relevant information
-              ~f.text_area :notes, :class => :text_area, :rows=>4
-              -if ["admin","editor"].include? current_account.role and @conflict.account
-                %p
-                  By
-                  %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
-
-          .group
-            =f.label 'Contributor'
-            .required=f.error_message_on :notes
-            %p.description Fill in your name, organization and contact email, as you want it to appear on the map (this data will be visible to the public)
-            =f.text_field :contributor, :class => 'text_field basic_input'
-
-          .group
-            %br/
-            -if @conflict.conflict_accounts.any?
-              %label Other contributing users
-              %ul{:style=>"list-style-type: none; padding: 0;"}
-                -@conflict.conflict_accounts.each do |ca|
-                  %li
-                    .pull-left= ca.account.email
-                    -if ["admin","editor"].include? current_account.role
-                      .pull-left
-                        &nbsp;
-                        %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"} Revoke
-                    %br/
-
-            -if ["admin","editor"].include? current_account.role
-              %br/
-              %label Invite users to contribute
-              .clearfix
-                .pull-left
-                  %input#invite{:type=>"email",:style=>"width:240px;",:placeholder=>"Paste email address"}
-                .pull-left
-                  &nbsp;
-                  &nbsp;
-                .pull-left
-                  %button.btn#invite-btn{:style=>"padding: 2px 12px;"} INVITE
-              %p#invite-err.error
-              :javascript
-                $("#invite-btn").on("click",function(e){
-                  e.preventDefault();
-                  if (!$("#invite").hasClass("error")) {
-                    $.post("/conflicts/ca_create",
-                      {aid:$("#invite").val(),cid:#{@conflict.new_record? ? 0 : @conflict.id}},
-                      function(data){
-                        console.log(data)
-                        if (data === "ok") {
-                          window.location.reload();
-                        } else {
-                          $("#invite-err").text(data);
-                        }
-                      }
-                    ); 
-                  } 
-                });
-
-
-
-:javascript
-  var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict saved successfully. &nbsp; &nbsp; </div>"
-  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved for the following reason: &nbsp; &nbsp;<br/><b></b><br/> &nbsp; &nbsp; &nbsp; Please try again.</div>"
-  function to_json() {
-    formdata = $("form#conflict_form").serializeArray();
-    var data = {};
-    $(formdata ).each(function(index, obj){
-      if (obj.name.match(/\[\w+\]/)) {
-        parnt = obj.name.split("[")[0];
-        child = obj.name.split("[")[1].replace(/\]$/,"");
-        if (Object.keys(data).indexOf(parnt) == -1) {
-          data[parnt] = {};
-        }
-        data[parnt][child] = obj.value;
-      } else {
-        data[obj.name] = obj.value;
-      }
-    });
-    return data
-  }
-  function valPage(page){
-    if ('#{@example}') {return true}
-    pageName = $(page['selector']).children('a').attr('href').replace('#','');
-    result = true;
-    $.each($('.'+pageName+'_input'),function(i,v){
-      var id = $('.'+pageName+'_input').eq(i).attr('id');
-      if (id === "conflict_company_country" || id === "conflict_supporter_country") return true;
-      console.log(id);
-      if ($('.form').validate().element($('#'+id))) {
-        //console.log('ok');
-      } else {
-        result = false;
-      }
-    });
-    //console.log(result);
-    return result;
-    //return true;
-  }
-  $('.next').click(function (e) {
-    e.preventDefault();
-    page = $('#conflict-tabs > li.active');
-    target = page.next().find('a').attr('href').replace("#","#_");
-    if (valPage(page)) {
-      page.next().children('a').tab('show');
-      page.next().removeClass('closed');
-      page.removeClass('shady');
-      window.location = target;
-      $('#activetab').val(target);
-      window.scrollTo(0,0);
-    } else {
-      page.addClass('shady');
-      page.next().children('a').tab('show');
-      page.next().removeClass('closed');
-    }
-  });
-  $('.prev').click(function (e) {
-    e.preventDefault();
-    page = $('#conflict-tabs > li.active');
-    target = page.prev().find('a').attr('href').replace("#","#_");
-    console.log(target)
-    if (valPage(page)) {
-      page.prev().children('a').tab('show');
-      page.removeClass('shady');
-      window.location = target;
-      $('#activetab').val(target);
-      window.scrollTo(0,0);
-    } else {
-      page.addClass('shady');
-      page.next().children('a').tab('show');
-    }
-  });
-  $('#conflict-tabs a').click(function (e) {
-    e.preventDefault();
-    if ($(this).parent().hasClass('closed')) {
-    } else {
-      target = $(this).attr('href').replace("#","#_");
-      window.location = target;
-      $('#activetab').val(target);
-      window.scrollTo(0,0);
-      $(this).tab('show');
-    }
-  })
-  $(document).ready(function(){
-    initMap([#{@lat||0},#{@lon||0}],false);
-    wlh = $('#conflict-tabs > li > a[href='+window.location.hash.replace('#_','#')+']');
-    if (wlh.length > 0) {
-      wlh.tab('show',function(){
-        window.scrollTo(0,0);
-      });
-    }
-    $(".datemask").mask("99/99/9999");
-    $('.datemask').attr('placeholder','__/__/____');
-    $.validator.addMethod("minwords",
-       function(value, element, params) {
-          var trimmed = jQuery.trim(value).replace(/  +/g, ' ')
-          var typedWords = trimmed.split(' ').length;
-          if(typedWords > params) {
-            return true;
-          } else {
-            return false;
-          }
-       },
-       jQuery.format("Write an explanation with {0} words minimum.")
-    );
-    $.validator.addMethod("maxwords",
-       function(value, element, params) {
-          var trimmed = jQuery.trim(value).replace(/  +/g, ' ')
-          var typedWords = trimmed.split(' ').length;
-          if(typedWords <= params) {
-            return true;
-          } else {
-            return false;
-          }
-       },
-       $.format("You passed {0} words.")
-    );
-    $.validator.addMethod("valuenot", 
-      function(value, element, params){
-        return params != value;
-      }, 
-      "Please choose."
-    );
-    $.validator.addMethod("checkone", function(value, elem, param) {
-        if($(".mustcheck:checkbox:checked").length > 0){
-           return true;
-       }else {
-           return false;
-       }
-    },"Please choose at least one field");
-
-    $.validator.addMethod("require_from_group", function(value, element, options) {
-      var numberRequired = options[0];
-      var selector = options[1];
-      var fields = $(selector, element.form);
-      var filled_fields = fields.filter(function() {
-        // it's more clear to compare with empty string
-        return $(this).val() != ""; 
-      });
-      var empty_fields = fields.not(filled_fields);
-      // we will mark only first empty field as invalid
-      if (filled_fields.length < numberRequired && empty_fields[0] == element) {
-        return false;
-      }
-      return true;
-      // {0} below is the 0th item in the options field
-    }, jQuery.format("Please fill out at least {0} of these fields."));
-
-    $rules = {
-        'conflict[name]': {
-          required: true,
-          maxlength: 255
-        },
-        'conflict[description]': {
-          required: true,
-          minwords: 2
-        },
-        'conflict[category_id]': {
-          required: true,
-          valuenot: ''
-        },
-        'conflict[type_id]': {
-          required: true,
-          valuenot: ''
-        },
-        'product': {
-          required: true,
-          checkone: true
-        },
-      }
-    function addCheckerRule (cls,rls) {
-      $(cls).each (function(i,v){
-        rls[$(v).attr('name')] = {'require_from_group': [1,cls]};
-      });
-    }
-    $.each(['.mobilizing_group_cb','.mobilizing_form_cb','.project_status_cb','.conflict_event_cb','.product_cb'],
-      function(i,v){
-        addCheckerRule(v,$rules);
-      }
-    );
-    $(".form").validate({
-      rules: $rules,
-      /*errorPlacement: function(error, element) {
-        error.appendTo( element.prev().prev().children('span'));
-      },*/
-    });
-  });
-  /*
-  $(document).ready(function (){
-    $( ".datepicker" ).datepicker($.datepicker.regional['tr']);
-    $( ".datepicker" ).datepicker( "option", "changeYear", true );
-    $( ".datepicker" ).datepicker( "option", "changeMonth", true );
-    $( ".datepicker" ).datepicker( "option", "maxDate", "+1y" );
-  });
-  */
-
--if @conflict.new_record? 
-  :javascript
-    $('#conflict-tabs > li').not('.active').addClass('closed');
--else
-  :javascript
-    $(document).ready(function(){
-      $(document).on("submit","form#conflict_form",function(e){
-        e.preventDefault();
-        $.ajax({
-          url : $("form#conflict_form").attr("action"),
-          type : "PUT", //$("form#contact_form").attr("method"),
-          dataType: "json",
-          data : to_json(),
-          success: function(data){
-            if (data.status == "success") {
-              $("#fixed").css("opacity",0);
-              $("#fixed").html(asuccess);
-              $("#fixed").css("opacity",1);
-            } else if (data.status == "error") {
-              $("#fixed").css("opacity",0);
-              $("#fixed").html(alerror);
-              $("#fixed #alert-error b").text(data.errors.join("<br/>"));
-              $("#fixed").css("opacity",1);
-            }
-          }
-        })
-      })
-    })
-        

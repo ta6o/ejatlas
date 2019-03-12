@@ -97,22 +97,22 @@
     .group
       =f.label :name
       =f.error_message_on :name
-      =f.text_field :name, :class => :text_field
+      =f.text_field :name, :class => :text_field, :maxlength=>255, :validate=>true
 
     .group
       =f.label :slug
       =f.error_message_on :slug
-      =f.text_field :slug, :class => :text_field
+      =f.text_field :slug, :class => :text_field, :maxlength=>255, :validate=>true
 
     .group
       =f.label :slogan
       =f.error_message_on :slogan
-      ~f.text_field :slogan, :class => :text_field
+      ~f.text_field :slogan, :class => :text_field, :maxlength=>255, :validate=>true
 
     .group
       =f.label :headline
       =f.error_message_on :headline
-      ~f.text_area :headline, :class => :text_area, :rows=>2
+      ~f.text_area :headline, :class => :text_area, :rows=>2, :maxlength=>255, :validate=>true
 
     .group
       =f.label :description
