@@ -148,7 +148,14 @@ class Featured < ActiveRecord::Base
         cmarker["#{self.id}:#{f}"] = val
       end
       ((mania | imps) & feats).each do |f|
-        cmarker["#{self.id}:#{f}"] = eval("c.#{f}").map(&:name).join(', ')
+        cmarker["#{self.id}:#{f}"] = eval("c.#{f}").map{ |x|
+          if x.name.downcase == "other"
+            name =  eval("c.other_#{f.sub("conflict_event","outcome")}")
+          else
+            name = x.name
+          end
+          name
+        }.join(', ')
       end
       #json << c.json
       marker << cmarker.to_json
