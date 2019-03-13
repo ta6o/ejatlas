@@ -150,7 +150,11 @@ class Featured < ActiveRecord::Base
       ((mania | imps) & feats).each do |f|
         cmarker["#{self.id}:#{f}"] = eval("c.#{f}").map{ |x|
           if x.name.downcase == "other"
-            name =  eval("c.other_#{f.sub("conflict_event","outcome")}")
+            begin
+              name =  eval("c.other_#{f.sub("conflict_event","outcome")}")
+            rescue
+              name = x.name
+            end
           else
             name = x.name
           end
