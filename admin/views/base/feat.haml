@@ -173,11 +173,15 @@
             });
           });
 
+    -if @descriptions and @id == 75 and @maptitle
+      .less
+        %p.description= @maptitle
+
   -if @descriptions and @id == 75
     -@descriptions.each do |locale, description|
       .horipane.description
         .title="#{locale.titlecase} description"
-        .content
+        .content{:style=>"overflow: hidden; display: none;"}
           .clearfix#disclaimer
             -dar = description.gsub("\n","<br />").split(/<br\s?\/?>/)
             -if dar.length > 1
