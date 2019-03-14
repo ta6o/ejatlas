@@ -20,5 +20,8 @@ db/*.db
 .rvmrc*
 Gemfile.lock
 public/data/*
+lib/locales/*
+lib/sheets/*
+stored_token.json
 misc/saves.csv
 
