@@ -14,8 +14,6 @@ var info = $("#infopane");
 var legendpane = $("#legendpane > .legend");
 var rtlegend = legendpane.html();
 var legend = rtlegend;
-console.log("legend:")
-console.log(legend)
 
 var hoverStyle = {
   "fillOpacity": 0.5
@@ -378,7 +376,8 @@ function showMarkers(markers) {
 
   if (cluster) {
     markerClusters = {}
-    var cats = {1:"Nuclear",2:"Mineral Ores and Building Materials Extraction",3:"Waste Management",4:"Biomass and Land Conflicts (Forests, Agriculture and Livestock Management)",5:"Fossil Fuels and Climate Justice/Energy",6:"Water Management",7:"Infrastructure and Built Environment",8:"Tourism Recreation",9:"Biodiversity conservation conflicts",10:"Industrial and Utilities conflicts",11:"Other"}
+    var cats = categoryHash;
+    console.log(cats)
     $.each(cats,function(i,e){
       markerClusters[i]= L.markerClusterGroup({
         showCoverageOnHover: false,

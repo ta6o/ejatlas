@@ -142,6 +142,8 @@
                   -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
                   -if k == "company"
                     %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                  -elsif k == "country"
+                    %li="<a href='/#{k}/#{j['slug']}'>#{t "#{scope}.#{j['name'].slug('_').shorten_en}"}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
                   -else
                     %li="<a href='/#{k}/#{j['slug']}'>#{t "#{scope}.#{j['name'].slug('_')}"}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
@@ -240,7 +242,7 @@
           dataType: 'json',
           cache: true,
           success: function (data, status, error) {
-            console.log('success', data);
+            //console.log('success', data);
             showMarkers(data);
           },
           error: function (data, status, error) {
@@ -248,7 +250,6 @@
           }
         });
         updateInfo(1,"<h3>#{@maptitle}</h3><p>#{t("index.var_cases_reported", num_cases:@markercount)}</p>")
-        console.log("figure")
       } else {
         setTimeout(onLoad,10);
       }

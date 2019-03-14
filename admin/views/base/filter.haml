@@ -348,7 +348,7 @@
         $('.map_icon').show();
         map.fitBounds(markerLayer.getBounds());
       }
-      $('#head p strong').text($('.map_icon').length+" cases reported");
+      $('#head p strong').text("#{t 'v.index.var_cases_reported',num_cases:'data_length'}".replace("data_length",$('.map_icon').length))
     };
 
     function serializeFilter(page_type){
