@@ -69,6 +69,7 @@ class Conflict < ActiveRecord::Base
   has_many :related_from, :through => :relations_from, :source => :to 
 
   before_save :set_slug
+  after_destroy :delete_index
 
   def title
     return "#{self.headline.sub(/\s+$/,'')}.".sub(/\.+$/,'.') if self.headline and self.headline.length > 0
@@ -662,6 +663,9 @@ class Conflict < ActiveRecord::Base
   end
 
   private
+  def delete_index
+  end
+
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
 =begin

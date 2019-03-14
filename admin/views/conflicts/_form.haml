@@ -60,14 +60,14 @@
           %span.required.large *
           %p.description Eg: Company or Community Name, Country
           .required=f.error_message_on :name
-          =f.text_field :name, :class => 'text_field basic_input', :maxlength=>255, :validate=>true
+          =f.text_field :name, :class => 'text_field basic_input'
 
         -if ["admin","editor"].include? current_account.role
           .group
             =f.label 'Name visible on address bar'
             %span.required.large *
             .required=f.error_message_on :name
-            =f.text_field :slug, :class => 'text_field basic_input', :maxlength=>255, :validate=>true
+            =f.text_field :slug, :class => 'text_field basic_input'
 
         .group
           =f.label 'Country'
@@ -94,12 +94,12 @@
           =f.label 'Location of conflict'
           %p.description (municipality or city/town)
           .required=f.error_message_on :site
-          =f.text_field :site, :class => 'text_field', :maxlength=>255, :validate=>true
+          =f.text_field :site, :class => 'text_field'
 
         .group.local_fade
           =f.label 'State or Province'
           .required=f.error_message_on :province
-          =f.text_field :province, :class => 'text_field', :maxlength=>255, :validate=>true
+          =f.text_field :province, :class => 'text_field'
 
           .col-md-4
             .group
@@ -146,10 +146,10 @@
         .group.local_fade
           %span Latitude:
           %span#maplat.large.hide
-          =f.text_field :lat, :class => 'text_field', :id => :imaplat, :maxlength=>255, :validate=>true
+          =f.text_field :lat, :class => 'text_field', :id => :imaplat
           %span Longitude:
           %span#maplon.large.hide
-          =f.text_field :lon, :class => 'text_field', :id => :imaplon, :maxlength=>255, :validate=>true
+          =f.text_field :lon, :class => 'text_field', :id => :imaplon
           %br/
           %p.description 
             Please point to the location of conflict with the red marker or use the fields above to enter coordinates in a decimal format, like
@@ -372,14 +372,14 @@
             %label Level of Investment:
             .required=f.error_message_on :investment_string
             %p.description (Please enter in USD and in this format: 1,000,000,000.00)
-            =f.text_field :investment_string, :class => :text_field, :maxlength=>255, :validate=>true
+            =f.text_field :investment_string, :class => :text_field
 
         .col-md-4
           .group
             %label Affected Population:
             %p.description (It may also be a range)
             .required=f.error_message_on :affected_people
-            =f.text_field :affected_people, :class => :text_field, :maxlength=>255, :validate=>true
+            =f.text_field :affected_people, :class => :text_field, :maxlength => 255
           %br/
           %br/
 
@@ -923,7 +923,7 @@
                     %textarea.i_legislation#legislation_description{:type=>'text',:name=>'legislation_description'}
                     %br/
                     %label Address
-                    %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
+                    %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://'}
                     %br/
                     %br/
                   .modal-footer
@@ -943,7 +943,7 @@
                       %textarea{:name=>'legislation_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_legislation.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
+                  %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
             :javascript
               $(document).ready(function(){
                 handleModal('legislation');
@@ -962,7 +962,7 @@
                     %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
                     %br/
                     %label Address
-                    %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
+                    %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://'}
                     %br/
                     %br/
                   .modal-footer
@@ -982,7 +982,7 @@
                       %textarea{:name=>'weblink_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_weblink.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
+                  %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
             :javascript
               $(document).ready(function(){
                 handleModal('weblink');
@@ -1007,7 +1007,7 @@
                     %textarea.i_reference#reference_description{:type=>'text',:name=>'reference_description'}
                     %br/
                     %label Address
-                    %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
+                    %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://'}
                     %br/
                     %br/
                   .modal-footer
@@ -1027,7 +1027,7 @@
                       %textarea{:name=>'reference_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_reference.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
+                  %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
             :javascript
               $(document).ready(function(){
                 handleModal('reference');
@@ -1083,7 +1083,7 @@
                     %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
                     %br/
                     %label Address
-                    %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://', :maxlength=>255, :validate=>true}
+                    %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
                     %br/
                     %br/
                   .modal-footer
@@ -1103,7 +1103,7 @@
                       %textarea{:name=>'medialink_description_'+l.id.to_s}= l.description
                     .col-md-2
                       %a.d_medialink.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url, :maxlength=>255, :validate=>true}
+                  %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
             :javascript
               $(document).ready(function(){
                 handleModal('medialink');
@@ -1122,7 +1122,7 @@
                       %h3 Another Document
                     .modal-body
                       %label Name:
-                      %input.i_document#document_title{:type=>'text',:name=>'document[title]', :maxlength=>255, :validate=>true}
+                      %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
                       %br/
                       %label Description:
                       %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
@@ -1161,7 +1161,7 @@
                       .row
                         .col-md-9
                           %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title, :maxlength=>255, :validate=>true}
+                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
                         .col-md-3
                           %a.d_image.pull-right.btn Remove
                           -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
@@ -1179,7 +1179,7 @@
                         .row
                           .col-md-9
                             %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                            %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title, :maxlength=>255, :validate=>true}
+                            %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
                           .col-md-3
                             %a.d_document.pull-right.btn Remove
                         %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
@@ -1187,7 +1187,7 @@
                     .row{:style=>'margin-top:8px;'}
                       .col-md-10
                         %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                        %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title, :maxlength=>255, :validate=>true}
+                        %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
                       .col-md-2
                         %a.d_document.pull-right.btn Remove
                     %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
@@ -1276,7 +1276,7 @@
               Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences, 
               %strong 255 
               characters maximum.
-            ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255, :validate=>true
+            ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255
 
           .group
             .required=f.error_message_on :approval_status
@@ -1531,7 +1531,7 @@
 
 :javascript
   var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict saved successfully. &nbsp; &nbsp; </div>"
-  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved for the following reason: &nbsp; &nbsp;<br/><b></b><br/> &nbsp; &nbsp; &nbsp; Please try again.</div>"
+  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved: &nbsp; &nbsp;<br/><br/><b></b></div>"
   function to_json() {
     formdata = $("form#conflict_form").serializeArray();
     var data = {};
@@ -1745,7 +1745,7 @@
             } else if (data.status == "error") {
               $("#fixed").css("opacity",0);
               $("#fixed").html(alerror);
-              $("#fixed #alert-error b").text(data.errors.join("<br/>"));
+              $("#fixed #alert-error b").html(data.errors.join("<br/><br/>"));
               $("#fixed").css("opacity",1);
             }
           }

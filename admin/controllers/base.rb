@@ -357,8 +357,16 @@ Admin.controller do
     @markerinfo = con.conflicts_marker
     @load = con.conflicts_link.length > (2**17) ? nil : con.conflicts_link
     @name = con.name
-    @description = con.description
     @id = con.id
+    if @id == 75
+      begin
+        @descriptions = JSON.parse(File.read("#{Dir.pwd}/public/data/feat75desc.json"))
+      rescue
+        @description = con.description
+      end
+    else
+      @description = con.description
+    end
     @desc = con.description
     @headline = con.slogan
     @ogimage = con.images.where(prime:1)[0].file.url if con.images.where(prime:1).any?

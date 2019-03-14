@@ -173,7 +173,29 @@
             });
           });
 
-  -if @description and @description.length > 0 or @maptitle.length > 0 and @feature
+    -if @descriptions and @id == 75 and @maptitle
+      .less
+        %p.description= @maptitle
+
+  -if @descriptions and @id == 75
+    -@descriptions.each do |locale, description|
+      .horipane.description
+        .title="#{locale.titlecase} description"
+        .content{:style=>"overflow: hidden; display: none;"}
+          .clearfix#disclaimer
+            -dar = description.gsub("\n","<br />").split(/<br\s?\/?>/)
+            -if dar.length > 1
+              %p.description
+                .less= dar[0].html_safe
+                %a.seemore{:href=>"#"} See more...
+                .more{:style=>'display:none;'}
+                  =dar[1..-1].join('<br />').html_safe
+                  %a.seeless{:href=>"#"} (See less)
+            -else
+              %p.description= description.gsub("\n","<br />").html_safe
+
+
+  -elsif @description and @description.length > 0 or @maptitle.length > 0 and @feature
     .horipane.description
       .title.active Description
       .content
@@ -196,15 +218,15 @@
                   %a.seeless{:href=>"#"} (See less)
             -else
               %p.description= @description.gsub("\n","<br />").html_safe
-              
+
   -#.horipane
     .title.active Info
     .content
       #infopane
 
-  .horipane
-    .title{:class=> @feature ? "" : "active"} Legend
-    .content{:style=> (@feature and @id != 69) ? "overflow: hidden; display: none;" : ""}
+  .horipane.legend
+    .title{:class=> (@feature and @id != 75) ? "" : "active"} Legend
+    .content{:style=> (@feature and not [69,75].include?(@id)) ? "overflow: hidden; display: none;" : ""}
       #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
         -unless @id == 69
           .legend.noselect.block{'data-width'=>220}
@@ -239,7 +261,7 @@
       dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; 
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); 
 
-    window.onload = function(){
+    $(document).ready(function(){
       $('.horipane .ctitle').on('click',function(e){
         target = $(this).parent().find('.cdata')
         if ($(this).parent().find('.cdata:visible').length > 0) {
@@ -248,4 +270,4 @@
           target.slideDown();
         }
       })
-    }
+    });
