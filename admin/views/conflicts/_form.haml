@@ -765,7 +765,7 @@
     #outcome.tab-pane
       .row
         .col-md-9
-          %p.lead Outcome
+          %p.lead=t("f.conflict.outcome")
         .col-md-3
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
@@ -777,7 +777,7 @@
         .col-md-4
           .group
             %br/
-            =f.label 'Current status of the project development'
+            =f.label t("f.conflict.current_status_project_development")
             .required=f.error_message_on :project_status
             %table{:style=>'width:100%'}
               %tbody
@@ -786,43 +786,42 @@
                   %tr
                     %td
                       %input{:type=>'radio',:name=>'project_status',:id=>'project_status_'+p.id.to_s,:value=>p.id.to_s, :checked=>('checked' if ps and i==ps-1)}
-                      %label= p.name
+                      %label= t("m.project_status_id.#{p.name.slug("_")}");
             %br/
             %br/
 
           .group
-            =f.label 'Development of Alternatives'
-            %p.description (What are the proposals being brought forward and by what ejos)
+            =f.label t("f.conflict.development_of_alternatives")
+            %p.description=t("f.conflict.what_are_proposals_being_brought")
             ~f.text_area :suggested_alternatives, :class => :text_area, :rows=>9
             %br/
             %br/
 
           .group
             .required=f.error_message_on :success_level
-            .required=f.error_message_on :success_level
-            =f.label 'Do you consider this an Environmental Justice success? Was environmental justice served?'
+            =f.label t("f.conflict.do_you_consider_this_an")
             %br/
             %table{:style=>'width:100%'}
               %tbody
                 %tr
                   %td
                     %label.inline.suc_lvl
-                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'0',:name=>'conflict[success_level]'} &nbsp;Yes
+                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'0',:name=>'conflict[success_level]'}=" &nbsp;#{t("f.conflict.yes")}".html_safe
                 %tr
                   %td
                     %label.inline.suc_lvl
-                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'2',:name=>'conflict[success_level]'} &nbsp;No
+                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'2',:name=>'conflict[success_level]'}=" &nbsp;#{t("f.conflict.no")}".html_safe
                 %tr
                   %td
                     %label.inline.suc_lvl
-                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'1',:name=>'conflict[success_level]'} &nbsp;Not Sure
+                      %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'1',:name=>'conflict[success_level]'}=" &nbsp;#{t("f.conflict.not_sure")}".html_safe
             -if suclvl = @conflict.success_level
               :javascript
                 $('input.suclvl[value=#{suclvl}]').prop('checked',true);
           %br/
 
           .group
-            =f.label 'Briefly explain'
+            =f.label t("f.conflict.briefly_explain")
             .required=f.error_message_on :success_reason
             ~f.text_area :success_reason, :class => :text_area, :rows=>6
 
@@ -830,8 +829,8 @@
         .col-md-8
           .group
             %br/
-            =f.label 'Conflict outcome / response'
-            %p.description (check all the outcomes that apply)
+            =f.label t("f.conflict.conflict_outcome_response")
+            %p.description=t("f.conflict.check_all_outcomes_that_apply")
             %table{:style=>'width:100%'}
               %tbody
                 -@conflict_events.each_with_index do |p,i|
@@ -839,7 +838,7 @@
                     %tr
                   %td.half
                     %input{:type=>'checkbox',:name=>'conflict_event_'+p.id.to_s,:id=>'conflict_event_'+p.id.to_s,:class=>'mustcheck conflict_event_cb'}
-                    %label= p.name
+                    %label= t("m.conflict_events.#{p.name.slug("_")}")
             ~f.text_area :other_outcomes, :class => 'text_area', :rows=>1, :id => 'other_outcomes'
             :javascript
               $('#conflict_event_26').change(function(){
@@ -923,7 +922,7 @@
         }
       .row
         .col-md-9
-          %p.lead Sources and Materials
+          %p.lead= t("f.conflict.sources_and_materials")
         .col-md-3
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
@@ -940,23 +939,24 @@
                 %form
                   .modal-header
                     %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3 Related Legislation
+                    %h3=t("f.conflict.related_legislation")
                   .modal-body
-                    %label Name and description of the legislation
+                    %label=t("f.conflict.name_description_legislation")
                     %textarea.i_legislation#legislation_description{:type=>'text',:name=>'legislation_description'}
                     %br/
-                    %label Address
+                    %label=t("f.conflict.address")
                     %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://'}
                     %br/
                     %br/
                   .modal-footer
-                    %a.btn#b_legislation Create
+                    %a.btn#b_legislation=t("f.conflict.create")
           .group
             .row
               .col-md-12
-                %label Related laws and legislations
-                %span.description - Juridical texts related to the conflict
-                %a#n_legislation.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_legislation'} Add
+                -#%label Related laws and legislations
+                  %span.description - Juridical texts related to the conflict
+                %label=t("f.conflict.related_laws_legislations_juridical_texts")
+                %a#n_legislation.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_legislation'}=t("f.conflict.add")
             #current_legislations
               -@conflict.legislations.each do |l|
                 .legislation
@@ -965,7 +965,7 @@
                     .col-md-10
                       %textarea{:name=>'legislation_description_'+l.id.to_s}= l.description
                     .col-md-2
-                      %a.d_legislation.pull-right.btn Remove
+                      %a.d_legislation.pull-right.btn=t("f.conflict.remove")
                   %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
             :javascript
               $(document).ready(function(){
@@ -979,23 +979,22 @@
                 %form
                   .modal-header
                     %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3 Related Web Link
+                    %h3=t("f.conflict.related_web_link")
                   .modal-body
-                    %label Name and description of the link
+                    %label=t("f.conflict.name_description_link")
                     %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
                     %br/
-                    %label Address
+                    %label=t("f.conflict.address")
                     %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://'}
                     %br/
                     %br/
                   .modal-footer
-                    %a.btn#b_weblink Create
+                    %a.btn#b_weblink=t("f.conflict.create")
           .group
             .row
               .col-md-12
-                %label Links
-                %span.description - to general newspaper articles, blogs or other websites
-                %a#n_weblink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_weblink'} Add
+                %label=t("f.conflict.links_to_general_newspaper_articles")
+                %a#n_weblink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_weblink'}=t("f.conflict.add")
             #current_weblinks
               -@conflict.weblinks.each do |l|
                 .weblink
@@ -1004,7 +1003,7 @@
                     .col-md-10
                       %textarea{:name=>'weblink_description_'+l.id.to_s}= l.description
                     .col-md-2
-                      %a.d_weblink.pull-right.btn Remove
+                      %a.d_weblink.pull-right.btn=t("f.conflict.remove")
                   %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
             :javascript
               $(document).ready(function(){
@@ -1013,7 +1012,7 @@
             %hr/
 
           .group
-            =f.label 'Other Comments'
+            =f.label t("f.conflict.other_comments")
             .required=f.error_message_on :other_comments
             ~f.text_area :other_comments, :class => :text_area, :rows=>4
 
@@ -1024,23 +1023,22 @@
                 %form
                   .modal-header
                     %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3 Related Reference
+                    %h3=t("f.conflict.related_reference")
                   .modal-body
-                    %label Name and description of source material
+                    %label=t("f.conflict.name_description_source_material")
                     %textarea.i_reference#reference_description{:type=>'text',:name=>'reference_description'}
                     %br/
-                    %label Address
+                    %label=t("f.conflict.address")
                     %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://'}
                     %br/
                     %br/
                   .modal-footer
-                    %a.btn#b_reference Create
+                    %a.btn#b_reference=t("f.conflict.create")
           .group
             .row
               .col-md-12
-                %label References
-                %span.description - to published books, academic articles, movies or published documentaries
-                %a#n_reference.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_reference'} Add
+                %label=t("f.conflict.references_to_published_books_academic")
+                %a#n_reference.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_reference'}=t("f.conflict.add")
             #current_references
               -@conflict.references.each do |l|
                 .reference
@@ -1049,7 +1047,7 @@
                     .col-md-10
                       %textarea{:name=>'reference_description_'+l.id.to_s}= l.description
                     .col-md-2
-                      %a.d_reference.pull-right.btn Remove
+                      %a.d_reference.pull-right.btn=t("f.conflict.remove")
                   %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
             :javascript
               $(document).ready(function(){
@@ -1057,120 +1055,16 @@
               });
             %hr/
 
-        .group
-          .row
-            .col-md-12
-              %label Upload a picture here
-              %span.description - you can also upload pdf documents
-              -unless @conflict.new_record?
-                %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'} Add
-              -if @conflict.new_record?
-                %p &nbsp;
-                %p.description
-                  %strong Please Save the form after uploading each photo.
-          #current_documents
-            -@conflict.images.each do |d|
-              .document
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                .row{:style=>'margin-top:8px;'}
-                  .col-md-3
-                    %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                    .center-text
-                      [[IMAGE]]
-                  .col-md-9
-                    .row
-                      .col-md-9
-                        %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                        %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
-                      .col-md-3
-                        %a.d_image.pull-right.btn Remove
-                        -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
-                    %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
-
-            -@conflict.documents.each do |d|
-              -next if d and d.copied?
-              .document
-                %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
-                  .row{:style=>'margin-top:8px;background:#aaa;'}
-
-          #m_medialink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-            .modal-dialog
-              .modal-content
-                %form
-                  .modal-header
-                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3 Related Media
-                  .modal-body
-                    %label Description about the media
-                    %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
-                    %br/
-                    %label Address
-                    %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
-                    %br/
-                    %br/
-                  .modal-footer
-                    %a.btn#b_medialink Add
           .group
             .row
               .col-md-12
-                %label Related Media
-                %span.description - links to videos, campaigns, social networks
-                %a#n_medialink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_medialink'} Add
-            #current_medialinks
-              -@conflict.medialinks.each do |l|
-                .medialink
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  .row{:style=>'margin-top:8px;'}
-                    .col-md-10
-                      %textarea{:name=>'medialink_description_'+l.id.to_s}= l.description
-                    .col-md-2
-                      %a.d_medialink.pull-right.btn Remove
-                  %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-            :javascript
-              $(document).ready(function(){
-                handleModal('medialink');
-              });
-            %hr/
-
-          -content_for :include do
-            =javascript_include_tag 'upload_iframe'
-          -content_for :outer do
-            #m_document.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-              .modal-dialog
-                .modal-content
-                  %form
-                    .modal-header
-                      %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                      %h3 Another Document
-                    .modal-body
-                      %label Name:
-                      %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
-                      %br/
-                      %label Description:
-                      %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
-                      %br/
-                      %label File:
-                      %br/
-                      %input.i_document#document_file{:type=>'file',:name=>'document[file]'}
-                      %input#document_file_cache{:type=>'hidden',:name=>'document[file_cache]'}
-                      %input#document_conflict_id{:type=>'hidden',:name=>'document[conflict_id]',:value=>"#{@conflict.id}"}
-                      %p
-                        #upload
-                    .modal-footer
-                      %input.btn#b_document{:type=>'button',:onclick=>"fileUpload(this.form,'index.php','upload'); return false;",:value=>'Send'} 
-
-          .group
-            .row
-              .col-md-12
-                %label Upload a picture here
-                %span.description - you can also upload pdf documents
+                %label=t("f.conflict.upload_picture_here_you_can")
                 -unless @conflict.new_record?
-                  %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'} Add
+                  %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
                 -if @conflict.new_record?
                   %p &nbsp;
                   %p.description
-                    %strong Please Save the form after uploading each photo.
+                    %strong=t("f.conflict.please_save_form_after_uploading")
             #current_documents
               -@conflict.images.each do |d|
                 .document
@@ -1186,7 +1080,108 @@
                           %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
                           %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
                         .col-md-3
-                          %a.d_image.pull-right.btn Remove
+                          %a.d_image.pull-right.btn=t("f.conflict.remove")
+                          -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
+                      %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+
+              -@conflict.documents.each do |d|
+                -next if d and d.copied?
+                .document
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
+                    .row{:style=>'margin-top:8px;background:#aaa;'}
+
+            #m_medialink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+              .modal-dialog
+                .modal-content
+                  %form
+                    .modal-header
+                      %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                      %h3=t("f.conflict.related_media")
+                    .modal-body
+                      %label=t("f.conflict.description_about_media")
+                      %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
+                      %br/
+                      %label=t("f.conflict.address")
+                      %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
+                      %br/
+                      %br/
+                    .modal-footer
+                      %a.btn#b_medialink=t("f.conflict.add")
+            .group
+              .row
+                .col-md-12
+                  %label=t("f.conflict.related_media_links_to_videos")
+                  %a#n_medialink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_medialink'}=t("f.conflict.add")
+              #current_medialinks
+                -@conflict.medialinks.each do |l|
+                  .medialink
+                    %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-10
+                        %textarea{:name=>'medialink_description_'+l.id.to_s}= l.description
+                      .col-md-2
+                        %a.d_medialink.pull-right.btn=t("f.conflict.remove")
+                    %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+              :javascript
+                $(document).ready(function(){
+                  handleModal('medialink');
+                });
+              %hr/
+
+          -content_for :include do
+            =javascript_include_tag 'upload_iframe'
+          -content_for :outer do
+            #m_document.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+              .modal-dialog
+                .modal-content
+                  %form
+                    .modal-header
+                      %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                      %h3=t("f.conflict.another_document")
+                    .modal-body
+                      %label=t("f.conflict.name")
+                      %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
+                      %br/
+                      %label=t("f.conflict.description")
+                      %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
+                      %br/
+                      %label=t("f.conflict.file")
+                      %br/
+                      %input.i_document#document_file{:type=>'file',:name=>'document[file]'}
+                      %input#document_file_cache{:type=>'hidden',:name=>'document[file_cache]'}
+                      %input#document_conflict_id{:type=>'hidden',:name=>'document[conflict_id]',:value=>"#{@conflict.id}"}
+                      %p
+                        #upload
+                    .modal-footer
+                      %input.btn#b_document{:type=>'button',:onclick=>"fileUpload(this.form,'index.php','upload'); return false;",:value=>t("f.conflict.send")} 
+
+          .group
+            .row
+              .col-md-12
+                %label=t("f.conflict.upload_picture_here_you_can")
+                -unless @conflict.new_record?
+                  %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
+                -if @conflict.new_record?
+                  %p &nbsp;
+                  %p.description
+                    %strong=t("f.conflict.please_save_form_after_uploading")
+            #current_documents
+              -@conflict.images.each do |d|
+                .document
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  .row{:style=>'margin-top:8px;'}
+                    .col-md-3
+                      %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                      .center-text
+                        [[IMAGE]]
+                    .col-md-9
+                      .row
+                        .col-md-9
+                          %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
+                        .col-md-3
+                          %a.d_image.pull-right.btn=t("f.conflict.remove")
                           -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
                       %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
 
@@ -1204,7 +1199,7 @@
                             %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
                             %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
                           .col-md-3
-                            %a.d_document.pull-right.btn Remove
+                            %a.d_document.pull-right.btn=t("f.conflict.remove")
                         %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
                   -else
                     .row{:style=>'margin-top:8px;'}
@@ -1212,7 +1207,7 @@
                         %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
                         %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
                       .col-md-2
-                        %a.d_document.pull-right.btn Remove
+                        %a.d_document.pull-right.btn=t("f.conflict.remove")
                     %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
 
             :javascript
@@ -1279,7 +1274,7 @@
     #meta.tab-pane
       .row
         .col-md-9
-          %p.lead Meta information
+          %p.lead=t("f.conflict.meta_information")
         .col-md-3
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
@@ -1290,31 +1285,29 @@
         .col-md-4
           -unless @conflict.new_record?
             .group
-              %label= "Conflict ID: #{@conflict.id}"
+              %label= "#{t("f.conflict.conflict_id")} #{@conflict.id}"
 
           .group
-            =f.label 'Headline text'
+            =f.label t("f.conflict.headline_text")
             .required=f.error_message_on :headline
             %p.description 
-              Mainly for Landing page appearance and facebook sharing, up to 2-3 sentences, 
-              %strong 255 
-              characters maximum.
+              =t("f.conflict.mainly_for_landing_page_appearance")
             ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255
 
           .group
             .required=f.error_message_on :approval_status
-            =f.label 'Approval status'
+            =f.label t("f.conflict.approval_status")
             %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'} &nbsp;Deleted
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.deleted")}".html_safe
             %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'} &nbsp;Draft
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'draft',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.draft")}".html_safe
             %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'} &nbsp;Submit for moderation
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.submit_for_moderation")}".html_safe
             %label.checkbox.inline.apstat
-              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'} &nbsp;Modified
+              %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.modified")}".html_safe
             -if ["admin","editor"].include? current_account.role
               %label.checkbox.inline.apstat
-                %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'} &nbsp;Approved
+                %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.approved")}".html_safe
             -if apstat = @conflict.approval_status
               -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
             -else
@@ -1331,28 +1324,29 @@
           -if @saves and @saves.length > 0
             .group
               %label Save history:
-              %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
-                %tdata
-                  -@saves.reverse.each do |save|
-                    %tr
-                      %td=save[4]
-                      %td
-                        %small=Account.find(save[3].to_i).name
+              %div{:style=>"max-height:240px;overflow-y:auto"}
+                %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
+                  %tdata
+                    -@saves.reverse.each do |save|
+                      %tr
+                        %td=save[4]
+                        %td
+                          %small=Account.find(save[3].to_i).name
 
 
           %br/
 
         .col-md-8
           .group
-            %label Send a message to the moderator
+            %label=t("f.conflict.notes_to_moderator")
             .row
               .col-md-4
                 .clearfix
                   .pull-left
-                    %textarea#message{:rows=>2,:style=>"width:240px;",:placeholder=>"Type a new message"}
+                    %textarea#message{:rows=>2,:style=>"width:240px;",:placeholder=>t("f.conflict.type_new_message")}
                 .clearfix
                   .pull-left
-                    %button.btn#message-btn{:style=>"width:240px;padding: 2px 12px;"} SEND
+                    %button.btn#message-btn{:style=>"width:240px;padding: 2px 12px;"}=t("f.conflict.send")
                 %p#message-err.error
 
               .col-md-8
@@ -1428,9 +1422,9 @@
 
           -if ["admin","editor"].include? current_account.role and @conflict.account
             .group
-              =f.label 'Internal Notes'
+              =f.label t("f.conflict.internal_notes")
               .required=f.error_message_on :notes
-              %p.description Please indicate the changes you have made as well as other relevant information
+              %p.description=t("f.conflict.please_indicate_changes_you_have")
               ~f.text_area :notes, :class => :text_area, :rows=>4
               -if ["admin","editor"].include? current_account.role and @conflict.account
                 %p
@@ -1438,15 +1432,15 @@
                   %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
 
           .group
-            =f.label 'Contributor'
+            =f.label t("f.conflict.contributor")
             .required=f.error_message_on :notes
-            %p.description Fill in your name, organization and contact email, as you want it to appear on the map (this data will be visible to the public)
+            %p.description=t("f.conflict.fill_in_your_name_organization")
             =f.text_field :contributor, :class => 'text_field basic_input'
 
           .group
             %br/
             -if @conflict.conflict_accounts.any?
-              %label Other contributing users
+              %label= t("f.conflict.other_contributing_users")
               %ul{:style=>"list-style-type: none; padding: 0;"}
                 -@conflict.conflict_accounts.each do |ca|
                   %li
@@ -1454,12 +1448,12 @@
                     -if ["admin","editor"].include? current_account.role
                       .pull-left
                         &nbsp;
-                        %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"} Revoke
+                        %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"}= t("f.conflict.revoke")
                     %br/
 
             -if ["admin","editor"].include? current_account.role
               %br/
-              %label Invite users to contribute
+              %label= t("f.conflict.invite_users_to_collaborate")
               .clearfix
                 .pull-left
                   %input#invite{:type=>"email",:style=>"width:240px;",:placeholder=>"Paste email address"}
@@ -1467,7 +1461,7 @@
                   &nbsp;
                   &nbsp;
                 .pull-left
-                  %button.btn#invite-btn{:style=>"padding: 2px 12px;"} INVITE
+                  %button.btn#invite-btn{:style=>"padding: 2px 12px;"}= t("f.conflict.invite")
               %p#invite-err.error
               :javascript
                 $("#invite-btn").on("click",function(e){
@@ -1488,67 +1482,6 @@
                 });
 
 
-        -if ["admin","editor"].include? current_account.role and @conflict.account
-          .group
-            =f.label 'Internal Notes'
-            .required=f.error_message_on :notes
-            %p.description Please indicate the changes you have made as well as other relevant information
-            ~f.text_area :notes, :class => :text_area, :rows=>4
-            -if ["admin","editor"].include? current_account.role and @conflict.account
-              %p
-                By
-                %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
-
-        .group
-          =f.label 'Contributor'
-          .required=f.error_message_on :notes
-          %p.description Fill in your name, organization and contact email, as you want it to appear on the map (this data will be visible to the public)
-          =f.text_field :contributor, :class => 'text_field basic_input'
-
-        .group
-          %br/
-          -if @conflict.conflict_accounts.any?
-            %label Other contributing users
-            %ul{:style=>"list-style-type: none; padding: 0;"}
-              -@conflict.conflict_accounts.each do |ca|
-                -next unless ca.account
-                %li
-                  .pull-left= ca.account.email
-                  -if ["admin","editor"].include? current_account.role
-                    .pull-left
-                      &nbsp;
-                      %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"} Revoke
-                  %br/
-
-          -if ["admin","editor"].include? current_account.role
-            %br/
-            %label Invite users to contribute
-            .clearfix
-              .pull-left
-                %input#invite{:type=>"email",:style=>"width:240px;",:placeholder=>"Paste email address"}
-              .pull-left
-                &nbsp;
-                &nbsp;
-              .pull-left
-                %button.btn#invite-btn{:style=>"padding: 2px 12px;"} INVITE
-            %p#invite-err.error
-            :javascript
-              $("#invite-btn").on("click",function(e){
-                e.preventDefault();
-                if (!$("#invite").hasClass("error")) {
-                  $.post("/conflicts/ca_create",
-                    {aid:$("#invite").val(),cid:#{@conflict.id}},
-                    function(data){
-                      console.log(data)
-                      if (data === "ok") {
-                        window.location.reload();
-                      } else {
-                        $("#invite-err").text(data);
-                      }
-                    }
-                  ); 
-                } 
-              });
 
 
 
