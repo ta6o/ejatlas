@@ -467,6 +467,7 @@ class Admin < Padrino::Application
 
   def self.fetch_translations download=true
     if download
+      `rm #{Dir.pwd}/lib/sheets/*`
       print "\rFetching..."
       require "google_drive"
       api_id = "***REMOVED***.apps.googleusercontent.com"
@@ -481,14 +482,15 @@ class Admin < Padrino::Application
           end
         end
       end
+      File.open("#{Dir.pwd}/lib/sheets/stamp","w"){|f| f << Time.now.to_i}
     end
-    File.open("#{Dir.pwd}/lib/sheets/stamp","w"){|f| f << Time.now.to_i}
 
     print "\rParsing..."
     locales = {}
     locs = []
     keys = []
     $tstatus = {}
+    `rm #{Dir.pwd}/lib/locales/*`
 
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./

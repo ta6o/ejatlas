@@ -168,16 +168,16 @@ Admin.controllers :conflicts do
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
-    @countries = Country.all.order :slug
+    @countries = Country.all.order(:slug).select("name","id")
     @categories = Category.all.order :id
     @alltypes = Type.where('category_id is not null').order('name asc')
     @types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
     @alltypeoptions = ""
     @categories.each do |c|
       @types.push c.types.all
-      @alltypeoptions += "<option value='0' disabled='disabled'>#{c.name}</option>"
+      @alltypeoptions += "<option value='0' disabled='disabled'>#{t("m.category_id.#{c.name.slug("_")}")}</option>"
       c.types.each do |ct|
-        @alltypeoptions += "<option value='#{ct.id.to_s}'>#{ct.name}</option>"
+        @alltypeoptions += "<option value='#{ct.id.to_s}'>#{t("m.types.#{ct.name.slug("_")}")}</option>"
       end
       @alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
     end

@@ -3,10 +3,10 @@
   .col-md-12
     .hero-unit
       %h1.title
-        Editing: 
+        = t("f.conflict.editing")
         = @conflict.name
         %small
-          %a{:target=>'_blank',:href=>"/conflict/#{@conflict.slug}"} view
+          %a{:target=>'_blank',:href=>"/conflict/#{@conflict.slug}"}= t("v.menu.view")
     .inner
       =form_for :conflict, url(:conflicts, :update, :id => @conflict.id), :method => :put, :class => :form, :id=>:conflict_form, :style => "margin:0 -15px" do |f|
         =partial "conflicts/form", :locals => { :f => f }
