@@ -503,6 +503,7 @@ class Admin < Padrino::Application
         if ind == 0
           locs = row.map{|loc| loc.slug("_")}
           locs[1..-1].each do |loc| 
+            next if loc == ""
             $tstatus[fn][loc] = 0
             if locales.has_key?(loc)
               locales[loc][domain] = {} unless locales[loc].has_key?(domain)
@@ -522,6 +523,7 @@ class Admin < Padrino::Application
             next if i == 0
             next if c.nil? or c.length == 0
             loc = locs[i]
+            next if loc == ""
             $tstatus[fn][loc] += 1
             point = locales[loc][domain]
             scope.length.times do |t|

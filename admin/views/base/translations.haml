@@ -22,15 +22,15 @@
               -tkeys.each do |kk|
                 -totals[kk] += (v[kk]||0)
                 -next if kk == "en"
-                %td{:title=>"#{(v[kk]||0)} / #{v["en"]}"}= ((v[kk]||0).to_f / v["en"].to_f * 100).to_i
+                %td{:title=>"#{kk}: #{(v[kk]||0)} / #{v["en"]}"}= ((v[kk]||0).to_f / v["en"].to_f * 100).to_i
 
           %tr
             %td
               %b TOTAL
             -totals.each do |k,v|
-              -next if k == "en"
+              -next if ["","en"].include?(k.to_s)
               %td
-                %b{:title=>"#{v} / #{totals["en"]}"}= (v.to_f / totals["en"].to_f * 100).to_i
+                %b{:title=>"#{k}: #{v} / #{totals["en"]}"}= (v.to_f / totals["en"].to_f * 100).to_i
 
       .pull-left
         %span Last updated at:
