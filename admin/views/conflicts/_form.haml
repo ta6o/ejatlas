@@ -358,7 +358,7 @@
     #project.tab-pane
       .row
         .col-md-9
-          %p.lead Project Details and Actors
+          %p.lead= t("f.conflict.project_details_actors")
         .col-md-3
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
@@ -369,22 +369,22 @@
       .row
         .col-md-5
           .group
-            =f.label 'Project details'
+            =f.label t("f.conflict.project_details")
             .required=f.error_message_on :project_details
-            %p.description (Please insert specific details on the relevant quantitative data eg tons of mineral extracted per year, kwh of electricity, etc...)
+            %p.description=t("f.conflict.please_insert_specific_details_on")
             ~f.text_area :project_details, :class => :text_area, :rows=>17
 
         .col-md-4
           .group
-            %label Level of Investment:
+            %label=t("f.conflict.level_of_investment")
             .required=f.error_message_on :investment_string
-            %p.description (Please enter in USD and in this format: 1,000,000,000.00)
+            %p.description=t("f.conflict.please_enter_in_usd_in")
             =f.text_field :investment_string, :class => :text_field
 
         .col-md-4
           .group
-            %label Affected Population:
-            %p.description (It may also be a range)
+            %label=t("f.conflict.affected_population")
+            %p.description=t("f.conflict.it_may_also_be_range")
             .required=f.error_message_on :affected_people
             =f.text_field :affected_people, :class => :text_field, :maxlength => 255
           %br/
@@ -395,12 +395,12 @@
       .row
         .col-md-5
           .group
-            %label Company names or state enterprises:
+            %label=t("f.conflict.company_names_or_state_enterprises")
             .row
               .col-md-10
-                %p.description Please use the button on the right to add new companies. If the company exists already, it will appear in the list and selecting it will refresh the form.
+                %p.description=t("f.conflict.please_use_button_on_right")
               .col-md-2
-                %button#n_company.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company"} Add
+                %button#n_company.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company"}=t("f.conflict.add")
             %br/
             .company_list
               -@conflict.companies.each do |l|
@@ -410,27 +410,27 @@
                     .col-md-8
                       %h5="#{l.name}"
                     .col-md-2
-                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company/#{l.id}"} Edit
+                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company/#{l.id}"}=t("f.conflict.edit")
                     .col-md-2
                       %input{:type=>'hidden',:value=>l.id}
-                      %a.d_actor.pull-right.btn Remove
+                      %a.d_actor.pull-right.btn=t("f.conflict.remove")
             %hr/
 
           .group
             %br/
-            =f.label 'Relevant government actors'
+            =f.label t("f.conflict.relevant_government_actors")
             .required=f.error_message_on :government_actor_id
             %br/
             %textarea#conflict_govt_actors.text-area{:rows=>4,:name=>'conflict[govt_actors]'}=@conflict.govt_actors
 
         .col-md-5
           .group
-            %label International and Finance Institutions
+            %label= t("f.conflict.international_finance_institutions")
             .row
               .col-md-10
-                %p.description Please use the button on the right to add new institutions. If the institution exists already, it will appear in the list and selecting it will refresh the form.
+                %p.description=t("f.conflict.please_use_button_on_right")
               .col-md-2
-                %button#n_supporter.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter"} Add
+                %button#n_supporter.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter"}=t("f.conflict.add")
             %br/
             .supporter_list
               -@conflict.supporters.each do |l|
@@ -440,10 +440,10 @@
                     .col-md-8
                       %h5="#{l.name}"
                     .col-md-2
-                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter/#{l.id}"} Edit
+                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter/#{l.id}"}=t("f.conflict.edit")
                     .col-md-2
                       %input{:type=>'hidden',:value=>l.id}
-                      %a.d_actor.pull-right.btn Remove
+                      %a.d_actor.pull-right.btn=t("f.conflict.remove")
             %hr/
 
             :javascript
@@ -460,7 +460,7 @@
 
           .group
             %br/
-            =f.label 'Environmental justice organizations (and other supporters) and their websites, if available'
+            =f.label t("f.conflict.environmental_justice_organizations_other_supporters")
             .required=f.error_message_on :justice_party_id
             %br/
             %textarea#conflict_ejos.text-area{:rows=>4,:name=>'conflict[ejos]'}=@conflict.ejos
@@ -479,7 +479,7 @@
     #conflict.tab-pane
       .row
         .col-md-9
-          %p.lead Conflict and Mobilization
+          %p.lead=t("f.conflict.conflict_and_mobilization")
         .col-md-3
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
@@ -490,21 +490,31 @@
       .row
         .col-md-9
           .group
-            =f.label 'Intensity of conflict'
+            =f.label t("f.conflict.intensity_of_conflict")
             .required=f.error_message_on :status_id
-            %p.description (at highest level)
-            =f.select :status_id, :collection => @statuses, :fields=>[:name, :id], :include_blank => true, :id => 'status_id', :class => 'basic_input'
+            %p.description= t("f.conflict.at_highest_level")
+            -#=f.select :status_id, :collection => @statuses, :fields=>[:name, :id], :include_blank => true, :id => 'status_id', :class => 'basic_input'
+          %select.basic_input#conflict_status_id{:name=>"conflict[status_id]"}
+            %option
+            -@statuses.each do |c|
+              %option{:value=>c.id,:selected=>c.id==@conflict.status_id}=t("m.status_id.#{c.name.slug("_")}")
+
 
           .group
-            =f.label 'When did the mobilization begin?'
+            =f.label t("f.conflict.when_did_mobilization_begin")
             .required=f.error_message_on :reaction_id
-            =f.select :reaction_id, :collection => @reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
+            -#=f.select :reaction_id, :collection => @reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
+          %select.basic_input#conflict_reaction_id{:name=>"conflict[reaction_id]"}
+            %option
+            -@reactions.each do |c|
+              %option{:value=>c.id,:selected=>c.id==@conflict.reaction_id}=t("m.reaction_id.#{c.name.slug("_")}")
+
 
           -unless @conflict.new_record?
             .group
-              %label= 'Is this conflict directly related to any other EJOLT ecological conflict?'
+              %label= t("f.conflict.is_this_conflict_directly_related")
               .required=f.error_message_on :related_conflict_id
-              %p.description Please enter the name of the conflict as per the Ejolt inventory
+              %p.description=t("f.conflict.please_enter_name_conflict_as")
               %input#related.autocomplete{:type=>'text','data-source'=>'relateds'}
               %br/
               %ul.autoc
@@ -520,14 +530,14 @@
 
         .col-md-3
           .group
-            =f.label 'Start of the conflict'
+            =f.label t("f.conflict.start_conflict")
             %span.required.large *
             .required=f.error_message_on :start_date
             =f.text_field :start_date, :class => 'text_field conflict_input datemask', :value => ( @conflict.get_start_date if @conflict.start_date )
 
           .group
-            =f.label 'End of the conflict'
-            %p.description (leave blank if ongoing)
+            =f.label t("f.conflict.end_conflict")
+            %p.description=t("f.conflict.leave_blank_if_ongoing")
             =f.text_field :end_date, :class => 'text_field datemask', :value => ( @conflict.get_end_date if @conflict.end_date )
 
 
@@ -535,8 +545,8 @@
         .col-md-12
           .group
             %br/
-            =f.label 'Groups mobilizing'
-            %p.description (check all that apply)
+            =f.label t("f.conflict.groups_mobilizing")
+            %p.description= t("f.conflict.check_all_that_apply")
             %table{:style=>'width:100%'}
               %tbody
                 -@mobgroups.each_with_index do |p,i|
@@ -544,7 +554,7 @@
                     %tr
                   %td.third
                     %input{:type=>'checkbox',:name=>'mobilizing_group_'+p.id.to_s,:id=>'mobilizing_group_'+p.id.to_s,:class=>'mustcheck mobilizing_group_cb'}
-                    %label= p.name
+                    %label= t("m.mobilizing_groups.#{p.name.slug("_")}")
             =f.text_area :other_mobilizing_groups, :class => 'text_area', :rows=>1, :id => :other_mobilizing_groups
             :javascript
               $('#mobilizing_group_21').change(function(){
@@ -562,8 +572,8 @@
             %br/
 
           .group
-            =f.label 'Forms of Mobilization'
-            %p.description (check all that apply)
+            =f.label t("f.conflict.forms_of_mobilization")
+            %p.description= t("f.conflict.check_all_that_apply")
             %table#mobform{:style=>'width:100%'}
               %tbody
                 -@mobforms.each_with_index do |p,i|
@@ -571,7 +581,7 @@
                     %tr
                   %td.third
                     %input{:type=>'checkbox',:name=>'mobilizing_form_'+p.id.to_s,:id=>'mobilizing_form_'+p.id.to_s,:class=>'mustcheck mobilizing_form_cb'}
-                    %label= p.name
+                    %label= t("m.mobilizing_forms.#{p.name.slug("_")}")
             =f.text_area :other_mobilizing_forms, :class => 'text_area', :rows=>1, :id => :other_mobilizing_forms
             :javascript
               $('#mobilizing_form_28').change(function(){
@@ -611,10 +621,10 @@
 
       .row
         .col-md-12
-          %p.lead Impacts of the project
+          %p.lead= t("f.conflict.impacts_project")
           .group.row
             .col-md-3
-              =f.label 'Environmental Impacts'
+              =f.label t("m.env_impacts.environmental_impacts")
               .required=f.error_message_on :env_impact_id
             .col-md-9
               %table.imptab{:style=>'width:100%'}
@@ -622,18 +632,18 @@
                   -3.times do |i|
                     %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
                       -if i==0
-                        %span.small Visible / Potential
+                        %span.small= t("f.conflict.visible_potential")
                       &nbsp;
                     %th.imprad{:valign=>'bottom'}
-                      V
+                      = t("f.conflict.v")
                     %th.imprad{:valign=>'bottom'}
-                      P
+                      = t("f.conflict.p")
                 %tbody
                   -@impacts[0].each_with_index do |p,i|
                     -if i%3 == 0
                       %tr
                     %td.implab{:valign=>'bottom'}
-                      %label= p.name
+                      %label= t("m.env_impacts.#{p.name.slug("_")}")
                     %td.imprad{:valign=>'bottom'}
                       %input.desrad{:type=>'radio',:name=>'env_radio_'+p.id.to_s,:id=>'env_radio_'+p.id.to_s+'_g',:value=>'g'}
                     %td.imprad{:valign=>'bottom'}
@@ -646,14 +656,14 @@
           .group.row
             .col-md-3 &nbsp;
             .col-md-9
-              =f.label 'Other Environmental Impacts'
+              =f.label t("m.env_impacts.other_environmental_impacts")
               .required=f.error_message_on :other_env_impacts
               ~f.text_area :other_env_impacts, :class => :text_area
           %hr/
 
           .group.row
             .col-md-3
-              =f.label 'Health Impacts'
+              =f.label t("m.hlt_impacts.health_impacts")
               .required=f.error_message_on :hlt_impact_id
             .col-md-9
               %table.imptab{:style=>'width:100%'}
@@ -661,18 +671,18 @@
                   -3.times do |i|
                     %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
                       -if i==0
-                        %span.small Visible / Potential
+                        %span.small= t("f.conflict.visible_potential")
                       &nbsp;
                     %th.imprad{:valign=>'bottom'}
-                      V
+                      = t("f.conflict.v")
                     %th.imprad{:valign=>'bottom'}
-                      P
+                      = t("f.conflict.p")
                 %tbody
                   -@impacts[1].each_with_index do |p,i|
                     -if i%3 == 0
                       %tr
                     %td.implab{:valign=>'bottom'}
-                      %label= p.name
+                      %label= t("m.hlt_impacts.#{p.name.slug("_")}")
                     %td.imprad{:valign=>'bottom'}
                       %input.desrad{:type=>'radio',:name=>'hlt_radio_'+p.id.to_s,:id=>'hlt_radio_'+p.id.to_s+'_g',:value=>'g'}
                     %td.imprad{:valign=>'bottom'}
@@ -685,14 +695,14 @@
           .group.row
             .col-md-3 &nbsp;
             .col-md-9
-              =f.label 'Other Health Impacts'
+              =f.label t("m.hlt_impacts.other_health_impacts")
               .required=f.error_message_on :other_hlt_impacts
               ~f.text_area :other_hlt_impacts, :class => :text_area
           %hr/
 
           .group.row
             .col-md-3
-              =f.label 'Socio-economic Impacts'
+              =f.label t("m.sec_impacts.socio_economical_impacts")
               .required=f.error_message_on :sec_impact_id
             .col-md-9
               %table.imptab{:style=>'width:100%'}
@@ -700,18 +710,18 @@
                   -3.times do |i|
                     %th.implab{:valign=>'bottom',:style=>'padding-left:0;text-align:left;border:none;'}
                       -if i==0
-                        %span.small Visible / Potential
+                        %span.small= t("f.conflict.visible_potential")
                       &nbsp;
                     %th.imprad{:valign=>'bottom'}
-                      V
+                      = t("f.conflict.v")
                     %th.imprad{:valign=>'bottom'}
-                      P
+                      = t("f.conflict.p")
                 %tbody
                   -@impacts[2].each_with_index do |p,i|
                     -if i%3 == 0
                       %tr
                     %td.implab{:valign=>'bottom'}
-                      %label= p.name
+                      %label= t("m.sec_impacts.#{p.name.slug("_")}")
                     %td.imprad{:valign=>'bottom'}
                       %input.desrad{:type=>'radio',:name=>'sec_radio_'+p.id.to_s,:id=>'sec_radio_'+p.id.to_s+'_g',:value=>'g'}
                     %td.imprad{:valign=>'bottom'}
@@ -724,7 +734,7 @@
           .group.row
             .col-md-3 &nbsp;
             .col-md-9
-              =f.label 'Other Socio-economic Impacts'
+              =f.label t("m.sec_impacts.other_socio_economic_impacts")
               .required=f.error_message_on :other_sec_impacts
               ~f.text_area :other_sec_impacts, :class => :text_area
           %br/
