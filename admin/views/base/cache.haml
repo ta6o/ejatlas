@@ -28,23 +28,6 @@
         %br/
         %br/
         %input.btn.full.btn-warning{:type=>'submit',:value=>'Update now'}
-  %br/
-  .row
-    .col-md-6.col-md-offset-3.clearfix
-      %input#trans.btn.full{:value=>'Update translations'}
-      %br/
-      %br/
-      .result
-
 
   :javascript
     function deselect() { $('input[type=checkbox]').attr('checked',false); }
-    $("#trans").on("click",function(){
-      $(this).addClass("disabled")
-      $(".result").text("")
-      $.get("/i18n?dl",function(data){
-        $(".result").text(data)
-        $("#trans").removeClass("disabled")
-        $("#trans").val("Update translations again")
-      })
-    })

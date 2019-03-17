@@ -27,3 +27,21 @@ module I18n
     alias :t :translate
   end
 end
+
+class String
+  def slug fill="-"
+    return self if self.nil?
+    self.to_ascii
+      .downcase
+      .strip
+      .gsub(/[-_\s\/]+/, '-')
+      .gsub(/[^\w-]/, '')
+      .gsub(/-+/,fill)
+  end
+  def shorten_en
+    words = self.gsub(/%{[^}]+}/,"var").strip.slug.split(/-/)
+    ["a","and","of","the"].each{|d| words.delete(d)} if words.length > 3
+    words[0..4].join("_")
+  end
+end
+

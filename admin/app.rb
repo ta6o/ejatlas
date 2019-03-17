@@ -32,10 +32,6 @@ class Admin < Padrino::Application
 
   require "./lib/i18n-translate-override.rb"
 
-  I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
-  I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
-  I18n.backend.load_translations
-
   $title = 'EJAtlas'
 
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
@@ -486,11 +482,13 @@ class Admin < Padrino::Application
         end
       end
     end
+    File.open("#{Dir.pwd}/lib/sheets/stamp","w"){|f| f << Time.now.to_i}
 
     print "\rParsing..."
     locales = {}
     locs = []
     keys = []
+    $tstatus = {}
 
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./
@@ -498,9 +496,12 @@ class Admin < Padrino::Application
       file = file.strip
       CSV.read("#{Dir.pwd}/lib/sheets/#{file}").each_with_index do |row,ind|
         domain = "models,views,forms".split(",").include?(file.sub(/\.csv$/,"").slug) ? file[0].slug : file.sub(/\.csv$/,"").slug("_")
+        fn = file.split(".")[0].slug
+        $tstatus[fn] = {} unless $tstatus.has_key?(fn)
         if ind == 0
           locs = row.map{|loc| loc.slug("_")}
           locs[1..-1].each do |loc| 
+            $tstatus[fn][loc] = 0
             if locales.has_key?(loc)
               locales[loc][domain] = {} unless locales[loc].has_key?(domain)
             else
@@ -519,6 +520,7 @@ class Admin < Padrino::Application
             next if i == 0
             next if c.nil? or c.length == 0
             loc = locs[i]
+            $tstatus[fn][loc] += 1
             point = locales[loc][domain]
             scope.length.times do |t|
               point[scope[t]] = {} unless point.has_key? scope[t]
@@ -541,22 +543,15 @@ class Admin < Padrino::Application
     print "\rDone."
   end
 
-end
+  I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
+  I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
+  begin
+    I18n.backend.load_translations
+  rescue
+    Admin.fetch_translations(false)
+    I18n.backend.load_translations
+  end
 
-class String
-  def slug fill="-"
-    return self if self.nil?
-    self.to_ascii
-      .downcase
-      .strip
-      .gsub(/[-_\s\/]+/, '-')
-      .gsub(/[^\w-]/, '')
-      .gsub(/-+/,fill)
-  end
-  def shorten_en
-    words = self.gsub(/%{[^}]+}/,"var").strip.slug.split(/-/)
-    ["a","and","of","the"].each{|d| words.delete(d)} if words.length > 3
-    words[0..4].join("_")
-  end
+
 end
 

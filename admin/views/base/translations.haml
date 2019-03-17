@@ -1,0 +1,45 @@
+-#coding:utf-8
+%br/
+.content
+  .status.row
+    .col-md-6.col-md-offset-3
+      %h3 Translation status
+      %table.table
+        %thead
+          %tr
+            %th %
+            -tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort
+            -tkeys.each do |k|
+              %th=k.upcase
+
+        %tbody
+          -totals = tkeys.map{|k| [k,0]}.to_h
+          -$tstatus.each do |k,v|
+            %tr
+              %td
+                %b=k.titlecase
+              -tkeys.each do |kk|
+                -totals[kk] += (v[kk]||0)
+                %td{:title=>"#{(v[kk]||0)} / #{v["en"]}"}= ((v[kk]||0).to_f / v["en"].to_f * 100).to_i
+
+          %tr
+            %td
+              %b TOTAL
+            -totals.each do |k,v|
+              %td
+                %b{:title=>"#{v} / #{totals["en"]}"}= (v.to_f / totals["en"].to_f * 100).to_i
+
+  .row
+    .col-md-6.col-md-offset-3.clearfix
+      %span.pull-left="Last updated at: #{Time.at(File.read("#{Dir.pwd}/lib/sheets/stamp").strip.to_i).to_s}"
+      %input#trans.btn.pull-right{:value=>'Update translations'}
+
+  :javascript
+    function deselect() { $('input[type=checkbox]').attr('checked',false); }
+    $("#trans").on("click",function(){
+      $(this).addClass("disabled")
+      $(".result").text("")
+      $.get("/i18n?dl",function(data){
+        window.location = "/translations"
+      })
+    })
