@@ -629,7 +629,7 @@ Admin.controller do
     model = 'country' if model == 'country_of_company'
     #filter = {match:{name:"#{token}"}}
     filter = {query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}}
-    result = $client.search(index: 'staging', type: model, body: {from:0,size:9999,"_source":{"includes":[:name]},query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['_source']['name']}}
+    result = $client.search(index: 'atlas', type: model, body: {from:0,size:9999,"_source":{"includes":[:name]},query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['_source']['name']}}
     pp result
     puts result.length
     return result.to_json

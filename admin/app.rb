@@ -376,7 +376,7 @@ class Admin < Padrino::Application
     #puts JSON.pretty_generate(filter)
     #pp stored_fields
 
-    result = $client.search(index: 'staging', type: type, body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})['hits']['hits']
+    result = $client.search(index: 'atlas', type: type, body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})['hits']['hits']
   end
 
   def self.old_filter options
