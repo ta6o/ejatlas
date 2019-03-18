@@ -759,6 +759,8 @@ Admin.controller do
     redirect to "/sessions/login?return=parse" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     Admin.fetch_translations(false) if $tstatus.nil?
+    @tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort
+    @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! @tkeys.include?(x)}
     render 'base/translations', :layout => :application
   end
 

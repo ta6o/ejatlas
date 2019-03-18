@@ -8,29 +8,30 @@
         %thead
           %tr
             %th %
-            -tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort
-            -tkeys.each do |k|
+            -@tkeys.each do |k|
               -next if k == "en"
               %th=k.upcase
 
         %tbody
-          -totals = tkeys.map{|k| [k,0]}.to_h
+          -totals = @tkeys.map{|k| [k,0]}.to_h
           -$tstatus.each do |k,v|
             %tr
               %td
                 %b=k.titlecase
-              -tkeys.each do |kk|
+              -@tkeys.each do |kk|
                 -totals[kk] += (v[kk]||0)
                 -next if kk == "en"
-                %td{:title=>"#{kk}: #{(v[kk]||0)} / #{v["en"]}"}= ((v[kk]||0).to_f / v["en"].to_f * 100).to_i
+                %td
+                  %a{:href=>"#",:title=>"#{@iso639[kk]} translations for #{k}","data-content"=>"#{(v[kk]||0)} / #{v["en"]} <small>(#{((v[kk]||0).to_f / v["en"].to_f * 100).to_i}%)</small>", "data-toggle"=>"popover" }= ((v[kk]||0).to_f / v["en"].to_f * 100).to_i
 
           %tr
             %td
               %b TOTAL
             -totals.each do |k,v|
-              -next if ["","en"].include?(k.to_s)
+              -next if ["","en"].include?(k)
               %td
-                %b{:title=>"#{k}: #{v} / #{totals["en"]}"}= (v.to_f / totals["en"].to_f * 100).to_i
+                %b
+                  %a{:href=>"#",:title=>"#{@iso639[k]} translations in general","data-content"=>"#{v} / #{totals["en"]} <small>(#{(v.to_f / totals["en"].to_f * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (v.to_f / totals["en"].to_f * 100).to_i
 
       .pull-left
         %span Last updated at:
@@ -47,3 +48,10 @@
         window.location = "/translations"
       })
     })
+    $(document).ready(function(){
+      $('[data-toggle="popover"]').popover({
+        html: true,
+        placement: "top",
+        trigger: "hover"
+      }); 
+    });
