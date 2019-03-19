@@ -3,6 +3,7 @@ class Conflict < ActiveRecord::Base
 
   #validates_presence_of :name, :province, :category, :description
 
+  has_many :conflict_texts
   has_many :conflict_accounts
   has_many :conflict_messages
   belongs_to :country
@@ -679,6 +680,11 @@ class Conflict < ActiveRecord::Base
     #ping
   end
 
+end
+
+class ConflictText < ActiveRecord::Base
+  belongs_to :conflict
+  validates_uniqueness_of :conflict_id, :scope => :locale
 end
 
 class ConflictRelation < ActiveRecord::Base
