@@ -618,7 +618,7 @@ class AsyncTask
         pp times
         puts
         ca.conflicts_marker = markers.to_json
-        File.open("#{PADRINO_ROOT}/public/data/markers.json","w") {|f| f << markers.to_json }
+        File.open("#{PADRINO_ROOT}/public/data/markers-#{locale}.json","w") {|f| f << markers.to_json }
       end
     end
 
