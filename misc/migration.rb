@@ -122,7 +122,6 @@ def check_it_conflicts
           ct.save!
         rescue => e
           puts e
-          break
         end
       end
     end

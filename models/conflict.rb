@@ -118,7 +118,11 @@ class Conflict < ActiveRecord::Base
   end
 
   def get_local_text attr, locale=I18n.locale
-    self.conflict_texts.where(:locale=>locale)[0].attributes[attr]
+    begin
+      self.conflict_texts.where(:locale=>locale)[0].attributes[attr]
+    rescue
+      self.conflict_texts[0].attributes[attr]
+    end
   end
 
   def set_local_text attr, val, locale=I18n.locale
@@ -169,7 +173,7 @@ class Conflict < ActiveRecord::Base
     lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 180
     lon = 0; 
     lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 90
-    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr}
+    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr,:l=>self.conflict_texts.map(&:locale).join("-")}
   end
 
   def accurate_marker
@@ -178,7 +182,7 @@ class Conflict < ActiveRecord::Base
     lat = self.lat.to_f if self.lat and self.lat.to_f.abs <= 180
     lon = 0; 
     lon = self.lon.to_f if self.lon and self.lon.to_f.abs <= 180
-    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr}.to_json
+    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr,:l=>self.conflict_texts.map(&:locale).join("-")}.to_json
   end
 
   def get_start_date
@@ -913,14 +917,10 @@ class ConflictText < ActiveRecord::Base
   validates_each :conflict_id, :locale do |record, attr, value|
     unless value
       record.errors.add(attr, "#{attr} must be present!") 
-      return false
     end
     if ConflictText.where(:conflict_id=>record.conflict_id,:locale=>record.locale).any?
-      p record.attributes.values[0..5]
       record.errors.add(attr, "Already exists!") 
-      return false
     end
-    true
   end
 
   belongs_to :conflict

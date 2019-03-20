@@ -107,7 +107,7 @@ Admin.controller do
   end
 
   get :index do
-    ca = Cached.first
+    ca = Cached.where(:locale=>I18n.locale).first
     #last_modified ca.updated_at
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
