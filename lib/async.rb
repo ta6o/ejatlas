@@ -627,7 +627,7 @@ class AsyncTask
       countries = []
       puts "Updating countries..."
       #Region.all.each {|c| countries << [c.jsonize,c.conflicts_count] if c.conflicts_count > 1; c.save}
-      ConflictText.where(:locale=>locale).map{|ct|ct.conflict.country}.flatten.uniq.each do |c| 
+      (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.country}.flatten.uniq - [nil]).each do |c| 
         countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1
         c.save
         client.index index: "atlas_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
@@ -640,7 +640,7 @@ class AsyncTask
     if params["companies"] == "on"
       companies = []
       puts "Updating companies..."
-      ConflictText.where(:locale=>locale).map{|ct|ct.conflict.companies}.flatten.uniq.each do |c| 
+      (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.companies}.flatten.uniq - [nil]).each do |c| 
         companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1
         c.save
         client.index index: "atlas_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
@@ -653,7 +653,7 @@ class AsyncTask
     if params["ifis"] == "on"
       supporters = []
       puts "Updating IFI's..."
-      ConflictText.where(:locale=>locale).map{|ct|ct.conflict.supporters}.flatten.uniq.each do |c| 
+      (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.supporters}.flatten.uniq - [nil]).each do |c| 
         supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1
         c.save
         client.index index: "atlas_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
@@ -666,7 +666,7 @@ class AsyncTask
     if params["commodities"] == "on"
       commodities = []
       puts "Updating commodities..."
-      ConflictText.where(:locale=>locale).map{|ct|ct.conflict.products}.flatten.uniq.each do |c| 
+      (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.products}.flatten.uniq - [nil]).each do |c| 
         commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"
         c.save
       end
@@ -678,7 +678,13 @@ class AsyncTask
     if params["categories"] == "on"
       types = []
       puts "Updating categories..."
-      Type.all.includes(:conflicts).each {|c| types << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"; c.save}
+      Type.all.each do |t|
+        cs = t.conflicts.where(approval_status: 'approved').conflict_texts.where(:locale=>locale)[0] - [nil]
+        if cs.length >= 1 and t.name != "Other"
+          types << [t.jsonize,cs.count] 
+        end
+        c.save
+      end
       types.sort_by! {|c| c[1]}
       types.reverse!
       ca.types = types.to_json
