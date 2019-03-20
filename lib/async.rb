@@ -678,7 +678,7 @@ class AsyncTask
     if params["categories"] == "on"
       types = []
       puts "Updating categories..."
-      Type.all.each do |t|
+      Type.all.includes(:conflicts).each do |t|
         cs = t.conflicts.where(approval_status: 'approved').conflict_texts.where(:locale=>locale)[0] - [nil]
         if cs.length >= 1 and t.name != "Other"
           types << [t.jsonize,cs.count] 

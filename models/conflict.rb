@@ -443,7 +443,6 @@ class Conflict < ActiveRecord::Base
     c = self
     v = self
     loc = options["locale"] || I18n.locale
-    p loc
 
     others = {
       "products" => [57,v.other_products,'commodity'],
