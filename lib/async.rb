@@ -604,7 +604,7 @@ class AsyncTask
             c.save
             times[:save] += Time.now - tc
             tc = Time.now
-            client.index index: "index_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
+            client.index index: "atlas_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
             times[:index] += Time.now - tc
             markers << c.as_marker if c.approval_status == "approved"
             print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per case)"
@@ -627,7 +627,7 @@ class AsyncTask
       Country.includes(:conflicts).each do |c| 
         countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1
         c.save
-        client.index index: "index_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: "atlas_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
       end
       countries.sort_by! {|c| c[1]}
       countries.reverse!
@@ -640,7 +640,7 @@ class AsyncTask
       Company.includes(:conflicts).each do |c|
         companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1
         c.save
-        client.index index: "index_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: "atlas_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
       end
       companies.sort_by! {|c| c[1]}
       companies.reverse!
@@ -653,7 +653,7 @@ class AsyncTask
       Supporter.includes(:conflicts).each do |c|
         supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1
         c.save
-        client.index index: "index_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: "atlas_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
       end
       supporters.sort_by! {|c| c[1]}
       supporters.reverse!
@@ -751,8 +751,8 @@ class AsyncTask
 
     if params["filter"] == "on"
       puts "Updating filter..."
-      Tag.all.each {|c| client.index index: "index_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
-      Account.where(public:true).each {|c| client.index index: "index_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}}
+      Tag.all.each {|c| client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
+      Account.where(public:true).each {|c| client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}}
       filterdata = {}
 
       filterdata["basic_data"] = {}

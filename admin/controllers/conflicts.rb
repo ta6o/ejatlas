@@ -305,9 +305,10 @@ Admin.controllers :conflicts do
     if current_account
       @conflict = Conflict.find(params[:id])
       if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id)
-        @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
-        @lat = @conflict.lat == "" ? nil : @conflict.lat
-        @lon = @conflict.lon == "" ? nil : @conflict.lon
+        rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
+        @cjson = rels.map {|ct| {:id=>ct.conflict_id,:value=>ct.name}}.to_json
+        @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
+        @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
         @saves = []
         CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
           @saves << row if row[2] == @conflict.id.to_s
@@ -420,7 +421,7 @@ Admin.controllers :conflicts do
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
     oldstat = @conflict.approval_status
-    sameslug = Conflict.where(:slug=>params["conflict"]["slug"]).map(&:id) - [params["id"].to_i]
+    sameslug = ConflictText.where(:slug=>params["conflict"]["slug"]).map(&:conflict_id) - [params["id"].to_i]
     if sameslug.any?
       return {:status=>"error",:errors=>["Name on address bar has been taken by conflict ##{sameslug.first}"]}.to_json 
     end
@@ -532,6 +533,7 @@ Admin.controllers :conflicts do
       end
 
       general = false
+      puts
       updated['conflict'].each do |k,v|
         if k == 'name' and v.match(/"/)
           quotes = ["“","","”"]
@@ -544,12 +546,26 @@ Admin.controllers :conflicts do
           general = true
           next
         end
-        unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
-          begin
-            @conflict.update_attribute k, v 
-          rescue => e
-            p e.methods
-            return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
+        if @conflict.attributes.has_key?(k) or @conflict.attributes.has_key?("#{k}_id") or k.match(/_id$/)
+          unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
+            begin
+              @conflict.update_attribute k, v 
+            rescue => e
+              p e.methods
+              return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
+            end
+          end
+        else
+          puts k
+          ct = @conflict.local_data
+          unless ct.attributes[k] == v
+            begin
+              ct.update_attribute k, v 
+            rescue => e
+              puts e
+              puts e.backtrace
+              return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
+            end
           end
         end
       end
@@ -570,7 +586,7 @@ Admin.controllers :conflicts do
         if @conflict.save :validate=>false
           flash[:notice] = 'Conflict was successfully created.'
           if ['admin','editor'].include?(current_account.role)
-            $client.index index: 'atlas', type: 'conflict', id: @conflict.id, body: @conflict.elastic
+            $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
           end
 
           if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
@@ -584,6 +600,7 @@ Admin.controllers :conflicts do
           response = {:status=>"success"}
         end
       rescue => e
+        puts e.backtrace
         return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[e.message]}.to_json]]
       end
     else

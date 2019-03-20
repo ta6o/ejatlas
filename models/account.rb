@@ -42,7 +42,7 @@ class Account < ActiveRecord::Base
   end
 
   def index
-    $client.index index: 'staging', type: 'account', id: self.id, body:{:id=>self.id, :name=>self.name}
+    $client.index index: 'atlas_en', type: 'account', id: self.id, body:{:id=>self.id, :name=>self.name}
   end
 
   private

@@ -113,6 +113,10 @@ class Conflict < ActiveRecord::Base
     return self.slug
   end
 
+  def local_data
+    self.conflict_texts.where(:locale=>I18n.locale).first
+  end
+
   def get_local_text attr, locale=I18n.locale
     self.conflict_texts.where(:locale=>locale)[0].attributes[attr]
   end
@@ -121,7 +125,7 @@ class Conflict < ActiveRecord::Base
     self.conflict_texts.where(:locale=>locale)[0].attributes[attr] = val
   end
 
-  def ping locale
+  def ping locale=I18n.locale
     ts = []
     t = Time.now
     self.json = self.jsonize(locale)
@@ -244,7 +248,11 @@ class Conflict < ActiveRecord::Base
     return @json.to_json
   end
 
-  def elastic loc
+  def relations
+    self.methods.grep(/^validate_associated_records_for_.*$/).map{|m|m.to_s.split("validate_associated_records_for_")[1]}
+  end
+
+  def elastic loc=I18n.locale
     result = {}
     self.attributes.each do |k,v|
       next if v.nil? or v == "" or ['marker','table','json','notes'].include? k
