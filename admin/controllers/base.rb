@@ -121,7 +121,7 @@ Admin.controller do
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
-    @recent = Conflict.select('id, headline, modified_at, name, slug, commented').where("approval_status = 'approved' AND headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
+    #@recent = Conflict.select('id, headline, modified_at, name, slug, commented').where("approval_status = 'approved' AND headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
     @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("created_at desc").limit(2)
     render "base/map", :layout => @layout
   end
@@ -538,6 +538,9 @@ Admin.controller do
     puts current_account.email
     puts current_account.role
     redirect back unless ["admin","editor"].include? current_account.role
+    Admin.fetch_translations(false) if $tstatus.nil?
+    @tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort
+    @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! @tkeys.include?(x)}
     render 'base/cache', :layout => :application
   end
 

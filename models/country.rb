@@ -64,7 +64,7 @@ class Country < ActiveRecord::Base
 
   def ping
     json, marker, link = [], [], []
-    self.conflicts.order("name asc").where(approval_status: 'approved').each do |c|
+    self.conflicts.where(approval_status: 'approved').order("id asc").each do |c|
       marker << c.marker
       #json << c.json
       link << c.as_button
@@ -76,7 +76,7 @@ class Country < ActiveRecord::Base
     cs, marker, json, link = [], [], [], []
     self.companies.order("name asc").includes(:conflicts).each do |c|
       #next if c.conflicts.count < 2
-      c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
+      c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
         next if cs.include?(cc.id)
         cs << cc.id
         marker << cc.marker
@@ -93,7 +93,7 @@ class Country < ActiveRecord::Base
     cs, marker, json, link = [], [], [], []
     self.supporters.order("name asc").includes(:conflicts).each do |c|
       #next if c.conflicts.count < 2
-      c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
+      c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
         next if cs.include?(cc.id)
         cs << cc.id
         marker << cc.marker
@@ -155,7 +155,7 @@ class Region < ActiveRecord::Base
   def ping
     json, marker, link = [], [], []
     if self.countries.any?
-      self.countries.first.conflicts.order("name asc").where(approval_status: 'approved').each do |c|
+      self.countries.first.where(approval_status: 'approved').conflicts.order("id asc").each do |c|
         marker << c.marker
         json << c.json
         link << c.as_button
@@ -167,7 +167,7 @@ class Region < ActiveRecord::Base
       cs, marker, json, link = [], [], [], []
       self.countries.first.companies.order("name asc").includes(:conflicts).each do |c|
         next if c.conflicts.count < 2
-        c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
+        c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
           next if cs.include?(cc.id)
           cs << cc.id
           marker << cc.marker
@@ -184,7 +184,7 @@ class Region < ActiveRecord::Base
       cs, marker, json, link = [], [], [], []
       self.countries.first.supporters.order("name asc").includes(:conflicts).each do |c|
         next if c.conflicts.count < 2
-        c.conflicts.order("name asc").where(approval_status: 'approved').each do |cc|
+        c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
           next if cs.include?(cc.id)
           cs << cc.id
           marker << cc.marker

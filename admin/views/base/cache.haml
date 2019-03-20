@@ -2,10 +2,9 @@
 .content
   %form{:method=>'POST',:action=>'/cache'}
     .row
-      .col-md-6.col-md-offset-3.clearfix
+      .col-md-3.col-md-offset-3.clearfix
         %h2 Cache update
         %p Check the models you wish to update.
-        %p= "Last updated at #{Cached.first.updated_at.strftime("%d/%m/%Y %H:%M")} (GMT+0)"
         %input{:type=>'checkbox',:name=>'filter',:checked=>true} &nbsp;  Filter
         %br/
         %input{:type=>'checkbox',:name=>'conflicts',:checked=>true} &nbsp;  Conflicts
@@ -27,7 +26,20 @@
         %a{:href=>"#",:onclick=>"deselect()"} Deselect all
         %br/
         %br/
+        %select{:name=>"locale"}
+          -@tkeys.each do |loc|
+            %option{:value=>loc,:selected=>(loc.to_sym === I18n.locale)}= @iso639[loc]
+        %br/
+        %br/
         %input.btn.full.btn-warning{:type=>'submit',:value=>'Update now'}
+        %br/
+        %br/
+        %p
+          Last updated:
+          %ul
+            -@tkeys.each do |loc|
+              -if ca = Cached.where(:locale=>loc).first
+                %li{:style=>"list-style-type:none;"}= "#{@iso639[loc]}: #{ca.updated_at.to_s}"
 
   :javascript
     function deselect() { $('input[type=checkbox]').attr('checked',false); }

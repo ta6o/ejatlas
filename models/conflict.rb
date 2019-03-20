@@ -92,8 +92,8 @@ class Conflict < ActiveRecord::Base
   end
 
   def self.find_slug slug
-    if c = Conflict.where(:slug=>slug.downcase).first
-      return c
+    if c = ConflictText.where(:slug=>slug.downcase).first
+      return c.conflict
     elsif os = OldSlug.where("attachable_type = 'Conflict'").where(:name=>slug.downcase).first
       return os.attachable
     else
@@ -113,10 +113,26 @@ class Conflict < ActiveRecord::Base
     return self.slug
   end
 
-  def ping
-    self.json = self.jsonize
-    self.marker = self.as_marker
-    self.table = self.as_table
+  def get_local_text attr, locale=I18n.locale
+    self.conflict_texts.where(:locale=>locale)[0].attributes[attr]
+  end
+
+  def set_local_text attr, val, locale=I18n.locale
+    self.conflict_texts.where(:locale=>locale)[0].attributes[attr] = val
+  end
+
+  def ping locale
+    ts = []
+    t = Time.now
+    self.json = self.jsonize(locale)
+    ts << Time.now - t
+    t = Time.now
+    self.marker = self.as_marker.to_json
+    ts << Time.now - t
+    t = Time.now
+    self.table = self.as_table(:locale=>locale)
+    ts << Time.now - t
+    ts
   end
 
 =begin
@@ -148,8 +164,8 @@ class Conflict < ActiveRecord::Base
     lat = 0; 
     lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 180
     lon = 0; 
-    lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 180
-    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr}.to_json
+    lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 90
+    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr}
   end
 
   def accurate_marker
@@ -183,7 +199,7 @@ class Conflict < ActiveRecord::Base
     end
   end
 
-  def jsonize
+  def jsonize locale
     c = self
     v = self
 
@@ -228,7 +244,7 @@ class Conflict < ActiveRecord::Base
     return @json.to_json
   end
 
-  def elastic
+  def elastic loc
     result = {}
     self.attributes.each do |k,v|
       next if v.nil? or v == "" or ['marker','table','json','notes'].include? k
@@ -414,6 +430,7 @@ class Conflict < ActiveRecord::Base
   def as_table(options={})
     c = self
     v = self
+    loc = options["locale"] || I18n.locale
 
     others = {
       "products" => [57,v.other_products,'commodity'],
@@ -424,7 +441,7 @@ class Conflict < ActiveRecord::Base
 
     tab = ''
 
-    self.structure.each do |val|
+    self.structure(loc).each do |val|
       ta = ''
       val[2].each do |va|
         case va[0]
@@ -589,14 +606,14 @@ class Conflict < ActiveRecord::Base
     return tab.gsub(/\r\n/,'<br />').gsub('\n','<br />')
   end
 
-  def structure
+  def structure loc
     [
 
-      ['Description', '1', [
+      [I18n.t('f.conflict.description',:locale=>loc), '1', [
         [:mini, 'c' ,'description', ''],
       ]],
 
-      ['Basic Data', '1', [
+      [I18n.t('f.conflict.basic_data',:locale=>loc), '1', [
         [:flat, 'c' ,'name', 'Name'],
         [:link, 'v', 'country', 'country', 'Country'],
         [:flat, 'c' ,'province', 'Province'],
@@ -604,13 +621,13 @@ class Conflict < ActiveRecord::Base
         [:arra, 'v' ,'accuracy_level', ['','LOW country/state level','MEDIUM regional level','HIGH local level'], 'Accuracy of Location'],
       ]],
 
-      ['Source of Conflict', '1', [
+      [I18n.t('f.conflict.source_of_conflict',:locale=>loc), '1', [
         [:name, 'v', 'category', 'Type of Conflict (1st level)'],
         [:many, 'types', 'Type of Conflict (2nd level)'],
         [:mlnk, 'products', 'Specific Commodities'],
       ]],
 
-      ['Project Details and Actors', '10', [
+      [I18n.t('f.conflict.project_details_sctors',:locale=>loc), '10', [
         [:mini, 'v' ,'project_details', 'Project Details'],
         [:flat, 'c' ,'project_area', 'Project Area (in hectares)'],
         [:flat, 'v' ,'investment_string', 'Level of Investment (in USD)'],
@@ -624,14 +641,14 @@ class Conflict < ActiveRecord::Base
         [:flat, 'c', 'ejos', 'Environmental justice organisations and other supporters'],
       ]],
 
-      ['The Conflict and the Mobilization', '2', [
+      [I18n.t('f.conflict.conflict_and_mobilization',:locale=>loc), '2', [
         [:arra, 'v' ,'status_id', ['',"UNKNOWN","LATENT (no visible organising at the moment)","LOW (some local organising)","MEDIUM (street protests, visible mobilization)","HIGH (widespread, mass mobilization, violence, arrests, etc...)"], 'Intensity of Conflict (at highest level)'],
         [:arra, 'c' ,'reaction_id', ['',"UNKNOWN","LATENT (no visible resistance)","PREVENTIVE resistance (precautionary phase)","In REACTION to the implementation (during construction or operation)","Mobilization for reparations once impacts have been felt"], 'When did the mobilization begin'],
         [:many, 'mobilizing_groups', 'Groups Mobilizing'],
         [:many, 'mobilizing_forms', 'Forms of Mobilization'],
       ]],
 
-      ['Impacts', '10', [
+      [I18n.t('f.conflict.impacts',:locale=>loc), '10', [
         [:impc, 'env', 'Environmental Impacts'],
         [:flat, 'v' ,'other_env_impacts', 'Other'],
         [:impc, 'hlt', 'Health Impacts'],
@@ -640,7 +657,7 @@ class Conflict < ActiveRecord::Base
         [:flat, 'v' ,'other_sec_impacts', 'Other'],
       ]],
 
-      ['Outcome', '10', [
+      [I18n.t('f.conflict.outcome',:locale=>loc), '10', [
         [:name, 'v', 'project_status', 'Project Status'],
         [:many, 'conflict_events', 'Pathways for conflict outcome / response'],
         [:flat, 'v' ,'suggested_alternatives', 'Development of Alternatives'],
@@ -648,7 +665,7 @@ class Conflict < ActiveRecord::Base
         [:flat, 'v' ,'success_reason', 'Why? Explain briefly.'],
       ]],
 
-      ['Sources and Materials', '3', [
+      [I18n.t('f.conflict.sources_and_materials',:locale=>loc), '3', [
         [:refs, 'legislations', 'Legislations'],
         [:refs, 'references', 'References'],
         [:refs, 'weblinks', 'Links'],
@@ -657,10 +674,221 @@ class Conflict < ActiveRecord::Base
         [:flat, 'v' ,'other_comments', 'Other Comments'],
       ]],
 
-      ['Meta Information', '8', [
+      [I18n.t('f.conflict.meta_information',:locale=>loc), '8', [
         [:flat, 'c', 'contributor', 'Contributor'],
         [:date, 'c', 'modified_at', 'Last update'],
       ]]]
+  end
+
+
+  def name locale=I18n.locale
+    self.get_local_text("name",locale.to_s)
+  end
+  def name= val, locale=I18n.locale
+    self.set_local_text("name",val,locale.to_s)
+  end
+
+  def slug locale=I18n.locale
+    self.get_local_text("slug",locale.to_s)
+  end
+  def slug= val, locale=I18n.locale
+    self.set_local_text("slug",val,locale.to_s)
+  end
+
+  def site locale=I18n.locale
+    self.get_local_text("site",locale.to_s)
+  end
+  def site= val, locale=I18n.locale
+    self.set_local_text("site",val,locale.to_s)
+  end
+
+  def province locale=I18n.locale
+    self.get_local_text("province",locale.to_s)
+  end
+  def province= val, locale=I18n.locale
+    self.set_local_text("province",val,locale.to_s)
+  end
+
+  def project_area locale=I18n.locale
+    self.get_local_text("project_area",locale.to_s)
+  end
+  def project_area= val, locale=I18n.locale
+    self.set_local_text("project_area",val,locale.to_s)
+  end
+
+  def project_length locale=I18n.locale
+    self.get_local_text("project_length",locale.to_s)
+  end
+  def project_length= val, locale=I18n.locale
+    self.set_local_text("project_length",val,locale.to_s)
+  end
+
+  def other_types locale=I18n.locale
+    self.get_local_text("other_types",locale.to_s)
+  end
+  def other_types= val, locale=I18n.locale
+    self.set_local_text("other_types",val,locale.to_s)
+  end
+
+  def description locale=I18n.locale
+    self.get_local_text("description",locale.to_s)
+  end
+  def description= val, locale=I18n.locale
+    self.set_local_text("description",val,locale.to_s)
+  end
+
+  def other_products locale=I18n.locale
+    self.get_local_text("other_products",locale.to_s)
+  end
+  def other_products= val, locale=I18n.locale
+    self.set_local_text("other_products",val,locale.to_s)
+  end
+
+  def project_details locale=I18n.locale
+    self.get_local_text("project_details",locale.to_s)
+  end
+  def project_details= val, locale=I18n.locale
+    self.set_local_text("project_details",val,locale.to_s)
+  end
+
+  def investment_string locale=I18n.locale
+    self.get_local_text("investment_string",locale.to_s)
+  end
+  def investment_string= val, locale=I18n.locale
+    self.set_local_text("investment_string",val,locale.to_s)
+  end
+
+  def affected_people locale=I18n.locale
+    self.get_local_text("affected_people",locale.to_s)
+  end
+  def affected_people= val, locale=I18n.locale
+    self.set_local_text("affected_people",val,locale.to_s)
+  end
+
+  def other_supporters locale=I18n.locale
+    self.get_local_text("other_supporters",locale.to_s)
+  end
+  def other_supporters= val, locale=I18n.locale
+    self.set_local_text("other_supporters",val,locale.to_s)
+  end
+
+  def related_conflict_string locale=I18n.locale
+    self.get_local_text("related_conflict_string",locale.to_s)
+  end
+  def related_conflict_string= val, locale=I18n.locale
+    self.set_local_text("related_conflict_string",val,locale.to_s)
+  end
+
+  def start_date locale=I18n.locale
+    self.get_local_text("start_date",locale.to_s)
+  end
+  def start_date= val, locale=I18n.locale
+    self.set_local_text("start_date",val,locale.to_s)
+  end
+
+  def end_date locale=I18n.locale
+    self.get_local_text("end_date",locale.to_s)
+  end
+  def end_date= val, locale=I18n.locale
+    self.set_local_text("end_date",val,locale.to_s)
+  end
+
+  def other_mobilizing_groups locale=I18n.locale
+    self.get_local_text("other_mobilizing_groups",locale.to_s)
+  end
+  def other_mobilizing_groups= val, locale=I18n.locale
+    self.set_local_text("other_mobilizing_groups",val,locale.to_s)
+  end
+
+  def other_mobilizing_forms locale=I18n.locale
+    self.get_local_text("other_mobilizing_forms",locale.to_s)
+  end
+  def other_mobilizing_forms= val, locale=I18n.locale
+    self.set_local_text("other_mobilizing_forms",val,locale.to_s)
+  end
+
+  def other_env_impacts locale=I18n.locale
+    self.get_local_text("other_env_impacts",locale.to_s)
+  end
+  def other_env_impacts= val, locale=I18n.locale
+    self.set_local_text("other_env_impacts",val,locale.to_s)
+  end
+
+  def other_hlt_impacts locale=I18n.locale
+    self.get_local_text("other_hlt_impacts",locale.to_s)
+  end
+  def other_hlt_impacts= val, locale=I18n.locale
+    self.set_local_text("other_hlt_impacts",val,locale.to_s)
+  end
+
+  def other_sec_impacts locale=I18n.locale
+    self.get_local_text("other_sec_impacts",locale.to_s)
+  end
+  def other_sec_impacts= val, locale=I18n.locale
+    self.set_local_text("other_sec_impacts",val,locale.to_s)
+  end
+
+  def other_outcomes locale=I18n.locale
+    self.get_local_text("other_outcomes",locale.to_s)
+  end
+  def other_outcomes= val, locale=I18n.locale
+    self.set_local_text("other_outcomes",val,locale.to_s)
+  end
+
+  def suggested_alternatives locale=I18n.locale
+    self.get_local_text("suggested_alternatives",locale.to_s)
+  end
+  def suggested_alternatives= val, locale=I18n.locale
+    self.set_local_text("suggested_alternatives",val,locale.to_s)
+  end
+
+  def success_reason locale=I18n.locale
+    self.get_local_text("success_reason",locale.to_s)
+  end
+  def success_reason= val, locale=I18n.locale
+    self.set_local_text("success_reason",val,locale.to_s)
+  end
+
+  def other_comments locale=I18n.locale
+    self.get_local_text("other_comments",locale.to_s)
+  end
+  def other_comments= val, locale=I18n.locale
+    self.set_local_text("other_comments",val,locale.to_s)
+  end
+
+  def table locale=I18n.locale
+    self.get_local_text("table",locale.to_s)
+  end
+  def table= val, locale=I18n.locale
+    self.set_local_text("table",val,locale.to_s)
+  end
+
+  def ejos locale=I18n.locale
+    self.get_local_text("ejos",locale.to_s)
+  end
+  def ejos= val, locale=I18n.locale
+    self.set_local_text("ejos",val,locale.to_s)
+  end
+
+  def govt_actors locale=I18n.locale
+    self.get_local_text("govt_actors",locale.to_s)
+  end
+  def govt_actors= val, locale=I18n.locale
+    self.set_local_text("govt_actors",val,locale.to_s)
+  end
+
+  def features locale=I18n.locale
+    self.get_local_text("features",locale.to_s)
+  end
+  def features= val, locale=I18n.locale
+    self.set_local_text("features",val,locale.to_s)
+  end
+
+  def headline locale=I18n.locale
+    self.get_local_text("headline",locale.to_s)
+  end
+  def headline= val, locale=I18n.locale
+    self.set_local_text("headline",val,locale.to_s)
   end
 
   private
@@ -669,22 +897,29 @@ class Conflict < ActiveRecord::Base
 
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
-=begin
-    if self.general and self.country and self.country.capital and self.country.capital.length > 0
-      capital = self.country.capital.gsub(',','.').split("|")
-      self.lat = capital[1]
-      self.lon = capital[2]
-    end
-=end
-    #puts "#{self.id} saved #{self.changed_attributes}"
-    #ping
   end
 
 end
 
 class ConflictText < ActiveRecord::Base
+  validates_each :conflict_id, :locale do |record, attr, value|
+    unless value
+      record.errors.add(attr, "#{attr} must be present!") 
+      return false
+    end
+    if ConflictText.where(:conflict_id=>record.conflict_id,:locale=>record.locale).any?
+      p record.attributes.values[0..5]
+      record.errors.add(attr, "Already exists!") 
+      return false
+    end
+    true
+  end
+
   belongs_to :conflict
-  validates_uniqueness_of :conflict_id, :scope => :locale
+
+  def inspect
+    puts "##{self.conflict_id.to_s.rjust(4,"0")}-#{self.locale}-#{self.id}: #{self.name} (#{(self.attributes.values-[nil]).length}/#{self.attributes.length})"
+  end
 end
 
 class ConflictRelation < ActiveRecord::Base
@@ -704,4 +939,3 @@ class ConflictRelation < ActiveRecord::Base
     return nil
   end
 end
-

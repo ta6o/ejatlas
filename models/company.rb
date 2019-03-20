@@ -34,7 +34,7 @@ class Company < ActiveRecord::Base
 
   def ping
     json, marker, link = [], [], []
-    self.conflicts.order("name asc").where(approval_status: 'approved').each do |c|
+    self.conflicts.where(approval_status: 'approved').order("id asc").each do |c|
       #json << c.json
       marker << c.marker
       link << c.as_button

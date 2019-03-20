@@ -42,34 +42,92 @@ def parse_columns str
 end
 
 def migrate_to_i18n
+=begin
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
+  drop_table :conflict_texts
   create_table :conflict_texts
   add_column_to_table :conflict_texts, cols
   tot = Conflict.count
   Conflict.all.order(:id).each_with_index do |con,ind|
-    #print("\r#{ind+1} / #{tot}: #{con.name}")
-    puts con.id
+    print("\r#{ind+1} / #{tot}: #{con.name}")
     ct = ConflictText.new
-    ct.conflict_id = con.id
-    ct.locale = "en"
     begin
+      ct.update_attribute :conflict_id, con.id
+      ct.update_attribute :locale, "en"
+      cols.each do |attr, type|
+        next if ["conflict_id","locale"].include?(attr)
+        eval "ct.#{attr} = con.attributes[attr]"
+      end
       ct.save!
     rescue => e
-      puts "1: #{con.id}"
-      puts e
-      break
-    end
-    cols.each do |attr, type|
-      eval "ct.#{attr} = con.attributes[attr]"
-    end
-    begin
-      ct.save!
-    rescue => e
-      puts "2: #{con.id}"
+      puts
+      puts "id: #{ct.id}, "
       puts e
       break
     end
   end
+  drop_column_from_table :conflicts, cols
   true
+=end
+  add_column_to_table :cacheds, {:locale=>"varchar(3)"}
 end
+
+def produce_conflict_getter_methods
+  rb = ""
+  rb += "\n"
+  parse_columns(File.read("#{Dir.pwd}/misc/migrate.txt")).each do |attr,type|
+    rb += "  def #{attr} locale=I18n.locale\n"
+    rb += "    self.get_local_text(\"#{attr}\",locale.to_s)\n"
+    rb += "  end\n"
+    rb += "  def #{attr}= val, locale=I18n.locale\n"
+    rb += "    self.set_local_text(\"#{attr}\",val,locale.to_s)\n"
+    rb += "  end\n"
+    rb += "\n"
+  end
+  rb
+end
+
+$ejit = {
+  :adapter  => 'postgresql',
+  :encoding => 'utf8',
+  :host => '127.0.0.1',
+  :port => '5432',
+  :user => "yakup",
+  :password => "***REMOVED***",
+  :database => 'ejit',
+}
+
+class ItConflict < ActiveRecord::Base
+  establish_connection $ejit
+end
+
+
+def check_it_conflicts
+  cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
+  File.readlines("../it_cases.txt").each do |line|
+    line = line.split(" - ")
+    p line
+    if it = ItConflict.find_by_slug(line[0].slug)
+      if en = Conflict.find_slug(line[1].slug)
+        puts "it: #{it.id}, en: #{en.id}"
+        begin
+          ct = ConflictText.new
+          ct.locale = "it"
+          ct.conflict_id = en.id
+          cols.each do |attr, type|
+            next if ["conflict_id","locale"].include?(attr)
+            eval "ct.#{attr} = it.attributes[attr]"
+          end
+          pp ct.attributes.values[0..5]
+          ct.save!
+        rescue => e
+          puts e
+          break
+        end
+      end
+    end
+  end
+  nil
+end
+
 

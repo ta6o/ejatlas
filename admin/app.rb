@@ -549,10 +549,11 @@ class Admin < Padrino::Application
 
   I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
   I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
+
   begin
     I18n.backend.load_translations
   rescue
-    Admin.fetch_translations(false)
+    Admin.fetch_translations false
     I18n.backend.load_translations
   end
 

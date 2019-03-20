@@ -577,34 +577,46 @@ class AsyncTask
 
   def setcache params
     puts "Starting cache update;"
-    ca = Cached.new unless ca = Cached.first
+    locale = params.delete("locale")
+    ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
     client = Elasticsearch::Client.new log: false
 
     if params["conflicts"] == "on"
+      markers = []
       puts "Updating conflicts..."
       Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
       FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
       Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
-      total = Conflict.count / 64.0
-      counter = 0
-      Conflict.find_in_batches(batch_size: 64) do |batch|
-        print "\r #{(counter/total*100).to_i}% done."
-        counter += 1
-        batch.each do |c|
-          c.ping
-          c.save
-          client.index index: 'staging', type: 'conflict', id: c.id, body: c.elastic
-          if c.approval_status == "approved"
-            open("#{PADRINO_ROOT}/tmp/cache/markers.json","a") {|f| f.puts(c.marker.to_json) }
-            #open("#{PADRINO_ROOT}/tmp/cache/jsons.json","a") {|f| f.puts (c.json.to_json) }
+      total = ConflictText.where(:locale=>locale).count
+      if total > 0
+        counter = 0
+        t0 = Time.now
+        times = {:ping => [0,0,0], :save => 0, :index => 0}
+        ConflictText.where(:locale=>locale).find_in_batches(batch_size: 64) do |batch|
+          batch.each do |ct|
+            c = ct.conflict
+            counter += 1
+            tc = c.ping(locale)
+            times[:ping][0] += tc[0]
+            times[:ping][1] += tc[1]
+            times[:ping][2] += tc[2]
+            tc = Time.now
+            c.save
+            times[:save] += Time.now - tc
+            tc = Time.now
+            client.index index: "index_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
+            times[:index] += Time.now - tc
+            markers << c.as_marker if c.approval_status == "approved"
+            print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per case)"
           end
+          break
         end
+        puts
+        pp times
+        puts
+        ca.conflicts_marker = markers.to_json
+        File.open("#{PADRINO_ROOT}/public/data/markers.json","w") {|f| f << markers.to_json }
       end
-      print "\r              "
-      puts
-      ca.conflicts_marker = "["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",")+"]"
-      ca.conflicts_json = ""#"["+File.read("#{PADRINO_ROOT}/tmp/cache/jsons.json").gsub("\n",",")+"]"
-      open("#{PADRINO_ROOT}/public/data/markers.json","w") {|f| f.puts("["+File.read("#{PADRINO_ROOT}/tmp/cache/markers.json").gsub("\n",",").gsub(/","/,",").gsub('\\"', '"').sub('"','').sub(/",$/,"")+"]")}
     end
 
 
@@ -615,7 +627,7 @@ class AsyncTask
       Country.includes(:conflicts).each do |c| 
         countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1
         c.save
-        client.index index: 'staging', type: 'country', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: "index_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
       end
       countries.sort_by! {|c| c[1]}
       countries.reverse!
@@ -628,7 +640,7 @@ class AsyncTask
       Company.includes(:conflicts).each do |c|
         companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1
         c.save
-        client.index index: 'staging', type: 'company', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: "index_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
       end
       companies.sort_by! {|c| c[1]}
       companies.reverse!
@@ -641,7 +653,7 @@ class AsyncTask
       Supporter.includes(:conflicts).each do |c|
         supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1
         c.save
-        client.index index: 'staging', type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: "index_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
       end
       supporters.sort_by! {|c| c[1]}
       supporters.reverse!
@@ -670,7 +682,8 @@ class AsyncTask
       #types = []
       puts "Updating featureds..."
       fids = Featured.all.map &:id
-      Conflict.where('features is not null').each do |c|
+      ConflictText.where('features is not null').each do |ct|
+        c = ct.conflict
         f = JSON.parse(c.features)
         f.each do |k,v|
           id = k.split(':')[0]
@@ -738,8 +751,8 @@ class AsyncTask
 
     if params["filter"] == "on"
       puts "Updating filter..."
-      Tag.all.each {|c| client.index index: 'staging', type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
-      Account.where(public:true).each {|c| client.index index: 'staging', type: 'account', id: c.id, body: {id:c.id,name:c.name}}
+      Tag.all.each {|c| client.index index: "index_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
+      Account.where(public:true).each {|c| client.index index: "index_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}}
       filterdata = {}
 
       filterdata["basic_data"] = {}
