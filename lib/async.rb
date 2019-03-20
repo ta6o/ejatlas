@@ -613,7 +613,6 @@ class AsyncTask
             markers << c.as_marker if c.approval_status == "approved"
             print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per case)"
           end
-          break
         end
         puts
         pp times
