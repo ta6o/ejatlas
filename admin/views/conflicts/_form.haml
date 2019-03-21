@@ -1433,9 +1433,15 @@
 
           .group
             =f.label t("f.conflict.contributor")
-            .required=f.error_message_on :notes
+            .required=f.error_message_on :contributor
             %p.description=t("f.conflict.fill_in_your_name_organization")
             =f.text_field :contributor, :class => 'text_field basic_input'
+
+          .group
+            =f.label t("f.conflict.translator")
+            .required=f.error_message_on :translator
+            %p.description=t("f.conflict.fill_in_your_name_organization")
+            =f.text_field :translator, :class => 'text_field basic_input'
 
           .group
             %br/
@@ -1713,7 +1719,7 @@
   :javascript
 
     tfields = [];
-    texts = "name, slug, site, province, project_area, project_length, other_types, description, other_products, project_details, investment_string, affected_people, other_supporters, related_conflict_string, other_mobilizing_groups, other_mobilizing_forms, other_env_impacts, other_hlt_impacts, other_sec_impacts, other_outcomes, suggested_alternatives, success_reason, other_comments, table, ejos, govt_actors, features, headline".split(/\s*,\s*/);
+    texts = "name, slug, site, province, project_area, project_length, other_types, description, other_products, project_details, investment_string, affected_people, other_supporters, related_conflict_string, other_mobilizing_groups, other_mobilizing_forms, other_env_impacts, other_hlt_impacts, other_sec_impacts, other_outcomes, suggested_alternatives, success_reason, other_comments, table, ejos, govt_actors, features, headline, notes".split(/\s*,\s*/);
     $.each (texts,function(i,e){
       c = $("#conflict_"+e);
       if(c.length == 0){

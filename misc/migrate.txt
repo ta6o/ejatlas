@@ -28,3 +28,4 @@ text       ejos
 text       govt_actors
 text       features
 string     headline
+string     translator

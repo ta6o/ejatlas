@@ -67,6 +67,7 @@ def migrate_to_i18n
     end
   end
   drop_column_from_table :conflicts, cols
+  add_column_to_table :conflicts, {:headline_exists=>"boolean"}
   add_column_to_table :cacheds, {:locale=>"varchar(3)"}
 =end
   drop_table :roles

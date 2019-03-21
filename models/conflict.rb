@@ -903,6 +903,13 @@ class Conflict < ActiveRecord::Base
     self.set_local_text("headline",val,locale.to_s)
   end
 
+  def translator locale=I18n.locale
+    self.get_local_text("translator",locale.to_s)
+  end
+  def translator= val, locale=I18n.locale
+    self.set_local_text("translator",val,locale.to_s)
+  end
+
   private
   def delete_index
   end
