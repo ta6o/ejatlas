@@ -67,9 +67,17 @@ def migrate_to_i18n
     end
   end
   drop_column_from_table :conflicts, cols
-  true
-=end
   add_column_to_table :cacheds, {:locale=>"varchar(3)"}
+=end
+  drop_table :roles
+  create_table :roles
+  add_column_to_table :roles, {:name=>"varchar(32)",:description=>"varchar(255)"}
+  drop_table :account_roles
+  create_table :account_roles
+  add_column_to_table :account_roles, {:account_id=>"integer",:role_id=>"integer"}
+  Role.create(:name=>"gis")
+  $tstatus.values.map(&:keys).flatten.uniq.sort.each {|k| Role.create(:name=>"translator_#{k}")}
+  true
 end
 
 def produce_conflict_getter_methods

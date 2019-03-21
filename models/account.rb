@@ -1,6 +1,8 @@
 class Account < ActiveRecord::Base
   attr_accessor :password, :password_confirmation
 
+  has_many :account_roles
+  has_many :roles, :through => :account_roles
   has_many :conflicts
   has_many :conflict_accounts
   has_many :conflict_messages
@@ -53,6 +55,16 @@ class Account < ActiveRecord::Base
     def password_required
       crypted_password.blank? || password.present?
     end
+end
+
+class Role < ActiveRecord::Base
+  has_many :account_roles
+  has_many :accounts, :through => :account_roles
+end
+
+class AccountRole < ActiveRecord::Base
+  belongs_to :account
+  belongs_to :role
 end
 
 class ConflictAccount < ActiveRecord::Base

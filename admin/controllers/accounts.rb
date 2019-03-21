@@ -70,10 +70,18 @@ Admin.controllers :accounts do
     end
   end
 
+  get "/my-profile" do
+    redirect to "/sessions/login" unless current_account
+    @account = current_account
+    @name = "My Profile"
+    @pass = true
+    render 'accounts/edit'
+  end
+
   get :edit, :with => :id do
     redirect to "/sessions/login" unless current_account
     @account = Account.find(params[:id])
-    @name = "My Profile" if @account == current_account
+    redirect_to "/accounts/my-profile" if @account == current_account
     if ["admin","editor"].include? current_account.role or @account == current_account
       redirect to '/accounts/edit/'+current_account.id.to_s if @account.role == "admin"
       @pass = true
@@ -91,11 +99,22 @@ Admin.controllers :accounts do
     p params
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     #puts params[:account]
-    params[:account].delete 'role' unless ["admin"].include?(current_account.role)
+    #params[:account].delete 'role' unless ["admin"].include?(current_account.role)
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
     if ["admin",'editor'].include? current_account.role or @account == current_account
+      roles = params["account"].delete("roles")
       if @account.update_attributes(params[:account])
         #puts @account.crypted_password
+        roles.each do |name,val|
+          p [name,val]
+          if val == "off" and role = @account.roles.where(:name=>name).first
+            AccountRole.where(:account_id=>@account.id, :role_id => role.id).first.delete
+            p " removed"
+          elsif val == "on" and role = Role.where(:name=>name).first and not @account.roles.where(:name=>name).first
+            AccountRole.create(:account_id=>@account.id, :role_id => role.id)
+            p " added"
+          end
+        end
         if params.has_key? :images_attributes and params['images_attributes'].any?
           images = {}
           params['images_attributes'].each{|i,v| images["n#{i}"] = @account.images[i.to_i]}
@@ -114,8 +133,9 @@ Admin.controllers :accounts do
             img.save
           end
         end
-        return redirect url(:accounts, :index) if ["admin",'editor'].include? current_account.role
-        return redirect url(:conflicts, :index)
+        #return redirect url(:accounts, :index) if ["admin",'editor'].include? current_account.role
+        #return redirect url(:conflicts, :index)
+        return redirect url(:accounts, :edit, @account.id)
       else
         render 'accounts/edit'
       end

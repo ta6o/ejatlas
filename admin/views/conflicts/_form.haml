@@ -1709,3 +1709,23 @@
       })
     })
         
+-if @translate_only
+  :javascript
+
+    tfields = [];
+    texts = "name, slug, site, province, project_area, project_length, other_types, description, other_products, project_details, investment_string, affected_people, other_supporters, related_conflict_string, other_mobilizing_groups, other_mobilizing_forms, other_env_impacts, other_hlt_impacts, other_sec_impacts, other_outcomes, suggested_alternatives, success_reason, other_comments, table, ejos, govt_actors, features, headline".split(/\s*,\s*/);
+    $.each (texts,function(i,e){
+      c = $("#conflict_"+e);
+      if(c.length == 0){
+        c = $("#"+e);
+      }
+      if(c.length > 0){
+        tfields.push(c[0])
+      }
+    });
+    $.each($("#conflict_form input, #conflict_form textarea, #conflict_form select"),function(i,e){
+      if (tfields.indexOf(e) == -1) {
+        $(e).prop("disabled",true)
+      }
+    });
+

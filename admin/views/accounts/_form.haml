@@ -56,12 +56,6 @@
       %input{:type=>'radio', :name=>'account[public]', :value=>'false', :checked => (@account.public ? false : '')} No
       %p.description Show your name and organization info publicly in cases you entered?
 
-    -if current_account and current_account.role == 'admin'
-      .group
-        =f.label :role
-        =f.error_message_on :role
-        =f.select :role, :options => access_control.roles
-
     -unless @account.new_record?
       .group
         %input#n_image.btn.full{'data-toggle'=>'modal','data-target'=>'#m_image',:value=>'Upload Image',:style=>'margin-top:20px;width:100%;'}
@@ -85,6 +79,21 @@
                   %input{:type=>'checkbox',:name=>"images_attributes[#{ind}][_destroy]",:id=>"images_attributes_#{ind}__destroy"}
                   %label{:for=>"images_attributes_#{ind}__destroy"} Delete?
               %br/
+
+    -if current_account and ["admin","editor"].include?(current_account.role)
+      .group
+        =f.label :role
+        =f.error_message_on :role
+        =f.select :role, :options => access_control.roles
+      .group
+        -Role.order(:name).each do |role|
+          %br/
+          %input{:type=>"hidden", :name=>"account[roles][#{role.name}]", :value=>"off"}
+          %input{:type=>"checkbox", :name=>"account[roles][#{role.name}]", :value=>"on", :checked => (@account.roles.include?(role))}= role.name.unslug(:up)
+    -else
+      .group
+        -current_account.roles.each do |role|
+          %p= role.name.unslug
 
   .col-md-4
     .group

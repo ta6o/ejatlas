@@ -314,6 +314,17 @@ Admin.controllers :conflicts do
           @saves << row if row[2] == @conflict.id.to_s
         end
         render 'conflicts/edit'
+      elsif current_account.roles.map(&:name).include?("translator_#{I18n.locale}")
+        @translate_only = true
+        rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
+        @cjson = rels.map {|ct| {:id=>ct.conflict_id,:value=>ct.name}}.to_json
+        @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
+        @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
+        @saves = []
+        CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
+          @saves << row if row[2] == @conflict.id.to_s
+        end
+        render 'conflicts/edit'
       else
         redirect to '/sessions/login'
       end

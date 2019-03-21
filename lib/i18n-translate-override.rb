@@ -38,6 +38,17 @@ class String
       .gsub(/[^\w-]/, '')
       .gsub(/-+/,fill)
   end
+  def unslug lettercase="down"
+    return self if self.nil?
+    lettercase = lettercase.to_s.downcase
+    if lettercase == "title"
+      self.gsub(/[-_\s\/]+/, ' ').titlecase
+    elsif lettercase == "up"
+      self.gsub(/[-_\s\/]+/, ' ').upcase
+    else
+      self.gsub(/[-_\s\/]+/, ' ')
+    end
+  end
   def shorten_en
     words = self.gsub(/%{[^}]+}/,"var").strip.slug.split(/-/)
     ["a","and","of","the"].each{|d| words.delete(d)} if words.length > 3
