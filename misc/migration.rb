@@ -42,34 +42,40 @@ def parse_columns str
 end
 
 def migrate_to_i18n
-=begin
+
+  # translations
+
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
   drop_table :conflict_texts
   create_table :conflict_texts
   add_column_to_table :conflict_texts, cols
   tot = Conflict.count
   Conflict.all.order(:id).each_with_index do |con,ind|
-    print("\r#{ind+1} / #{tot}: #{con.name}")
-    ct = ConflictText.new
+    print("\r#{ind+1} / #{tot}: #{con.id}")
     begin
-      ct.update_attribute :conflict_id, con.id
-      ct.update_attribute :locale, "en"
+      ct = ConflictText.new
+      ct.conflict_id = con.id
+      ct.locale = "en"
       cols.each do |attr, type|
         next if ["conflict_id","locale"].include?(attr)
         eval "ct.#{attr} = con.attributes[attr]"
       end
+      ct.created_at = Time.now
+      ct.modified_at = Time.now
+      ct.updated_at = Time.now
       ct.save!
     rescue => e
       puts
       puts "id: #{ct.id}, "
       puts e
-      break
+      return
     end
   end
-  drop_column_from_table :conflicts, cols
-  add_column_to_table :conflicts, {:headline_exists=>"boolean"}
+  drop_column_from_table :conflicts, cols.reject{|k,v| ["approval_status","created_at","updated_at","modified_at"].include?(k)}
   add_column_to_table :cacheds, {:locale=>"varchar(3)"}
-=end
+
+  # roles
+  
   drop_table :roles
   create_table :roles
   add_column_to_table :roles, {:name=>"varchar(32)",:description=>"varchar(255)"}
@@ -77,7 +83,9 @@ def migrate_to_i18n
   create_table :account_roles
   add_column_to_table :account_roles, {:account_id=>"integer",:role_id=>"integer"}
   Role.create(:name=>"gis")
+  Admin.fetch_translations(false) unless $tstatus
   $tstatus.values.map(&:keys).flatten.uniq.sort.each {|k| Role.create(:name=>"translator_#{k}")}
+
   true
 end
 

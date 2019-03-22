@@ -29,3 +29,7 @@ text       govt_actors
 text       features
 string     headline
 string     translator
+varchar(8) approval_status
+datetime   created_at
+datetime   updated_at
+datetime   modified_at

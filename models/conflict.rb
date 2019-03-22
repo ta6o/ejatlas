@@ -121,7 +121,12 @@ class Conflict < ActiveRecord::Base
     begin
       self.conflict_texts.where(:locale=>locale)[0].attributes[attr]
     rescue
-      self.conflict_texts[0].attributes[attr]
+      cts = self.conflict_texts
+      if cts.any?
+        cts.first.attributes[attr]
+      else
+        nil
+      end
     end
   end
 
