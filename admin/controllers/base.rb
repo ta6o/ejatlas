@@ -547,6 +547,7 @@ Admin.controller do
   post :cache do
     redirect to "/sessions/login?return=cache" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
+    p params
     AsyncTask.new.setcache params
     redirect to 'jobs'
   end

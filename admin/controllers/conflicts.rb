@@ -304,7 +304,8 @@ Admin.controllers :conflicts do
   get :edit, :with => :id do
     if current_account
       @conflict = Conflict.find(params[:id])
-      if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id)
+      roles = current_account.roles.map(&:name)
+      if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or (roles.include?("locale-#{I18n.locale}") and roles.include?("editor"))
         rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
         @cjson = rels.map {|ct| {:id=>ct.conflict_id,:value=>ct.name}}.to_json
         @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
@@ -314,7 +315,7 @@ Admin.controllers :conflicts do
           @saves << row if row[2] == @conflict.id.to_s
         end
         render 'conflicts/edit'
-      elsif current_account.roles.map(&:name).include?("translator_#{I18n.locale}")
+      elsif roles.include?("locale-#{I18n.locale}") and roles.include?("translator")
         @translate_only = true
         rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
         @cjson = rels.map {|ct| {:id=>ct.conflict_id,:value=>ct.name}}.to_json

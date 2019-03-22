@@ -45,6 +45,7 @@ def migrate_to_i18n
 
   # translations
 
+=begin
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
   drop_table :conflict_texts
   create_table :conflict_texts
@@ -73,6 +74,8 @@ def migrate_to_i18n
   end
   drop_column_from_table :conflicts, cols.reject{|k,v| ["approval_status","created_at","updated_at","modified_at"].include?(k)}
   add_column_to_table :cacheds, {:locale=>"varchar(3)"}
+  
+=end
 
   # roles
   
@@ -82,9 +85,19 @@ def migrate_to_i18n
   drop_table :account_roles
   create_table :account_roles
   add_column_to_table :account_roles, {:account_id=>"integer",:role_id=>"integer"}
+  Role.create(:name=>"editor")
+  Role.create(:name=>"translator")
   Role.create(:name=>"gis")
   Admin.fetch_translations(false) unless $tstatus
-  $tstatus.values.map(&:keys).flatten.uniq.sort.each {|k| Role.create(:name=>"translator_#{k}")}
+  tkeys =  $tstatus.values.map(&:keys).flatten.uniq.sort
+  tkeys.each {|k| Role.create(:name=>"locale-#{k}")}
+
+  cacheparams = {"filter"=>"on", "conflicts"=>"on", "countries"=>"on", "companies"=>"on", "ifis"=>"on", "commodities"=>"on", "categories"=>"on", "featureds"=>"on"}
+
+  tkeys.each do |loc|
+    cacheparams["locale"] = loc
+    AsyncTask.new.setcache cacheparams
+  end
 
   true
 end
@@ -111,7 +124,7 @@ $ejit = {
   :port => '5432',
   :user => "yakup",
   :password => "***REMOVED***",
-  :database => 'ejit',
+  :database => 'ejit'
 }
 
 class ItConflict < ActiveRecord::Base

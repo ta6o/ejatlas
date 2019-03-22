@@ -580,8 +580,8 @@ class AsyncTask
   handle_asynchronously :backup
 
   def setcache params
-    puts "Starting cache update;"
     locale = params.delete("locale")
+    puts "Starting cache update for #{locale.upcase} locale:"
     ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
     client = Elasticsearch::Client.new log: false
 
@@ -596,7 +596,7 @@ class AsyncTask
         counter = 0
         t0 = Time.now
         times = {:ping => [0,0,0], :save => 0, :index => 0}
-        ConflictText.where(:locale=>locale).find_in_batches(batch_size: 64) do |batch|
+        ConflictText.where(:locale=>locale).order(:id).find_in_batches(batch_size: 64) do |batch|
           batch.each do |ct|
             c = ct.conflict
             counter += 1
@@ -769,9 +769,12 @@ class AsyncTask
       puts "Updating filter..."
       Tag.all.each {|c| client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}}
       cs = ConflictText.where(:locale=>locale).map{|ct|ct.conflict}
-      (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq.each do |c| 
+
+      accs = (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq - [nil]
+      accs.each do |c| 
         client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
       end
+
       filterdata = {}
 
       filterdata["basic_data"] = {}
