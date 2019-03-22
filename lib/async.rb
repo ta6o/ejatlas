@@ -714,6 +714,7 @@ class AsyncTask
       iids = []
       docs.each do |d|
         doc = Document.find d
+        next unless doc.conflict
         fns = []
         doc.conflict.images.each {|i| fns << i.file.file.filename}
         if fns.include? doc.file.file.filename

@@ -55,8 +55,22 @@
 -if @exports and @exports.any?
   .content
     %h3 Exports
-    %ul{:style=>"list-style-type:none;padding:0;"}
-      -@exports.sort.reverse.each do |exp|
-        %li
-          %a{:href=>"/exports/#{exp}"}= exp
+    -ly = ""
+    -lm = ""
+    -changed = false
+    -@exports.sort.reverse.each do |exp|
+      -date = exp.match(/\d{4}-\d{2}/).to_s.split("-")
+      -if ly != date[0]
+        -ly = date[0]
+        %br/
+        %h4
+          %b=ly
+      -if lm != date[1]
+        -lm = date[1]
+        -changed = true
+        %b.pull-left{:style=>"width:16px;"}=lm
+      -else
+        -changed = false
+      %a{:href=>"/exports/#{exp}",:style=>"margin-left:#{changed ? 12 : 28}px;"}= exp
+      %br/
 
