@@ -112,10 +112,10 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     @markercount = Conflict.where(approval_status: 'approved').count
-    countries = JSON.parse(ca.countries)
-    companies = JSON.parse(ca.companies)[0..100]
-    commodities = JSON.parse(ca.commodities)
-    types = JSON.parse(ca.types)
+    countries = ca.countries ? JSON.parse(ca.countries) : []
+    companies = ca.countries ? JSON.parse(ca.companies)[0..100] : []
+    commodities = ca.countries ? JSON.parse(ca.commodities) : []
+    types = ca.countries ? JSON.parse(ca.types) : []
     @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
     @maptitle = "World Map"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json

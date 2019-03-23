@@ -1,7 +1,7 @@
 -# coding: utf-8
 !!!
 -#%html{:lang => "en", :dir => "ltr", :manifest=>"#{request.path == "/" ? "" : request.path}/manifest.txt"}
-%html{:lang => "en", :dir => "ltr"}
+%html{:lang => I18n.locale.to_s, :dir=>$dir}
   %head
     %meta{:charset => "utf-8"}/
     %title= @name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"

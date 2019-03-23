@@ -1,3 +1,19 @@
+//
+// Temporary RTL style to fix bugs rapidly. 
+// They will move to some place more appropriate later.
+// --------------------------------------------------
+
+.pull-left {
+  &.flip {
+    float: right !important;
+  }
+}
+.pull-right {
+  &.flip {
+    float: left !important;
+  }
+}
+
 p {
   line-height: 20px;
   &.headline {
@@ -12,11 +28,11 @@ p {
 .center-block {
   .center-block();
 }
-.pull-right {
-  float: right !important;
-}
 .pull-left {
   float: left !important;
+}
+.pull-right {
+  float: right !important;
 }
 
 // Toggling content
@@ -109,7 +125,7 @@ small {
   height: 32px;
   position: absolute;
   top:8px;
-  right:-8px;
+  left:-8px;
   display: none;
 }
 
@@ -127,7 +143,7 @@ small {
     background: @brand-darkred;
     margin: -32px -32px 8px;
     padding: 4px 32px 0px;
-    text-align: left;
+    text-align: right;
     p {
       padding-bottom:6px;
     }
@@ -142,8 +158,8 @@ form {
   .tab-pane {
     margin: 0 15px;
   }
-  .pull-right.btn-group.png {
-    margin-right: -15px;
+  .pull-left.btn-group.png {
+    margin-left: -15px;
   }
   label {
     font-weight: bold;
@@ -223,12 +239,12 @@ form {
   }
   .implab {
     width: 27%;
-    padding-left: 12px;
-    border-left: 1px solid #ddd;
+    padding-right: 12px;
+    border-right: 1px solid #ddd;
   }
   .imprad {
     width: 3%;
-    text-align: left;
+    text-align: right;
   }
   .quart {
     width: 25%;
@@ -241,7 +257,7 @@ form {
   }
   .acc_lvl, .pop_type {
     font-weight: normal;
-    padding-left: 0;
+    padding-right: 0;
   }
 }
 
@@ -264,7 +280,7 @@ footer {
     max-height: 21px;
   }
   .pull-left {
-    margin-left: 12px;
+    margin-right: 12px;
   }
   a.pull-left {
     margin-top: 8px;
@@ -295,8 +311,8 @@ footer {
   margin: 0 0 3em 0;
 }
 ul.sidelink {
-  float: right;
-  text-align: right;
+  float: left;
+  text-align: left;
   margin-top:6px;
   li {
     font-size: 125%;
@@ -335,10 +351,10 @@ ul.sidelink {
 #help {
   margin: 0 0 -70px;
   padding: 18px 0;
-  .pull-right #img {
-    margin:3px 12px 0 0;
+  .pull-left #img {
+    margin:3px 0 0 12px;
   }
-  .pull-right h4 {
+  .pull-left h4 {
     display: block;
     cursor: pointer;
     width: 25px;
@@ -361,12 +377,12 @@ ul.sidelink {
   .modal-dialog {
     position: absolute;
     bottom:12px;
-    right:30%;
+    left:30%;
     width:40%;
     .modal-content {
-      border-radius: 8px 8px 6px 6px;
+      border-radius: 8px 6px 6px 8px;
       .modal-header {
-        border-radius: 6px 6px 0 0;
+        border-radius: 6px 0 0 6px;
         padding: 8px;
         background: @brand-primary;
         text-align: center;
@@ -374,7 +390,7 @@ ul.sidelink {
         .close {
           position: absolute;
           top: -1px;
-          right: -3px;
+          left: -3px;
           text-align: center;
           padding: 3px 2px;
           width: 25px;
@@ -402,9 +418,9 @@ ul.sidelink {
     width:30%;
     top:144px;
     .modal-content {
-      border-radius: 8px 8px 6px 6px;
+      border-radius: 8px 6px 6px 8px;
       .modal-header {
-        border-radius: 6px 6px 0 0;
+        border-radius: 6px 0 0 6px;
         padding: 8px;
         background: @brand-primary;
         text-align: center;
@@ -412,7 +428,7 @@ ul.sidelink {
         .close {
           position: absolute;
           top: -1px;
-          right: -3px;
+          left: -3px;
           text-align: center;
           padding: 3px 2px;
           width: 25px;
@@ -445,7 +461,6 @@ ul.sidelink {
   width: 32px !important; 
   height: 32px !important;
   margin: -16px 0 0 -16px !important;
-  position: absolute;
   &.min {
     border-radius: 8px; 
     width: 14px !important; 
@@ -460,47 +475,6 @@ ul.sidelink {
     height: 6px !important;
     margin: -3px 0 0 -3px !important;
     background-image: none !important;
-  }
-  &.cluster {
-    border-radius: 20px;
-    border: 0;
-    width: 40px !important; 
-    height: 40px !important;
-    margin: -20px 0 0 -20px !important;
-    background-image: none !important;
-    b {
-      position: absolute;
-      font-size: 9px;
-      margin: -2px 1.5px 0 0;
-      color: white;
-    }
-  }
-  &.cluster.min {
-    border-radius: 10px;
-    border: 0;
-    width: 20px !important; 
-    height: 20px !important;
-    margin: -10px 0 0 -10px !important;
-    background-image: none !important;
-    b {
-      font-size: 12px;
-      margin: 2px 0 0 6.5px;
-    }
-  }
-  &.cluster.mic {
-    border-radius: 5px;
-    border: 0;
-    width: 10px !important; 
-    height: 10px !important;
-    margin: -5px 0 0 -5px !important;
-    background-image: none !important;
-    b {
-      font-size: 9px;
-      margin: -2px 0 0 1.5px;
-    }
-  }
-  &.cluster.i_1 b {
-    color: black
   }
   &.i_ {background:red}
   &.i_0 {background:transparent}
@@ -586,7 +560,7 @@ ul.sidelink {
     height: auto;
     position: absolute;
     bottom: 0;
-    left: 0;
+    right: 0;
     background: @brand-warning;;
     font-size: 12px;
     display:none;
@@ -601,15 +575,15 @@ ul.sidelink {
     border-bottom: 4px solid transparent;
     td {
       vertical-align: top;
-      &.left a {
+      &.right a {
         margin: 4px 0;
       }
     }
     &:hover {
-      td.left span {
+      td.right span {
         //text-decoration: underline;
       }
-      td.right span {
+      td.left span {
         background-color: @brand-primary;
       }
     }
@@ -622,7 +596,21 @@ ul.sidelink {
     max-width: none;
   }
   .home-button {
-    padding: 0 5px 5px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    border: 1px solid #888;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    text-decoration: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: black;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    display: block;
+    margin-left: 13px;
+    margin-top: 12px;
     cursor: pointer;
     &:hover {
       background-color: #fff;
@@ -675,8 +663,8 @@ ul.sidelink {
     .box-shadow(0px 12px 12px 0px rgba(255, 255, 255, 0.3) inset);
     background: url('/images/bg.png');
     font-weight: bold;
-    padding: 4px 15px 4px 27px;
-    margin: 0 -15px 0 -27px;
+    padding: 4px 27px 4px 15px;
+    margin: 0 -27px 0 -15px;
     cursor: s-resize;
     &:before {
       content: "\e080";
@@ -687,7 +675,7 @@ ul.sidelink {
       font-style: normal;
       font-weight: normal;
       font-size: 9px;
-      padding-right: 8px;
+      padding-left: 8px;
     }
     &.active {
       cursor: n-resize;
@@ -720,7 +708,7 @@ ul.sidelink {
       }
       td.exp {
         vertical-align:top;
-        padding:0 0 0 12px;
+        padding:0 12px 0 0;
         h4 {
           margin:0px;
           font-size:18px;
@@ -756,6 +744,9 @@ ul.sidelink {
       display: none;
     }
   }
+}
+#filter-container .content {
+  padding: 8px 16px;
 }
     
 
@@ -824,7 +815,7 @@ ul.sidelink {
         margin: -4px 0 0 2px;
         div {
           height: 16px;
-          float:left;
+          float:right;
         }
       }
     }
@@ -838,7 +829,7 @@ ul.sidelink {
   #share {
     margin: 0 0 -70px;
     padding: 0;
-    .pull-right #img {
+    .pull-left #img {
       margin:3px 12px 0 0;
     }
   }
@@ -862,12 +853,6 @@ ul.sidelink {
     }
   }
 }
-
-/*.rightpane #disclaimer h2 {
-  font-size: 16px; 
-  line-height: 22px; 
-  font-weight: normal;
-}*/
 
 #conflict_summary {
   h2 {
@@ -898,14 +883,14 @@ ul.sidelink {
     }
     .date {
       img {
-        float:left;
-        margin-left: 12px;
+        float:right;
+        margin-right: 12px;
       }
       p {
         font-size: 11px;
         margin-top:-5px;
         margin-bottom:0;
-        float: right;
+        float: left;
       }
     }
   }
@@ -914,7 +899,7 @@ ul.sidelink {
     h4 { margin: 0 0 4px; }
     margin-bottom: 24px;
     background: @white;
-    img {margin-left: 60px;}
+    img {margin-right: 60px;}
     p {
       margin-bottom: 4px;
       &.fld {
@@ -936,7 +921,7 @@ ul.sidelink {
       td {
         padding: 3px 0px;
         width: 100%;
-        float: left;
+        float: right;
         border-top: 0px;
         &.fld {
           width: 100% !important;
@@ -1002,7 +987,7 @@ ul.sidelink {
     overflow-y: auto;
   }
   .dropbox {
-    border-radius: 0 16px 16px 16px;
+    border-radius: 16px 0 16px 16px;
     margin: 8px 2% 8px 2%;
     padding: 10px 0 10px 12px;
     width: 96%;
@@ -1028,10 +1013,10 @@ ul.sidelink {
       font-size:13px;
       position: absolute;
       top:2px;
-      left:4px;
+      right:4px;
       cursor:pointer;
       color: #ddd;
-      margin-right:-4px;
+      margin-left:-4px;
       width:13px;
       z-index: 10;
       > .drop {
@@ -1053,7 +1038,7 @@ ul.sidelink {
       }
     }
     > span {
-      margin-left: 8px;
+      margin-right: 8px;
     }
   }
   .options {
@@ -1061,7 +1046,7 @@ ul.sidelink {
       display: none;
       h4 {
         font-weight: bold;
-        //text-align:right;
+        //text-align:left;
       }
       ul {
         overflow-x: hidden;
@@ -1075,7 +1060,7 @@ ul.sidelink {
         }
         li {
           span {
-            //float: right;
+            //float: left;
           }
         }
       }
@@ -1091,10 +1076,10 @@ ul.sidelink {
         &[type='text'] { max-width: 128px; }
       }
       input.gte {
-        float: left;
+        float: right;
       }
       input.lte {
-        float: right;
+        float: left;
       }
     }
   }
@@ -1123,10 +1108,10 @@ ul.sidelink {
       font-size:10px;
       position: relative;
       top:-6px;
-      left:-7px;
+      right:-7px;
       cursor:pointer;
       color: #666;
-      margin-right:-4px
+      margin-left:-4px
     }
   }
   .idrag {
@@ -1160,13 +1145,13 @@ ul.sidelink {
   background-repeat: no-repeat;
   position: fixed;
   top: 2px;
-  left: 12px;
+  right: 12px;
 }
 .ejolt-logo {
   width:96px;
   height:36px;
   margin: -9px 12px 0 0;
-  background: url('/images/ejolt_logo.png');
+  background: url('/images/ejolt_logo.gif');
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -1205,7 +1190,7 @@ ul.sidelink {
 
 .resize {
   background-color: #d8d8d8;
-  border-left: 2px solid rgba(255,255,255,0.5);
+  border-right: 2px solid rgba(255,255,255,0.5);
   //#gradient > .horizontal(#eee, #ccc);
   background-image: url('/images/move.png');
   background-repeat: no-repeat;
@@ -1217,11 +1202,11 @@ ul.sidelink {
   top:0px;
   cursor: grab;
   cursor: col-resize;
-  left: 70%;
+  left: 30%;
   z-index: 4;
   .box-shadow(3px 0px 7px -3px rgba(0, 0, 0, 0.4));
   span {
-    border-style: solid none solid solid;
+    border-style: solid solid solid none;
     border-color: rgba(255,255,255,0.5);
     border-width: 2px;
     color: black;
@@ -1229,8 +1214,8 @@ ul.sidelink {
     text-indent: 15px;
     font-size: 16px;
     background-color: #d8d8d8;
-    margin: 16px -24px 0;
-    border-radius: 25px 0px 0px 25px;
+    margin: 16px -23px 0;
+    border-radius: 0 25px 25px 0;
     width: 24px !important;
     cursor: e-resize;
     &.glyphicon-backward {
@@ -1246,7 +1231,8 @@ ul.sidelink {
   height: 100%;
   overflow-y: hidden;
   overflow-x: auto;
-  left: 0px;
+  right: 0px;
+  top: 0px !important;
 }
 
 .rightpane {
@@ -1254,20 +1240,20 @@ ul.sidelink {
   width: 30%;
   background: #fff;
   top: 0px;
-  right: 0px;
+  left: 0px;
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 2;
   .inner {
-    padding: 0 15px 0 36px;
+    padding: 0 32px 0 14px;
     .summary_header{
       .commands { 
         margin: 8px 0 -36px;
         #commands {
           ul li {
-            padding-left: 12px;
-            float: left;
+            padding-right: 12px;
+            float: right;
             font-size: 16px;
           }
         }
@@ -1290,7 +1276,7 @@ ul.sidelink {
 #bottompane {
   background: transparent;
   bottom: 0px;
-  right: 0px;
+  left: 0px;
   height: 160px;
   position:absolute;
   width: 40%;
@@ -1304,11 +1290,12 @@ ul.sidelink {
   cursor: default;
   position:fixed;
   top:16px;
-  left:48px;
+  left:none;
+  right:48px;
   background-color: @brand-dark;
   padding: 4px 16px;
   p {
-    margin: 0 0 0 36px !important;
+    margin: 0 36px 0 0 !important;
     font-size: 16px;
     color: #FFF;
     font-weight: bold;
@@ -1318,7 +1305,7 @@ ul.sidelink {
 position: relative;
 }
 #carousel_inner {
-  float:left;
+  float:right;
   width:100%;
   overflow: hidden;
   margin-bottom:12px;
@@ -1330,15 +1317,15 @@ position: relative;
   margin: 0px;
   padding: 0px;
   width:99999px; /* important */
-  left: -210px;
+  right: 0px;
 }
 
 #carousel_ul li{
   position:relative;
-  float: left; 
+  float: right; 
   padding:0px;
   height:240px;
-  margin-right: 6px;
+  margin-left: 6px;
 }
 
 #carousel_ul li img {
@@ -1355,10 +1342,10 @@ position: relative;
   background: rgba(255,255,255,0.7);
   display:none;
   overflow: hidden;
-  padding-left:12px;
+  padding-right:12px;
   a {
     color: #333;
-    text-align: left;
+    text-align: right;
   }
   &:hover {
     background: @blue;
@@ -1377,10 +1364,10 @@ position: relative;
   background: rgba(255,255,255,0.7);
   display:none;
   color: #333;
-  padding-left:12px;
+  padding-right:12px;
 }
 
-#left_scroll, #right_scroll{
+#right_scroll, #left_scroll{
   position:absolute;
   top: 100px;
   color: #000;
@@ -1400,8 +1387,8 @@ position: relative;
     color: #FFF;
   }
 }
-#left_scroll {left:12px; span{margin-left:-6px;}}
-#right_scroll {right:12px;}
+#right_scroll {right:12px; span{margin-right:-6px;}}
+#left_scroll {left:12px;}
 .nav a.disable, .nav a.disable:hover {
   color: #999;
 }
@@ -1409,7 +1396,7 @@ position: relative;
   a {
     img {
     width: 40%;
-    margin-left: 8%;
+    margin-right: 8%;
     }
   }
 }
@@ -1455,18 +1442,18 @@ position: relative;
   margin: 3px 4px 0px 0px;
 }
 .i_choropleth {
-  float: left;
+  float: right;
   width: 200px !important;
   min-width: 200px !important;
   max-width: 200px !important;
-  margin-right:12px;
+  margin-left:12px;
 }
 
 .seemore, .seeless {
-  float: right;
+  float: left;
   font-style: italic;
   background:white;
-  padding-left:12px;
+  padding-right:12px;
   z-index: 1200;
 }
 .more, .less {
@@ -1477,9 +1464,12 @@ position: relative;
   width: 100%;
 }
 .nav.nav-pills {
-  left: 48px;
+  right: 48px;
   top: 36px;
   font-weight: bold;
+  > li + li {
+    margin: 0;
+  }
   li.first {
     width: 44px;
     a:hover{
@@ -1487,9 +1477,9 @@ position: relative;
     }
   }
 }
-.leaflet-right { right: 12px !important; }
+.leaflet-left { left: 12px !important; }
 .leaflet-top { top: 72px !important; }
-.leaflet-control-layers { margin-right: 4px !important; }
+.leaflet-control-layers { margin-left: 8px !important; }
 .leaflet-control-attribution { 
   margin: 0 -12px 0 0 !important; 
   max-height:16px;
@@ -1505,15 +1495,12 @@ position: relative;
 .leaflet-popup-pane {
   z-index: 7 !important;
   border-radius:4px;
-  .features {
-    max-height: 240px;
-    overflow-y: auto;
-  }
   .leaflet-popup {
     a.leaflet-popup-close-button {
     }
   }
 }
+
 .navbar { 
   min-height: 0px !important; 
   }
@@ -1543,7 +1530,7 @@ position: relative;
 }
 .dropdown-menu {
   top:33px;
-  left:-1px;
+  right:-1px;
   border: 0;
   box-shadow: none;
   min-width: 0px;
@@ -1552,11 +1539,13 @@ position: relative;
     font-weight: bold;
   }
 }
-.dropdown-right {
+.dropdown-left {
   top: 0px;
-  height: 28px;
-  left: 49px;
+  height: 27px;
+  right: 98px;
+  min-width: 570px;
   line-height: 24px;
+  padding-top: 0;
   input {
     border-radius: 0 !important;
     background-color: #eee;
@@ -1586,11 +1575,11 @@ br.small {
   max-height: 288px;
   overflow-x: auto;
 }
-.full { margin-left: -18px; }
+.full { margin-right: -18px; }
 
 @media (max-width: @screen-md) {
   .resize { display:none; }
-  .leftpane,.rightpane,.bottompane,footer {
+  .rightpane,.leftpane,.bottompane,footer {
     position: relative;
     width:100%;
     min-width:100%;
@@ -1601,28 +1590,28 @@ br.small {
   .ejatlas-logo {
     position: absolute;
     top:6px;
-    left:18px;
+    right:18px;
     width: 51px;
     height: 74px;
   }
   .tagline {
     position: absolute;
     top:0px;
-    left:0px;
+    right:0px;
     padding: 6px 40px;
     width:100%;
   }
   .nav, .nav.nav-pills {
     position: absolute;
     top:24px;
-    left:44px;
+    right:44px;
     li.first{width:24px;}
   }
   #map {
     max-height: 500px !important;
   }
   footer {padding:20px;margin-top:20px;}
-  .full { margin-left: -30px; }
+  .full { margin-right: -30px; }
   .rightpane {
     h2,h4 {
       margin: 0 0 18px !important;
@@ -1643,7 +1632,7 @@ br.small {
   .ejatlas-logo {
     position: absolute;
     top:-22px;
-    left:-12px;
+    right:-12px;
     width: 51px;
     height: 74px;
     cursor:pointer;
@@ -1651,7 +1640,7 @@ br.small {
   .tagline {
     position: absolute;
     top:0px;
-    left:0px;
+    right:0px;
     padding: 6px 20px;
     width:100%;
     cursor:pointer;
@@ -1660,7 +1649,7 @@ br.small {
   .nav, .nav.nav-pills {
     position: absolute;
     top:20px;
-    left:0px;
+    right:0px;
     width:100%;
     background-color:@brand-primary;
     li.first{width:48px;}
@@ -1687,7 +1676,7 @@ br.small {
       height: 100% !important;
       max-height: 100% !important;
       .leaflet-top { top:0px !important}
-      .leaflet-right { right:6px !important}
+      .leaflet-left { left:6px !important}
     }
     #top {
       cursor: pointer !important;
@@ -1697,15 +1686,15 @@ br.small {
         width: 48px !important;
         height: 70px !important;
         top: 2px !important;
-        left: 12px !important;
+        right: 12px !important;
       }
       .tagline {
         top: 16px !important;
-        left: 48px !important;
+        right: 48px !important;
         padding: 4px 16px !important;
         width: 260px !important;
         position:relative !important;
-        p { margin: 0 0 0 8px !important; } 
+        p { margin: 0 8px 0 0 !important; } 
       }
     }
   }

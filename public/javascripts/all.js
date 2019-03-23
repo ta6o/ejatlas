@@ -17965,7 +17965,7 @@ function showMarkers(markers) {
     }
     if (markers.length == 1){
       var marker = L.marker([mark.a, mark.o],{
-        icon: L.divIcon({ className: 'map_icon s_1 i_'+mark.c+' id_'+mark.i }),
+          icon: L.divIcon({ className: 'map_icon s_1 i_'+mark.c+' id_'+mark.i+' loc_'+mark.l }),
         riseOnHover: true,
       }).addTo(markerLayer);
       markerc[mark.i] = marker;

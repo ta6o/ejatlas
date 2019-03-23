@@ -557,6 +557,7 @@ class Admin < Padrino::Application
     I18n.backend.load_translations
   end
 
+  $dir = I18n.locale == :ar ? "rtl" : "ltr"
 
 end
 
