@@ -68,6 +68,7 @@ class Admin < Padrino::Application
   before do
     unless ["localhost","ejatlas"].include? (locale = request.host.split(".")[0])
       I18n.locale = locale
+      $dir = I18n.locale.to_s == "ar" ? "rtl" : "ltr"
     end
   end
 
@@ -556,8 +557,6 @@ class Admin < Padrino::Application
     Admin.fetch_translations false
     I18n.backend.load_translations
   end
-
-  $dir = I18n.locale == :ar ? "rtl" : "ltr"
 
 end
 
