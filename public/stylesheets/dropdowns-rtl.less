@@ -1,0 +1,110 @@
+//
+// RTL Dropdown menus
+// --------------------------------------------------
+
+// Dropdown arrow/caret
+.caret {
+  margin-right: 2px;
+  margin-left: 0;
+}
+
+// The dropdown menu (ul)
+.dropdown-menu {
+  right: 0;
+  left: auto;
+  float: left;
+  text-align: right; // Ensures proper alignment if parent has it changed (e.g., modal footer)
+
+  // Aligns the dropdown menu to right
+  //
+  // Deprecated as of 3.1.0 in favor of `.dropdown-menu-[dir]`
+  &.pull-right {
+    left: 0;
+    right: auto;
+    float: right;
+  }
+}
+
+// Menu positioning
+//
+// Add extra class to `.dropdown-menu` to flip the alignment of the dropdown
+// menu with the parent.
+.dropdown-menu-right {
+  left: auto; // Reset the default from `.dropdown-menu`
+  right: 0;
+}
+// With v3, we enabled auto-flipping if you have a dropdown within a right
+// aligned nav component. To enable the undoing of that, we provide an override
+// to restore the default dropdown menu alignment.
+//
+// This is only for left-aligning a dropdown menu within a `.navbar-right` or
+// `.pull-right` nav component.
+.dropdown-menu-left {
+  left: 0;
+  right: auto;
+}
+
+// Component alignment
+//
+// Reiterate per navbar.less and the modified component alignment there.
+
+@media (min-width: @grid-float-breakpoint) {
+  .navbar-right {
+    .dropdown-menu {
+      .dropdown-menu-right();
+    }
+    // Necessary for overrides of the default right aligned menu.
+    // Will remove come v4 in all likelihood.
+    .dropdown-menu-left {
+      .dropdown-menu-left();
+    }
+  }
+}
+
+.left-caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 2px;
+  vertical-align: middle;
+  border-right: @caret-width-base solid @dropdown-caret-color;
+  border-bottom: @caret-width-base solid transparent;
+  border-top:  @caret-width-base solid transparent;
+  // Firefox fix for https://github.com/twbs/bootstrap/issues/9538. Once fixed,
+  // we can just straight up remove this.
+  border-left: 0 dotted;
+}
+
+.dropdown-left {
+  top: 0;
+  right: 100%;
+  margin-top: 8px;
+  margin-right: 12px;
+  width: 506px;
+  color: white;
+  padding: 2px 8px;
+  line-height: 22px;
+  input[type=text], input[type=password] {
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+    font-size:12px;
+    line-height: 12px;
+  } 
+  .btn {
+    padding: 0 4px;
+    background: @gray-lighter;
+    color: @brand-primary;
+    &:hover, &:focus {
+      color: @gray-lighter;
+      background: @brand-warning;
+    }
+  }
+  a {
+    color: white;
+  }
+  .pull-right {
+    padding-left: 12px;
+  }
+}
+
