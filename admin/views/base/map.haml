@@ -36,7 +36,7 @@
           %p
             %strong Please click the markers on the map for more information.
           .clearfix
-            .pull-right
+            %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
               %input{:type=>'checkbox',:checked=>true} &nbsp; Do not show this information again
 
 .front
@@ -48,14 +48,14 @@
             %image{"xlink:href"=>"#{$fileurl}/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
   #help.clearfix
-    .pull-right
+    %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
       %h4
         %strong{:style=>'left:0',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Show this help"} ?
-    .pull-right
+    %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
       %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas,")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"}
         #share_tw 
           #img &nbsp;
-    .pull-right
+    %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
       -#.fb-like{"data-href"=>"https://developers.facebook.com/docs/plugins/","data-layout"=>"button","data-action"=>"like","data-show-faces"=>"true","data-share"=>"true"}
       %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"}
         #share_fb 
