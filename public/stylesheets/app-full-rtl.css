@@ -8304,6 +8304,7 @@ ul.sidelink li.active {
 .nav.nav-pills {
   right: 48px;
   top: 36px;
+  width: max-content;
   font-weight: bold;
 }
 .nav.nav-pills li.first {

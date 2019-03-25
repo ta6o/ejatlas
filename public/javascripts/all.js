@@ -17613,6 +17613,9 @@ function initMap () {
     baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
   })
 
+  $topflo = ($dir == "ltr") ? "topright" : "topleft";
+  $botflo = ($dir == "ltr") ? "bottomright" : "bottomleft";
+
   markerLayer = L.featureGroup();
   featureLayer = L.featureGroup({interactive:true});
   initLayers = [];
@@ -17644,7 +17647,8 @@ function initMap () {
   });
 
   if (Object.keys(baselayers).length > 1){ 
-    lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
+    //lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
+    lControl = L.control.layers(baselayers, overlayMaps, {position: $topflo}).addTo(map); 
   }
 
   if (Object.keys(baselayers).indexOf('World Imagery') >= 0){ 
@@ -17740,15 +17744,20 @@ function initMap () {
     $('body').css('cursor','auto !important');
   });
 
-  var zoomControl = L.control.zoom({position:'topright'});
+  //var zoomControl = L.control.zoom({position:'topright'});
+  map.removeControl(map.attributionControl)
+  L.control.attribution({position: $botflo}).addTo(map);
+  var zoomControl = L.control.zoom({position:$topflo});
   map.addControl(zoomControl);
   var loadingControl = L.Control.loading({
-    position: 'topright',
+    //position: 'topright',
+    position: $topflo,
     zoomControl: zoomControl
   });
   map.addControl(loadingControl);
   var HomeButton = L.Control.extend({
-    options: { position: 'topright' }, 
+    //options: { position: 'topright' }, 
+    options: { position: $topflo }, 
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'home-button leaflet-control-layers');
       L.DomEvent.addListener(container, 'click', getBack);
@@ -17788,7 +17797,8 @@ function initMap () {
 
   $('.resize').on('mousedown',function(e){
     e.preventDefault();
-    mouseX = e.pageX;
+    //mouseX = e.pageX;
+    mouseX = $dir == "ltr" ? e.pageX : window.innerWidth - e.pageX;
     dragging = true;
     $(".rightpane .inner").css('display','block');
     if ($('.resize span').hasClass('glyphicon-backward')) {
@@ -17796,7 +17806,8 @@ function initMap () {
       $('.rightpane .inner').show();
       $('.leftpane').animate({'width':perc+"%"});
       $('.rightpane').animate({'width':(100-perc)+'%'});
-      $('.resize').animate({'left':perc+"%"},function(){
+      //$('.resize').animate({'left':perc+"%"},function(){
+      $('.resize').animate({$flo:perc+"%"},function(){
         $('.rightpane').css('overflow-x','hidden');
         $('.rightpane').css('overflow-y','auto');
         $('.resize span').removeClass('glyphicon-backward');
@@ -17806,10 +17817,12 @@ function initMap () {
       });
     }
     $('body').bind('mousemove',function(e){
-      px = Math.max(Math.min(Math.max(e.pageX,500),window.innerWidth - 480),500);
+      //px = Math.max(Math.min(Math.max(e.pageX,500),window.innerWidth - 480),500);
+      px = Math.max(Math.min(Math.max( ($dir == "ltr" ? e.pageX : window.innerWidth - e.pageX ),500),window.innerWidth - 480),500);
       $(".leftpane").css('width',px+'px')
       $("#rightpane").css('width',(window.innerWidth-px)+'px')
-      $("#resize").css('left',(px)+'px')
+      //$("#resize").css('left',(px)+'px')
+      $("#resize").css($flo,(px)+'px')
     });
   });
   $('.resize span').on('mouseup',function(e){
@@ -17827,7 +17840,8 @@ function initMap () {
     if ($(this).hasClass('glyphicon-forward')) {
       $('.leftpane').animate({'width':window.innerWidth - 16});
       $('.rightpane').animate({'width':'16px'});
-      $('.resize').animate({'left':window.innerWidth - 16},function(){
+      //$('.resize').animate({'left':window.innerWidth - 16},function(){
+      $('.resize').animate({$flo:window.innerWidth - 16},function(){
         $('.rightpane .inner').hide();
         $('.resize span').removeClass('glyphicon-forward').addClass('glyphicon-backward');
         $('.resize span').css('cursor','w-resize');
@@ -17838,7 +17852,8 @@ function initMap () {
       $('.rightpane .inner').show();
       $('.leftpane').animate({'width':perc+"%"});
       $('.rightpane').animate({'width':(100-perc)+'%'});
-      $('.resize').animate({'left':perc+"%"},function(){
+      //$('.resize').animate({'left':perc+"%"},function(){
+      $('.resize').animate({$flo:perc+"%"},function(){
         $('.rightpane').css('overflow-x','hidden');
         $('.rightpane').css('overflow-y','auto');
         $('.resize span').removeClass('glyphicon-backward').addClass('glyphicon-forward');
@@ -17856,7 +17871,8 @@ function initMap () {
         $('.rightpane .inner').show();
         $('.leftpane').animate({'width':perc+"%"});
         $('.rightpane').animate({'width':(100-perc)+'%'});
-        $('.resize').animate({'left':perc+"%"},function(){
+        //$('.resize').animate({'left':perc+"%"},function(){
+        $('.resize').animate({$flo:perc+"%"},function(){
           $('.rightpane').css('overflow-x','hidden');
           $('.rightpane').css('overflow-y','auto');
           onResize();
@@ -18094,10 +18110,12 @@ function onResize() {
   if ($('#map').css('position')=='fixed'){
     map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
-    px = Math.max(Math.min(Math.max(parseInt($('#resize').css('left')),500),window.innerWidth - 480),500);
+    //px = Math.max(Math.min(Math.max(parseInt($('#resize').css('left')),500),window.innerWidth - 480),500);
+    px = Math.max(Math.min(Math.max(parseInt($('#resize').css($flo)),500),window.innerWidth - 480),500);
     $("#map").css('width',px+'px');
     $("#rightpane").css('width',(window.innerWidth-px)+'px');
-    $("#resize").css('left',px+'px');
+    //$("#resize").css('left',px+'px');
+    $("#resize").css($flo,px+'px');
   } else {
     map.scrollWheelZoom.disable();
     $('#map').css('height',(window.innerHeight-96)+'px');
@@ -18118,7 +18136,8 @@ function dragEnd() {
   dragging = false;
   if ($('#carousel_container').length > 0){resetCarousel();}
   map.invalidateSize();
-  if (parseInt($('#resize').css("left")) > window.innerWidth - 16) $('#resize').css("left", window.innerWidth - 16)
+  //if (parseInt($('#resize').css("left")) > window.innerWidth - 16) $('#resize').css("left", window.innerWidth - 16)
+  if (parseInt($('#resize').css($flo)) > window.innerWidth - 16) $('#resize').css($flo, window.innerWidth - 16)
   mapWidth = document.getElementById('map').style.width
   if (mapWidth.match(/px$/)) {
     mapWidth = Math.ceil(parseInt(mapWidth.replace(/px$/,'')) / window.innerWidth * 100);
@@ -18150,8 +18169,12 @@ function dragEnd() {
       perc = Math.floor(100/Math.min(cols,siblings))
       $(e).css('width',(perc-2)+'%');
       $(e).css('min-width',(perc-2)+'%');
-      $(e).css('margin-right','2%');
-      $(e).css('float','left');
+      if ($dir == "ltr") {
+        $(e).css('margin-right','2%');
+      } else {
+        $(e).css('margin-left','2%');
+      }
+      $(e).css('float',$flo);
       $(e).find('.blocked').hide();
     }
   });
