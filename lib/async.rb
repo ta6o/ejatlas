@@ -581,6 +581,7 @@ class AsyncTask
 
   def setcache params
     locale = params.delete("locale")
+    puts
     puts "Starting cache update for #{locale.upcase} locale:"
     ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
     client = Elasticsearch::Client.new log: false
@@ -588,6 +589,8 @@ class AsyncTask
     if params["reindex"] == "on"
       puts "Removing old indices"
       `curl -XDELETE localhost:9200/atlas_#{locale} 2> /dev/null`
+      `curl -XPUT localhost:9200/atlas_#{locale} 2> /dev/null`
+      `curl -XPUT localhost:9200/atlas_#{locale} -d '#{File.read("#{Dir.pwd}/lib/mapping.json").gsub(/\s*/,"")}' 2> /dev/null`
     end
 
     if params["conflicts"] == "on" or params["reindex"] == "on"
@@ -640,7 +643,7 @@ class AsyncTask
         c.save
         #client.index index: "atlas_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
-				print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per country)"
+				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per country)"
       end
       puts
       puts
@@ -660,7 +663,7 @@ class AsyncTask
         c.save
         #client.index index: "atlas_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,type:"company"}
-				print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per company)"
+				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per company)"
       end
       puts
       puts
@@ -680,7 +683,7 @@ class AsyncTask
         c.save
         #client.index index: "atlas_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,type:"financial_institution"}
-				print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
+				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
       end
       puts
       puts
@@ -795,16 +798,22 @@ class AsyncTask
 
     if params["filter"] == "on" or params["reindex"] == "on"
       puts "Updating filter..."
-      Tag.all.each do |c| 
+      total = Tag.count
+      t0 = Time.now
+      Tag.all.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,type:"tag"}
+				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per tag)"
       end
       cs = ConflictText.where(:locale=>locale).map{|ct|ct.conflict}
 
       accs = (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq - [nil]
-      accs.each do |c| 
+      total = accs.length
+      t0 = Time.now
+      accs.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,type:"account"}
+				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per account)"
       end
 
       filterdata = {}
