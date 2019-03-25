@@ -121,7 +121,7 @@ Admin.controller do
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
-    #@recent = Conflict.select('id, headline, modified_at, name, slug, commented').where("approval_status = 'approved' AND headline <> '' AND headline IS NOT NULL").order("modified_at desc").limit(6)
+    @recent = Admin.filter_recent
     @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("created_at desc").limit(2)
     render "base/map", :layout => @layout
   end
@@ -656,10 +656,10 @@ Admin.controller do
 
   get :more_recent do
     result = []
-    Conflict.select('id, headline, modified_at, name, slug').where("approval_status = 'approved' AND headline <> '' AND headline IS NOT NULL").order("modified_at desc").offset(params[:offset]).limit(6).each do |c|
-      j = JSON.parse(c.to_json)
+    Admin.filter_recent(params[:offset]).each do |c|
+      j = {"conflict"=>c}
       begin 
-        j["conflict"]["image"] = c.images.first.file.thumb.url
+        j["conflict"]["image"] = Conflict.find(c["id"]).images.first.file.thumb.url
       rescue 
         j["conflict"]["image"] = "/images/bg.png"
       end

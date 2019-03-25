@@ -364,26 +364,27 @@ class Admin < Padrino::Application
   end
 
   def self.filter_recent offset=0, size=6
+    puts I18n.locale
     filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
-    puts JSON.pretty_generate(filter)
     result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
   end
 
   def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type='conflict'
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
-    #puts JSON.pretty_generate(JSON.parse(filter))
-    if approved
-      filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}} )
-    else
-      filter = Admin.elasticify( { bool: { filter: { bool: JSON.parse( filter ) }}} )
+    if type == "conflict"
+      #puts JSON.pretty_generate(JSON.parse(filter))
+      if approved
+        filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}} )
+      else
+        filter = Admin.elasticify( { bool: { filter: { bool: JSON.parse( filter ) }}} )
+      end
+      filter = Admin.cleanup(filter)
+      result = $client.search(index: "atlas_#{I18n.locale}", type: type, body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})["hits"]["hits"]
+    elsif "account,company,country,financial_institution,tag".split(",").include?(type)
+      filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: JSON.parse( filter ) }}} )
+      filter = Admin.cleanup(filter)
+      result = $client.search(index: "atlas", type: "doc", body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})["hits"]["hits"]
     end
-    #puts JSON.pretty_generate(filter)
-    filter = Admin.cleanup(filter)
-    #filter = { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}}
-    #puts JSON.pretty_generate(filter)
-    #pp stored_fields
-
-    result = $client.search(index: "atlas_#{I18n.locale}", type: type, body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter})["hits"]["hits"]
   end
 
   def self.old_filter options

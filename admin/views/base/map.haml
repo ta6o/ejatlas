@@ -190,18 +190,20 @@
         %table
           %tbody.recent
             -@recent.each do |c|
-              %tr.block.conflict-button{"data-id"=>c.id,"data-width"=>360,:id=>"recent_#{c.id}"}
+              -next if Conflict.where(:id=>c["id"]).empty?
+              %tr.block.conflict-button{"data-id"=>c["id"],"data-width"=>360,:id=>"recent_#{c["id"]}"}
                 %td.image
-                  %a{:href=>"/conflict/#{c.slug}"}
-                    .img{:style=>(c.images.any? ? "background:url('#{c.images.first.file.thumb.url}');" : "")}
+                  %a{:href=>"/conflict/#{c["slug"]}"}
+                    -con = Conflict.find(c["id"])
+                    .img{:style=>(con.images.any? ? "background:url('#{con.images.first.file.thumb.url}');" : "")}
                 %td.exp
                   %p
                     %strong
-                      %a{:href=>"/conflict/#{c.slug}"}= c.name#.split(',')[0]
-                      -ago = ((Time.now-c.modified_at)/(60*60*24)).to_i
-                      -if c.commented
+                      %a{:href=>"/conflict/#{c["slug"]}"}= c["name"]#.split(',')[0]
+                      -ago = ((Time.now-con.modified_at)/(60*60*24)).to_i
+                      -if con.commented
                         %small commented
-                  %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c.headline
+                  %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c["headline"]
 
 -content_for :body_end do
   :javascript

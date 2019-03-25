@@ -1,0 +1,447 @@
+{
+  "mappings" : {
+    "conflict" : {
+      "properties" : {
+        "account_id" : {
+          "type" : "long"
+        },
+        "accuracy_level" : {
+          "type" : "long"
+        },
+        "affected_max" : {
+          "type" : "long"
+        },
+        "affected_min" : {
+          "type" : "long"
+        },
+        "affected_people" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "approval_status" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "category_id" : {
+          "type" : "long"
+        },
+        "commented" : {
+          "type" : "boolean"
+        },
+        "companies" : {
+          "type" : "long"
+        },
+        "conflict_accounts" : {
+          "type" : "long"
+        },
+        "conflict_events" : {
+          "type" : "long"
+        },
+        "conflict_id" : {
+          "type" : "long"
+        },
+        "conflict_messages" : {
+          "type" : "long"
+        },
+        "conflict_texts" : {
+          "type" : "long"
+        },
+        "contributor" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "country_id" : {
+          "type" : "long"
+        },
+        "created_at" : {
+          "type" : "date"
+        },
+        "description" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
+          }
+        },
+        "ejos" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
+          }
+        },
+        "end_datestamp" : {
+          "type" : "date"
+        },
+        "env_impacts" : {
+          "type" : "long"
+        },
+        "features" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "formerid" : {
+          "type" : "long"
+        },
+        "general" : {
+          "type" : "boolean"
+        },
+        "govt_actors" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "headline" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "hlt_impacts" : {
+          "type" : "long"
+        },
+        "id" : {
+          "type" : "long"
+        },
+        "investment_string" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "investment_sum" : {
+          "type" : "long"
+        },
+        "lat" : {
+          "type" : "float"
+        },
+        "locale" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "lon" : {
+          "type" : "float"
+        },
+        "mobilizing_forms" : {
+          "type" : "long"
+        },
+        "mobilizing_groups" : {
+          "type" : "long"
+        },
+        "modified_at" : {
+          "type" : "date"
+        },
+        "name" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "old_slugs" : {
+          "type" : "long"
+        },
+        "other_comments" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_env_impacts" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_hlt_impacts" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_mobilizing_forms" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_mobilizing_groups" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_outcomes" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_products" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_sec_impacts" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "other_types" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "population_type" : {
+          "type" : "long"
+        },
+        "products" : {
+          "type" : "long"
+        },
+        "project_area" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "project_details" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
+          }
+        },
+        "project_status_id" : {
+          "type" : "long"
+        },
+        "province" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "reaction_id" : {
+          "type" : "long"
+        },
+        "region_id" : {
+          "type" : "long"
+        },
+        "sec_impacts" : {
+          "type" : "long"
+        },
+        "site" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "slug" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "start_datestamp" : {
+          "type" : "date"
+        },
+        "status_id" : {
+          "type" : "long"
+        },
+        "success_level" : {
+          "type" : "long"
+        },
+        "success_reason" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "suggested_alternatives" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            }
+          }
+        },
+        "supporters" : {
+          "type" : "long"
+        },
+        "tags" : {
+          "type" : "long"
+        },
+        "types" : {
+          "type" : "long"
+        },
+        "updated_at" : {
+          "type" : "date"
+        }
+      }
+    },
+    "country" : {
+      "properties" : {
+        "id" : {
+          "type" : "long"
+        },
+        "name" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        }
+      }
+    },
+    "company" : {
+      "properties" : {
+        "id" : {
+          "type" : "long"
+        },
+        "name" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        }
+      }
+    },
+    "financial_institution" : {
+      "properties" : {
+        "id" : {
+          "type" : "long"
+        },
+        "name" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        }
+      }
+    },
+    "account" : {
+      "properties" : {
+        "id" : {
+          "type" : "long"
+        },
+        "name" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        }
+      }
+    },
+    "tag" : {
+      "properties" : {
+        "id" : {
+          "type" : "long"
+        },
+        "name" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        }
+      }
+    }
+  }
+}

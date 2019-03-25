@@ -639,7 +639,7 @@ class AsyncTask
         countries << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.count >= 1
         c.save
         #client.index index: "atlas_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc", id: c.id, body: {id:c.id,name:c.name,type:"country"}
+        client.index index: "atlas", type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
 				print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per country)"
       end
       puts
@@ -659,7 +659,7 @@ class AsyncTask
         companies << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count > 1
         c.save
         #client.index index: "atlas_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: c.id, body: {id:c.id,name:c.name,type:"company"}
+        client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,type:"company"}
 				print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per company)"
       end
       puts
@@ -679,7 +679,7 @@ class AsyncTask
         supporters << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1
         c.save
         #client.index index: "atlas_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: c.id, body: {id:c.id,name:c.name,type:"financial_institution"}
+        client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,type:"financial_institution"}
 				print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
       end
       puts
@@ -797,14 +797,14 @@ class AsyncTask
       puts "Updating filter..."
       Tag.all.each do |c| 
         #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: c.id, body: {id:c.id,name:c.name,type:"tag"}
+        client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,type:"tag"}
       end
       cs = ConflictText.where(:locale=>locale).map{|ct|ct.conflict}
 
       accs = (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq - [nil]
       accs.each do |c| 
         #client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: c.id, body: {id:c.id,name:c.name,type:"account"}
+        client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,type:"account"}
       end
 
       filterdata = {}
