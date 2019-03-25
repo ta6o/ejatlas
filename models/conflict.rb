@@ -113,8 +113,8 @@ class Conflict < ActiveRecord::Base
     return self.slug
   end
 
-  def local_data
-    self.conflict_texts.where(:locale=>I18n.locale).first
+  def local_data locale=I18n.locale
+    self.conflict_texts.where(:locale=>locale).first
   end
 
   def get_local_text attr, locale=I18n.locale
@@ -131,7 +131,12 @@ class Conflict < ActiveRecord::Base
   end
 
   def set_local_text attr, val, locale=I18n.locale
-    self.conflict_texts.where(:locale=>locale)[0].attributes[attr] = val
+    begin
+      self.conflict_texts.where(:locale=>locale)[0].attributes[attr] = val
+    rescue =>e
+      puts "#{self.id}: #{e}"
+      nil
+    end
   end
 
   def ping locale=I18n.locale
@@ -143,7 +148,7 @@ class Conflict < ActiveRecord::Base
     self.marker = self.as_marker.to_json
     ts << Time.now - t
     t = Time.now
-    self.table = self.as_table(:locale=>locale)
+    self.set_local_text "table", self.as_table(:locale=>locale), locale
     ts << Time.now - t
     ts
   end
@@ -175,9 +180,9 @@ class Conflict < ActiveRecord::Base
   def as_marker
     clr = self.category ? self.category.id : 0
     lat = 0; 
-    lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 180
+    lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 90
     lon = 0; 
-    lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 90
+    lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 180
     return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr,:l=>self.conflict_texts.map(&:locale).join("-")}
   end
 
@@ -264,7 +269,15 @@ class Conflict < ActiveRecord::Base
   def elastic loc=I18n.locale
     result = {}
     self.attributes.each do |k,v|
-      next if v.nil? or v == "" or ['marker','table','json','notes'].include? k
+      next if v.nil? or v == "" or ['marker','table','json','notes','start_date','end_date'].include? k
+      if ["lat","lon"].include?(k)
+        result[k] = v.to_f
+      else
+        result[k] = v
+      end
+    end
+    self.local_data(loc).attributes.each do |k,v|
+      next if v.nil? or v == "" or ['marker','table','json','notes','start_date','end_date'].include? k
       result[k] = v
     end
     self.methods.grep(/^validate_associated_records_for_.*$/).each do |m| 

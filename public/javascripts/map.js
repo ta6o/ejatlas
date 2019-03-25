@@ -1,5 +1,5 @@
 
-var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap;
+var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap, shownMarkers;
 
 var $msize = "mic";
 var jsons = {};
@@ -409,8 +409,10 @@ function showMarkers(markers) {
     })
   }
 
+  shownMarkers = 0
   $.each(markers, function(i,mark){
     if (!mark.a || !mark.o) {
+      console.log(mark)
       return 0
     }
     if (markers.length == 1){
@@ -498,6 +500,7 @@ function showMarkers(markers) {
     //oms.addMarker(marker);
     arrr.push(mark.i);
     all ++;
+    shownMarkers ++;
   });
   map.closePopup();
 

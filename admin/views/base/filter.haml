@@ -348,7 +348,8 @@
         $('.map_icon').show();
         map.fitBounds(markerLayer.getBounds());
       }
-      $('#head p strong').text("#{t 'v.index.var_cases_reported',num_cases:'data_length'}".replace("data_length",$('.map_icon').length))
+      //$('#head p strong').text("#{t 'v.index.var_cases_reported',num_cases:'data_length'}".replace("data_length",$('.map_icon').length))
+      sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');
     };
 
     function serializeFilter(page_type){

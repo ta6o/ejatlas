@@ -5,15 +5,15 @@
       .col-md-3.col-md-offset-3.clearfix
         %h2 Cache update
         %p Check the models you wish to update.
-        %input{:type=>'checkbox',:name=>'filter',:checked=>true} &nbsp;  Filter
+        %input.index{:type=>'checkbox',:name=>'filter',:checked=>true} &nbsp;  Filter
         %br/
-        %input{:type=>'checkbox',:name=>'conflicts',:checked=>true} &nbsp;  Conflicts
+        %input.index{:type=>'checkbox',:name=>'conflicts',:checked=>true} &nbsp;  Conflicts
         %br/
-        %input{:type=>'checkbox',:name=>'countries',:checked=>true} &nbsp;  Countries
+        %input.index{:type=>'checkbox',:name=>'countries',:checked=>true} &nbsp;  Countries
         %br/
-        %input{:type=>'checkbox',:name=>'companies',:checked=>true} &nbsp;  Companies
+        %input.index{:type=>'checkbox',:name=>'companies',:checked=>true} &nbsp;  Companies
         %br/
-        %input{:type=>'checkbox',:name=>'ifis',:checked=>true} &nbsp; IFI's
+        %input.index{:type=>'checkbox',:name=>'ifis',:checked=>true} &nbsp; IFI's
         %br/
         %input{:type=>'checkbox',:name=>'commodities',:checked=>true} &nbsp;  Commodities
         %br/
@@ -31,6 +31,9 @@
             %option{:value=>loc,:selected=>(loc.to_sym === I18n.locale)}= @iso639[loc]
         %br/
         %br/
+        %input#reindex{:type=>'checkbox',:name=>'reindex'} &nbsp;  Reindex
+        %br/
+        %br/
         %input.btn.full.btn-warning{:type=>'submit',:value=>'Update now'}
         %br/
         %br/
@@ -43,3 +46,10 @@
 
   :javascript
     function deselect() { $('input[type=checkbox]').attr('checked',false); }
+    $("#reindex").on("change",function(e){
+      if ($(this).prop("checked")) {
+        $(".index").prop("checked","true").prop("disabled",true)
+      } else {
+        $(".index").prop("disabled",false)
+      }
+    })

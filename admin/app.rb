@@ -363,6 +363,12 @@ class Admin < Padrino::Application
     end
   end
 
+  def self.filter_recent offset=0, size=6
+    filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
+    puts JSON.pretty_generate(filter)
+    result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+  end
+
   def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type='conflict'
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
     #puts JSON.pretty_generate(JSON.parse(filter))

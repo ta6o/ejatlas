@@ -111,7 +111,7 @@ Admin.controller do
     #last_modified ca.updated_at
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    @markercount = Conflict.where(approval_status: 'approved').count
+    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
     countries = ca.countries ? JSON.parse(ca.countries) : []
     companies = ca.countries ? JSON.parse(ca.companies)[0..100] : []
     commodities = ca.countries ? JSON.parse(ca.commodities) : []

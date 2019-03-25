@@ -131,6 +131,29 @@ class ItConflict < ActiveRecord::Base
   establish_connection $ejit
 end
 
+def check_langs
+  clangs = {}
+  tot = ConflictText.count
+  ConflictText.all.order(:conflict_id).each_with_index do |ct,ind|
+    text = ct.description
+    text = ct.name if text.nil? or text.length <= 16
+    lang = id_language(text)
+    clangs[lang] ||= []
+    clangs[lang] << ct.conflict_id
+    print "\r#{ind} / #{tot}"
+  end
+  clangs
+end
+
+def id_language text
+  res = `python2 misc/idlang.py "#{text.gsub(/["'`]/,"")}"`
+  if res.length > 0
+    #res.strip.gsub(/(\[|\])+/,"").split(/\s*,\s*/).map{|e|a=e.split(/:/);[a[0],a[1].to_f]}.to_h
+    res.strip
+  else
+    false
+  end
+end
 
 def check_it_conflicts
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
