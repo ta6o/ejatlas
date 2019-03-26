@@ -57,14 +57,6 @@ class Admin < Padrino::Application
 
   Delayed::Worker.destroy_failed_jobs = false
 
-  configure :development do
-    $consurl = 'http://0.0.0.0:3000'
-  end
-
-  configure :production do
-    $consurl = 'http://ejatlas.org'
-  end
-
   before do
     unless ["localhost","ejatlas"].include? (locale = request.host.split(".")[0])
       I18n.locale = locale
@@ -143,26 +135,26 @@ class Admin < Padrino::Application
   def self.new_account(a)
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/confirm.haml").render(self)
-    Admin.send_mail(a, 'Welcome to EJAtlas', html)
+    Admin.send_mail(a, I18n.t("emails.confirm.welcome_to_ejatlas"), html)
   end
 
   def self.notify_new_account(a)
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_new_account.haml").render(self)
-    Admin.send_mail(Account.find(1), 'New collaborator', html)
+    Admin.send_mail(Account.find(1), I18n.t("emails.notify_new_account.new_message_from_var", account_name: @account.name), html)
   end
 
   def self.password_reset(a)
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/reset.haml").render(self)
-    Admin.send_mail(a, 'Password reset request', html)
+    Admin.send_mail(a, I18n.t("emails.reset.password_reset_request"), html)
   end
 
   def self.notify_moderator(c)
     @account = c.account
     @conflict = c
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_moderator.haml").render(self)
-    Admin.send_mail(Account.find(1), "Case updated: #{c.name}", html)
+    Admin.send_mail(Account.find(1), I18n.t("emails.notify_moderator.case_updated_var", conflict_name: c.name), html)
   end
 
   def self.notify_collaborator(c)
@@ -171,7 +163,7 @@ class Admin < Padrino::Application
     return unless @account
     @conflict = c
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
-    Admin.send_mail(@account, (c.approval_status == "approved" ? "#{c.name} approved on EJAtlas" : "Moderation update for #{c.name}"), html)
+    Admin.send_mail(@account, (c.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: c.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: c.name)), html)
   end
 
   def self.notify_mod_msg(m)
@@ -182,16 +174,19 @@ class Admin < Padrino::Application
     if ["admin","editor"].include?(@account.role)
       @collab = @conflict.account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
-      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
+      #Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
+      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: c.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: c.name)), html)
     else
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
-      Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
+      #Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
+      Admin.send_mail(Account.find(1), I18n.t("emails.notify_new_account.new_message_from_var", account_name: @account.name), html)
     end
     @conflict.conflict_accounts.each do |ca|
       @collab = ca.account
       next if @collab == @account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
-      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
+      #Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
+      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: c.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: c.name)), html)
     end
   end
 
@@ -366,7 +361,11 @@ class Admin < Padrino::Application
   def self.filter_recent offset=0, size=6
     puts I18n.locale
     filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
-    result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+    begin
+      result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+    rescue
+      []
+    end
   end
 
   def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type='conflict'

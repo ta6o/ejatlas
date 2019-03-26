@@ -1,31 +1,40 @@
 -# coding: utf-8
-%html
+%html{:lang => I18n.locale.to_s, :dir=>I18n.locale.to_s == "ar" ? "rtl" : "ltr"}
   %head
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
     :css
       a { color: #049cdb; text-decoration:none; }
       a:hover { text-decoration:underline; }
+    -if I18n.locale.to_s == "ar"
+      :css
+        p { 
+          direction: rtl; 
+          text-align: right;
+        }
   %body{:style=>'background:#fff'}
     %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
       %p
-        = "Dear #{@account.name},"
+        = I18n.t("emails.general.dear_var", account_name: @account.name)
         %br/
         %br/
-        You requested a new password at
-        #{DateTime.now.strftime("%Y-%m/%d %H:%M")} 
+        =I18n.t("emails.reset.you_requested_new_password_at")
+        \:
+        %br/
+        =I18n.l(DateTime.now, format: :long)
         %br/
         %br/
-        You can set a new password by clicking the link below:
+        =I18n.t("emails.reset.you_can_set_new_password")
         %br/
         %br/
-        %a{:href=>$consurl+'/accounts/reset?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'} Change my password
+        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{I18n.locale}.")}/accounts/reset?id=#{@account.id}&hash=#{@account.surname}",:target=>'_blank'}
+          =I18n.t("emails.reset.change_my_password")
         %br/
         %br/
-        If you haven't made such a request, please contact us at
+        =I18n.t("emails.reset.if_you_havent_made_such")
         %a{:href=>'mailto:ejoltmap@gmail.com'} ejoltmap@gmail.com
         %br/
         %br/
-        Best wishes,
+        =I18n.t("emails.general.best_wishes")
         %br/
         %br/
-        EJatlas editors
+        =I18n.t("emails.general.ejatlas_editors")

@@ -700,8 +700,10 @@ class AsyncTask
       cos.each_with_index do |c,counter|
         commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"
         c.save
-				print "\r #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
+				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per commodity)"
       end
+      puts
+      puts
       commodities.sort_by! {|c| c[1]}
       commodities.reverse!
       ca.commodities = commodities.to_json
@@ -815,6 +817,8 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,type:"account"}
 				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per account)"
       end
+      puts
+      puts
 
       filterdata = {}
 

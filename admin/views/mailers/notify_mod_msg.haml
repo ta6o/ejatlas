@@ -1,17 +1,23 @@
 -# coding: utf-8
-%html
+%html{:lang => I18n.locale.to_s, :dir=>I18n.locale.to_s == "ar" ? "rtl" : "ltr"}
   %head
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
     :css
       a { color: #049cdb; text-decoration:none; }
       a:hover { text-decoration:underline; }
+    -if I18n.locale.to_s == "ar"
+      :css
+        p { 
+          direction: rtl; 
+          text-align: right;
+        }
   %body{:style=>'background:#fff'}
     %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
       %p
-        Dear Editor,
+        = I18n.t("emails.general.dear_editor")
         %br/
         %br/
-        = "The user <a href='mailto:#{@account.email}'>#{@account.name}</a> has sent a message to you concerning the case <a href='http://ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>:"
+        = I18n.t("emails.notify_moderator.user_var_has_flagged_case", account_name: "<a href='mailto:#{@account.email}'>#{@account.name}</a>", conflict_link: "<a href='http://ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>").html_safe
         %br/
         %blockquote
           %em= @msg.gsub(/\n/,'<br />')

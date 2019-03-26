@@ -1,30 +1,36 @@
 -# coding: utf-8
-%html
+%html{:lang => I18n.locale.to_s, :dir=>I18n.locale.to_s == "ar" ? "rtl" : "ltr"}
   %head
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
     :css
       a { color: #049cdb; text-decoration:none; }
       a:hover { text-decoration:underline; }
+    -if I18n.locale.to_s == "ar"
+      :css
+        p { 
+          direction: rtl; 
+          text-align: right;
+        }
   %body{:style=>'background:#fff'}
     %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
       %p
-        = "Dear #{@collab.name},"
+        = I18n.t("emails.general.dear_var", account_name: @account.name)
         %br/
         %br/
-        = "Please note that the EJAtlas editors have reviewed the case you submitted:"
+        =I18n.t("emails.notify_collaborator.please_note_that_ejatlas_editors")
         %br/
         = "<a href='http://ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>"
         %br/
         %br/
-        ="They have left the following message(s):"
+        =I18n.t("emails.notify_collaborator.they_have_left_following_messages")
         %br/
         %blockquote
           %em= @msg.gsub(/\n/,'<br />')
         %br/
-        Thank you very much for your valuable contribution, which makes possible the making of the largest and rich database on socio-environmental conflicts in the world.
+        =I18n.t("emails.notify_collaborator.thank_you_very_much_for")
         %br/
         %br/
-        In solidarity, 
+        =I18n.t("emails.general.in_solidarity")
         %br/
-        the EJatlas editors
         %br/
+        =I18n.t("emails.general.ejatlas_editors")

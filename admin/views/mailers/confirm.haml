@@ -1,34 +1,38 @@
 -# coding: utf-8
-%html
+%html{:lang => I18n.locale.to_s, :dir=>I18n.locale.to_s == "ar" ? "rtl" : "ltr"}
   %head
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
     :css
       a { color: #049cdb; text-decoration:none; }
       a:hover { text-decoration:underline; }
+    -if I18n.locale.to_s == "ar"
+      :css
+        p { 
+          direction: rtl; 
+          text-align: right;
+        }
   %body{:style=>'background:#fff'}
     %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
       %p
-        = "Dear #{@account.name},"
+        = I18n.t("emails.general.dear_var", account_name: @account.name)
         %br/
         %br/
-        Thank you for your collaboration to the EJatlas. As you know, the EJOLT mapping of environmental conflicts is a collaborative project and relies on the contributions of activists on the ground as well as researchers. Please check the 
-        %a{:href=>$siteurl+'/faq',:target=>'_blank'} FAQ
-        for further details of the data collection process.
+        =I18n.t("emails.confirm.thank_you_for_your_collaboration")
+        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{I18n.locale}.")}/faq",:target=>'_blank'}= I18n.t("emails.confirm.faq")
+        = I18n.t("emails.confirm.for_further_details_data_collection")
         %br/
         %br/
-        Please mark your form as draft while you are still working on it. After you mark it as queued we will moderate it as soon as possible and you will receive an email telling you to check the case. After approved it will be visible on the map. Please share the case to increase its visibility. 
+        = I18n.t("emails.confirm.please_mark_your_form_as")
         %br/
         %br/
-        %a{:href=>$consurl+'/accounts/confirm?id='+@account.id.to_s+'&hash='+@account.surname,:target=>'_blank'}
-          %span Please click here to confirm your account.
+        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{I18n.locale}.")}/accounts/confirm?id=#{@account.id}&hash=#{@account.surname}",:target=>'_blank'}
+          %span= I18n.t("emails.confirm.please_click_here_to_confirm")
         %br/
         %br/
-        We very much appreciate your contribution and please be in touch at 
-        %a{:href=>'mailto:ejoltmap@gmail.com'} ejoltmap@gmail.com
-        if you encounter any difficulties or problems and thanks again for the hard work you have all put into this Mapping of Environmental Justice struggles.
+        = I18n.t("emails.confirm.we_very_much_appreciate_your", ejoltmap_at_gmailcom: "<a href='mailto:ejoltmap@gmail.com'>ejoltmap@gmail.com</a>").html_safe
         %br/
         %br/
-        Best wishes,
+        = I18n.t("emails.general.best_wishes")
         %br/
         %br/
-        EJatlas editors
+        = I18n.t("emails.general.ejatlas_editors")
