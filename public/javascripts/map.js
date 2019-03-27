@@ -71,6 +71,7 @@ function initMap () {
     center: new L.latLng([16,26]),
     zoom: 2,
     minZoom: 2,
+    zoomSnap: 0,
     layers: initLayers,
     zoomControl: false,
     //renderer: L.canvas()
@@ -366,7 +367,6 @@ function initMap () {
   window.onresize = onResize; 
 
   updateInfo(1,disclaimer);
-  mapFit();
 }
 
 function slideAttribution () {
@@ -526,6 +526,7 @@ function showMarkers(markers) {
       legendpane.hide();
     }
     setTimeout( markerSize, 200);
+    setTimeout( mapFit, 200);
   });
   //$('.map_icon').addClass('mic');
   markerSize();
@@ -634,7 +635,7 @@ function mapFit(){
   if (markerBounds.getSouthWest() == undefined) {
     map.setView([16,26],2);
   } else {
-    map.fitBounds(markerBounds);
+    map.fitBounds(markerBounds,{padding:[0,80]});
   }
 }
 
