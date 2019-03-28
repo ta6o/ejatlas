@@ -5574,6 +5574,7 @@ ul.sidelink li.active {
 }
 .map_icon.i_6 {
   background: #00bdff url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;
+  border: 1px solid #000 !important;
 }
 .map_icon.i_2 {
   background: #ff7f00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;
