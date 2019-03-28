@@ -146,7 +146,7 @@ Admin.controller do
     @images = c.images
     @zoom = 8
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
-    @baselayers = "Esri.WorldPhysical,Esri.WorldTopoMap,Esri.WorldImagery"
+    @baselayers = "Esri.WorldImagery,Esri.WorldTopoMap,Esri.WorldPhysical"
     @related = c.related
     @headline = c.headline and c.headline.length > 0 ? c.headline : nil
     @summary = c.table
