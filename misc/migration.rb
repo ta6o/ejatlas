@@ -161,7 +161,7 @@ def check_it_conflicts
     line = line.split(" - ")
     p line
     if it = ItConflict.find_by_slug(line[0].slug)
-      if en = Conflict.find_slug(line[1].slug)
+      if en = Conflict.find_slug(line[1].slug) and ConflictText.where(:conflict_id=>en.id,:locale=>"it").empty?
         puts "it: #{it.id}, en: #{en.id}"
         begin
           ct = ConflictText.new
@@ -171,7 +171,26 @@ def check_it_conflicts
             next if ["conflict_id","locale"].include?(attr)
             eval "ct.#{attr} = it.attributes[attr]"
           end
-          pp ct.attributes.values[0..5]
+          ct.save!
+        rescue => e
+          puts e
+        end
+      else
+        puts "it: #{it.id}, en: none"
+        begin
+          c = Conflict.create
+          ct = ConflictText.new
+          ct.locale = "it"
+          ct.conflict_id = c.id
+          it.attributes.each do |attr, type|
+            if cols.keys.include?(attr)
+              eval "ct.#{attr} = it.attributes[attr]"
+            else
+              eval "c.#{attr} = it.attributes[attr]"
+            end
+          end
+          it.methods.grep(/^validate_associated_records_for_.*$/).map{|m|m.to_s.split("validate_associated_records_for_")[1]}.each do |rel|
+          end
           ct.save!
         rescue => e
           puts e
@@ -182,4 +201,11 @@ def check_it_conflicts
   nil
 end
 
+def test_it 
+  ItConflict.all.order(:id).each do |it|
+    puts "#{it.name} (#{it.approval_status})"
+    p it.methods.grep(/^validate_associated_records_for_.*$/).map{|m|m.to_s.split("validate_associated_records_for_")[1]}
+  end
+  nil
+end
 
