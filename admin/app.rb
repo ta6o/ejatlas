@@ -46,7 +46,7 @@ class Admin < Padrino::Application
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
 
-  $baselayers = "Thunderforest.Landscape,Esri.WorldImagery,Esri.WorldTopoMap"
+  $baselayers = "Esri.WorldPhysical,Esri.WorldImagery,Esri.WorldTopoMap"
   $relatives = {"category_id" => "Categories", "types" => "Subcategories", "population_type" => "Population Type", "country_id" => "Country", "companies"=>"Companies","supporters"=>"IFI's","products"=>"Commodities", "mobilizing_groups" => "Mobilizing Groups", "mobilizing_forms" => "Mobilizing Forms", "env_impacts"=>"Environmental Impacts", "hlt_impacts"=>"Health Impacts", "sec_impacts"=>"Socioeconomical Impacts", "conflict_events" => "Outcomes"}
   
   $ips = Socket.ip_address_list.find_all{|ai| ai.ipv4?}.map &:ip_address
