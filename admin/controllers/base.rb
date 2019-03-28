@@ -470,7 +470,7 @@ Admin.controller do
     @title = fil.name
     @fid = fil.uid
     @filter = true
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Esri.WorldPhysical"
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/embed", :layout => false
   end
