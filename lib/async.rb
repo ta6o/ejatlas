@@ -714,10 +714,10 @@ class AsyncTask
       puts "Updating categories..."
       Type.all.each do |t|
         next if t.name == "Other"
-        ty = CType.where(:type_id=>1).map(&:conflict_id) - [nil]
-        cs = ConflictText.where(:conflict_id=>ty.uniq,:locale=>locale).map {|c| c.conflict.approval_status=="approved" ? true : nil} - [nil]
+        ty = CType.where(:type_id=>t.id).map(&:conflict_id) - [nil]
+        cs = ConflictText.where(:conflict_id=>ty.uniq,:locale=>locale, :approval_status=>"approved")
         if cs.length >= 1
-          types << [t.jsonize,cs.count] 
+          types << [t.jsonize,cs.count]
         end
         t.save
       end

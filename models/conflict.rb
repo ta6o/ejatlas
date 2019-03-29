@@ -462,9 +462,10 @@ class Conflict < ActiveRecord::Base
   end
 
   def as_table(options={})
+    loc = options["locale"] || options[:locale] || I18n.locale
     c = self
     v = self
-    loc = options["locale"] || options[:locale] || I18n.locale
+    ct = self.local_data(loc)
 
     others = {
       "products" => [57,v.other_products,'commodity'],
@@ -491,10 +492,9 @@ class Conflict < ActiveRecord::Base
           cnt.gsub!(/\n\n/,"\n")
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
         when :mini
-          cnt = eval va[1]+'.'+va[2]
-          cnt = cnt.to_s
+          cnt = eval(va[1]+'.'+va[2]).to_s
           cnt.gsub!(/\r/,"\n")
-          cnt.gsub!(/\n\n/,"\n")
+          cnt.gsub!(/\n+/,"\n")
           cna = cnt.split(/<\/p>\s*<p>/)
           if cna.length == 0
             ta += ''
@@ -502,8 +502,8 @@ class Conflict < ActiveRecord::Base
             ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns">'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
           else
             cn1 = "#{cna[0]}</p>"
-            cn2 = cna[1..-1].join("</p><p>")
-            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">See more...</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
+            cn2 = "<p>#{cna[1..-1].join("</p><p>")}"
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">'+I18n.t("v.info.see_more",loc)+'</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
           end
         when :name
           cnt = eval va[1]+'.'+va[2]
@@ -644,7 +644,7 @@ class Conflict < ActiveRecord::Base
     [
 
       [I18n.t('f.conflict.description',:locale=>loc), '1', [
-        [:mini, 'c' ,'description', ''],
+        [:mini, 'ct' ,'description', ''],
       ]],
 
       [I18n.t('f.conflict.basic_data',:locale=>loc), '1', [
