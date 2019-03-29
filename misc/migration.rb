@@ -155,6 +155,30 @@ def id_language text
   end
 end
 
+def check_ar_conflicts
+  found = 0
+  CSV.read("../arabic.csv").each_with_index do |ar,ind|
+    next if ind == 0
+    if en = Conflict.find_slug(ar[0].strip.split(/\//)[-1])
+      found += 1
+      begin
+        ct = ConflictText.new
+        ct.locale = "ar"
+        ct.conflict_id = en.id
+        ct.name = ar[2]
+        ct.description = ar[3]
+        ct.save!
+      rescue => e
+        puts e
+      end
+    else
+      puts "not found: #{ar[0]}"
+    end
+  end
+  puts found
+  nil
+end
+
 def check_it_conflicts
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
   File.readlines("../it_cases.txt").each do |line|
