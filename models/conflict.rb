@@ -464,7 +464,7 @@ class Conflict < ActiveRecord::Base
   def as_table(options={})
     c = self
     v = self
-    loc = options["locale"] || I18n.locale
+    loc = options["locale"] || options[:locale] || I18n.locale
 
     others = {
       "products" => [57,v.other_products,'commodity'],
