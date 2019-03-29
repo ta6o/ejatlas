@@ -132,7 +132,7 @@ class Conflict < ActiveRecord::Base
 
   def set_local_text attr, val, locale=I18n.locale
     begin
-      self.conflict_texts.where(:locale=>locale)[0].attributes[attr] = val
+      self.local_data(locale).update_attribute attr, val
     rescue =>e
       puts "#{self.id}: #{e}"
       nil
@@ -141,15 +141,19 @@ class Conflict < ActiveRecord::Base
 
   def ping locale=I18n.locale
     ts = []
+
     t = Time.now
     self.json = self.jsonize(locale)
     ts << Time.now - t
+
     t = Time.now
     self.marker = self.as_marker.to_json
     ts << Time.now - t
+
     t = Time.now
     self.set_local_text "table", self.as_table(:locale=>locale), locale
     ts << Time.now - t
+
     ts
   end
 
