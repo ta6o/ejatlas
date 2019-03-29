@@ -648,69 +648,69 @@ class Conflict < ActiveRecord::Base
       ]],
 
       [I18n.t('f.conflict.basic_data',:locale=>loc), '1', [
-        [:flat, 'c' ,'name', 'Name'],
-        [:link, 'v', 'country', 'country', 'Country'],
-        [:flat, 'c' ,'province', 'Province'],
-        [:flat, 'c' ,'site', 'Site'],
-        [:arra, 'v' ,'accuracy_level', ['','LOW country/state level','MEDIUM regional level','HIGH local level'], 'Accuracy of Location'],
+        [:flat, 'c' ,'name', I18n.t('f.conflict.name_of_conflict',:locale=>loc)],
+        [:link, 'v', 'country', 'country', I18n.t('f.conflict.country',:locale=>loc)],
+        [:flat, 'c' ,'province', I18n.t('f.conflict.state_or_province',:locale=>loc)],
+        [:flat, 'c' ,'site', I18n.t('f.conflict.municipality_or_city_town',:locale=>loc)],
+        [:arra, 'v' ,'accuracy_level', ['', I18n.t('m.accuracy_level.low_country_level',:locale=>loc), I18n.t('m.accuracy_level.medium_regional_level',:locale=>loc), I18n.t('m.accuracy_level.high_local_level',:locale=>loc)], I18n.t('f.conflict.accuracy_of_location',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.source_of_conflict',:locale=>loc), '1', [
-        [:name, 'v', 'category', 'Type of Conflict (1st level)'],
-        [:many, 'types', 'Type of Conflict (2nd level)'],
-        [:mlnk, 'products', 'Specific Commodities'],
+        [:name, 'v', 'category', I18n.t('f.conflict.type_conflict_1st_level',:locale=>loc)],
+        [:many, 'types', I18n.t('f.conflict.type_conflict_2nd_level',:locale=>loc)],
+        [:mlnk, 'products', I18n.t('f.conflict.specific_commodities',:locale=>loc)]
       ]],
 
-      [I18n.t('f.conflict.project_details_sctors',:locale=>loc), '10', [
-        [:mini, 'v' ,'project_details', 'Project Details'],
-        [:flat, 'c' ,'project_area', 'Project Area (in hectares)'],
-        [:flat, 'v' ,'investment_string', 'Level of Investment (in USD)'],
-        [:arra, 'v' ,'population_type', ['Unknown','Urban','Semi-urban','Rural'], 'Type of Population'],
-        [:flat, 'v' ,'affected_people', 'Potential Affected Population'],
-        [:flat, 'c' ,'start_date', 'Start Date'],
-        [:flat, 'v' ,'end_date', 'End Date'],
-        [:mlnk, 'companies', 'company', 'Company Names or State Enterprises'],
-        [:flat, 'c', 'govt_actors', 'Relevant government actors'],
-        [:mlnk, 'supporters', 'institution', 'International and Financial Institutions'],
-        [:flat, 'c', 'ejos', 'Environmental justice organisations and other supporters'],
+      [I18n.t('f.conflict.project_details_actors',:locale=>loc), '10', [
+        [:mini, 'v' ,'project_details', I18n.t('f.conflict.project_details',:locale=>loc)],
+        [:flat, 'c' ,'project_area', I18n.t('f.conflict.project_area',:locale=>loc)],
+        [:flat, 'v' ,'investment_string', I18n.t('f.conflict.level_of_investment',:locale=>loc)],
+        [:arra, 'v' ,'population_type', [ I18n.t('m.population_type.unknown',:locale=>loc), I18n.t('m.population_type.urban',:locale=>loc), I18n.t('m.population_type.semi_urban',:locale=>loc),I18n.t('m.population_type.rural',:locale=>loc)], I18n.t('f.conflict.type_of_population',:locale=>loc)],
+        [:flat, 'v' ,'affected_people', I18n.t('f.conflict.affected_population',:locale=>loc)],
+        [:flat, 'c' ,'start_date', I18n.t('f.conflict.start_conflict',:locale=>loc)],
+        [:flat, 'v' ,'end_date', I18n.t('f.conflict.end_conflict',:locale=>loc)],
+        [:mlnk, 'companies', 'company', I18n.t('f.conflict.company_names_or_state_enterprises',:locale=>loc)],
+        [:flat, 'c', 'govt_actors', I18n.t('f.conflict.relevant_government_actors',:locale=>loc)],
+        [:mlnk, 'supporters', 'institution', I18n.t('f.conflict.international_finance_institutions',:locale=>loc)],
+        [:flat, 'c', 'ejos', I18n.t('f.conflict.environmental_justice_organizations_other_supporters',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.conflict_and_mobilization',:locale=>loc), '2', [
-        [:arra, 'v' ,'status_id', ['',"UNKNOWN","LATENT (no visible organising at the moment)","LOW (some local organising)","MEDIUM (street protests, visible mobilization)","HIGH (widespread, mass mobilization, violence, arrests, etc...)"], 'Intensity of Conflict (at highest level)'],
-        [:arra, 'c' ,'reaction_id', ['',"UNKNOWN","LATENT (no visible resistance)","PREVENTIVE resistance (precautionary phase)","In REACTION to the implementation (during construction or operation)","Mobilization for reparations once impacts have been felt"], 'When did the mobilization begin'],
-        [:many, 'mobilizing_groups', 'Groups Mobilizing'],
-        [:many, 'mobilizing_forms', 'Forms of Mobilization'],
+        [:arra, 'v' ,'status_id', ['', I18n.t('m.status_id.unknown',:locale=>loc), I18n.t('m.status_id.latent_no_visible_organising_at_the_moment',:locale=>loc), I18n.t('m.status_id.low_some_local_organising',:locale=>loc), I18n.t('m.status_id.medium_street_protests_visible_mobilization',:locale=>loc), I18n.t('m.status_id.high_widespread_mass_mobilization_violence_arrests_etc',:locale=>loc)], I18n.t('m.status_id.intensity',:locale=>loc)],
+        [:arra, 'c' ,'reaction_id', ['', I18n.t('m.reaction_id.unknown',:locale=>loc), I18n.t('m.reaction_id.latent_no_visible_resistance',:locale=>loc), I18n.t('m.reaction_id.preventive_resistance_precautionary_phase',:locale=>loc), I18n.t('m.reaction_id.in_reaction_to_the_implementation_during_construction_or_operation',:locale=>loc), I18n.t('m.reaction_id.mobilization_for_reparations_once_impacts_have_been_felt',:locale=>loc)], I18n.t('m.reaction_id.reaction_stage',:locale=>loc)],
+        [:many, 'mobilizing_groups', I18n.t('f.conflict.groups_mobilizing',:locale=>loc)],
+        [:many, 'mobilizing_forms', I18n.t('f.conflict.forms_of_mobilization',:locale=>loc)]
       ]],
 
-      [I18n.t('f.conflict.impacts',:locale=>loc), '10', [
-        [:impc, 'env', 'Environmental Impacts'],
-        [:flat, 'v' ,'other_env_impacts', 'Other'],
-        [:impc, 'hlt', 'Health Impacts'],
-        [:flat, 'v' ,'other_hlt_impacts', 'Other'],
-        [:impc, 'sec', 'Socio-economic Impacts'],
-        [:flat, 'v' ,'other_sec_impacts', 'Other'],
+      [I18n.t('f.conflict.impacts_project',:locale=>loc), '10', [
+        [:impc, 'env', I18n.t('m.env_impacts.environmental_impacts',:locale=>loc)],
+        [:flat, 'v' ,'other_env_impacts', I18n.t('m.env_impacts.other_environmental_impacts',:locale=>loc)],
+        [:impc, 'hlt', I18n.t('m.hlt_impacts.health_impacts',:locale=>loc)],
+        [:flat, 'v' ,'other_hlt_impacts', I18n.t('m.hlt_impacts.other_health_impacts',:locale=>loc)],
+        [:impc, 'sec', I18n.t('m.sec_impacts.socio_economical_impacts',:locale=>loc)],
+        [:flat, 'v' ,'other_sec_impacts', I18n.t('m.sec_impacts.other_socio_economic_impacts',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.outcome',:locale=>loc), '10', [
-        [:name, 'v', 'project_status', 'Project Status'],
-        [:many, 'conflict_events', 'Pathways for conflict outcome / response'],
-        [:flat, 'v' ,'suggested_alternatives', 'Development of Alternatives'],
-        [:arra, 'c' ,'success_level', ['Yes','Not Sure','No'], 'Do you consider this as a success?'],
-        [:flat, 'v' ,'success_reason', 'Why? Explain briefly.'],
+        [:name, 'v', 'project_status', I18n.t('m.project_status_id.project_status',:locale=>loc)],
+        [:many, 'conflict_events', I18n.t('f.conflict.conflict_outcome_response',:locale=>loc)],
+        [:flat, 'v' ,'suggested_alternatives', I18n.t('f.conflict.development_of_alternatives',:locale=>loc)],
+        [:arra, 'c' ,'success_level', [I18n.t('f.conflict.yes',:locale=>loc),I18n.t('f.conflict.not_sure',:locale=>loc),I18n.t('f.conflict.no',:locale=>loc)], I18n.t('f.conflict.do_you_consider_this_an',:locale=>loc)],
+        [:flat, 'v' ,'success_reason', I18n.t('f.conflict.briefly_explain',:locale=>loc)],
       ]],
 
       [I18n.t('f.conflict.sources_and_materials',:locale=>loc), '3', [
-        [:refs, 'legislations', 'Legislations'],
-        [:refs, 'references', 'References'],
-        [:refs, 'weblinks', 'Links'],
-        [:refs, 'medialinks', 'Media Links'],
-        [:refs, 'documents', 'Other Documents'],
-        [:flat, 'v' ,'other_comments', 'Other Comments'],
+        [:refs, 'legislations', I18n.t('f.conflict.related_laws_legislations_juridical_texts',:locale=>loc)],
+        [:refs, 'references', I18n.t('f.conflict.references_to_published_books_academic',:locale=>loc)],
+        [:refs, 'weblinks', I18n.t('f.conflict.links_to_general_newspaper_articles',:locale=>loc)],
+        [:refs, 'medialinks', I18n.t('f.conflict.related_media_links_to_videos',:locale=>loc)],
+        [:refs, 'documents', I18n.t('f.conflict.other_documents',:locale=>loc)],
+        [:flat, 'v' ,'other_comments', I18n.t('f.conflict.other_comments',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.meta_information',:locale=>loc), '8', [
-        [:flat, 'c', 'contributor', 'Contributor'],
-        [:date, 'c', 'modified_at', 'Last update'],
+        [:flat, 'c', 'contributor', I18n.t('f.conflict.contributor',:locale=>loc)],
+        [:date, 'c', 'modified_at', I18n.t('f.conflict.last_update',:locale=>loc)]
       ]]]
   end
 
