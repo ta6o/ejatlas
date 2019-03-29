@@ -468,10 +468,10 @@ class Conflict < ActiveRecord::Base
     ct = self.local_data(loc)
 
     others = {
-      "products" => [57,v.other_products,'commodity'],
-      "conflict_events" => [26,v.other_outcomes],
-      "mobilizing_groups" => [21,v.other_mobilizing_groups],
-      "mobilizing_forms" => [28,v.other_mobilizing_forms]
+      "products" => [57,ct.other_products,'commodity'],
+      "conflict_events" => [26,ct.other_outcomes],
+      "mobilizing_groups" => [21,ct.other_mobilizing_groups],
+      "mobilizing_forms" => [28,ct.other_mobilizing_forms]
     }
 
     tab = ''
@@ -503,14 +503,18 @@ class Conflict < ActiveRecord::Base
           else
             cn1 = "#{cna[0]}</p>"
             cn2 = "<p>#{cna[1..-1].join("</p><p>")}"
-            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">'+I18n.t("v.info.see_more",loc)+'</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">'+I18n.t("v.info.see_more",:locale=>loc)+'</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
           end
         when :name
           cnt = eval va[1]+'.'+va[2]
-          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.name+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+I18n.t("m.#{va[2]}_id.#{cnt.name.slug('_')}",:locale=>loc)+'</td></tr>' unless cnt.nil? or cnt == ''
         when :link
           cnt = eval va[1]+'.'+va[2]
-          ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+cnt.name.to_s+'</a></td></tr>' unless cnt.nil? or cnt == ''
+          if va[2] == "country"
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+I18n.t("countries.#{cnt.name.slug('_')}",:locale=>loc)+'</a></td></tr>' unless cnt.nil? or cnt == ''
+          else
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+cnt.name.to_s+'</a></td></tr>' unless cnt.nil? or cnt == ''
+          end
         when :self
           cnt = va[1]
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
@@ -525,15 +529,16 @@ class Conflict < ActiveRecord::Base
               if m.id == others[va[1]][0]
                 arr << others[va[1]][1]
               else
-                arr << m.name
+                arr << I18n.t("m.#{va[1]}.#{m.name.slug("_")}",:locale=>loc)
               end
             else
-              arr << m.name
+              arr << I18n.t("m.#{va[1]}.#{m.name.slug("_")}",:locale=>loc)
             end
           end
           cnt = arr.join '<br /> '
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :mlnk
+          p va
           man = eval 'v.'+va[1]
           arr = []
           man.each do |m| 
@@ -542,9 +547,9 @@ class Conflict < ActiveRecord::Base
                 arr << others[va[1]][1]
               else
                 begin
-                  arr << "<a href='/"+others[va[1]][2]+"/"+m.slug+"'>"+m.name+"</a>"
+                  arr << "<a href='/"+others[va[1]][2]+"/"+m.slug+"'>"+I18n.t("m.#{va[1]}.#{m.name.slug('_')}",:locale=>loc)+"</a>"
                 rescue
-                  arr << m.name
+                  arr << I18n.t("m.products.#{m.name.slug('_')}",:locale=>loc)
                 end
               end
             else
@@ -608,8 +613,7 @@ class Conflict < ActiveRecord::Base
           avis = []
           apot = []
           man.each do |m|
-            imp = ''
-            imp += eval 'm.'+va[1]+'_impact.name'
+            imp = I18n.t("m.#{va[1]}_impacts.#{eval('m.'+va[1]+'_impact.name').slug('_')}",:locale=>loc)
             if m.visible
               avis << imp
             else
@@ -618,9 +622,9 @@ class Conflict < ActiveRecord::Base
           end
           if avis.length+apot.length > 0
             ta += '<tr><td class="fld">'+va[-1]+'</td><td>'
-            ta += "<strong>Visible: </strong>"+avis.join(', ') unless avis.length == 0
+            ta += "<strong>#{I18n.t("f.conflict.visible",:locale=>loc)}: </strong>"+avis.join(', ') unless avis.length == 0
             ta += "<br />" if avis.length > 0 and apot.length > 0
-            ta += "<strong>Potential: </strong>"+apot.join(', ') unless apot.length == 0
+            ta += "<strong>#{I18n.t("f.conflict.potential",:locale=>loc)}: </strong>"+apot.join(', ') unless apot.length == 0
             ta += '</td></tr>'
           end
         when :subm
@@ -648,35 +652,35 @@ class Conflict < ActiveRecord::Base
       ]],
 
       [I18n.t('f.conflict.basic_data',:locale=>loc), '1', [
-        [:flat, 'c' ,'name', I18n.t('f.conflict.name_of_conflict',:locale=>loc)],
-        [:link, 'v', 'country', 'country', I18n.t('f.conflict.country',:locale=>loc)],
-        [:flat, 'c' ,'province', I18n.t('f.conflict.state_or_province',:locale=>loc)],
-        [:flat, 'c' ,'site', I18n.t('f.conflict.municipality_or_city_town',:locale=>loc)],
-        [:arra, 'v' ,'accuracy_level', ['', I18n.t('m.accuracy_level.low_country_level',:locale=>loc), I18n.t('m.accuracy_level.medium_regional_level',:locale=>loc), I18n.t('m.accuracy_level.high_local_level',:locale=>loc)], I18n.t('f.conflict.accuracy_of_location',:locale=>loc)]
+        [:flat, 'ct' ,'name', I18n.t('f.conflict.name_of_conflict',:locale=>loc)],
+        [:link, 'c', 'country', 'country', I18n.t('f.conflict.country',:locale=>loc)],
+        [:flat, 'ct' ,'province', I18n.t('f.conflict.state_or_province',:locale=>loc)],
+        [:flat, 'ct' ,'site', I18n.t('f.conflict.municipality_or_city_town',:locale=>loc)],
+        [:arra, 'c' ,'accuracy_level', ['', I18n.t('m.accuracy_level.low_country_level',:locale=>loc), I18n.t('m.accuracy_level.medium_regional_level',:locale=>loc), I18n.t('m.accuracy_level.high_local_level',:locale=>loc)], I18n.t('f.conflict.accuracy_of_location',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.source_of_conflict',:locale=>loc), '1', [
-        [:name, 'v', 'category', I18n.t('f.conflict.type_conflict_1st_level',:locale=>loc)],
+        [:name, 'c', 'category', I18n.t('f.conflict.type_conflict_1st_level',:locale=>loc)],
         [:many, 'types', I18n.t('f.conflict.type_conflict_2nd_level',:locale=>loc)],
         [:mlnk, 'products', I18n.t('f.conflict.specific_commodities',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.project_details_actors',:locale=>loc), '10', [
-        [:mini, 'v' ,'project_details', I18n.t('f.conflict.project_details',:locale=>loc)],
-        [:flat, 'c' ,'project_area', I18n.t('f.conflict.project_area',:locale=>loc)],
-        [:flat, 'v' ,'investment_string', I18n.t('f.conflict.level_of_investment',:locale=>loc)],
-        [:arra, 'v' ,'population_type', [ I18n.t('m.population_type.unknown',:locale=>loc), I18n.t('m.population_type.urban',:locale=>loc), I18n.t('m.population_type.semi_urban',:locale=>loc),I18n.t('m.population_type.rural',:locale=>loc)], I18n.t('f.conflict.type_of_population',:locale=>loc)],
-        [:flat, 'v' ,'affected_people', I18n.t('f.conflict.affected_population',:locale=>loc)],
+        [:mini, 'ct' ,'project_details', I18n.t('f.conflict.project_details',:locale=>loc)],
+        [:flat, 'ct' ,'project_area', I18n.t('f.conflict.project_area',:locale=>loc)],
+        [:flat, 'ct' ,'investment_string', I18n.t('f.conflict.level_of_investment',:locale=>loc)],
+        [:arra, 'c' ,'population_type', [ I18n.t('m.population_type.unknown',:locale=>loc), I18n.t('m.population_type.urban',:locale=>loc), I18n.t('m.population_type.semi_urban',:locale=>loc),I18n.t('m.population_type.rural',:locale=>loc)], I18n.t('f.conflict.type_of_population',:locale=>loc)],
+        [:flat, 'ct' ,'affected_people', I18n.t('f.conflict.affected_population',:locale=>loc)],
         [:flat, 'c' ,'start_date', I18n.t('f.conflict.start_conflict',:locale=>loc)],
-        [:flat, 'v' ,'end_date', I18n.t('f.conflict.end_conflict',:locale=>loc)],
+        [:flat, 'c' ,'end_date', I18n.t('f.conflict.end_conflict',:locale=>loc)],
         [:mlnk, 'companies', 'company', I18n.t('f.conflict.company_names_or_state_enterprises',:locale=>loc)],
-        [:flat, 'c', 'govt_actors', I18n.t('f.conflict.relevant_government_actors',:locale=>loc)],
+        [:flat, 'ct', 'govt_actors', I18n.t('f.conflict.relevant_government_actors',:locale=>loc)],
         [:mlnk, 'supporters', 'institution', I18n.t('f.conflict.international_finance_institutions',:locale=>loc)],
-        [:flat, 'c', 'ejos', I18n.t('f.conflict.environmental_justice_organizations_other_supporters',:locale=>loc)]
+        [:flat, 'ct', 'ejos', I18n.t('f.conflict.environmental_justice_organizations_other_supporters',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.conflict_and_mobilization',:locale=>loc), '2', [
-        [:arra, 'v' ,'status_id', ['', I18n.t('m.status_id.unknown',:locale=>loc), I18n.t('m.status_id.latent_no_visible_organising_at_the_moment',:locale=>loc), I18n.t('m.status_id.low_some_local_organising',:locale=>loc), I18n.t('m.status_id.medium_street_protests_visible_mobilization',:locale=>loc), I18n.t('m.status_id.high_widespread_mass_mobilization_violence_arrests_etc',:locale=>loc)], I18n.t('m.status_id.intensity',:locale=>loc)],
+        [:arra, 'c' ,'status_id', ['', I18n.t('m.status_id.unknown',:locale=>loc), I18n.t('m.status_id.latent_no_visible_organising_at_the_moment',:locale=>loc), I18n.t('m.status_id.low_some_local_organising',:locale=>loc), I18n.t('m.status_id.medium_street_protests_visible_mobilization',:locale=>loc), I18n.t('m.status_id.high_widespread_mass_mobilization_violence_arrests_etc',:locale=>loc)], I18n.t('m.status_id.intensity',:locale=>loc)],
         [:arra, 'c' ,'reaction_id', ['', I18n.t('m.reaction_id.unknown',:locale=>loc), I18n.t('m.reaction_id.latent_no_visible_resistance',:locale=>loc), I18n.t('m.reaction_id.preventive_resistance_precautionary_phase',:locale=>loc), I18n.t('m.reaction_id.in_reaction_to_the_implementation_during_construction_or_operation',:locale=>loc), I18n.t('m.reaction_id.mobilization_for_reparations_once_impacts_have_been_felt',:locale=>loc)], I18n.t('m.reaction_id.reaction_stage',:locale=>loc)],
         [:many, 'mobilizing_groups', I18n.t('f.conflict.groups_mobilizing',:locale=>loc)],
         [:many, 'mobilizing_forms', I18n.t('f.conflict.forms_of_mobilization',:locale=>loc)]
@@ -684,11 +688,11 @@ class Conflict < ActiveRecord::Base
 
       [I18n.t('f.conflict.impacts_project',:locale=>loc), '10', [
         [:impc, 'env', I18n.t('m.env_impacts.environmental_impacts',:locale=>loc)],
-        [:flat, 'v' ,'other_env_impacts', I18n.t('m.env_impacts.other_environmental_impacts',:locale=>loc)],
+        [:flat, 'ct' ,'other_env_impacts', I18n.t('m.env_impacts.other_environmental_impacts',:locale=>loc)],
         [:impc, 'hlt', I18n.t('m.hlt_impacts.health_impacts',:locale=>loc)],
-        [:flat, 'v' ,'other_hlt_impacts', I18n.t('m.hlt_impacts.other_health_impacts',:locale=>loc)],
+        [:flat, 'ct' ,'other_hlt_impacts', I18n.t('m.hlt_impacts.other_health_impacts',:locale=>loc)],
         [:impc, 'sec', I18n.t('m.sec_impacts.socio_economical_impacts',:locale=>loc)],
-        [:flat, 'v' ,'other_sec_impacts', I18n.t('m.sec_impacts.other_socio_economic_impacts',:locale=>loc)]
+        [:flat, 'ct' ,'other_sec_impacts', I18n.t('m.sec_impacts.other_socio_economic_impacts',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.outcome',:locale=>loc), '10', [
