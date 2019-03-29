@@ -538,7 +538,6 @@ class Conflict < ActiveRecord::Base
           cnt = arr.join '<br /> '
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :mlnk
-          p va
           man = eval 'v.'+va[1]
           arr = []
           man.each do |m| 
