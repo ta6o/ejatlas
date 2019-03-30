@@ -152,7 +152,7 @@
         %header
           =yield_content :outer
           .container-full
-            #map.map.leftpane.noselect
+            #map.map.leftpane.noselect{:style=>"background:#78adce !important;"}
               -#bottompane.bottompane
                 .inner=yield_content :bottom
             .resize#resize.noselect{:title=>'Drag to resize info pane',"data-help"=>"popover","data-placement"=>"right","title"=>"","data-content"=>"Resize the information pane"}
@@ -171,17 +171,17 @@
         %header
           =yield_content :outer
           .container-full
-            #map.map.leftpane.noselect
+            #map.map.leftpane.noselect{:style=>"background-color:#7ca6d0"}
               -#bottompane.bottompane
                 .inner=yield_content :bottom
-            .resize#resize.noselect{:title=>'Drag to resize info pane',"data-help"=>"popover","data-placement"=>"right","title"=>"","data-content"=>"Resize the information pane"}
-              %span.glyphicon.glyphicon-forward{:title=>'Toggle info pane',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Go full screen"}
+            .resize#resize.noselect{:title=>'Drag to resize info pane',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Resize the information pane"}
+              %span.glyphicon.glyphicon-backward{:title=>'Toggle info pane',"data-help"=>"popover","data-placement"=>"right","title"=>"","data-content"=>"Go full screen",:style=>"cursor:w-resize"}
             #rightpane.rightpane.graybg
               :javascript
                 function getStyle(eId, strCssRule){ var oElm = document.getElementById(eId); var strValue = ""; if(document.defaultView && document.defaultView.getComputedStyle){ strValue = document.defaultView.getComputedStyle(oElm, "").getPropertyValue(strCssRule); } else if(oElm.currentStyle){ strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); }); strValue = oElm.currentStyle[strCssRule]; } return strValue; }
                 if (localStorage.key('mapWidth') && getStyle('map','position') == 'fixed'){
                   document.getElementById('map').style.width = localStorage['mapWidth']+"%";
-                  document.getElementById('resize').style.left = localStorage['mapWidth']+"%";
+                  document.getElementById('resize').style.right = localStorage['mapWidth']+"%";
                   document.getElementById('rightpane').style.width = (100-localStorage['mapWidth'])+"%";
                 }
               .inner.whitebg= yield

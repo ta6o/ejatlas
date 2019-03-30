@@ -8322,6 +8322,9 @@ ul.sidelink li.active {
 .leaflet-control-layers {
   margin-left: 8px !important;
 }
+.leaflet-control-zoom a {
+  background-color: transparent !important;
+}
 .leaflet-control-attribution {
   margin: 0 -12px 0 0 !important;
   max-height: 16px;
@@ -8332,6 +8335,10 @@ ul.sidelink li.active {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.leaflet-control.leaflet-control-zoom {
+  margin-left: 9px;
+  margin-top: 12px;
 }
 .leaflet-popup-pane {
   z-index: 7 !important;

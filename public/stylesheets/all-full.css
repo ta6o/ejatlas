@@ -5574,13 +5574,14 @@ ul.sidelink li.active {
 }
 .map_icon.i_6 {
   background: #00bdff url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
 }
 .map_icon.i_2 {
   background: #ff7f00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;
 }
 .map_icon.i_1 {
   background: #ffff00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;
-  border: 1px solid #000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
 }
 .map_icon.i_4 {
   background: #754c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;
@@ -6604,6 +6605,9 @@ ul.sidelink li.active {
 }
 .leaflet-control-layers {
   margin-right: 4px !important;
+}
+.leaflet-control-zoom a {
+  background-color: transparent !important;
 }
 .leaflet-control-attribution {
   margin: 0 -12px 0 0 !important;

@@ -120,7 +120,7 @@ Admin.controller do
     @maptitle = "World Map"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     @recent = Admin.filter_recent
     @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("created_at desc").limit(2)
     render "base/map", :layout => @layout
@@ -159,7 +159,7 @@ Admin.controller do
     @images = c.images
     @zoom = 8
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
+    @baselayers = "Esri.WorldImagery,Esri.WorldPhysical,Esri.WorldTopoMap"
     @related = c.related
     @headline = c.headline and c.headline.length > 0 ? c.headline : nil
     @summary = c.table
@@ -187,7 +187,6 @@ Admin.controller do
     @vectors = c.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
     @zoom = 8
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
-    @baselayers = "Esri.WorldImagery,Thunderforest.Landscape,Esri.WorldTopoMap"
     @name = c.name
     @pos = [c.lat,c.lon]
     @cid = c.id
@@ -224,7 +223,7 @@ Admin.controller do
     @image = nil
     @image = con.flag_images.first.file.url if con.flag_images.any?
     @maptitle = "Environmental Conflicts in #{@name}"
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
@@ -246,7 +245,7 @@ Admin.controller do
     @image = nil
     @image = con.logo_images.first.file.url if con.logo_images.any?
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
@@ -267,7 +266,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
@@ -288,7 +287,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts on #{@name}"
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
@@ -310,7 +309,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts about #{@name}"
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
@@ -329,7 +328,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
@@ -346,7 +345,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = "Environmental Conflicts of #{@name}"
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
@@ -483,7 +482,7 @@ Admin.controller do
     @title = fil.name
     @fid = fil.uid
     @filter = true
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/embed", :layout => false
   end
@@ -522,7 +521,7 @@ Admin.controller do
     @name = browseinfo[params[:model]].titlecase
     @maptitle = "Browse #{@name}"
     @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json
-    @baselayers = "Esri.WorldTopoMap,Esri.WorldImagery,Thunderforest.Landscape"
+    @baselayers = $baselayers
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     render "base/front"
   end

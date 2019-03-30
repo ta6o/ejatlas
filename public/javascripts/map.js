@@ -46,8 +46,8 @@ function initMap () {
     f = e.split('.');
     try {
       baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
-    } catch {
-      console.log("provider not found: "+e);
+    } catch(err) {
+      console.log(err+": "+e);
     }
   })
 
@@ -73,8 +73,8 @@ function initMap () {
     //maxBounds: [[-90,-270],[90,270]],
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
-    zoom: 2,
-    minZoom: 2,
+    zoom: 1,
+    minZoom: 1,
     zoomSnap: 0,
     layers: initLayers,
     zoomControl: false,
@@ -188,6 +188,7 @@ function initMap () {
   L.control.attribution({position: $botflo}).addTo(map);
   var zoomControl = L.control.zoom({position:$topflo});
   map.addControl(zoomControl);
+  $(".leaflet-control.leaflet-control-zoom").addClass("leaflet-control-layers");
   var loadingControl = L.Control.loading({
     //position: 'topright',
     position: $topflo,
@@ -240,12 +241,11 @@ function initMap () {
     mouseX = $dir == "ltr" ? e.pageX : window.innerWidth - e.pageX;
     dragging = true;
     $(".rightpane .inner").css('display','block');
-    if ($('.resize span').hasClass('glyphicon-backward')) {
+    if ($flo == 'left' && $('.resize span').hasClass('glyphicon-backward')) {
       if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
       $('.rightpane .inner').show();
       $('.leftpane').animate({'width':perc+"%"});
       $('.rightpane').animate({'width':(100-perc)+'%'});
-      //$('.resize').animate({'left':perc+"%"},function(){
       $('.resize').animate({$flo:perc+"%"},function(){
         $('.rightpane').css('overflow-x','hidden');
         $('.rightpane').css('overflow-y','auto');
@@ -254,13 +254,24 @@ function initMap () {
         $('.resize span').css('cursor','e-resize');
         map.invalidateSize();
       });
+    } else if ($flo == 'right' && $('.resize span').hasClass('glyphicon-forward')) {
+      if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
+      $('.rightpane .inner').show();
+      $('.leftpane').animate({'width':perc+"%"});
+      $('.rightpane').animate({'width':(100-perc)+'%'});
+      $('.resize').animate({$flo:perc+"%"},function(){
+        $('.rightpane').css('overflow-x','hidden');
+        $('.rightpane').css('overflow-y','auto');
+        $('.resize span').removeClass('glyphicon-forward');
+        $('.resize span').addClass('glyphicon-backward');
+        $('.resize span').css('cursor','e-resize');
+        map.invalidateSize();
+      });
     }
     $('body').bind('mousemove',function(e){
-      //px = Math.max(Math.min(Math.max(e.pageX,500),window.innerWidth - 480),500);
       px = Math.max(Math.min(Math.max( ($dir == "ltr" ? e.pageX : window.innerWidth - e.pageX ),500),window.innerWidth - 480),500);
       $(".leftpane").css('width',px+'px')
       $("#rightpane").css('width',(window.innerWidth-px)+'px')
-      //$("#resize").css('left',(px)+'px')
       $("#resize").css($flo,(px)+'px')
     });
   });
@@ -276,29 +287,52 @@ function initMap () {
   });
 
   $('.resize span').on('click',function(e){
-    if ($(this).hasClass('glyphicon-forward')) {
-      $('.leftpane').animate({'width':window.innerWidth - 16});
-      $('.rightpane').animate({'width':'16px'});
-      //$('.resize').animate({'left':window.innerWidth - 16},function(){
-      $('.resize').animate({$flo:window.innerWidth - 16},function(){
-        $('.rightpane .inner').hide();
-        $('.resize span').removeClass('glyphicon-forward').addClass('glyphicon-backward');
-        $('.resize span').css('cursor','w-resize');
-        map.invalidateSize();
-      });
-    } else {
-      if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
-      $('.rightpane .inner').show();
-      $('.leftpane').animate({'width':perc+"%"});
-      $('.rightpane').animate({'width':(100-perc)+'%'});
-      //$('.resize').animate({'left':perc+"%"},function(){
-      $('.resize').animate({$flo:perc+"%"},function(){
-        $('.rightpane').css('overflow-x','hidden');
-        $('.rightpane').css('overflow-y','auto');
-        $('.resize span').removeClass('glyphicon-backward').addClass('glyphicon-forward');
-        $('.resize span').css('cursor','e-resize');
-        onResize();
-      });
+    if ($flo == 'left') {
+      if ($(this).hasClass('glyphicon-forward')) {
+        $('.leftpane').animate({'width':window.innerWidth - 16});
+        $('.rightpane').animate({'width':'16px'});
+        $('.resize').animate({'left':window.innerWidth - 16},function(){
+          $('.rightpane .inner').hide();
+          $('.resize span').removeClass('glyphicon-forward').addClass('glyphicon-backward');
+          $('.resize span').css('cursor','w-resize');
+          map.invalidateSize();
+        });
+      } else {
+        if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
+        $('.rightpane .inner').show();
+        $('.leftpane').animate({'width':perc+"%"});
+        $('.rightpane').animate({'width':(100-perc)+'%'});
+        $('.resize').animate({'left':perc+"%"},function(){
+          $('.rightpane').css('overflow-x','hidden');
+          $('.rightpane').css('overflow-y','auto');
+          $('.resize span').removeClass('glyphicon-backward').addClass('glyphicon-forward');
+          $('.resize span').css('cursor','e-resize');
+          onResize();
+        });
+      }
+    } else if ($flo == 'right') {
+      if ($(this).hasClass('glyphicon-backward')) {
+        $('.leftpane').animate({'width':window.innerWidth - 16});
+        $('.rightpane').animate({'width':'16px'});
+        $('.resize').animate({'right':window.innerWidth - 16},function(){
+          $('.rightpane .inner').hide();
+          $('.resize span').removeClass('glyphicon-backward').addClass('glyphicon-forward');
+          $('.resize span').css('cursor','e-resize');
+          map.invalidateSize();
+        });
+      } else {
+        if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
+        $('.rightpane .inner').show();
+        $('.leftpane').animate({'width':perc+"%"});
+        $('.rightpane').animate({'width':(100-perc)+'%'});
+        $('.resize').animate({'right':perc+"%"},function(){
+          $('.rightpane').css('overflow-x','hidden');
+          $('.rightpane').css('overflow-y','auto');
+          $('.resize span').removeClass('glyphicon-forward').addClass('glyphicon-backward');
+          $('.resize span').css('cursor','w-resize');
+          onResize();
+        });
+      }
     }
   })
 
@@ -552,11 +586,11 @@ function onResize() {
   if ($('#map').css('position')=='fixed'){
     map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
-    //px = Math.max(Math.min(Math.max(parseInt($('#resize').css('left')),500),window.innerWidth - 480),500);
     px = Math.max(Math.min(Math.max(parseInt($('#resize').css($flo)),500),window.innerWidth - 480),500);
+    console.log(px)
+    console.log(px)
     $("#map").css('width',px+'px');
     $("#rightpane").css('width',(window.innerWidth-px)+'px');
-    //$("#resize").css('left',px+'px');
     $("#resize").css($flo,px+'px');
   } else {
     map.scrollWheelZoom.disable();
@@ -635,11 +669,13 @@ function markerFit(ids){
 
 function mapFit(){
   markerBounds = markerLayer.getBounds();
+  console.log(markerBounds);
   //console.log(markerBounds)
   if (markerBounds.getSouthWest() == undefined) {
     map.setView([16,26],2);
   } else {
-    map.fitBounds(markerBounds,{padding:[0,80]});
+    console.log("padme");
+    map.fitBounds(markerBounds,{padding:[8,80]});
   }
 }
 

@@ -48,7 +48,7 @@ class Admin < Padrino::Application
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
 
-  $baselayers = "Thunderforest.Landscape,Esri.WorldImagery,Esri.WorldTopoMap"
+  $baselayers = "Esri.WorldPhysical,Esri.WorldImagery,Esri.WorldTopoMap"
   $alllayers = [ "OpenStreetMap.Mapnik", "OpenStreetMap.BlackAndWhite", "OpenStreetMap.DE", "OpenStreetMap.HOT", "Thunderforest.OpenCycleMap", "Thunderforest.Transport", "Thunderforest.Landscape", "Thunderforest.Outdoors", "OpenMapSurfer.Roads", "OpenMapSurfer.Grayscale", "Hydda.Full", "Hydda.Base", "MapQuestOpen.OSM", "MapQuestOpen.Aerial", "Stamen.Toner", "Stamen.TonerBackground", "Stamen.TonerLite", "Stamen.Terrain", "Stamen.TerrainBackground", "Stamen.Watercolor", "Esri.WorldStreetMap", "Esri.DeLorme", "Esri.WorldTopoMap", "Esri.WorldImagery", "Esri.WorldTerrain", "Esri.WorldShadedRelief", "Esri.WorldPhysical", "Esri.OceanBasemap", "Esri.NatGeoWorldMap", "Esri.WorldGrayCanvas", "HERE.normalDay", "HERE.normalDayCustom", "HERE.normalDayGrey", "HERE.normalDayMobile", "HERE.normalDayGreyMobile", "HERE.normalDayTransit", "HERE.normalDayTransitMobile", "HERE.normalNight", "HERE.normalNightMobile", "HERE.normalNightGrey", "HERE.normalNightGreyMobile", "HERE.carnavDayGrey", "HERE.hybridDay", "HERE.hybridDayMobile", "HERE.pedestrianDay", "HERE.pedestrianNight", "HERE.satelliteDay", "HERE.terrainDay", "HERE.terrainDayMobile", "Acetate.basemap", "Acetate.terrain", "Acetate.all", "Acetate.hillshading", "FreeMapSK", "MtbMap", "OpenMapSurfer.AdminBounds", "Hydda.RoadsAndLabels", "Stamen.TonerHybrid", "Stamen.TonerLines", "Stamen.TonerLabels", "OpenWeatherMap.Clouds", "OpenWeatherMap.CloudsClassic", "OpenWeatherMap.Precipitation", "OpenWeatherMap.PrecipitationClassic", "OpenWeatherMap.Rain", "OpenWeatherMap.RainClassic", "OpenWeatherMap.Pressure", "OpenWeatherMap.PressureContour", "OpenWeatherMap.Wind", "OpenWeatherMap.Temperature", "OpenWeatherMap.Snow", "Acetate.foreground", "Acetate.roads", "Acetate.labels"];
   $relatives = {"category_id" => "Categories", "types" => "Subcategories", "population_type" => "Population Type", "country_id" => "Country", "companies"=>"Companies","supporters"=>"IFI's","products"=>"Commodities", "mobilizing_groups" => "Mobilizing Groups", "mobilizing_forms" => "Mobilizing Forms", "env_impacts"=>"Environmental Impacts", "hlt_impacts"=>"Health Impacts", "sec_impacts"=>"Socioeconomical Impacts", "conflict_events" => "Outcomes"}
   
@@ -61,7 +61,7 @@ class Admin < Padrino::Application
   before do
     unless ["localhost","ejatlas"].include? (locale = request.host.split(".")[0])
       I18n.locale = locale
-      $dir = I18n.locale.to_s == "ar" ? "rtl" : "ltr"
+      $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
     end
   end
 
@@ -286,7 +286,6 @@ class Admin < Padrino::Application
             else
               r = val.values.first.split(':').map{|i| i.to_i}
             end
-            puts r
             range = {k=>{"gte"=>r[0],"lte"=>r[1]}}
             obj.delete('term')
           end
@@ -360,7 +359,6 @@ class Admin < Padrino::Application
   end
 
   def self.filter_recent offset=0, size=6
-    puts I18n.locale
     filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     begin
       result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline]},query:filter})["hits"]["hits"].map{|x| x["_source"]}

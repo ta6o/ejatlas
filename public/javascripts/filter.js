@@ -1,6 +1,6 @@
 
 function filterMarkers(filter) {
-  //console.log(filter);
+  console.log(filter);
   if (filter.length == 0 || (filter.length == 1 && filter[0] == "")) {
     markers = [];
     $.each(filterinfo,function(i,v){
@@ -31,6 +31,7 @@ function grepFields (command) {
   return result
 }
 function showMarkers (ids) {
+  console.log(ids)
   updateInfo(1, ids.length+" cases filtered." )
   classes = ".id_"+ids.join(", .id_");
   //console.log(classes)

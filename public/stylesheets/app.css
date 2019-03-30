@@ -5645,6 +5645,9 @@ ul.sidelink li.active {
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
+.front .leaflet-control-layers.leaflet-control {
+  overflow-y: auto;
+}
 #infopane {
   position: relative;
   height: 340px;

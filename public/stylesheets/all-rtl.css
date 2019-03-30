@@ -7426,6 +7426,9 @@ ul.sidelink li.active {
   font-size: 24px;
   line-height: 29px;
 }
+#map .leaflet-control-layers.leaflet-control {
+  overflow-y: auto;
+}
 #filterlink button {
   width: 25%;
 }
@@ -8002,6 +8005,7 @@ ul.sidelink li.active {
 }
 .resize {
   background-color: #d8d8d8;
+  overflow-y: auto;
   border-right: 2px solid rgba(255, 255, 255, 0.5);
   background-image: url('/images/move.png');
   background-repeat: no-repeat;
