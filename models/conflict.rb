@@ -495,7 +495,9 @@ class Conflict < ActiveRecord::Base
           cnt = eval(va[1]+'.'+va[2]).to_s
           cnt.gsub!(/\r/,"\n")
           cnt.gsub!(/\n+/,"\n")
+          cnt = "<p>#{cnt.gsub(/\n/,"</p><p>")}</p>" unless cnt.match(/<p>/)
           cna = cnt.split(/<\/p>\s*<p>/)
+          p cna.length
           if cna.length == 0
             ta += ''
           elsif cna.length == 1 or options[:print] == true
@@ -726,7 +728,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def slug locale=I18n.locale
-    self.get_local_text("slug",locale.to_s)
+    self.get_local_text("slug",locale.to_s) || self.get_local_text("slug","en")
   end
   def slug= val, locale=I18n.locale
     self.set_local_text("slug",val,locale.to_s)

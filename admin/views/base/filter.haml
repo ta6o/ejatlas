@@ -54,7 +54,7 @@
                         %input.token{:id=>"#{field}-input",:type=>'text',:style=>'width:100%'}
                       .col-xs-3
                         .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-section"=>"prefix"}
-                          %icon.glyphicon.glyphicon-arrow-right
+                          %icon.glyphicon{:class=>"glyphicon-arrow-#{$dir == "ltr" ? "right":"left"}"}
                     %ul
                 -elsif options['content'].match(/\d+:\d+/)
                   -range = options['content'].split(':')
@@ -254,7 +254,7 @@
           name = me.attr('data-name');
           row = me.closest('.row');
           that = row.find('input');
-          thatval = that.val().replace(/[^\w\d\s]/g,"")
+          thatval = that.val()//.replace(/[^\w\d\s]/g,"")
           text = thatval.substr(0,1).toUpperCase() + thatval.substr(1);
           drag = $('<li><span title="'+toTitleCase('name'.replace(/_/g,' '))+': '+text+'"data-value="'+text+'" data-field="'+field+'" data-field-local="'+flocal+'" data-name="'+name+'" data-section="prefix" class="drag graybg" ><strong style="font-size:12px;">'+flocal+':</strong> '+(text)+'</span></li>');
           //console.log(drag.html())
@@ -307,7 +307,7 @@
             $item.val( "" );
             $id = $item.attr('id');
             $ul = $item.nextAll('ul')
-            $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='"+$item.attr('data-section')+"' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"'>"+ui.item.label+"</span>"
+            $html = "<span class='drag graybg' data-value='"+ui.item.value+"' data-section='"+$item.attr('data-section')+"' data-name='"+$item.attr('data-name')+"' data-field='"+$item.attr('data-field')+"' data-field-local='"+$item.attr('data-field-local')+"'>"+ui.item.label+"</span>"
             $($ul).append($('<li>', {html: $html}));
             $('.drag, .idrag').draggable({
               connectToSortable: ".root.dropbox",
@@ -331,7 +331,7 @@
       if (that.prop('tagName')=='SPAN') {
         $(that).find('strong').detach()
         text = $(that).text();
-        return $('<span title="'+toTitleCase($(that).attr('data-field').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+$(that).attr('data-field-local')+':</strong> '+(text)+'</span>');
+        return $('<span title="'+toTitleCase($(that).attr('data-field-local').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+$(that).attr('data-field-local')+':</strong> '+(text)+'</span>');
       } else if ($(that).prop('tagName')=='DIV') {
         if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
           that = $(that).find('div')

@@ -320,27 +320,29 @@
                   $('#other_products').val('');
                 }
               });
-              bkLib.onDomLoaded(function() {
-                nicEditors.editors.push(
-                  new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
-                );
-                window.setTimeout(niceWidth,1000);
-              });
-              function niceWidth(){
-                ta_width = $(".tab-pane.active .row").width() / 3 - 15;
-                console.log(ta_width)
-                $("ul#conflict-tabs li a").on('shown.bs.tab',function(e){
-                  console.log(ta_width)
-                  item = $($(e.target).attr('href')).find(".group textarea#conflict_description").parent();
-                  item.find("div").not(".nicEdit-buttonContain,.nicEdit-button,.nicEdit-button-undefined,.nicEdit-panel>div").css("width",ta_width);
-                  item.find("div.nicEdit-main").css("width",ta_width-8).css("min-height",114);
-                  item.find("div.nicEdit-panelContain").css("width",ta_width);
-                })
-              }
               pids = #{pids}
               $.each(pids, function(i,pid){
                 $('#product_'+pid).attr('checked','checked');
               })
+            -if I18n.locale.to_sym != :ar
+              :javascript
+                bkLib.onDomLoaded(function() {
+                  nicEditors.editors.push(
+                    new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
+                  );
+                  window.setTimeout(niceWidth,1000);
+                });
+                function niceWidth(){
+                  ta_width = $(".tab-pane.active .row").width() / 3 - 15;
+                  console.log(ta_width)
+                  $("ul#conflict-tabs li a").on('shown.bs.tab',function(e){
+                    console.log(ta_width)
+                    item = $($(e.target).attr('href')).find(".group textarea#conflict_description").parent();
+                    item.find("div").not(".nicEdit-buttonContain,.nicEdit-button,.nicEdit-button-undefined,.nicEdit-panel>div").css("width",ta_width);
+                    item.find("div.nicEdit-main").css("width",ta_width-8).css("min-height",114);
+                    item.find("div.nicEdit-panelContain").css("width",ta_width);
+                  })
+                }
 
 
       .row

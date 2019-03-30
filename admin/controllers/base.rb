@@ -582,6 +582,7 @@ Admin.controller do
   end
 
   post :filter do
+    pp params["filter"]
     if params['page_type'] == "feat"
       (Admin.filter(params["filter"]).map{|i| begin Conflict.select('id, slug, name').find(i['_id'].to_i) rescue nil end }-[nil]).sort{|a,b| a.slug <=> b.slug}.to_json
     elsif params['page_type'] == "network" or params['page_type'] == "graph"
@@ -629,13 +630,15 @@ Admin.controller do
   get "/ac_json/:model" do
     token = params[:token]
     model = params[:model]
-    model = 'country' if model == 'country_of_company'
-    #filter = {match:{name:"#{token}"}}
-    filter = {query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}}
-    result = $client.search(index: 'atlas', type: model, body: {from:0,size:9999,"_source":{"includes":[:name]},query:filter})['hits']['hits'].map{|i|{:value=>i['_id'].to_i,:label=>i['_source']['name']}}
-    pp result
-    puts result.length
-    return result.to_json
+    p [token, model]
+    model = "country" if model == "country_of_company"
+    if model == "country"
+      res = Country.all.map{|c| {:value=>c.id, :label=>I18n.t("countries.#{c.name.slug('_')}")}}
+    else
+      filter = {bool:{must:[{query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}},{match:{type: model}}]}}
+      res = $client.search(index: 'atlas', type: "doc", body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
+    end
+    res.to_json
   end
 
   get "/ac_coc/:country" do

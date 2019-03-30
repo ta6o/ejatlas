@@ -7935,7 +7935,7 @@ ul.sidelink li.active {
   opacity: 0.6;
 }
 #conflict_filter .drag {
-  border-radius: 0 16px 16px 16px;
+  border-radius: 16px 0 16px 16px;
   border: 1px solid gray;
   padding: 3px 8px 5px;
   line-height: 18px;
