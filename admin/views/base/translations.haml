@@ -19,11 +19,11 @@
               %td
                 %b=k.titlecase
               -@tkeys.each do |kk|
-                -val = (v[kk].nil? or v[kk]==0 ? 0 : v[kk] - 1)
+                -val = ((v[kk].nil? or v[kk]==0) ? 0 : v[kk] - 1)
                 -totals[kk] += ((v[kk]||1)-1)
                 -next if kk == "en"
                 %td
-                  %a{:href=>"#",:title=>"#{@iso639[kk]} translations for #{k}","data-content"=>"#{val} / #{v["en"].to_i-1} <small>(#{(val.to_f / (v["en"].to_f-1) * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (val.to_f / (v["en"].to_f-1) * 100).to_i
+                  %a{:href=>"#",:title=>"#{@iso639[kk]} translations for #{k}","data-content"=>"#{val} / #{v["en"].to_i-1} <small>(#{(val.to_f / (v["en"]-1.0) * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (val.to_f / (v["en"]-1.0) * 100).to_i
 
           %tr
             %td
