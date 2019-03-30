@@ -497,7 +497,6 @@ class Conflict < ActiveRecord::Base
           cnt.gsub!(/\n+/,"\n")
           cnt = "<p>#{cnt.gsub(/\n/,"</p><p>")}</p>" unless cnt.match(/<p>/)
           cna = cnt.split(/<\/p>\s*<p>/)
-          p cna.length
           if cna.length == 0
             ta += ''
           elsif cna.length == 1 or options[:print] == true
