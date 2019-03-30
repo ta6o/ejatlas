@@ -44,7 +44,11 @@ function initMap () {
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
-    baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
+    try {
+      baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = L.tileLayer.provider(e, {minZoom: 1, maxzoom:18});
+    } catch {
+      console.log("provider not found: "+e);
+    }
   })
 
   $topflo = ($dir == "ltr") ? "topright" : "topleft";
@@ -210,7 +214,7 @@ function initMap () {
   //oms.legColors.usual = "black";
   //oms.legColors.highlighted = "white";
 
-  map.on('zoomend', function(e) { i
+  map.on('zoomend', function(e) { 
     markerSize();
   });
 

@@ -175,7 +175,7 @@ Admin.controller do
   get :print, :with => :slug do
     c = Conflict.find_slug(params[:slug])
     pass unless c
-    @markerinfo = c.country.conflicts_marker
+    @markerinfo = c.accurate_marker
     @cmarker = c.as_marker.to_json
     @defs = []
     c.country.vector_data.each do |vd|
