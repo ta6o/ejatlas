@@ -155,6 +155,36 @@ def id_language text
   end
 end
 
+def check_tr_conflicts
+  found = 0
+  csv = CSV.read("../turkish.csv")
+  header = csv.shift.map{|x|x.slug("_")}
+  header.each do |h|
+    puts h unless (Conflict.attribute_names.include?(h) or ConflictText.attribute_names.include?(h))
+  end
+  return csv.map{|x|x[0]}
+  csv.each_with_index do |ar,ind|
+    if en = Conflict.find_slug(ar[0].strip.split(/\//)[-1])
+      found += 1
+      begin
+        ct = ConflictText.new
+        ct.locale = "ar"
+        ct.conflict_id = en.id
+        ct.name = ar[2]
+        ct.description = ar[3]
+        ct.save!
+      rescue => e
+        puts e
+      end
+    else
+      puts "not found: #{ar[0]}"
+    end
+  end
+  puts found
+  nil
+end
+
+
 def check_ar_conflicts
   found = 0
   CSV.read("../arabic.csv").each_with_index do |ar,ind|
