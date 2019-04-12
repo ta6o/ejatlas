@@ -1,6 +1,6 @@
 class AsyncTask
   def odsexport params
-    puts require 'rodf'
+    require 'rodf'
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
@@ -260,7 +260,7 @@ class AsyncTask
   handle_asynchronously :odsexport
 
   def csvexport params
-    puts require 'csv'
+    require 'csv'
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
@@ -504,6 +504,34 @@ class AsyncTask
   end
   handle_asynchronously :csvexport
 
+  def export_companies params
+    require 'csv'
+    puts "xportin"
+    tata = Time.now
+    path = "#{$filedir}/../exports/ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
+    path = "#{Dir.pwd}/../ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
+    CSV.open(path,"w") do |csv|
+      csv << ["company_name", "conflict_name", "conflict_link", "description","environmental_impacts","health_impacts","socioeconomical_impacts"]
+      Company.order(:name).includes(:conflicts).each_with_index do |c,i|
+        print "\r#{i} / #{Company.count}"
+        c.conflicts.where(approval_status: 'approved').each do |cc|
+          row = [c.name,cc.name,"https://ejatlas.org/conflict/#{cc.slug}"]
+          if cc.headline and cc.headline.length > 12
+            row << cc.headline
+          else
+            row << cc.description.split("</p>")[0].gsub(/<[^>]>/,"")
+          end
+          row << [cc.env_impacts.map(&:name),cc.other_env_impacts].flatten.join("\n").strip
+          row << [cc.hlt_impacts.map(&:name),cc.other_hlt_impacts].flatten.join("\n").strip
+          row << [cc.sec_impacts.map(&:name),cc.other_sec_impacts].flatten.join("\n").strip
+          csv << row
+        end
+      end
+    end
+    puts "Done."
+  end
+  handle_asynchronously :export_companies
+
   def export_graphcommons params
     start = Time.now
     require "graphcommons"
@@ -643,7 +671,7 @@ class AsyncTask
         c.save
         #client.index index: "atlas_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
-				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per country)"
+        print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per country)"
       end
       puts
       puts
@@ -663,7 +691,7 @@ class AsyncTask
         c.save
         #client.index index: "atlas_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,type:"company"}
-				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per company)"
+        print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per company)"
       end
       puts
       puts
@@ -683,7 +711,7 @@ class AsyncTask
         c.save
         #client.index index: "atlas_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,type:"financial_institution"}
-				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
+        print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
       end
       puts
       puts
@@ -700,7 +728,7 @@ class AsyncTask
       cos.each_with_index do |c,counter|
         commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"
         c.save
-				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per commodity)"
+        print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per commodity)"
       end
       puts
       puts
@@ -805,7 +833,7 @@ class AsyncTask
       Tag.all.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,type:"tag"}
-				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per tag)"
+        print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per tag)"
       end
       cs = ConflictText.where(:locale=>locale).map{|ct|ct.conflict}
 
@@ -815,7 +843,7 @@ class AsyncTask
       accs.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,type:"account"}
-				print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per account)"
+        print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per account)"
       end
       puts
       puts

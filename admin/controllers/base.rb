@@ -761,6 +761,14 @@ Admin.controller do
     redirect to 'jobs'
   end
 
+  post :export_companies do
+    redirect to "/sessions/login?return=export" unless current_account
+    redirect back unless ["admin","editor"].include? current_account.role
+    puts "aman"
+    AsyncTask.new.export_companies("")
+    redirect to 'jobs'
+  end
+
   get :translations do
     redirect to "/sessions/login?return=parse" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
