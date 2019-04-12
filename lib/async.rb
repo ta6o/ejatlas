@@ -260,7 +260,7 @@ class AsyncTask
   handle_asynchronously :odsexport
 
   def csvexport params
-    puts require 'csv'
+    require 'csv'
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
@@ -503,6 +503,34 @@ class AsyncTask
     GC.start
   end
   handle_asynchronously :csvexport
+
+  def export_companies params
+    require 'csv'
+    puts "xportin"
+    tata = Time.now
+    path = "#{$filedir}/../exports/ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
+    path = "#{Dir.pwd}/../ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
+    CSV.open(path,"w") do |csv|
+      csv << ["company_name", "conflict_name", "conflict_link", "description","environmental_impacts","health_impacts","socioeconomical_impacts"]
+      Company.order(:name).includes(:conflicts).each_with_index do |c,i|
+        print "\r#{i} / #{Company.count}"
+        c.conflicts.where(approval_status: 'approved').each do |cc|
+          row = [c.name,cc.name,"https://ejatlas.org/conflict/#{cc.slug}"]
+          if cc.headline and cc.headline.length > 12
+            row << cc.headline
+          else
+            row << cc.description.split("</p>")[0].gsub(/<[^>]>/,"")
+          end
+          row << [cc.env_impacts.map(&:name),cc.other_env_impacts].flatten.join("\n").strip
+          row << [cc.hlt_impacts.map(&:name),cc.other_hlt_impacts].flatten.join("\n").strip
+          row << [cc.sec_impacts.map(&:name),cc.other_sec_impacts].flatten.join("\n").strip
+          csv << row
+        end
+      end
+    end
+    puts "Done."
+  end
+  handle_asynchronously :export_companies
 
   def export_graphcommons params
     start = Time.now

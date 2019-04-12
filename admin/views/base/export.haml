@@ -42,4 +42,12 @@
             %input{:type=>'radio',:name=>'filetype',:value=>'csv',:checked=>false} &nbsp; CSV
             %br/
         %br/
-        %input.btn.btn-warning{:type=>'submit',:value=>'Export now'}
+        %input.btn.btn-warning{:type=>'submit',:value=>'Export conflicts'}
+
+  %hr
+  %form{:method=>'POST',:action=>'/export_companies'}
+    .row
+      .col-md-6.col-md-offset-3.clearfix
+        %h2 Export companies
+        %br/
+        %input.btn.btn-warning{:type=>'submit',:value=>'Export companies'}
