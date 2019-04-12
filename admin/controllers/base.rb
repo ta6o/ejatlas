@@ -159,7 +159,7 @@ Admin.controller do
     @images = c.images
     @zoom = 8
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
-    @baselayers = "Esri.WorldImagery,Esri.WorldPhysical,Esri.WorldTopoMap"
+    @baselayers = $baselayers
     @related = c.related
     @headline = c.headline and c.headline.length > 0 ? c.headline : nil
     @summary = c.table
@@ -187,6 +187,7 @@ Admin.controller do
     @vectors = c.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
     @zoom = 8
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
+    @baselayers = $baselayers
     @name = c.name
     @pos = [c.lat,c.lon]
     @cid = c.id
