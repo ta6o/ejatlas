@@ -511,11 +511,11 @@ class AsyncTask
     path = "#{$filedir}/../exports/ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
     path = "#{Dir.pwd}/../ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
     CSV.open(path,"w") do |csv|
-      csv << ["company_name", "conflict_name", "conflict_link", "description","environmental_impacts","health_impacts","socioeconomical_impacts"]
+      csv << ["company_name", "acronym", "country_of_origin", "conflict_name", "conflict_link", "description","environmental_impacts","health_impacts","socioeconomical_impacts"]
       Company.order(:name).includes(:conflicts).each_with_index do |c,i|
         print "\r#{i} / #{Company.count}"
         c.conflicts.where(approval_status: 'approved').each do |cc|
-          row = [c.name,cc.name,"https://ejatlas.org/conflict/#{cc.slug}"]
+          row = [c.name, c.acronym, (c.country ? c.country.name : ""), cc.name,"https://ejatlas.org/conflict/#{cc.slug}"]
           if cc.headline and cc.headline.length > 12
             row << cc.headline
           else
