@@ -127,7 +127,7 @@ class Conflict < ActiveRecord::Base
 
   def get_local_text attr, locale=I18n.locale
     begin
-      self.conflict_texts.where(:locale=>locale)[0].attributes[attr]
+      self.conflict_texts.where(:locale=>locale)[0].attributes[attr.to_s]
     rescue
       cts = self.conflict_texts
       if cts.any?
@@ -140,9 +140,9 @@ class Conflict < ActiveRecord::Base
 
   def set_local_text attr, val, locale=I18n.locale
     begin
-      self.local_data(locale).update_attribute attr, val
+      self.local_data(locale).update_attribute attr.to_s, val
     rescue =>e
-      puts "#{self.id}: #{e}"
+      puts "#{self.id}: #{e}: #{attr}\n#{val}\n\n"
       nil
     end
   end
@@ -827,20 +827,6 @@ class Conflict < ActiveRecord::Base
   end
   def related_conflict_string= val, locale=I18n.locale
     self.set_local_text("related_conflict_string",val,locale.to_s)
-  end
-
-  def start_date locale=I18n.locale
-    self.get_local_text("start_date",locale.to_s)
-  end
-  def start_date= val, locale=I18n.locale
-    self.set_local_text("start_date",val,locale.to_s)
-  end
-
-  def end_date locale=I18n.locale
-    self.get_local_text("end_date",locale.to_s)
-  end
-  def end_date= val, locale=I18n.locale
-    self.set_local_text("end_date",val,locale.to_s)
   end
 
   def other_mobilizing_groups locale=I18n.locale

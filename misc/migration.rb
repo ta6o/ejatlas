@@ -287,11 +287,23 @@ end
 
 def check_it_conflicts 
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
-  p cols
+  puts
+  puts "Accounts"
   itslugs = File.readlines("../it_cases.txt").map{|l| l.split(" - ")[0]}
+  ItAccount.all.order(:id).each_with_index do |it,ind|
+    print "\r #{ind+1}/#{ItAccount.count}"
+    next if Account.find_by_email(it.email)
+    acc = create_in_ejatlas it
+    it.it_images.each do |img|
+      create_in_ejatlas img, acc.id
+    end
+  end
+  puts
+  puts "Conflicts"
   ItConflict.all.order(:id).each_with_index do |it,ind|
-    puts
-    puts "#{it.name} (#{it.approval_status})"
+    print "\r #{ind+1}/#{ItConflict.count}"
+    #puts
+    #puts "#{it.name} (#{it.approval_status})"
     next if itslugs.include?(it.slug)
 #=begin
     if ct = ConflictText.find_by_slug(it.slug)
@@ -306,22 +318,29 @@ def check_it_conflicts
       attr = "formerid" if attr === "id"
       attr = attr.sub(/^it_/,"") if attr.match(/_id$/)
       if cols.keys.include?(attr)
-        puts "    #{attr.green}: #{val}"
+        #puts "    #{attr.green}: #{val}"
         ct.update_attribute attr, val
+        if attr == "approval_status"
+          c.update_attribute attr, val
+        end
       else
-        puts "    #{attr.blue}: #{val}"
-        c.update_attribute attr, val
+        #puts "    #{attr.blue}: #{val}"
+        if attr == "account_id"
+          c.update_attribute attr, Account.find_by_email(ItAccount.find(val).email).id
+        else
+          c.update_attribute attr, val
+        end
       end
     end
     it.methods.grep(/^validate_associated_records_for_.*$/).map{|m|m.to_s.split("validate_associated_records_for_")[1]}.each do |rel|
       if rel.match(/^it_[pc]_/)
-        puts "    #{rel.red}: #{eval("it.#{rel}.map(&:id)")}"
+        #puts "    #{rel.red}: #{eval("it.#{rel}.map(&:id)")}"
       else
         if "categories,conflict_events,env_impacts,hlt_impacts,mobilizing_forms,mobilizing_groups,products,project_statuses,reactions,sec_impacts,statuses,types".split(",").map{|x| "it_#{x}"}.include?(rel)
           begin
-            puts "    #{rel.yellow}: #{eval("it.#{rel}.map(&:name)")}"
+            #puts "    #{rel.yellow}: #{eval("it.#{rel}.map(&:name)")}"
           rescue
-            puts "    #{rel.purple}: #{eval("it.#{rel}.map(&:id)")}"
+            #puts "    #{rel.purple}: #{eval("it.#{rel}.map(&:id)")}"
           end
           eval("it.#{rel}").each do |obj|
             oid = obj.id
@@ -329,17 +348,16 @@ def check_it_conflicts
             eval("c.#{rel.sub(/^it_/,"")}") << eval(obj.model_name.to_s.sub(/^It/,"")).find(oid)
           end
         elsif "companies,supporters".split(",").map{|x| "it_#{x}"}.include?(rel)
-          puts "    #{rel.magenta}: #{eval("it.#{rel}.map(&:id)")}"
+          #puts "    #{rel.magenta}: #{eval("it.#{rel}.map(&:id)")}"
           eval("it.#{rel}").each do |comp|
             if cm = eval(comp.model_name.to_s.sub(/^It/,"")).find_by_slug(comp.slug)
-              puts "found"
               eval("c.#{rel.sub(/^it_/,"")}") << cm unless eval("c.#{rel.sub(/^it_/,"")}").include?(cm)
             else
               create_in_ejatlas comp, c.id
             end
           end
         else
-          puts "    #{rel.cyan}: #{eval("it.#{rel}.map(&:id)")}"
+          #puts "    #{rel.cyan}: #{eval("it.#{rel}.map(&:id)")}"
           eval("it.#{rel}").each do |obj|
             create_in_ejatlas obj, c.id
           end
@@ -351,7 +369,7 @@ def check_it_conflicts
   nil
 end
 
-def create_in_ejatlas obj, conflict_id=nil
+def create_in_ejatlas obj, aid=nil
   if obj.has_attribute? :slug and eval(obj.model_name.to_s.sub(/^It/,"")).find_by_slug(obj.slug)
     return nil
   end
@@ -361,23 +379,18 @@ def create_in_ejatlas obj, conflict_id=nil
     next if attr.match(/^file$/)
     if attr.match(/_id$/)
       attr = attr.sub(/^it_/,"")
-      ebj.update_attribute attr, conflict_id
+      ebj.update_attribute attr, aid
     else
       val = val.sub(/^It/,"") if attr === "attachable_type"
       ebj.update_attribute attr, val
     end
   end
   if obj.has_attribute? :file
-    `cd #{Dir.pwd}/tmp && curl -O #{obj.file_url} && cd ..`
+    `cd #{Dir.pwd}/tmp && curl -O #{obj.file_url} 2> /dev/null && cd ..`
     file = File.open("#{Dir.pwd}/tmp/#{obj.file_url.split(/\//)[-1]}","rb")
     #file = open(obj.file_url)
-    puts file
     ebj.file = file
-    begin
-      ebj.save!
-    rescue => e
-      puts e
-    end
+    ebj.save!
   end
   ebj
 end

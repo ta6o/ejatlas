@@ -19,8 +19,11 @@ class ImageUploader < CarrierWave::Uploader::Base
     return "" unless at
     return "#{$filedir}/img/#{at.class}/#{at.old_slug}" if at.methods.include?(:old_slug)
     return "#{$filedir}/img/#{at.class}/#{at.slug}" if at.has_attribute?('slug')
-    return "#{$filedir}/img/#{at.class}/#{at.slug}" unless at.slug.nil?
-    "#{$filedir}/img/#{at.class}/#{at.id}"
+    begin
+      return "#{$filedir}/img/#{at.class}/#{at.slug}" unless at.slug.nil?
+    rescue
+      "#{$filedir}/img/#{at.class}/#{at.id}"
+    end
   end
 
   def cache_dir
@@ -33,8 +36,11 @@ class ImageUploader < CarrierWave::Uploader::Base
     return "" unless self.file
     return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}" if at.methods.include?(:old_slug)
     return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" if at.has_attribute?('slug')
-    return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" unless at.slug.nil?
-    "#{$fileurl}/img/#{at.class}/#{at.id}/#{self.file.filename}"
+    begin
+      return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" unless at.slug.nil?
+    rescue
+      "#{$fileurl}/img/#{at.class}/#{at.id}/#{self.file.filename}"
+    end
   end
 
   def thumb_url
@@ -42,8 +48,11 @@ class ImageUploader < CarrierWave::Uploader::Base
     return "" unless at
     return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}" if at.methods.include?(:old_slug)
     return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" if at.has_attribute?('slug')
-    return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" unless at.slug.nil?
-    "#{$fileurl}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"
+    begin
+      return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" unless at.slug.nil?
+    rescue
+      "#{$fileurl}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"
+    end
   end
 
   version :thumb do
