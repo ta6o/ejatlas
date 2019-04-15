@@ -16,8 +16,10 @@ class ImageUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
     at = self.model.attachable 
-    return "#{$filedir}/img/#{at.class}/#{at.old_slug}"if at.methods.include?(:old_slug)
-    return "#{$filedir}/img/#{at.class}/#{at.slug}"if at.has_attribute?('slug')
+    return "" unless at
+    return "#{$filedir}/img/#{at.class}/#{at.old_slug}" if at.methods.include?(:old_slug)
+    return "#{$filedir}/img/#{at.class}/#{at.slug}" if at.has_attribute?('slug')
+    return "#{$filedir}/img/#{at.class}/#{at.slug}" unless at.slug.nil?
     "#{$filedir}/img/#{at.class}/#{at.id}"
   end
 
@@ -27,15 +29,20 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   def url
     at = self.model.attachable 
-    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}"if at.methods.include?(:old_slug)
-    return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}"if at.has_attribute?('slug')
+    return "" unless at
+    return "" unless self.file
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}" if at.methods.include?(:old_slug)
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" if at.has_attribute?('slug')
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" unless at.slug.nil?
     "#{$fileurl}/img/#{at.class}/#{at.id}/#{self.file.filename}"
   end
 
   def thumb_url
     at = self.model.attachable 
-    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}"if at.methods.include?(:old_slug)
-    return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}"if at.has_attribute?('slug')
+    return "" unless at
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}" if at.methods.include?(:old_slug)
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" if at.has_attribute?('slug')
+    return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" unless at.slug.nil?
     "#{$fileurl}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"
   end
 

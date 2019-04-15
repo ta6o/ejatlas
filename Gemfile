@@ -23,6 +23,7 @@ gem 'roo'
 gem 'rodf'
 gem "rmagick"
 gem 'google_drive'
+gem 'colorize'
 
 gem 'padrino'
 

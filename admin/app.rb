@@ -41,7 +41,7 @@ class Admin < Padrino::Application
     $fileurl = 'https://file.ejatlas.org'
   else
     $siteurl = 'http://localhost:3000'
-    $filedir = Dir.pwd
+    $filedir = "#{Dir.pwd}/../file"
     $fileurl = 'https://file.ejatlas.org'
   end
   $pageauthor = 'EJOLT'
@@ -88,7 +88,7 @@ class Admin < Padrino::Application
   end
 
   def self.slugify str
-    str.slug
+    str.slug if str
   end
 
   def self.send_mail user, subject, message

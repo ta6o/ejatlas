@@ -1,4 +1,6 @@
 
+load "#{Dir.pwd}/misc/all-models.rb"
+
 def create_table table
   unless ActiveRecord::Base.connection.table_exists? table
     ActiveRecord::Base.connection.create_table table
@@ -30,6 +32,42 @@ def drop_column_from_table table, cols
       ActiveRecord::Migration.remove_column table.to_sym, name
     end
   end
+end
+
+def check_id_columns model
+  model.connection.tap do |db|
+    db.tables.each do |table|
+      puts table
+      db.columns(table).each do |col|
+        puts "  #{col.name}" if col.name.match(/_id$/)
+        if col.name.match(/_id$/) and col.name != "attachable_id" and not col.name.match(/^it_/)
+          #rename_column model, table, col.name, "it_#{col.name}"
+        end
+      end
+    end
+  end
+  nil
+end
+
+def compare_models 
+  "categories,conflict_events,env_impacts,hlt_impacts,mobilizing_forms,mobilizing_groups,products,project_statuses,reactions,sec_impacts,statuses,types".split(",").each do |table|
+    puts "#{table.classify} #{eval("#{table.classify}.count")}"
+    eval("#{table.classify}.count").times do |i|
+      puts "  #{eval("#{table.classify}.find(i+1).name")}"
+      puts "  #{eval("It#{table.classify}.find(i+1).name")}"
+      puts
+    end
+  end
+  nil
+end
+
+def rename_column model, table, column, name
+  model.connection.tap do |db|
+    if db.column_exists? table.to_sym, column.to_sym
+      db.rename_column table.to_sym, column.to_sym, name.to_sym
+    end
+  end
+  nil
 end
 
 def parse_columns str
@@ -117,20 +155,6 @@ def produce_conflict_getter_methods
   rb
 end
 
-$ejit = {
-  :adapter  => 'postgresql',
-  :encoding => 'utf8',
-  :host => '127.0.0.1',
-  :port => '5432',
-  :user => "yakup",
-  :password => "***REMOVED***",
-  :database => 'ejit'
-}
-
-class ItConflict < ActiveRecord::Base
-  establish_connection $ejit
-end
-
 def check_langs
   clangs = {}
   tot = ConflictText.count
@@ -209,13 +233,19 @@ def check_ar_conflicts
   nil
 end
 
-def check_it_conflicts
+def check_existing_it_conflicts
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
   File.readlines("../it_cases.txt").each do |line|
+    puts
     line = line.split(" - ")
     p line
     if it = ItConflict.find_by_slug(line[0].slug)
-      if en = Conflict.find_slug(line[1].slug) and ConflictText.where(:conflict_id=>en.id,:locale=>"it").empty?
+      if en = Conflict.find_slug(line[1].slug)
+        unless ConflictText.where(:conflict_id=>en.id,:locale=>"it").empty?
+          puts "it: #{it.id}, en: #{en.id}"
+          puts "found"
+          next
+        end
         puts "it: #{it.id}, en: #{en.id}"
         begin
           ct = ConflictText.new
@@ -255,11 +285,100 @@ def check_it_conflicts
   nil
 end
 
-def test_it 
-  ItConflict.all.order(:id).each do |it|
+def check_it_conflicts 
+  cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
+  p cols
+  itslugs = File.readlines("../it_cases.txt").map{|l| l.split(" - ")[0]}
+  ItConflict.all.order(:id).each_with_index do |it,ind|
+    puts
     puts "#{it.name} (#{it.approval_status})"
-    p it.methods.grep(/^validate_associated_records_for_.*$/).map{|m|m.to_s.split("validate_associated_records_for_")[1]}
+    next if itslugs.include?(it.slug)
+#=begin
+    if ct = ConflictText.find_by_slug(it.slug)
+      c = ct.conflict
+    else
+      c = Conflict.create
+      ct = ConflictText.create :locale=>:it, :conflict_id => c.id
+    end
+#=end
+    it.attributes.each do |attr,val|
+      next if "table,json,marker,commented,features,licence,ready,formerid,it_region_id".split(",").include?(attr)
+      attr = "formerid" if attr === "id"
+      attr = attr.sub(/^it_/,"") if attr.match(/_id$/)
+      if cols.keys.include?(attr)
+        puts "    #{attr.green}: #{val}"
+        ct.update_attribute attr, val
+      else
+        puts "    #{attr.blue}: #{val}"
+        c.update_attribute attr, val
+      end
+    end
+    it.methods.grep(/^validate_associated_records_for_.*$/).map{|m|m.to_s.split("validate_associated_records_for_")[1]}.each do |rel|
+      if rel.match(/^it_[pc]_/)
+        puts "    #{rel.red}: #{eval("it.#{rel}.map(&:id)")}"
+      else
+        if "categories,conflict_events,env_impacts,hlt_impacts,mobilizing_forms,mobilizing_groups,products,project_statuses,reactions,sec_impacts,statuses,types".split(",").map{|x| "it_#{x}"}.include?(rel)
+          begin
+            puts "    #{rel.yellow}: #{eval("it.#{rel}.map(&:name)")}"
+          rescue
+            puts "    #{rel.purple}: #{eval("it.#{rel}.map(&:id)")}"
+          end
+          eval("it.#{rel}").each do |obj|
+            oid = obj.id
+            oid = 53 if obj.model_name == "ItType" and obj.id == 52
+            eval("c.#{rel.sub(/^it_/,"")}") << eval(obj.model_name.to_s.sub(/^It/,"")).find(oid)
+          end
+        elsif "companies,supporters".split(",").map{|x| "it_#{x}"}.include?(rel)
+          puts "    #{rel.magenta}: #{eval("it.#{rel}.map(&:id)")}"
+          eval("it.#{rel}").each do |comp|
+            if cm = eval(comp.model_name.to_s.sub(/^It/,"")).find_by_slug(comp.slug)
+              puts "found"
+              eval("c.#{rel.sub(/^it_/,"")}") << cm unless eval("c.#{rel.sub(/^it_/,"")}").include?(cm)
+            else
+              create_in_ejatlas comp, c.id
+            end
+          end
+        else
+          puts "    #{rel.cyan}: #{eval("it.#{rel}.map(&:id)")}"
+          eval("it.#{rel}").each do |obj|
+            create_in_ejatlas obj, c.id
+          end
+        end
+      end
+    end
+    #break if ind == 0
   end
   nil
+end
+
+def create_in_ejatlas obj, conflict_id=nil
+  if obj.has_attribute? :slug and eval(obj.model_name.to_s.sub(/^It/,"")).find_by_slug(obj.slug)
+    return nil
+  end
+  ebj = eval(obj.model_name.to_s.sub(/^It/,"")).new
+  obj.attributes.each do |attr,val|
+    next if attr.match(/^id$/)
+    next if attr.match(/^file$/)
+    if attr.match(/_id$/)
+      attr = attr.sub(/^it_/,"")
+      ebj.update_attribute attr, conflict_id
+    else
+      val = val.sub(/^It/,"") if attr === "attachable_type"
+      ebj.update_attribute attr, val
+    end
+  end
+  if obj.has_attribute? :file
+    `cd #{Dir.pwd}/tmp && curl -O #{obj.file_url} && cd ..`
+    file = File.open("#{Dir.pwd}/tmp/#{obj.file_url.split(/\//)[-1]}","rb")
+    #file = open(obj.file_url)
+    puts file
+    ebj.file = file
+    begin
+      ebj.save!
+    rescue => e
+      puts e
+    end
+  end
+  ebj
 end
 

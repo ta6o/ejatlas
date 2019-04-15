@@ -117,6 +117,14 @@ class Conflict < ActiveRecord::Base
     self.conflict_texts.where(:locale=>locale).first
   end
 
+  def get_original_local_text attr
+    begin
+      self.conflict_texts.order(:created_at)[0].attributes[attr]
+    rescue
+      nil
+    end
+  end
+
   def get_local_text attr, locale=I18n.locale
     begin
       self.conflict_texts.where(:locale=>locale)[0].attributes[attr]
@@ -726,8 +734,12 @@ class Conflict < ActiveRecord::Base
     self.set_local_text("name",val,locale.to_s)
   end
 
-  def slug locale=I18n.locale
-    self.get_local_text("slug",locale.to_s) || self.get_local_text("slug","en")
+  def slug locale=nil
+    if locale
+      self.get_local_text("slug",locale.to_s) || self.get_local_text("slug","en")
+    else
+      self.get_original_local_text("slug")
+    end
   end
   def slug= val, locale=I18n.locale
     self.set_local_text("slug",val,locale.to_s)
