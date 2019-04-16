@@ -1,6 +1,4 @@
 
-load "#{Dir.pwd}/misc/all-models.rb"
-
 def create_table table
   unless ActiveRecord::Base.connection.table_exists? table
     ActiveRecord::Base.connection.create_table table
@@ -34,14 +32,14 @@ def drop_column_from_table table, cols
   end
 end
 
-def check_id_columns model
+def check_id_columns model, prefix=nil
   model.connection.tap do |db|
     db.tables.each do |table|
       puts table
       db.columns(table).each do |col|
         puts "  #{col.name}" if col.name.match(/_id$/)
-        if col.name.match(/_id$/) and col.name != "attachable_id" and not col.name.match(/^it_/)
-          #rename_column model, table, col.name, "it_#{col.name}"
+        if col.name.match(/_id$/) and col.name != "attachable_id" and prefix and not col.name.match(/^#{prefix}_/)
+          rename_column model, table, col.name, "#{prefix}_#{col.name}"
         end
       end
     end
@@ -49,13 +47,73 @@ def check_id_columns model
   nil
 end
 
-def compare_models 
+def compare_models_with_translations prefix
+  result = {}
   "categories,conflict_events,env_impacts,hlt_impacts,mobilizing_forms,mobilizing_groups,products,project_statuses,reactions,sec_impacts,statuses,types".split(",").each do |table|
-    puts "#{table.classify} #{eval("#{table.classify}.count")}"
-    eval("#{table.classify}.count").times do |i|
-      puts "  #{eval("#{table.classify}.find(i+1).name")}"
-      puts "  #{eval("It#{table.classify}.find(i+1).name")}"
-      puts
+    found = []
+    trans = table
+    trans = "category_id" if table == "categories"
+    trans = trans.sub(/e?s$/,"_id") if ["project_statuses", "reactions", "statuses"].include?(table)
+    result[trans] = {}
+    puts
+    puts "#{table.classify.blue} #{eval("#{table.classify}.count")}"
+    puts "#{prefix.titlecase.green}#{table.classify.green} #{eval("#{prefix.titlecase}#{table.classify}.count")}"
+    [eval("#{table.classify}.order(:id).last.id"),eval("#{prefix.titlecase}#{table.classify}.order(:id).last.id")].max.times do |i|
+      begin
+        en = eval("#{table.classify}").find(i+1)
+        tnm = I18n.t("m.#{trans}.#{en.name.slug("_")}",:tr)
+        begin
+          lo = eval("#{prefix.titlecase}#{table.classify}").find_by_slug(tnm.slug)
+        rescue
+          lo = eval("#{prefix.titlecase}#{table.classify}").find_by_name(tnm)
+        end
+        if lo
+          puts "#{(i+1).to_s.yellow}  #{en.name.blue} #{lo.id} #{lo.name.cyan}"
+          found << lo.id
+          result[trans][lo.id] = i+1
+        else
+          puts "#{(i+1).to_s.yellow}  #{en.name.blue} ? #{tnm.magenta}"
+        end
+      rescue
+        puts "#{(i+1).to_s.yellow}  #{"not found".red}"
+      end
+    end
+    [eval("#{table.classify}.order(:id).last.id"),eval("#{prefix.titlecase}#{table.classify}.order(:id).last.id")].max.times do |i|
+      next if found.include?(i+1)
+      begin
+        lo = eval("#{prefix.titlecase}#{table.classify}").find(i+1)
+        puts "#{(i+1).to_s.red}  #{lo.name.green}"
+      rescue
+        puts "#{(i+1)}  not found".red
+      end
+    end
+  end
+  result
+end
+
+def update_legacy_name model, id, name
+  model.find(id).update_attribute :name, name
+  model.find(id).update_attribute :slug, name.slug if model.has_attribute?(:slug)
+end
+
+def compare_models prefix
+  "categories,conflict_events,env_impacts,hlt_impacts,mobilizing_forms,mobilizing_groups,products,project_statuses,reactions,sec_impacts,statuses,types".split(",").each do |table|
+    puts
+    puts "#{table.classify.blue} #{eval("#{table.classify}.count")}"
+    puts "#{prefix.titlecase.green}#{table.classify.green} #{eval("#{prefix.titlecase}#{table.classify}.count")}"
+    [eval("#{table.classify}.order(:id).last.id"),eval("#{prefix.titlecase}#{table.classify}.order(:id).last.id")].max.times do |i|
+      begin
+        en = eval("#{table.classify}.find(i+1)")
+        puts "#{i+1}  #{en.name.blue}"
+      rescue
+        puts "#{i+1}  not found".red
+      end
+      begin
+        lo = eval("#{prefix.titlecase}#{table.classify}.find(i+1)")
+        puts "#{i+1}  #{lo.name.green}"
+      rescue
+        puts "#{i+1}  not found".red
+      end
     end
   end
   nil
@@ -180,31 +238,135 @@ def id_language text
 end
 
 def check_tr_conflicts
-  found = 0
+  load "#{Dir.pwd}/misc/tr-models.rb"
+  lastlocale = I18n.locale
+  I18n.locale = :tr
   csv = CSV.read("../turkish.csv")
   header = csv.shift.map{|x|x.slug("_")}
-  header.each do |h|
-    puts h unless (Conflict.attribute_names.include?(h) or ConflictText.attribute_names.include?(h))
-  end
-  return csv.map{|x|x[0]}
-  csv.each_with_index do |ar,ind|
-    if en = Conflict.find_slug(ar[0].strip.split(/\//)[-1])
-      found += 1
-      begin
-        ct = ConflictText.new
-        ct.locale = "ar"
-        ct.conflict_id = en.id
-        ct.name = ar[2]
-        ct.description = ar[3]
-        ct.save!
-      rescue => e
-        puts e
-      end
-    else
-      puts "not found: #{ar[0]}"
+  coat = {}
+  ctat = {}
+  rels = {}
+  res = {"categoy_id"=>{8=>1, 7=>2, 2=>3, 9=>4, 5=>5, 6=>6, 1=>7, 10=>8, 3=>9, 4=>10, 0=>11}, "conflict_events"=>{15=>1, 18=>2, 1=>3, 12=>4, 5=>5, 9=>6, 10=>8, 11=>9, 6=>11, 13=>12, 16=>13, 4=>14, 7=>15, 8=>16, 14=>17, 2=>18, 3=>19, 19=>20, 17=>21, 0=>26}, "env_impacts"=>{1=>1, 2=>2, 3=>3, 4=>4, 5=>5, 6=>6, 7=>7, 8=>8, 9=>9, 10=>10, 11=>11, 12=>12, 13=>13, 14=>14, 15=>15, 16=>16, 17=>17, 18=>18, 19=>19, 20=>20, 0=>21}, "hlt_impacts"=>{1=>1, 5=>2, 6=>3, 7=>4, 8=>5, 9=>6, 2=>7, 3=>8, 10=>9, 4=>10, 0=>11}, "mobilizing_forms"=>{14=>2, 5=>3, 23=>4, 3=>5, 17=>6, 2=>7, 25=>8, 24=>9, 9=>10, 15=>11, 6=>12, 19=>13, 13=>14, 18=>15, 20=>16, 12=>17, 22=>18, 16=>19, 11=>20, 21=>21, 4=>22, 1=>23, 10=>24, 7=>25, 0=>28}, "mobilizing_groups"=>{12=>1, 2=>2, 22=>4, 15=>5, 9=>6, 18=>7, 20=>8, 17=>9, 21=>10, 10=>11, 6=>12, 16=>13, 13=>14, 3=>15, 8=>16, 5=>17, 14=>18, 19=>19, 4=>20, 1=>3, 7=>14, 0=>21}, "products"=>{24=>33, 2=>1, 3=>2, 4=>3, 28=>4, 45=>5, 40=>6, 33=>7, 27=>8, 5=>9, 38=>10, 43=>11, 23=>12, 31=>13, 17=>14, 15=>15, 20=>16, 41=>17, 6=>18, 37=>19, 1=>20, 13=>21, 26=>22, 50=>23, 35=>24, 36=>25, 9=>26, 25=>27, 19=>28, 14=>29, 42=>30, 10=>31, 39=>32, 44=>34, 30=>35, 34=>36, 29=>37, 22=>38, 46=>39, 11=>40, 48=>41, 51=>42, 8=>43, 12=>44, 47=>45, 7=>46, 21=>47, 16=>48, 18=>49, 32=>50, 53=>57, 0=>57}, "project_status_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 5=>6, 6=>1, 0=>1}, "reaction_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 0=>1}, "sec_impacts"=>{2=>1, 1=>2, 3=>3, 4=>4, 5=>5, 6=>6, 9=>7, 10=>8, 11=>9, 12=>10, 13=>11, 14=>12, 0=>13}, "status_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 0=>1}, "types"=>{39=>1, 38=>2, 37=>3, 34=>4, 35=>5, 33=>6, 36=>7, 8=>8, 4=>9, 5=>10, 6=>11, 49=>12, 47=>13, 44=>14, 46=>15, 48=>16, 43=>17, 41=>18, 7=>19, 40=>20, 42=>21, 26=>22, 23=>23, 18=>24, 25=>25, 24=>26, 20=>27, 22=>28, 27=>29, 19=>30, 21=>31, 51=>32, 31=>33, 32=>34, 28=>35, 29=>36, 30=>37, 3=>38, 1=>39, 2=>40, 53=>41, 50=>42, 11=>43, 12=>44, 9=>45, 10=>46, 15=>47, 17=>48, 16=>49, 14=>50, 13=>51, 0=>53}}
+  header.each_with_index do |h,i|
+    if ConflictText.attribute_names.include?(h)
+      ctat[i] = h
+    elsif Conflict.attribute_names.include?(h)
+      coat[i] = h
+    elsif not ["link","eid"].include?(h)
+      rels[i] = h
     end
   end
-  puts found
+  ctat.delete 2
+  coat[2] = "id"
+  TrAccount.all.order(:id).each_with_index do |tr,ind|
+    print "\r TrAccount #{ind+1}/#{TrAccount.count}"
+    next if Account.find_by_email(tr.email)
+    acc = create_in_ejatlas tr
+    tr.tr_images.each do |img|
+      create_in_ejatlas img, acc.id
+    end
+  end
+  puts
+  csv.each_with_index do |row,ind|
+    print "\r TrConflict #{ind+1}/#{csv.length}"
+    puts
+    found = false
+    if row[1]
+      if c = Conflict.find(row[1].to_i)
+        unless ct = ConflictText.find_by_slug(row[4].strip)
+          ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
+        end
+      else
+        puts row[1].red
+      end
+      found = true
+    elsif ct = ConflictText.find_by_slug(row[4].strip)
+      c = ct.conflict
+      unless c
+        ct.destroy
+        puts "ConflictText destroyed!".red
+        break
+      end
+    else
+      c = Conflict.create
+      ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
+    end
+    row.each_with_index do |val, index|
+      next unless val
+      attr = header[index]
+      next if "table,json,marker,commented,features,licence,ready,formerid,tr_region_id".split(",").include?(attr)
+      attr = "formerid" if attr === "id"
+      if coat.keys.include? index 
+        c.update_attribute attr, val unless found
+      elsif ctat.keys.include? index
+        ct.update_attribute attr, val
+        if attr == "approval_status"
+          c.update_attribute attr, val
+        end
+      elsif rels.keys.include? index
+        next if found
+        soul = []
+        if attr == "account" 
+          if a = Account.find_by_name(val)
+            c.update_attribute :account_id, a.id
+          else
+            puts val
+          end
+        elsif attr == "types"
+          soul = val.split(":::")
+          model = Type
+        elsif attr == "product_id"
+          soul = val.split(/\n/)
+          model = Product
+        elsif attr == "conflict_event_id"
+          soul = val.split(/\n/)
+          model = ConflictEvent
+        elsif "".split(",").include?(attr)
+        end
+        others = []
+        other = ""
+        soul.each do |line|
+          begin
+            t = eval("Tr#{model}").find_by_slug(line.slug)
+          rescue
+            t = eval("Tr#{model}").find_by_name(line)
+          end
+          if t
+            puts t.class
+            tid = res[model.to_s.tableize][t.id]
+            if res[model.to_s.tableize][0] == t.id or not tid
+              tt = model.find(res["types"][0])
+              if eval("c.#{model.to_s.tableize}").include? tt
+                puts "#{model} #{t.name.red} already related".blue
+              else
+                eval("c.#{model.to_s.tableize}") << tt
+              end
+              other = "other_#{model.to_s.tableize}"
+              if ConflictText.has_attribute?(other)
+                others << t.name
+              end
+            else
+              tt = model.find(tid)
+              if eval("c.#{model.to_s.tableize}").include? tt
+                puts "#{model} #{t.name.red} already related".blue
+              else
+                eval("c.#{model.to_s.tableize}") << model.find(tid)
+              end
+            end
+          else
+            puts "#{model} not found: #{line.blue}".red
+          end
+        end
+        if ConflictText.has_attribute?(other)
+          puts "#{others.join(", ")}".yellow
+          ct.update_attribute other, others.join(", ")
+        end
+      end
+    end
+    puts
+    break if ind == 0
+  end
+  I18n.locale = lastlocale
   nil
 end
 
@@ -234,16 +396,19 @@ def check_ar_conflicts
 end
 
 def check_existing_it_conflicts
+  load "#{Dir.pwd}/misc/it-models.rb"
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
-  File.readlines("../it_cases.txt").each do |line|
-    puts
+  lines = File.readlines("../it_cases.txt")
+  lines.each_with_index do |line,ind|
+    print "\r #{ind+1}/#{lines.length}"
+    #puts
     line = line.split(" - ")
-    p line
+    #p line
     if it = ItConflict.find_by_slug(line[0].slug)
       if en = Conflict.find_slug(line[1].slug)
         unless ConflictText.where(:conflict_id=>en.id,:locale=>"it").empty?
-          puts "it: #{it.id}, en: #{en.id}"
-          puts "found"
+          #puts "it: #{it.id}, en: #{en.id}"
+          #puts "found"
           next
         end
         puts "it: #{it.id}, en: #{en.id}"
@@ -260,7 +425,7 @@ def check_existing_it_conflicts
           puts e
         end
       else
-        puts "it: #{it.id}, en: none"
+        #puts "it: #{it.id}, en: none"
         begin
           c = Conflict.create
           ct = ConflictText.new
@@ -286,6 +451,9 @@ def check_existing_it_conflicts
 end
 
 def check_it_conflicts 
+  load "#{Dir.pwd}/misc/it-models.rb"
+  lastlocale = I18n.locale
+  I18n.locale = :it
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
   puts
   puts "Accounts"
@@ -322,6 +490,8 @@ def check_it_conflicts
         ct.update_attribute attr, val
         if attr == "approval_status"
           c.update_attribute attr, val
+        elsif attr == "province" and it.it_region_id
+          ct.update_attribute attr, "#{val.strip}, #{it.it_region.name.strip}"
         end
       else
         #puts "    #{attr.blue}: #{val}"
@@ -366,22 +536,24 @@ def check_it_conflicts
     end
     #break if ind == 0
   end
+  I18n.locale = lastlocale
   nil
 end
 
 def create_in_ejatlas obj, aid=nil
-  if obj.has_attribute? :slug and eval(obj.model_name.to_s.sub(/^It/,"")).find_by_slug(obj.slug)
+  pref = I18n.locale.to_s.downcase
+  if obj.has_attribute? :slug and eval(obj.model_name.to_s.sub(/^#{pref.titlecase}/,"")).find_by_slug(obj.slug)
     return nil
   end
-  ebj = eval(obj.model_name.to_s.sub(/^It/,"")).new
+  ebj = eval(obj.model_name.to_s.sub(/^#{pref.titlecase}/,"")).new
   obj.attributes.each do |attr,val|
     next if attr.match(/^id$/)
     next if attr.match(/^file$/)
     if attr.match(/_id$/)
-      attr = attr.sub(/^it_/,"")
+      attr = attr.sub(/^#{pref}_/,"")
       ebj.update_attribute attr, aid
     else
-      val = val.sub(/^It/,"") if attr === "attachable_type"
+      val = val.sub(/^#{pref.titlecase}/,"") if attr === "attachable_type"
       ebj.update_attribute attr, val
     end
   end
@@ -390,7 +562,11 @@ def create_in_ejatlas obj, aid=nil
     file = File.open("#{Dir.pwd}/tmp/#{obj.file_url.split(/\//)[-1]}","rb")
     #file = open(obj.file_url)
     ebj.file = file
-    ebj.save!
+    begin
+      ebj.save!
+    rescue => e
+      puts e
+    end
   end
   ebj
 end

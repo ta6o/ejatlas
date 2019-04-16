@@ -1,12 +1,24 @@
-$ejit = {
-  :adapter  => 'postgresql',
-  :encoding => 'utf8',
-  :host => '127.0.0.1',
-  :port => '5432',
-  :user => "yakup",
-  :password => "***REMOVED***",
-  :database => 'ejit'
-}
+if ENV['RACK_ENV'] == "development"
+  $ejit = {
+    :adapter  => 'postgresql',
+    :encoding => 'utf8',
+    :host => '127.0.0.1',
+    :port => '5432',
+    :user => "yakup",
+    :password => "***REMOVED***",
+    :database => 'ejit'
+  }
+else
+  $ejit = {
+    :adapter  => 'postgresql',
+    :encoding => 'utf8',
+    :host => '127.0.0.1',
+    :port => '5432',
+    :user => "root",
+    :password => "***REMOVED***",
+    :database => 'ejit'
+  }
+end
 
 
 class ItAccount < ActiveRecord::Base
@@ -18,6 +30,12 @@ class ItAccount < ActiveRecord::Base
   has_many :it_images, class_name: "ItImage", as: :attachable, dependent: :destroy
 end
 
+
+class ItRegion < ActiveRecord::Base
+  establish_connection $ejit
+  self.table_name = :regions
+  has_many :it_conflicts
+end
 
 class ItCategory < ActiveRecord::Base
   establish_connection $ejit
@@ -51,6 +69,7 @@ class ItConflict < ActiveRecord::Base
   establish_connection $ejit
   self.table_name = :conflicts
   belongs_to :it_country
+  belongs_to :it_region
   belongs_to :it_category
   belongs_to :it_account
   belongs_to :it_project_status

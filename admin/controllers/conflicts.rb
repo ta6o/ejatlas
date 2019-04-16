@@ -210,7 +210,7 @@ Admin.controllers :conflicts do
         proper = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id)
         other =  Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(id: current_account.conflict_accounts.map(&:conflict_id))
         @conflicts = proper.or(other).order('modified_at desc')
-        pp @conflicts.class
+        #pp @conflicts.class
       end
     end
     render 'conflicts/index'
@@ -289,14 +289,14 @@ Admin.controllers :conflicts do
       @title = 'New Conflict'
       @name = 'New Conflict'
       @conflict = Conflict.new
-      @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').to_a.map(&:name)
+      @cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:name)
       render 'conflicts/new'
     end
   end
 
   get :example do
     @conflict = Conflict.new
-    @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').to_a.map(&:name)
+    @cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:name)
     @example = true
     render 'conflicts/example'
   end
@@ -306,7 +306,8 @@ Admin.controllers :conflicts do
       @conflict = Conflict.find(params[:id])
       roles = current_account.roles.map(&:name)
       if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or (roles.include?("locale-#{I18n.locale}") and roles.include?("editor"))
-        rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
+        #rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
+        rels = ConflictText.where(approval_status: 'approved').order('updated_at desc')
         @cjson = rels.map {|ct| {:id=>ct.conflict_id,:value=>ct.name}}.to_json
         @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
         @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
@@ -405,7 +406,8 @@ Admin.controllers :conflicts do
     pass unless current_account
     #params.each {|kk,vv| #puts; #puts kk; if vv.is_a? Hash then vv.each {|k,v| #puts "#{k.to_s}: #{v.to_s}"} else #puts vv end }
     updated = Admin.correctForm(params)
-    @conflict = Conflict.new(updated[:conflict])
+    @conflict = Conflict.create
+    @conflict.update_attributes(updated[:conflict])
     #puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     if @conflict.save :validate => false
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
@@ -424,8 +426,8 @@ Admin.controllers :conflicts do
   end
 
    put :update, :with => :id do
-    pp params["id"]
-    pp params["conflict"]["slug"]
+    #pp params["id"]
+    #pp params["conflict"]["slug"]
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     updated = Admin.correctForm(params)
@@ -545,7 +547,6 @@ Admin.controllers :conflicts do
       end
 
       general = false
-      puts
       updated['conflict'].each do |k,v|
         if k == 'name' and v.match(/"/)
           quotes = ["“","","”"]
@@ -568,7 +569,7 @@ Admin.controllers :conflicts do
             end
           end
         else
-          puts k
+          #puts k
           ct = @conflict.local_data
           unless ct.attributes[k] == v
             begin

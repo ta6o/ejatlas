@@ -471,6 +471,10 @@ class Admin < Padrino::Application
     (Country.all.map(&:capital)-[nil]).sort
   end
 
+  def self.parse_error error, color=:yellow
+    error.backtrace.map{|x| x.match(/^(.+?):(\d+)(|:in `(.+)')$/); [$1,$2,$4] }.map {|x| x[0].match(/\/run/) ? "> #{x[0].split(/\//)[-1].colorize(color)} ##{x[1].colorize(color)} : #{x[2]}" : nil} - [nil]
+  end
+
   def self.fetch_translations download=true
     if download
       `rm #{Dir.pwd}/lib/sheets/*`

@@ -117,33 +117,21 @@ class Conflict < ActiveRecord::Base
     self.conflict_texts.where(:locale=>locale).first
   end
 
-  def get_original_local_text attr
-    begin
-      self.conflict_texts.order(:created_at)[0].attributes[attr]
-    rescue
-      nil
-    end
-  end
-
   def get_local_text attr, locale=I18n.locale
-    begin
-      self.conflict_texts.where(:locale=>locale)[0].attributes[attr.to_s]
-    rescue
-      cts = self.conflict_texts
-      if cts.any?
-        cts.first.attributes[attr]
-      else
-        nil
-      end
+    if d = self.conflict_texts.where(:locale=>locale).first
+      d.attributes[attr.to_s]
+    elsif d = self.conflict_texts.order(:created_at).first
+      d.attributes[attr.to_s]
     end
   end
 
   def set_local_text attr, val, locale=I18n.locale
-    begin
-      self.local_data(locale).update_attribute attr.to_s, val
-    rescue =>e
-      puts "#{self.id}: #{e}: #{attr}\n#{val}\n\n"
-      nil
+    if d = self.local_data(locale)
+      d.update_attribute attr.to_s, val
+    elsif d = self.conflict_texts.order(:created_at).first
+      d.update_attribute attr.to_s, val
+    elsif self.id and d = ConflictText.create(:conflict_id => self.id, :locale=>locale)
+      d.update_attribute attr.to_s, val
     end
   end
 
@@ -735,13 +723,9 @@ class Conflict < ActiveRecord::Base
   end
 
   def slug locale=nil
-    if locale
-      self.get_local_text("slug",locale.to_s) || self.get_local_text("slug","en")
-    else
-      self.get_original_local_text("slug")
-    end
+    self.get_local_text("slug",locale.to_s)
   end
-  def slug= val, locale=I18n.locale
+  def slug= val, locale=nil
     self.set_local_text("slug",val,locale.to_s)
   end
 
@@ -939,7 +923,9 @@ class Conflict < ActiveRecord::Base
   end
 
   def set_slug
-    self.slug = Admin.slugify self.name unless self.slug
+    if self.conflict_texts.any?
+      self.slug = Admin.slugify self.name unless self.slug
+    end
   end
 
 end
