@@ -294,6 +294,7 @@ def check_tr_conflicts
     row.each_with_index do |val, index|
       next unless val
       attr = header[index]
+      puts attr.yellow
       next if "table,json,marker,commented,features,licence,ready,formerid,tr_region_id".split(",").include?(attr)
       attr = "formerid" if attr === "id"
       if coat.keys.include? index 
@@ -306,6 +307,7 @@ def check_tr_conflicts
       elsif rels.keys.include? index
         next if found
         soul = []
+        cool = []
         if attr == "account" 
           if a = Account.find_by_name(val)
             c.update_attribute :account_id, a.id
@@ -313,58 +315,97 @@ def check_tr_conflicts
             puts val
           end
         elsif attr == "types"
-          soul = val.split(":::")
+          soul = val.split(":::").map{|x|[x]}
           model = Type
-        elsif attr == "product_id"
-          soul = val.split(/\n/)
-          model = Product
-        elsif attr == "conflict_event_id"
-          soul = val.split(/\n/)
-          model = ConflictEvent
+        #elsif "product_id,conflict_event_id,mobilizing_group_id,mobilizing_form_id".split(",").include?(attr)
+        elsif attr.match(/_id$/)
+          soul = val.split(/\n/).map{|x|[x]}
+          model = eval(attr.sub(/_id$/,"").classify)
+        elsif attr.match(/_impact$/)
+          soul = val.split(/\n/).map do |x|
+            y = x.match(/\(.\)$/)[0]
+            [x.sub(/\s*\(.\)$/,""),{:imp=>y.slug}]
+          end
+          model = eval("#{attr}s".classify)
+        elsif "references,legislations,weblinks,medialinks".split(",").include?(attr)
+          cool = val.split(/\]\n/).map do |x|
+            y = x.split(/\)\s*\[/)
+            puts
+            p y
+            [y[0].sub(/^\(/,"").strip,{:url=>(y[1]||"").sub(/\]?$/,"").strip}]
+          end
+          p soul
+          model = eval(attr.classify)
+          puts model.to_s.green
         elsif "".split(",").include?(attr)
         end
         others = []
         other = ""
+        puts
+        puts model.to_s.red
         soul.each do |line|
+          name = line[0]
+          tname = model.to_s.tableize
           begin
-            t = eval("Tr#{model}").find_by_slug(line.slug)
+            t = eval("Tr#{model}").find_by_slug(name.slug)
           rescue
-            t = eval("Tr#{model}").find_by_name(line)
+            t = eval("Tr#{model}").find_by_name(name)
           end
           if t
-            puts t.class
-            tid = res[model.to_s.tableize][t.id]
-            if res[model.to_s.tableize][0] == t.id or not tid
-              tt = model.find(res["types"][0])
-              if eval("c.#{model.to_s.tableize}").include? tt
-                puts "#{model} #{t.name.red} already related".blue
+            tid = res[tname][t.id]
+            if res[tname][0] == t.id or not tid
+              tt = model.find(res[tname][0])
+              if eval("c.#{tname}").include? tt
+                puts "#{t.name.magenta} already added"
               else
-                eval("c.#{model.to_s.tableize}") << tt
+                puts "#{t.name.blue} adding to case"
               end
-              other = "other_#{model.to_s.tableize}"
+              other = "other_#{tname}"
               if ConflictText.has_attribute?(other)
                 others << t.name
               end
             else
               tt = model.find(tid)
-              if eval("c.#{model.to_s.tableize}").include? tt
-                puts "#{model} #{t.name.red} already related".blue
+              if eval("c.#{tname}").include? tt
+                puts "#{tt.name.cyan} already added"
               else
-                eval("c.#{model.to_s.tableize}") << model.find(tid)
+                puts "#{tt.name.green} adding to case"
               end
             end
+            opts = {"conflict_id" => c.id, tname.sub(/s$/,"_id") => tt.id}
+            if tname.match(/_impacts$/) and line[1].has_key?(:imp)
+              opts["visible"] = (line[1][:imp] == "g" ? true : false)
+            end
+            eval("C#{model}").create opts
           else
             puts "#{model} not found: #{line.blue}".red
           end
         end
+        cool.each do |line|
+          name = line[0]
+          tname = model.to_s.tableize
+          if line[1].has_key?(:url) 
+            tt = model.where(:url=>line[1][:url],:conflict_id=>c.id)
+            if tt
+              if eval("c.#{tname}").include? tt
+                puts "#{tt.name.cyan} already added"
+              end
+            else
+              puts "#{tt.name.green} adding to case"
+              opts = {"conflict_id" => c.id, "url" => line[1][:url], "name" => name}
+              model.create opts
+            end
+          else
+          end
+        end
         if ConflictText.has_attribute?(other)
-          puts "#{others.join(", ")}".yellow
+          puts "#{other.yellow}: #{others.join(", ")}".yellow
           ct.update_attribute other, others.join(", ")
         end
       end
     end
     puts
-    break if ind == 0
+    break if ind == 6
   end
   I18n.locale = lastlocale
   nil
