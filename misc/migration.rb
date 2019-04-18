@@ -271,7 +271,7 @@ def check_tr_conflicts
     print "\r TrConflict #{ind+1}/#{csv.length}"
     puts
     found = false
-    if row[1]
+    if row[1] and row[1].strip.length > 0
       if c = Conflict.find(row[1].to_i)
         unless ct = ConflictText.find_by_slug(row[4].strip)
           ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
@@ -291,15 +291,17 @@ def check_tr_conflicts
       c = Conflict.create
       ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
     end
+
     row.each_with_index do |val, index|
       next unless val
       attr = header[index]
-      puts attr.yellow
       next if "table,json,marker,commented,features,licence,ready,formerid,tr_region_id".split(",").include?(attr)
       attr = "formerid" if attr === "id"
       if coat.keys.include? index 
+        puts "    #{attr.green}: #{val}"
         c.update_attribute attr, val unless found
       elsif ctat.keys.include? index
+        puts "    #{attr.green}: #{val}"
         ct.update_attribute attr, val
         if attr == "approval_status"
           c.update_attribute attr, val
@@ -317,7 +319,6 @@ def check_tr_conflicts
         elsif attr == "types"
           soul = val.split(":::").map{|x|[x]}
           model = Type
-        #elsif "product_id,conflict_event_id,mobilizing_group_id,mobilizing_form_id".split(",").include?(attr)
         elsif attr.match(/_id$/)
           soul = val.split(/\n/).map{|x|[x]}
           model = eval(attr.sub(/_id$/,"").classify)
@@ -330,19 +331,37 @@ def check_tr_conflicts
         elsif "references,legislations,weblinks,medialinks".split(",").include?(attr)
           cool = val.split(/\]\n/).map do |x|
             y = x.split(/\)\s*\[/)
-            puts
-            p y
-            [y[0].sub(/^\(/,"").strip,{:url=>(y[1]||"").sub(/\]?$/,"").strip}]
+            [y[0].sub(/^\s*\(?/,"").strip,{:url=>(y[1]||"").sub(/\]?\s*$/,"").strip}]
           end
-          p soul
           model = eval(attr.classify)
-          puts model.to_s.green
-        elsif "".split(",").include?(attr)
+        elsif "documents,images".split(",").include?(attr)
+          cool = val.split(/\n\s*\n/).map do |x|
+            y = x.split(/\n/)
+            [y[0].strip,{:file=>(y[1]||"").strip}]
+          end
+          model = eval(attr.classify)
+        elsif "companies,supporters".split(",").include?(attr)
+          cool = val.split(/\n/).map do |x|
+            y = x.split(/:/).map &:strip
+            acr = y[0].scan(/\[[^\]]*\]/)[0]
+            ac = nil
+            ac = acr if acr and acr.length > 0
+            cnt = y[0].scan(/\([^\]]*\)/)[0]
+            cn = nil
+            cn = 195 if cnt and cnt.strip == "Türkiye"
+            cn = 71 if cnt and cnt.strip == "Almanya"
+            nam = y[0].split("[")[0]
+            [nam, {:cnt=>cn,:acr=>ac,:desc=>y[1]}]
+          end
+          model = eval(attr.classify)
+        else
+          puts "  Not processed: #{attr}".red
+          break
         end
         others = []
         other = ""
         puts
-        puts model.to_s.red
+        puts "  #{model}"
         soul.each do |line|
           name = line[0]
           tname = model.to_s.tableize
@@ -356,9 +375,9 @@ def check_tr_conflicts
             if res[tname][0] == t.id or not tid
               tt = model.find(res[tname][0])
               if eval("c.#{tname}").include? tt
-                puts "#{t.name.magenta} already added"
+                puts "    #{t.name.magenta} found"
               else
-                puts "#{t.name.blue} adding to case"
+                puts "    #{t.name.blue} adding to case"
               end
               other = "other_#{tname}"
               if ConflictText.has_attribute?(other)
@@ -367,9 +386,9 @@ def check_tr_conflicts
             else
               tt = model.find(tid)
               if eval("c.#{tname}").include? tt
-                puts "#{tt.name.cyan} already added"
+                puts "    #{tt.name.cyan} found"
               else
-                puts "#{tt.name.green} adding to case"
+                puts "    #{tt.name.green} adding to case"
               end
             end
             opts = {"conflict_id" => c.id, tname.sub(/s$/,"_id") => tt.id}
@@ -378,34 +397,75 @@ def check_tr_conflicts
             end
             eval("C#{model}").create opts
           else
-            puts "#{model} not found: #{line.blue}".red
+            puts "    #{model} not found: #{line.blue}".red
           end
         end
         cool.each do |line|
           name = line[0]
           tname = model.to_s.tableize
-          if line[1].has_key?(:url) 
-            tt = model.where(:url=>line[1][:url],:conflict_id=>c.id)
+          if line[1].has_key?(:cnt) 
+            puts name.yellow
+            tt = model.find_by_slug(name.slug)
             if tt
               if eval("c.#{tname}").include? tt
-                puts "#{tt.name.cyan} already added"
+                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found"
+              else
+                eval("c.#{tname}") << tt
+                puts "    #{model.to_s.green} #{tt.name.green} found, adding to case"
               end
             else
-              puts "#{tt.name.green} adding to case"
-              opts = {"conflict_id" => c.id, "url" => line[1][:url], "name" => name}
-              model.create opts
+              opts = {:name => name, "country_id" => line[1][:cnt], "acronym" => line[1][:acr], "description" => line[1][:desc]}
+              tt = model.create opts
+              eval("c.#{tname}") << tt
+              puts "    #{model.to_s.green} #{tt.name.green} adding to case"
             end
-          else
+          elsif line[1].has_key?(:url) 
+            tt = model.where(:url=>line[1][:url],:conflict_id=>c.id)[0]
+            if tt
+              if eval("c.#{tname}").include? tt
+                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found"
+              end
+            else
+              opts = {"conflict_id" => c.id, "url" => line[1][:url], "description" => name}
+              tt = model.create opts
+              puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case"
+            end
+          elsif model == Image
+            tt = nil
+            model.where(:title => line[0],"attachable_type" => "Conflict", "attachable_id" => c.id).each do |img|
+              if img.file.file.filename == line[1][:file].split(/\//)
+                tt = img 
+                break
+              end
+            end
+            if tt
+              if eval("c.#{tname}").include? tt
+                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found"
+              end
+            else
+              `cd #{Dir.pwd}/tmp && curl -O #{line[1][:file].sub("org","yakup.work")} 2> /dev/null && cd ..`
+              file = File.open("#{Dir.pwd}/tmp/#{line[1][:file].split(/\//)[-1]}","rb")
+              opts = {"attachable_type" => "Conflict", "attachable_id" => c.id, "title" => name, "file" => file}
+              if file
+                begin
+                  tt = model.create! opts
+                  puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case"
+                rescue => e
+                  puts e.to_s.red
+                end
+              else
+                  puts "    #{model.to_s.yellow} not found"
+              end
+            end
           end
         end
         if ConflictText.has_attribute?(other)
-          puts "#{other.yellow}: #{others.join(", ")}".yellow
+          puts "    #{other.yellow}: #{others.join(", ")}".yellow
           ct.update_attribute other, others.join(", ")
         end
       end
     end
     puts
-    break if ind == 6
   end
   I18n.locale = lastlocale
   nil
