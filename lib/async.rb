@@ -635,6 +635,7 @@ class AsyncTask
         ConflictText.where(:locale=>locale).find_in_batches(batch_size: 64) do |batch|
           batch.each do |ct|
             c = ct.conflict
+            next unless c
             counter += 1
             tc = c.ping(locale)
             times[:ping][0] += tc[0]
@@ -663,7 +664,7 @@ class AsyncTask
     if params["countries"] == "on" or params["reindex"] == "on"
       countries = []
       puts "Updating countries..."
-      cos = (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.country}.flatten.uniq - [nil])
+      cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.country : nil}.flatten.uniq - [nil])
       total = cos.length
       t0 = Time.now
       cos.each_with_index do |c,counter|
@@ -683,7 +684,7 @@ class AsyncTask
     if params["companies"] == "on" or params["reindex"] == "on"
       companies = []
       puts "Updating companies..."
-      cos = (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.companies}.flatten.uniq - [nil])
+      cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.companies : nil}.flatten.uniq - [nil])
       total = cos.length
       t0 = Time.now
       cos.each_with_index do |c,counter|
@@ -703,7 +704,7 @@ class AsyncTask
     if params["ifis"] == "on" or params["reindex"] == "on"
       supporters = []
       puts "Updating IFI's..."
-      cos = (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.supporters}.flatten.uniq - [nil])
+      cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.supporters : nil}.flatten.uniq - [nil])
       total = cos.length
       t0 = Time.now
       cos.each_with_index do |c,counter|
@@ -723,7 +724,7 @@ class AsyncTask
     if params["commodities"] == "on"
       commodities = []
       puts "Updating commodities..."
-      cos = (ConflictText.where(:locale=>locale).map{|ct|ct.conflict.products}.flatten.uniq - [nil])
+      cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.products : nil}.flatten.uniq - [nil])
       total = cos.length
       cos.each_with_index do |c,counter|
         commodities << [c.jsonize,c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"
@@ -740,7 +741,8 @@ class AsyncTask
     if params["categories"] == "on"
       types = []
       puts "Updating categories..."
-      Type.all.each do |t|
+      total = Type.count
+      Type.all.each_with_index do |t,counter|
         next if t.name == "Other"
         ty = CType.where(:type_id=>t.id).map(&:conflict_id) - [nil]
         cs = ConflictText.where(:conflict_id=>ty.uniq,:locale=>locale, :approval_status=>"approved")
@@ -748,6 +750,7 @@ class AsyncTask
           types << [t.jsonize,cs.count]
         end
         t.save
+        print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per category)"
       end
       types.sort_by! {|c| c[1]}
       types.reverse!
@@ -835,7 +838,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,type:"tag"}
         print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per tag)"
       end
-      cs = ConflictText.where(:locale=>locale).map{|ct|ct.conflict}
+      cs = ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict : nil} - [nil]
 
       accs = (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq - [nil]
       total = accs.length

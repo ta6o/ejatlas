@@ -141,7 +141,6 @@ def migrate_to_i18n
 
   # translations
 
-=begin
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
   drop_table :conflict_texts
   create_table :conflict_texts
@@ -171,7 +170,6 @@ def migrate_to_i18n
   drop_column_from_table :conflicts, cols.reject{|k,v| ["approval_status","created_at","updated_at","modified_at"].include?(k)}
   add_column_to_table :cacheds, {:locale=>"varchar(3)"}
   
-=end
 
   # roles
   
@@ -237,7 +235,8 @@ def id_language text
   end
 end
 
-def check_tr_conflicts
+def check_tr_conflicts verbose = false
+  # TODO handle duplicates!
   load "#{Dir.pwd}/misc/tr-models.rb"
   lastlocale = I18n.locale
   I18n.locale = :tr
@@ -246,7 +245,7 @@ def check_tr_conflicts
   coat = {}
   ctat = {}
   rels = {}
-  res = {"categoy_id"=>{8=>1, 7=>2, 2=>3, 9=>4, 5=>5, 6=>6, 1=>7, 10=>8, 3=>9, 4=>10, 0=>11}, "conflict_events"=>{15=>1, 18=>2, 1=>3, 12=>4, 5=>5, 9=>6, 10=>8, 11=>9, 6=>11, 13=>12, 16=>13, 4=>14, 7=>15, 8=>16, 14=>17, 2=>18, 3=>19, 19=>20, 17=>21, 0=>26}, "env_impacts"=>{1=>1, 2=>2, 3=>3, 4=>4, 5=>5, 6=>6, 7=>7, 8=>8, 9=>9, 10=>10, 11=>11, 12=>12, 13=>13, 14=>14, 15=>15, 16=>16, 17=>17, 18=>18, 19=>19, 20=>20, 0=>21}, "hlt_impacts"=>{1=>1, 5=>2, 6=>3, 7=>4, 8=>5, 9=>6, 2=>7, 3=>8, 10=>9, 4=>10, 0=>11}, "mobilizing_forms"=>{14=>2, 5=>3, 23=>4, 3=>5, 17=>6, 2=>7, 25=>8, 24=>9, 9=>10, 15=>11, 6=>12, 19=>13, 13=>14, 18=>15, 20=>16, 12=>17, 22=>18, 16=>19, 11=>20, 21=>21, 4=>22, 1=>23, 10=>24, 7=>25, 0=>28}, "mobilizing_groups"=>{12=>1, 2=>2, 22=>4, 15=>5, 9=>6, 18=>7, 20=>8, 17=>9, 21=>10, 10=>11, 6=>12, 16=>13, 13=>14, 3=>15, 8=>16, 5=>17, 14=>18, 19=>19, 4=>20, 1=>3, 7=>14, 0=>21}, "products"=>{24=>33, 2=>1, 3=>2, 4=>3, 28=>4, 45=>5, 40=>6, 33=>7, 27=>8, 5=>9, 38=>10, 43=>11, 23=>12, 31=>13, 17=>14, 15=>15, 20=>16, 41=>17, 6=>18, 37=>19, 1=>20, 13=>21, 26=>22, 50=>23, 35=>24, 36=>25, 9=>26, 25=>27, 19=>28, 14=>29, 42=>30, 10=>31, 39=>32, 44=>34, 30=>35, 34=>36, 29=>37, 22=>38, 46=>39, 11=>40, 48=>41, 51=>42, 8=>43, 12=>44, 47=>45, 7=>46, 21=>47, 16=>48, 18=>49, 32=>50, 53=>57, 0=>57}, "project_status_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 5=>6, 6=>1, 0=>1}, "reaction_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 0=>1}, "sec_impacts"=>{2=>1, 1=>2, 3=>3, 4=>4, 5=>5, 6=>6, 9=>7, 10=>8, 11=>9, 12=>10, 13=>11, 14=>12, 0=>13}, "status_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 0=>1}, "types"=>{39=>1, 38=>2, 37=>3, 34=>4, 35=>5, 33=>6, 36=>7, 8=>8, 4=>9, 5=>10, 6=>11, 49=>12, 47=>13, 44=>14, 46=>15, 48=>16, 43=>17, 41=>18, 7=>19, 40=>20, 42=>21, 26=>22, 23=>23, 18=>24, 25=>25, 24=>26, 20=>27, 22=>28, 27=>29, 19=>30, 21=>31, 51=>32, 31=>33, 32=>34, 28=>35, 29=>36, 30=>37, 3=>38, 1=>39, 2=>40, 53=>41, 50=>42, 11=>43, 12=>44, 9=>45, 10=>46, 15=>47, 17=>48, 16=>49, 14=>50, 13=>51, 0=>53}}
+  res = {"category_id"=>{8=>1, 7=>2, 2=>3, 9=>4, 5=>5, 6=>6, 1=>7, 10=>8, 3=>9, 4=>10, 0=>11, 11=>11}, "conflict_events"=>{15=>1, 18=>2, 1=>3, 12=>4, 5=>5, 9=>6, 10=>8, 11=>9, 6=>11, 13=>12, 16=>13, 4=>14, 7=>15, 8=>16, 14=>17, 2=>18, 3=>19, 19=>20, 17=>21, 0=>26}, "env_impacts"=>{1=>1, 2=>2, 3=>3, 4=>4, 5=>5, 6=>6, 7=>7, 8=>8, 9=>9, 10=>10, 11=>11, 12=>12, 13=>13, 14=>14, 15=>15, 16=>16, 17=>17, 18=>18, 19=>19, 20=>20, 0=>21}, "hlt_impacts"=>{1=>1, 5=>2, 6=>3, 7=>4, 8=>5, 9=>6, 2=>7, 3=>8, 10=>9, 4=>10, 0=>11}, "mobilizing_forms"=>{14=>2, 5=>3, 23=>4, 3=>5, 17=>6, 2=>7, 25=>8, 24=>9, 9=>10, 15=>11, 6=>12, 19=>13, 13=>14, 18=>15, 20=>16, 12=>17, 22=>18, 16=>19, 11=>20, 21=>21, 4=>22, 1=>23, 10=>24, 7=>25, 0=>28}, "mobilizing_groups"=>{12=>1, 2=>2, 22=>4, 15=>5, 9=>6, 18=>7, 20=>8, 17=>9, 21=>10, 10=>11, 6=>12, 16=>13, 13=>14, 3=>15, 8=>16, 5=>17, 14=>18, 19=>19, 4=>20, 1=>3, 7=>14, 0=>21}, "products"=>{24=>33, 2=>1, 3=>2, 4=>3, 28=>4, 45=>5, 40=>6, 33=>7, 27=>8, 5=>9, 38=>10, 43=>11, 23=>12, 31=>13, 17=>14, 15=>15, 20=>16, 41=>17, 6=>18, 37=>19, 1=>20, 13=>21, 26=>22, 50=>23, 35=>24, 36=>25, 9=>26, 25=>27, 19=>28, 14=>29, 42=>30, 10=>31, 39=>32, 44=>34, 30=>35, 34=>36, 29=>37, 22=>38, 46=>39, 11=>40, 48=>41, 51=>42, 8=>43, 12=>44, 47=>45, 7=>46, 21=>47, 16=>48, 18=>49, 32=>50, 53=>57, 0=>57}, "project_status_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 5=>6, 6=>1, 0=>1}, "reaction_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 0=>1}, "sec_impacts"=>{2=>1, 1=>2, 3=>3, 4=>4, 5=>5, 6=>6, 9=>7, 10=>8, 11=>9, 12=>10, 13=>11, 14=>12, 0=>13}, "status_id"=>{1=>2, 2=>3, 3=>4, 4=>5, 0=>1}, "types"=>{39=>1, 38=>2, 37=>3, 34=>4, 35=>5, 33=>6, 36=>7, 8=>8, 4=>9, 5=>10, 6=>11, 49=>12, 47=>13, 44=>14, 46=>15, 48=>16, 43=>17, 41=>18, 7=>19, 40=>20, 42=>21, 26=>22, 23=>23, 18=>24, 25=>25, 24=>26, 20=>27, 22=>28, 27=>29, 19=>30, 21=>31, 51=>32, 31=>33, 32=>34, 28=>35, 29=>36, 30=>37, 3=>38, 1=>39, 2=>40, 53=>41, 50=>42, 11=>43, 12=>44, 9=>45, 10=>46, 15=>47, 17=>48, 16=>49, 14=>50, 13=>51, 0=>53}}
   header.each_with_index do |h,i|
     if ConflictText.attribute_names.include?(h)
       ctat[i] = h
@@ -266,26 +265,27 @@ def check_tr_conflicts
       create_in_ejatlas img, acc.id
     end
   end
-  puts
+  puts if verbose
   csv.each_with_index do |row,ind|
     print "\r TrConflict #{ind+1}/#{csv.length}"
-    puts
+    puts if verbose
     found = false
     if row[1] and row[1].strip.length > 0
       if c = Conflict.find(row[1].to_i)
         unless ct = ConflictText.find_by_slug(row[4].strip)
           ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
         end
+        found = true
       else
-        puts row[1].red
+        puts row[1].red if verbose
       end
-      found = true
-    elsif ct = ConflictText.find_by_slug(row[4].strip)
+    elsif row[4] and ct = ConflictText.find_by_slug(row[4].strip)
       c = ct.conflict
       unless c
         ct.destroy
-        puts "ConflictText destroyed!".red
-        break
+        c = Conflict.create
+        ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
+        puts "ConflictText destroyed!".red if verbose
       end
     else
       c = Conflict.create
@@ -298,10 +298,28 @@ def check_tr_conflicts
       next if "table,json,marker,commented,features,licence,ready,formerid,tr_region_id".split(",").include?(attr)
       attr = "formerid" if attr === "id"
       if coat.keys.include? index 
-        puts "    #{attr.green}: #{val}"
-        c.update_attribute attr, val unless found
+        if attr == "category_id"
+          t = eval("TrCategory").find_by_name(val.strip)
+          if t and t.id and t.id <= 10
+            tid = res["category_id"][t.id]
+            if tt = Category.find(tid)
+              puts "    #{attr.green}: #{val}" if verbose
+              c.update_attribute attr, tt.id unless found
+            else
+              puts "    #{attr.red}: #{val} not found" if verbose
+            end
+          else
+            puts "    #{attr.red}: #{val} not found" if verbose
+          end
+        elsif attr == "population_type"
+          c.update_attribute attr, [nil,"Kentsel","Yarı Kentsel","Kırsal"].index(val) unless found
+          puts "    #{attr.green}: #{val}" if verbose
+        else
+          c.update_attribute attr, val unless found
+          puts "    #{attr.green}: #{val}" if verbose
+        end
       elsif ctat.keys.include? index
-        puts "    #{attr.green}: #{val}"
+        puts "    #{attr.green}: #{val}" if verbose
         ct.update_attribute attr, val
         if attr == "approval_status"
           c.update_attribute attr, val
@@ -314,7 +332,7 @@ def check_tr_conflicts
           if a = Account.find_by_name(val)
             c.update_attribute :account_id, a.id
           else
-            puts val
+            puts val if verbose
           end
         elsif attr == "types"
           soul = val.split(":::").map{|x|[x]}
@@ -355,13 +373,13 @@ def check_tr_conflicts
           end
           model = eval(attr.classify)
         else
-          puts "  Not processed: #{attr}".red
+          puts "  Not processed: #{attr}".red if verbose
           break
         end
         others = []
         other = ""
-        puts
-        puts "  #{model}"
+        puts if verbose
+        puts "  #{model}" if verbose
         soul.each do |line|
           name = line[0]
           tname = model.to_s.tableize
@@ -375,9 +393,9 @@ def check_tr_conflicts
             if res[tname][0] == t.id or not tid
               tt = model.find(res[tname][0])
               if eval("c.#{tname}").include? tt
-                puts "    #{t.name.magenta} found"
+                puts "    #{t.name.magenta} found" if verbose
               else
-                puts "    #{t.name.blue} adding to case"
+                puts "    #{t.name.blue} adding to case" if verbose
               end
               other = "other_#{tname}"
               if ConflictText.has_attribute?(other)
@@ -386,9 +404,9 @@ def check_tr_conflicts
             else
               tt = model.find(tid)
               if eval("c.#{tname}").include? tt
-                puts "    #{tt.name.cyan} found"
+                puts "    #{tt.name.cyan} found" if verbose
               else
-                puts "    #{tt.name.green} adding to case"
+                puts "    #{tt.name.green} adding to case" if verbose
               end
             end
             opts = {"conflict_id" => c.id, tname.sub(/s$/,"_id") => tt.id}
@@ -397,38 +415,38 @@ def check_tr_conflicts
             end
             eval("C#{model}").create opts
           else
-            puts "    #{model} not found: #{line.blue}".red
+            puts "    #{model} not found: #{line.blue}".red if verbose
           end
         end
         cool.each do |line|
           name = line[0]
           tname = model.to_s.tableize
           if line[1].has_key?(:cnt) 
-            puts name.yellow
+            puts name.yellow if verbose
             tt = model.find_by_slug(name.slug)
             if tt
               if eval("c.#{tname}").include? tt
-                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found"
+                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found" if verbose
               else
                 eval("c.#{tname}") << tt
-                puts "    #{model.to_s.green} #{tt.name.green} found, adding to case"
+                puts "    #{model.to_s.green} #{tt.name.green} found, adding to case" if verbose
               end
             else
               opts = {:name => name, "country_id" => line[1][:cnt], "acronym" => line[1][:acr], "description" => line[1][:desc]}
               tt = model.create opts
               eval("c.#{tname}") << tt
-              puts "    #{model.to_s.green} #{tt.name.green} adding to case"
+              puts "    #{model.to_s.green} #{tt.name.green} adding to case" if verbose
             end
           elsif line[1].has_key?(:url) 
             tt = model.where(:url=>line[1][:url],:conflict_id=>c.id)[0]
             if tt
               if eval("c.#{tname}").include? tt
-                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found"
+                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found" if verbose
               end
             else
               opts = {"conflict_id" => c.id, "url" => line[1][:url], "description" => name}
               tt = model.create opts
-              puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case"
+              puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case" if verbose
             end
           elsif model == Image
             tt = nil
@@ -440,32 +458,36 @@ def check_tr_conflicts
             end
             if tt
               if eval("c.#{tname}").include? tt
-                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found"
+                puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found" if verbose
               end
             else
               `cd #{Dir.pwd}/tmp && curl -O #{line[1][:file].sub("org","yakup.work")} 2> /dev/null && cd ..`
-              file = File.open("#{Dir.pwd}/tmp/#{line[1][:file].split(/\//)[-1]}","rb")
+              begin
+                file = File.open("#{Dir.pwd}/tmp/#{line[1][:file].split(/\//)[-1]}","rb")
+              rescue
+                file = nil
+              end
               opts = {"attachable_type" => "Conflict", "attachable_id" => c.id, "title" => name, "file" => file}
               if file
                 begin
                   tt = model.create! opts
-                  puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case"
+                  puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case" if verbose
                 rescue => e
-                  puts e.to_s.red
+                  puts e.to_s.red if verbose
                 end
               else
-                  puts "    #{model.to_s.yellow} not found"
+                puts "    #{model.to_s.yellow} not found" if verbose
               end
             end
           end
         end
         if ConflictText.has_attribute?(other)
-          puts "    #{other.yellow}: #{others.join(", ")}".yellow
+          puts "    #{other.yellow}: #{others.join(", ")}".yellow if verbose
           ct.update_attribute other, others.join(", ")
         end
       end
     end
-    puts
+    puts if verbose
   end
   I18n.locale = lastlocale
   nil
