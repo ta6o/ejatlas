@@ -155,9 +155,9 @@ def migrate_to_i18n
   tot = Conflict.count
   Conflict.all.order(:id).each_with_index do |con,ind|
     print("\r#{ind+1} / #{tot}: #{con.id}")
-    text = c.description
-    text = c.name if text.nil? or text.length <= 16
-    lang = id_language(text)
+    #text = con.description
+    #text = con.name if text.nil? or text.length <= 16
+    #lang = id_language(text)
     begin
       ct = ConflictText.new
       ct.conflict_id = con.id
