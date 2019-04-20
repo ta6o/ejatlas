@@ -752,6 +752,8 @@ class AsyncTask
         t.save
         print "\r #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{(counter+1)}/#{total}, #{((Time.now-t0)/counter).round(3)}s per category)"
       end
+      puts
+      puts
       types.sort_by! {|c| c[1]}
       types.reverse!
       ca.types = types.to_json

@@ -32,12 +32,16 @@ def drop_column_from_table table, cols
   end
 end
 
-def check_id_columns model, prefix=nil
-  model.connection.tap do |db|
+def check_id_columns prefix=nil, verbose=false
+  return nil unless prefix
+  prefix = prefix.to_s
+  return nil unless File.exists?("#{Dir.pwd}/misc/#{prefix}-models.rb")
+  load "#{Dir.pwd}/misc/#{prefix}-models.rb"
+  eval("#{prefix.titlecase}Conflict").connection.tap do |db|
     db.tables.each do |table|
-      puts table
+      puts table if verbose
       db.columns(table).each do |col|
-        puts "  #{col.name}" if col.name.match(/_id$/)
+        puts "  #{col.name}" if col.name.match(/_id$/) if verbose
         if col.name.match(/_id$/) and col.name != "attachable_id" and prefix and not col.name.match(/^#{prefix}_/)
           rename_column model, table, col.name, "#{prefix}_#{col.name}"
         end
@@ -139,6 +143,9 @@ end
 
 def migrate_to_i18n
 
+  verbose = ActiveRecord::Migration.verbose
+  ActiveRecord::Migration.verbose = false
+
   # translations
 
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
@@ -148,6 +155,9 @@ def migrate_to_i18n
   tot = Conflict.count
   Conflict.all.order(:id).each_with_index do |con,ind|
     print("\r#{ind+1} / #{tot}: #{con.id}")
+    text = ct.description
+    text = ct.name if text.nil? or text.length <= 16
+    lang = id_language(text)
     begin
       ct = ConflictText.new
       ct.conflict_id = con.id
@@ -170,6 +180,9 @@ def migrate_to_i18n
   drop_column_from_table :conflicts, cols.reject{|k,v| ["approval_status","created_at","updated_at","modified_at"].include?(k)}
   add_column_to_table :cacheds, {:locale=>"varchar(3)"}
   
+  drop_table :former_infos
+  create_table :former_infos
+  add_column_to_table :former_infos, {:former_id=>"integer",:former_db=>"varchar(12)",:attachable_type=>"varchar(32)",:attachable_id=>"integer",:created_at=>"datetime",:updated_at=>"datetime"}
 
   # roles
   
@@ -186,12 +199,27 @@ def migrate_to_i18n
   tkeys =  $tstatus.values.map(&:keys).flatten.uniq.sort
   tkeys.each {|k| Role.create(:name=>"locale-#{k}")}
 
+  # import local platform data
+
+  check_id_columns :tr
+  check_tr_conflicts
+
+  check_id_columns :it
+  check_existing_it_conflicts
+  check_it_conflicts
+
+  check_ar_conflicts
+
+  # cache update
+
   cacheparams = {"filter"=>"on", "conflicts"=>"on", "countries"=>"on", "companies"=>"on", "ifis"=>"on", "commodities"=>"on", "categories"=>"on", "featureds"=>"on"}
 
   tkeys.each do |loc|
     cacheparams["locale"] = loc
     AsyncTask.new.setcache cacheparams
   end
+
+  ActiveRecord::Migration.verbose = verbose
 
   true
 end
@@ -264,6 +292,7 @@ def check_tr_conflicts verbose = false
     tr.tr_images.each do |img|
       create_in_ejatlas img, acc.id
     end
+    FormerInfo.attach(acc,tr.id.to_i,:ejtr)
   end
   puts if verbose
   csv.each_with_index do |row,ind|
@@ -291,6 +320,9 @@ def check_tr_conflicts verbose = false
       c = Conflict.create
       ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
     end
+    if row[2] and row[2].to_s == row[2].to_i.to_s
+      FormerInfo.attach(ct,row[2].to_i,:ejtr)
+    end
 
     row.each_with_index do |val, index|
       next unless val
@@ -300,7 +332,7 @@ def check_tr_conflicts verbose = false
       if coat.keys.include? index 
         if attr == "category_id"
           t = eval("TrCategory").find_by_name(val.strip)
-          if t and t.id and t.id <= 10
+          if t and t.id 
             tid = res["category_id"][t.id]
             if tt = Category.find(tid)
               puts "    #{attr.green}: #{val}" if verbose
@@ -432,8 +464,14 @@ def check_tr_conflicts verbose = false
                 puts "    #{model.to_s.green} #{tt.name.green} found, adding to case" if verbose
               end
             else
-              opts = {:name => name, "country_id" => line[1][:cnt], "acronym" => line[1][:acr], "description" => line[1][:desc]}
-              tt = model.create opts
+              if tc = eval("Tr#{model}").find_by_slug(name.slug)
+                tt = create_in_ejatlas tc
+                FormerInfo.attach(tt,tc.id,:ejit)
+              else
+                opts = {:name => name, "country_id" => line[1][:cnt], "acronym" => line[1][:acr], "description" => line[1][:desc]}
+                tt = model.create opts
+                FormerInfo.attach(tt,0,:ejit)
+              end
               eval("c.#{tname}") << tt
               puts "    #{model.to_s.green} #{tt.name.green} adding to case" if verbose
             end
@@ -449,6 +487,7 @@ def check_tr_conflicts verbose = false
               puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case" if verbose
             end
           elsif model == Image
+            next
             tt = nil
             model.where(:title => line[0],"attachable_type" => "Conflict", "attachable_id" => c.id).each do |img|
               if img.file.file.filename == line[1][:file].split(/\//)
@@ -493,22 +532,18 @@ def check_tr_conflicts verbose = false
   nil
 end
 
-
 def check_ar_conflicts
   found = 0
-  CSV.read("../arabic.csv").each_with_index do |ar,ind|
-    next if ind == 0
-    if en = Conflict.find_slug(ar[0].strip.split(/\//)[-1])
+  header = []
+  CSV.read("../arabic_final.csv").each_with_index do |ar,ind|
+    if ind == 0
+      header = ar
+    elsif en = Conflict.find_slug(ar[0].strip.split(/\//)[-1])
       found += 1
-      begin
-        ct = ConflictText.new
-        ct.locale = "ar"
-        ct.conflict_id = en.id
-        ct.name = ar[2]
-        ct.description = ar[3]
-        ct.save!
-      rescue => e
-        puts e
+      ct = ConflictText.create :conflict_id => en.id, :locale => :ar
+      ar.each_with_index do |val,i|
+        next unless i > 1
+        ct.update_attribute header[i], val
       end
     else
       puts "not found: #{ar[0]}"
@@ -534,7 +569,7 @@ def check_existing_it_conflicts
           #puts "found"
           next
         end
-        puts "it: #{it.id}, en: #{en.id}"
+        #puts "it: #{it.id}, en: #{en.id}"
         begin
           ct = ConflictText.new
           ct.locale = "it"
@@ -573,13 +608,13 @@ def check_existing_it_conflicts
   nil
 end
 
-def check_it_conflicts 
+def check_it_conflicts verbose=true
   load "#{Dir.pwd}/misc/it-models.rb"
   lastlocale = I18n.locale
   I18n.locale = :it
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
-  puts
-  puts "Accounts"
+  puts if verbose
+  puts "EJIT: Accounts" if verbose
   itslugs = File.readlines("../it_cases.txt").map{|l| l.split(" - ")[0]}
   ItAccount.all.order(:id).each_with_index do |it,ind|
     print "\r #{ind+1}/#{ItAccount.count}"
@@ -588,9 +623,10 @@ def check_it_conflicts
     it.it_images.each do |img|
       create_in_ejatlas img, acc.id
     end
+    FormerInfo.attach(acc,it.id,:ejit)
   end
-  puts
-  puts "Conflicts"
+  puts if verbose
+  puts "EJIT: Conflicts" if verbose
   ItConflict.all.order(:id).each_with_index do |it,ind|
     print "\r #{ind+1}/#{ItConflict.count}"
     #puts
@@ -604,6 +640,7 @@ def check_it_conflicts
       ct = ConflictText.create :locale=>:it, :conflict_id => c.id
     end
 #=end
+    FormerInfo.attach(c,it.id,:ejit)
     it.attributes.each do |attr,val|
       next if "table,json,marker,commented,features,licence,ready,formerid,it_region_id".split(",").include?(attr)
       attr = "formerid" if attr === "id"
@@ -646,7 +683,8 @@ def check_it_conflicts
             if cm = eval(comp.model_name.to_s.sub(/^It/,"")).find_by_slug(comp.slug)
               eval("c.#{rel.sub(/^it_/,"")}") << cm unless eval("c.#{rel.sub(/^it_/,"")}").include?(cm)
             else
-              create_in_ejatlas comp, c.id
+              ejc = create_in_ejatlas comp, c.id
+              FormerInfo.attach(ejc,comp.id,:ejit)
             end
           end
         else

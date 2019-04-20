@@ -64,3 +64,9 @@ class CConflictEvent < ActiveRecord::Base
   belongs_to :conflict_event
   belongs_to :conflict
 end
+class FormerInfo < ActiveRecord::Base
+  belongs_to :attachable, polymorphic: true
+  def self.attach obj, id, db
+    FormerInfo.create!(:attachable_type=>obj.class,:attachable_id=>obj.id,:former_id=>id,:former_db=>db)
+  end
+end
