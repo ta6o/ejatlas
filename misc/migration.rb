@@ -43,7 +43,7 @@ def check_id_columns prefix=nil, verbose=false
       db.columns(table).each do |col|
         puts "  #{col.name}" if col.name.match(/_id$/) if verbose
         if col.name.match(/_id$/) and col.name != "attachable_id" and prefix and not col.name.match(/^#{prefix}_/)
-          rename_column model, table, col.name, "#{prefix}_#{col.name}"
+          rename_column prefix, table, col.name, "#{prefix}_#{col.name}"
         end
       end
     end
@@ -123,8 +123,10 @@ def compare_models prefix
   nil
 end
 
-def rename_column model, table, column, name
-  model.connection.tap do |db|
+def rename_column prefix, table, column, name
+  return nil unless prefix
+  prefix = prefix.to_s
+  eval("#{prefix.titlecase}Conflict").connection.tap do |db|
     if db.column_exists? table.to_sym, column.to_sym
       db.rename_column table.to_sym, column.to_sym, name.to_sym
     end
