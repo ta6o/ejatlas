@@ -154,6 +154,7 @@ def migrate_to_i18n
   drop_table :conflict_texts
   create_table :conflict_texts
   add_column_to_table :conflict_texts, cols
+
   tot = Conflict.count
   Conflict.all.order(:id).each_with_index do |con,ind|
     print("\r#{ind+1} / #{tot}: #{con.id}")

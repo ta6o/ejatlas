@@ -378,13 +378,15 @@ function initMap () {
   });
   
   $('.horipane').on('mouseenter','.conflict-button',function(e){
-    id = $(this).attr('data-id');
+    id = $(this).data('id');
     selector = '#map .map_icon.id_'+id;
     $(selector).addClass('selected')
-    markerc[parseInt(id)].setZIndexOffset(markerCount+1)
     transformItem(selector, 'scale', 1.25);
     $(selector).removeClass('mic').removeClass('min').addClass('hovered');
-    updateInfo(1,markerc[id].content)
+    if(Object.keys(markerc).indexOf(String(id))>=0) {
+      markerc[String(id)].setZIndexOffset(markerCount+1)
+      updateInfo(1,markerc[String(id)].content)
+    }
   })
   $('.horipane').on('mouseleave','.conflict-button',function(e){
     selector = '#map .map_icon.id_'+$(this).attr('data-id');

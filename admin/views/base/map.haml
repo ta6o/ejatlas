@@ -204,6 +204,12 @@
                       -if con.commented
                         %small commented
                   %p{:style=>'margin:0;padding:0;font-size:12px;line-height:16px;'}= c["headline"]
+            -if @recent.length < 6
+              :javascript
+                var scrolling = false;
+            -else
+              :javascript
+                var scrolling = true;
 
 -content_for :body_end do
   :javascript
@@ -227,7 +233,7 @@
       }
       fillWithCases();
       $('#rightpane').scroll(function() {
-        if(!scrolling) {return}
+        if(!scrolling) return
         if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
           $('body').css('cursor','wait');
           ask();
@@ -271,10 +277,12 @@
         $('.columns').css('-webkit-column-count', iColumns);
       }
     }
-    var scrolling = true;
     function ask() {
+      if(!scrolling) return
       $.getJSON("/more_recent","offset="+$('.recent tr').length,function(data){
-        if (data.length < 6) scrolling = false;
+        if (data.length < 6) {
+          scrolling = false;
+        }
         $.each(data,function(i,n) {
           n = n.conflict
           if ($('#recent_'+n.id).length == 0){
