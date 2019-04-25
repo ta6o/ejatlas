@@ -11,13 +11,21 @@ class Country < ActiveRecord::Base
 
   before_save :set_slug
 
+  def local_conflicts locale=:en
+    self.conflicts.where(approval_status: 'approved').map{|c|ct=c.conflict_texts.where(:locale=>locale);if ct.any? then ct[0] else nil end}.uniq - [nil]
+  end
+
+  def local_conflicts_count locale=:en
+    self.local_conflicts(locale).count
+  end
+
   def conflicts_count
     self.conflicts.where(approval_status: 'approved').count
   end
 
-  def jsonize
+  def jsonize locale=:en
     @json = {}
-    @json[:name] = self.name
+    @json[:name] = I18n.t("countries.#{self.name.slug("_")}",:locale=>locale).gsub(/\([^\)]+\)/,"")
     @json[:slug] = self.slug
     return @json.to_json
   end
@@ -65,7 +73,7 @@ class Country < ActiveRecord::Base
   def ping
     json, marker, link = [], [], []
     self.conflicts.where(approval_status: 'approved').order("id asc").each do |c|
-      marker << c.marker
+      marker << JSON.parse(c.marker)
       #json << c.json
       link << c.as_button
     end
@@ -79,7 +87,7 @@ class Country < ActiveRecord::Base
       c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
         next if cs.include?(cc.id)
         cs << cc.id
-        marker << cc.marker
+        marker << JSON.parse(cc.marker)
         json << cc.json
         culprits = []
         cc.companies.where(country_id: self.id).each {|cu| culprits << "<a href='/company/#{cu.slug}'>#{cu.name}</a>"}
@@ -96,7 +104,7 @@ class Country < ActiveRecord::Base
       c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
         next if cs.include?(cc.id)
         cs << cc.id
-        marker << cc.marker
+        marker << JSON.parse(cc.marker)
         json << cc.json
         culprits = []
         cc.supporters.where(country_id: self.id).each {|cu| culprits << "<a href='/institution/#{cu.slug}'>#{cu.name}</a>"}
@@ -106,12 +114,12 @@ class Country < ActiveRecord::Base
     self.supporters_marker = marker.to_json
     self.supporters_json = json.to_json
     self.supporters_link = link.join
+    self.save
   end
 
   private
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
-    ping
   end
 end
 
@@ -130,9 +138,9 @@ class Region < ActiveRecord::Base
     return count
   end
 
-  def jsonize
+  def jsonize locale=:en
     @json = {}
-    @json[:name] = self.name
+    @json[:name] = I18n.t("countries.region.#{self.name.slug("_")}",:locale=>locale).gsub(/\([^\)]+\)/,"")
     @json[:slug] = self.slug
     return @json.to_json
   end

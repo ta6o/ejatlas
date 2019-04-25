@@ -181,7 +181,7 @@ def migrate_to_i18n
     end
   end
   drop_column_from_table :conflicts, cols.reject{|k,v| ["approval_status","created_at","updated_at","modified_at"].include?(k)}
-  add_column_to_table :cacheds, {:locale=>"varchar(3)"}
+  add_column_to_table :cacheds, {:locale=>"varchar(3)",:featureds=>"text"}
   
   drop_table :former_infos
   create_table :former_infos

@@ -385,7 +385,7 @@ function initMap () {
     $(selector).removeClass('mic').removeClass('min').addClass('hovered');
     if(Object.keys(markerc).indexOf(String(id))>=0) {
       markerc[String(id)].setZIndexOffset(markerCount+1)
-      updateInfo(1,markerc[String(id)].content)
+      //updateInfo(1,markerc[String(id)].content)
     }
   })
   $('.horipane').on('mouseleave','.conflict-button',function(e){
@@ -452,7 +452,6 @@ function showMarkers(markers) {
   shownMarkers = 0
   $.each(markers, function(i,mark){
     if (!mark.a || !mark.o) {
-      console.log(mark)
       return 0
     }
     if (markers.length == 1){
@@ -518,7 +517,7 @@ function showMarkers(markers) {
       $(selector).addClass('selected')
       transformItem(selector, 'scale', 1.25);
       $(selector).removeClass('mic').removeClass('min').addClass('hovered');
-      updateInfo(1,marker.content);
+      //updateInfo(1,marker.content);
     });
     marker.on('mouseout', function(e){
       selector = '#map .map_icon.id_'+marker.id;

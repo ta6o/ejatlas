@@ -3,8 +3,8 @@
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';
-    var markerinfo = eval("["+#{@markerinfo.html_safe}.join(',')+"]");
     var vectorinfo = [];
+    var markerinfo = []
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";
     var fid = #{@fid || 0};
@@ -14,10 +14,15 @@
   :javascript
     window.onload = onLoad;
     function onLoad() {
+      $.each(#{@markerinfo.html_safe}, function(i,e){
+        if (e.l.match(/#{I18n.locale}/)) {
+          markerinfo.push(e)
+        }
+      })
       if (typeof initMap === 'function' ) {
         initMap();
         showMarkers(markerinfo);
-        updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+        updateInfo(1,"<p>#{t("v.index.var_cases_reported", num_cases:@markercount)}</p>")
         mapFit();
       } else {
         setTimeout(onLoad,10);
@@ -47,9 +52,11 @@
         %img{:class=>$dir=="ltr" ? "pull-left" : "pull-right",:src=>@image ,:style=>$dir=="ltr" ? 'max-height:20px;width:auto;margin:4px 12px 20px 0px;' : 'max-height:20px;width:auto;margin:4px 0 20px 12px;'}
         %div{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}
           %h2= @name
+          #infopane
       -else
         %div{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}
           %h2= @name
+          #infopane
 
   -if @description and @description.length > 0 or @maptitle.length > 0 and @feature
     .horipane.description
@@ -70,21 +77,60 @@
         -else
           %p.description= @description.gsub("\n","<br />").html_safe
               
-  -#.horipane
-    .title.active Info
-    .content
-      #infopane
 
   .horipane
-    .title.active{:class=> @feature ? "" : "active"} Legend
-    .content
+    .title= t "v.index.legend"
+    .content{:style=>'display:none'}
       #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
-        .legend.noselect.block{'data-width'=>220}
+        .legend.noselect
+          %table
+            %tbody
+              %tr
+                %td.icon
+                  .vis.map-icon.i_1
+                    %td.desc.i_1= t("m.category_id.nuclear").gsub(/\([^\)]\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_2
+                %td.desc.i_2= t("m.category_id.mineral_ores_and_building_materials_extraction").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_3
+                %td.desc.i_3= t("m.category_id.waste_management").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_4
+                %td.desc.i_4= t("m.category_id.biomass_and_land_conflicts_forests_agriculture_fisheries_and_livestock_management").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_5
+                %td.desc.i_5= t("m.category_id.fossil_fuels_and_climate_justice_energy").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_6
+                %td.desc.i_6= t("m.category_id.water_management").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_7
+                %td.desc.i_7= t("m.category_id.infrastructure_and_built_environment").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_8
+                %td.desc.i_8= t("m.category_id.tourism_recreation").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_9
+                %td.desc.i_9= t("m.category_id.biodiversity_conservation_conflicts").gsub(/\([^\)]+\)/,"").strip
+              %tr
+                %td.icon
+                  .vis.map-icon.i_10
+                %td.desc.i_10= t("m.category_id.industrial_and_utilities_conflicts").gsub(/\([^\)]+\)/,"").strip
+
 
   -if @browseinfo
     -k = @browseinfo.keys.first
     .horipane.browse
-      .title.active= "Browse by #{k}"
+      .title.active= t "v.index.by_#{k}"
       .content
         %div{:id=>"browse#{k}"}
           %ul.columns
@@ -99,11 +145,11 @@
         -if @feature
           .clearfix#disclaimer
             =(@load || "").html_safe
-          .clearfix
+          -#.clearfix
             %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
         -else
           .clearfix#disclaimer
             %h2{:style=>"margin-top:0"}= @maptitle
             =@load.html_safe
-          .clearfix
+          -#.clearfix
             %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name

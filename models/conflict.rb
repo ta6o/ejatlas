@@ -462,6 +462,7 @@ class Conflict < ActiveRecord::Base
     c = self
     v = self
     ct = self.local_data(loc)
+    return "" unless ct
 
     others = {
       "products" => [57,ct.other_products,'commodity'],

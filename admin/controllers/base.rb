@@ -3,6 +3,7 @@ Admin.controller do
 
   before do
     @layout = :full
+    @featureds = Featured.where(:id=>JSON.parse(Cached.where(:locale=>I18n.locale).first.featureds||"[]")).select("name, slug")
   end
 
   post "/image" do
@@ -196,19 +197,44 @@ Admin.controller do
     render 'base/print', :layout => :print
   end
 
+  get "/:model" do
+    browseinfo = {"country"=>"countries","company"=>"companies","commodity"=>"commodities","type"=>"types"}
+    pass unless browseinfo.has_key?(params[:model])
+    ca = Cached.where(:locale=>I18n.locale).first
+    @filterform = JSON.parse(ca.filterdata)
+    @filter = render "base/filter", :layout => false
+    @markercount = Conflict.where(approval_status: 'approved').count
+    @markerinfo = ca.conflicts_marker
+    @filterinfo = ca.conflicts_json
+    info = eval("JSON.parse(ca.#{browseinfo[params[:model]]})")
+    @browseinfo = {params[:model] => info}
+    @name = I18n.t("f.menu.#{browseinfo[params[:model]]}")
+    @maptitle = "Browse #{@name}"
+    @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json
+    @baselayers = $baselayers
+    @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
+    render "base/front"
+  end
+
   get :country, :with => :slug do
+    ca = Cached.where(:locale=>I18n.locale).first
     con = Country.find_slug(params[:slug])
     con = Region.find_slug(params[:slug]) unless con
     pass unless con
-    ca = Cached.select(:filterdata).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     contents = File.read('admin/views/base/filter.haml')
     @filterinfo = con.conflicts_json
     @load = con.conflicts_link
+    if I18n.locale != :en or I18n.locale != "en"
+      @load = ""
+      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
+        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
+      end
+    end
     @name = con.name
+    @name = I18n.t("countries.#{con.name.slug("_")}")
     @description = con.description
     @id = con.id
     @desc = con.description
@@ -223,21 +249,27 @@ Admin.controller do
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown').to_json
     @image = nil
     @image = con.flag_images.first.file.url if con.flag_images.any?
-    @maptitle = "Environmental Conflicts in #{@name}"
+    @maptitle = I18n.t("v.index.environmental_conflicts_in_var",:country=>I18n.t("countries.#{con.name.slug("_")}"))
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
   get :company, :with => :slug do
+    ca = Cached.where(:locale=>I18n.locale).first
     con = Company.find_slug(params[:slug])
     pass unless con
-    ca = Cached.select(:filterdata).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
     @load = con.conflicts_link
+    if I18n.locale != :en or I18n.locale != "en"
+      @load = ""
+      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
+        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
+      end
+    end
     @name = con.name
     @description = con.description
     @id = con.id
@@ -245,55 +277,67 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     @image = nil
     @image = con.logo_images.first.file.url if con.logo_images.any?
-    @maptitle = "Environmental Conflicts of #{@name}"
+    @maptitle = I18n.t("v.index.environmental_conflicts_of_var",:company=>con.name)
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
   get :institution, :with => :slug do
+    ca = Cached.where(:locale=>I18n.locale).first
     con = Supporter.find_slug(params[:slug])
     pass unless con
-    ca = Cached.select(:filterdata).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
     @load = con.conflicts_link
+    if I18n.locale != :en or I18n.locale != "en"
+      @load = ""
+      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
+        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
+      end
+    end
     @name = con.name
     @description = con.description
     @id = con.id
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
-    @maptitle = "Environmental Conflicts of #{@name}"
+    @maptitle = I18n.t("v.index.environmental_conflicts_of_var",:company=>con.name)
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
   get :commodity, :with => :slug do
-    ca = Cached.select(:filterdata).first
+    ca = Cached.where(:locale=>I18n.locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Product.find_slug(params[:slug])
     pass unless con
-    ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
-    #puts @markerinfo
     @filterinfo = con.conflicts_json
     @load = con.conflicts_link
-    @name = con.name
-    @id = con.id
     @markercount = con.conflicts.where(approval_status: 'approved').count
+    if I18n.locale != :en or I18n.locale != "en"
+      @load = ""
+      @markercount = 0
+      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
+        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
+        @markercount += 1
+      end
+    end
+    @name = I18n.t("m.products.#{con.name.slug("_")}")
+    @id = con.id
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
-    @maptitle = "Environmental Conflicts on #{@name}"
+    @maptitle = I18n.t("v.index.environmental_conflicts_on_var",:commodity=>I18n.t("m.products.#{con.name.slug("_")}"))
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
 
   get :type, :with => :slug do
-    ca = Cached.select(:filterdata).first
+    ca = Cached.where(:locale=>I18n.locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Type.find_slug(params[:slug])
@@ -303,13 +347,19 @@ Admin.controller do
     #puts @markerinfo
     @filterinfo = con.conflicts_json
     @load = con.conflicts_link
-    @name = con.name
+    if I18n.locale != :en or I18n.locale != "en"
+      @load = ""
+      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
+        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
+      end
+    end
+    @name = I18n.t("m.types.#{con.name.slug("_")}")
     @description = con.description
     @id = con.id
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
-    @maptitle = "Environmental Conflicts about #{@name}"
+    @maptitle = I18n.t("v.index.environmental_conflicts_about_var",:category=>I18n.t("m.types.#{con.name.slug("_")}"))
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
@@ -317,7 +367,7 @@ Admin.controller do
   get 'country-of-company', :with => :slug do
     con = Country.find_slug(params[:slug])
     pass unless con
-    ca = Cached.select(:filterdata).first
+    ca = Cached.where(:locale=>I18n.locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     ##last_modified con.updated_at
@@ -325,6 +375,7 @@ Admin.controller do
     @filterinfo = con.companies_json
     @load = con.companies_link
     @name = "Companies from #{con.name}"
+    @name = I18n.t("m.products.#{con.name.slug("_")}")
     @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
@@ -336,11 +387,12 @@ Admin.controller do
   get 'country-of-institution', :with => :slug do
     con = Country.find_slug(params[:slug])
     pass unless con
-    ca = Cached.select(:filterdata).first
+    ca = Cached.where(:locale=>I18n.locale).first
     ##last_modified con.updated_at
     @markerinfo = con.supporters_marker
     @load = con.supporters_link
     @name = "Financial Institutions from #{con.name}"
+    @name = I18n.t("m.products.#{con.name.slug("_")}")
     @id = con.id
     @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
@@ -505,26 +557,6 @@ Admin.controller do
     c = Conflict.find(params[:id].to_i)
     hash = {:table=>c.table,:slug=>c.slug}
     return hash.to_json
-  end
-
-  get "/:model" do
-    browseinfo = {"country"=>"countries","company"=>"companies","commodity"=>"commodities","type"=>"types"}
-    pass unless browseinfo.has_key?(params[:model])
-    ca = Cached.first
-    @filterform = JSON.parse(ca.filterdata)
-    @filter = render "base/filter", :layout => false
-    @markercount = Conflict.where(approval_status: 'approved').count
-    @markerinfo = ca.conflicts_marker
-    @filterinfo = ca.conflicts_json
-    info = eval("JSON.parse(ca.#{browseinfo[params[:model]]})")
-    @browseinfo = {params[:model] => info}
-    puts @browseinfo
-    @name = browseinfo[params[:model]].titlecase
-    @maptitle = "Browse #{@name}"
-    @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json
-    @baselayers = $baselayers
-    @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
-    render "base/front"
   end
 
   get :backup do
