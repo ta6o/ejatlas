@@ -30,14 +30,14 @@
         .modal-header
           %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
           %h4
-            %strong Welcome to Environmental Justice Atlas
+            %strong= t("v.help.welcome_to_environmental_justice_atlas")
         .modal-body
-          %p The EJ Atlas is a teaching, networking and advocacy resource. Strategists, activist organizers, scholars, and teachers will find many uses for the database, as well as citizens wanting to learn more about the often invisible conflicts taking place. 
+          %p= t("v.help.ej_atlas_is_teaching_networking")
           %p
-            %strong Please click the markers on the map for more information.
+            %strong= t("v.help.please_click_markers_on_map")
           .clearfix
             %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
-              %input{:type=>'checkbox',:checked=>true} &nbsp; Do not show this information again
+              %input{:type=>'checkbox',:checked=>true}= " &nbsp; #{t("v.help.do_not_show_this_information")}".html_safe
 
 .front
   -if @defs
@@ -50,14 +50,14 @@
   #help.clearfix
     %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
       %h4
-        %strong{:style=>'left:0',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Show this help"} ?
+        %strong{:style=>'left:0',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>t("v.help.show_this_help")} ?
     %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
-      %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas,")}&url=#{$siteurl}",:target=>"_blank",:title=>"Tweet"}
+      %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas,")}&url=#{$siteurl}",:target=>"_blank",:title=>t("v.social.tweet")}
         #share_tw 
           #img &nbsp;
     %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
       -#.fb-like{"data-href"=>"https://developers.facebook.com/docs/plugins/","data-layout"=>"button","data-action"=>"like","data-show-faces"=>"true","data-share"=>"true"}
-      %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>"Share on Facebook"}
+      %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>t("v.social.share_on_facebook")}
         #share_fb 
           #img &nbsp;
   .clearfix
@@ -73,7 +73,7 @@
         =t("v.index.and_or").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}=t("v.index.fill_out_our_survey").gsub(/\s+/,"&nbsp;").html_safe
 
-  .horipane{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>"Drop down each pane"}
+  .horipane{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>t("v.help.drop_down_each_pane")}
     .title= t "v.index.legend"
     .content{:style=>'display:none'}
       #legendpane
