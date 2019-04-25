@@ -379,5 +379,25 @@
         "project_status_id": "#{ t "v.filter.project_status"}",
         "suggested_alternatives": "#{ t "f.conflict.development_of_alternatives"}",
         "success_level": "#{ t "m.success_level.success_level"}",
-        "success_reason": "#{ t "m.success_level.succaÔUìW‘/ºÿ"©e•Á)
-<¸’³¶K¨#	º›–é~nI#„‰ğlPÏÅ4†Œ:?3ıKİ¾£Qï‡Œúd’vÔÄè\²‹ó@í*Ìì¾·Z—DV€Hğ:î¼?T~£ŠÎ)<ûÑ#ÉÀ&ÔSã‡ÍõÚó¼×¹ù"q±ßîæŞÿDèááX#ºšqàk)zÙ,}8LÍX¨l0qÃÌ@İOW‡½	§[CdO,c“iFšƒ²î¶ÍZ4+ÄÇLÒö jYWW¾önÕ˜ÊÆÊÇdRaëo¦\Ÿ®Úbà·hÿò·ö	©r¡âcS'°:Bã^0]Îa•`öx÷^Şü!«ÄÁE6cÛì<kYŞvš9Yu~g¥Ôç¹ãï>Ód 2l&ÒzÀ›LÿôjÜw)HäŸ!¬AÕîp@MÄy<ËEÊé“ùœë[aiáˆ°ˆ'H½ıÃ–DÆ]z> Ğt†kPy¦Lâ¸ó!4ØhY­wK,t3l–z~=ô„8‹†*¶ñ=n~Å6•†5 Å¯XŒ30çÙiŸn?úZ6sâ¢Ø¿á=/.¿f8»OÆ÷÷€ƒmøó.ÂRùf]¨ø·qÛQ$eC´âÎ6wÈE7sçj	†‘‡³`à˜…á1L'ë^Æ3Š}n¡lzÇæMìû#¼©–ƒ‹š®wÕŸ‹ÙOèŞMnŠ³…1ê µ‰0?†Y³K4—üAtEäoÍ²´˜ƒş—¦G~A4³l]ü±e³’6híh()÷Çc–½1ÀA€L‘êiªæÕã1Æób±ØŒ
+        "success_reason": "#{ t "m.success_level.success_reason"}",
+        "other_comments": "#{ t "f.conflict.other_comments"}"
+      };
+
+      var categoryHash = #{CGI.unescapeHTML($cathash.to_json).html_safe};
+
+    -if ENV['RACK_ENV'] == 'development'
+      :javascript
+        conflict = false;
+        $full = true;
+        jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
+    -else
+      :javascript
+        conflict = false;
+        $full = true;
+        jQl.loadjQ('/javascripts/main.js'); 
+    -if @color and @color.length > 1
+      :javascript
+        $(document).ready(function(){
+          $('#map').css('background','#{@color}')
+        });
+    =yield_content :body_end
