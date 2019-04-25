@@ -151,7 +151,7 @@
                         = t "v.menu.maps"
                         %b.caret
                       %ul.dropdown-menu
-                        -if @featureds.any?
+                        -if @featureds and @featureds.any?
                           -@featureds.each do |feat|
                             %li
                               %a{:href=>"/featured/#{feat.slug}"}= feat.name
