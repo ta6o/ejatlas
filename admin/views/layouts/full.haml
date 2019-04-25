@@ -95,7 +95,7 @@
                   = t "v.menu.maps"
                   %b.caret
                 %ul.dropdown-menu
-                  -if @featureds.any?
+                  -if @featureds and @featureds.any?
                     -@featureds.each do |feat|
                       %li
                         %a{:href=>"/featured/#{feat.slug}"}= feat.name
@@ -219,10 +219,11 @@
                   = t "v.menu.maps"
                   %b.caret
                 %ul.dropdown-menu
-                  -Featured.where(published:true).select('name, slug').each do |feat|
-                    %li
-                      %a{:href=>"/featured/#{feat.slug}"}= feat.name
-                  %li.divider
+                  -if @featureds and @featureds.any?
+                    -@featureds.each do |feat|
+                      %li
+                        %a{:href=>"/featured/#{feat.slug}"}= feat.name
+                    %li.divider
                   %li
                     %a{:href=>'/country'}= t "v.menu.country_maps"
                   %li
