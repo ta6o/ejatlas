@@ -25,8 +25,9 @@ class Admin < Padrino::Application
   #
 
   require 'pp'
-  enable :sessions
-  enable :store_location
+  require 'colorize'
+  enable  :sessions
+  enable  :store_location
 
   set :login_page, "/sessions/login"
 
