@@ -303,18 +303,22 @@ Admin.controllers :conflicts do
 
   get :edit, :with => :id do
     if current_account
-      @conflict = Conflict.find(params[:id])
-      if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id)
-        @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
-        @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
-        @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
-        @saves = []
-        CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
-          @saves << row if row[2] == @conflict.id.to_s
+      begin
+        @conflict = Conflict.find(params[:id])
+        if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id)
+          @cjson = Conflict.where(approval_status: 'approved').order('slug').select('name,id').map{|j|{:id=>j['id'],:value=>j['name']}}.to_json
+          @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
+          @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
+          @saves = []
+          CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
+            @saves << row if row[2] == @conflict.id.to_s
+          end
+          render 'conflicts/edit'
+        else
+          redirect to '/sessions/login'
         end
-        render 'conflicts/edit'
-      else
-        redirect to '/sessions/login'
+      rescue
+        pass
       end
     else
       redirect to '/sessions/login'
