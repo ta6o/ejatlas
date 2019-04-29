@@ -303,7 +303,11 @@ Admin.controllers :conflicts do
 
   get :edit, :with => :id do
     if current_account
-      @conflict = Conflict.find(params[:id])
+      begin
+        @conflict = Conflict.find(params[:id])
+      rescue
+        pass
+      end
       roles = current_account.roles.map(&:name)
       if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or (roles.include?("locale-#{I18n.locale}") and roles.include?("editor"))
         #rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
@@ -326,9 +330,8 @@ Admin.controllers :conflicts do
         CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
           @saves << row if row[2] == @conflict.id.to_s
         end
-        render 'conflicts/edit'
-      else
-        redirect to '/sessions/login'
+      rescue
+        pass
       end
     else
       redirect to '/sessions/login'
