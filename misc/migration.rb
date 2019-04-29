@@ -181,8 +181,24 @@ def migrate_to_i18n
     end
   end
   drop_column_from_table :conflicts, cols.reject{|k,v| ["approval_status","created_at","updated_at","modified_at"].include?(k)}
+
+  add_column_to_table :companies, {:local_names=>"text"}
+  add_column_to_table :supporters, {:local_names=>"text"}
   add_column_to_table :cacheds, {:locale=>"varchar(3)",:featureds=>"text"}
-  
+
+  add_column_to_table :references, {:locale=>"varchar(3)"}
+  add_column_to_table :legislations, {:locale=>"varchar(3)"}
+  add_column_to_table :weblinks, {:locale=>"varchar(3)"}
+  add_column_to_table :medialinks, {:locale=>"varchar(3)"}
+  add_column_to_table :documents, {:locale=>"varchar(3)"}
+  add_column_to_table :images, {:locale=>"varchar(3)"}
+
+  [Reference, Legislation, Weblink, Medialink, Document, Image].each do |model|
+    model.all.each do |instance|
+      instance.update_attribute :locale, "en"
+    end
+  end
+
   drop_table :former_infos
   create_table :former_infos
   add_column_to_table :former_infos, {:former_id=>"integer",:former_db=>"varchar(12)",:attachable_type=>"varchar(32)",:attachable_id=>"integer",:created_at=>"datetime",:updated_at=>"datetime"}

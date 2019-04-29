@@ -40,6 +40,11 @@
         %b=Time.at(File.read("#{Dir.pwd}/lib/sheets/stamp").strip.to_i).to_s
       %input#trans.btn.pull-right{:value=>'Update translations'}
 
+      %p
+        Please click on
+        %a{:href=>"https://docs.google.com/spreadsheets/d/***REMOVED***/edit#gid=881201717",:target=>"_blank"} this link
+        to access the translations document.
+
   :javascript
     function deselect() { $('input[type=checkbox]').attr('checked',false); }
     $("#trans").on("click",function(){
