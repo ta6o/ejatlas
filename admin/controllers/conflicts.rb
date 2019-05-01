@@ -330,8 +330,6 @@ Admin.controllers :conflicts do
         CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
           @saves << row if row[2] == @conflict.id.to_s
         end
-      rescue
-        pass
       end
     else
       redirect to '/sessions/login'
