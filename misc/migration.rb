@@ -340,7 +340,7 @@ def check_tr_conflicts verbose = false
       ct = ConflictText.create :locale=>:tr, :conflict_id => c.id
     end
     if row[2] and row[2].to_s == row[2].to_i.to_s
-      FormerInfo.attach(ct,row[2].to_i,:ejtr)
+      FormerInfo.attach(c,row[2].to_i,:ejtr)
     end
 
     row.each_with_index do |val, index|
@@ -485,11 +485,11 @@ def check_tr_conflicts verbose = false
             else
               if tc = eval("Tr#{model}").find_by_slug(name.slug)
                 tt = create_in_ejatlas tc
-                FormerInfo.attach(tt,tc.id,:ejit)
+                FormerInfo.attach(tt,tc.id,:ejtr)
               else
                 opts = {:name => name, "country_id" => line[1][:cnt], "acronym" => line[1][:acr], "description" => line[1][:desc]}
                 tt = model.create opts
-                FormerInfo.attach(tt,0,:ejit)
+                FormerInfo.attach(tt,0,:ejtr)
               end
               eval("c.#{tname}") << tt
               puts "    #{model.to_s.green} #{tt.name.green} adding to case" if verbose
@@ -703,7 +703,7 @@ def check_it_conflicts verbose=true
               eval("c.#{rel.sub(/^it_/,"")}") << cm unless eval("c.#{rel.sub(/^it_/,"")}").include?(cm)
             else
               ejc = create_in_ejatlas comp, c.id
-              FormerInfo.attach(ejc,comp.id,:ejit)
+              FormerInfo.attach(ejc,comp.id,:tr)
             end
           end
         else

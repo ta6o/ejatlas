@@ -8,6 +8,7 @@ class Supporter < ActiveRecord::Base
   has_many :vector_data, as: :attachable, dependent: :destroy
 
   has_many :old_slugs, class_name: "OldSlug", as: :attachable, dependent: :destroy
+  has_many :former_infos, class_name: "FormerInfo", as: :attachable, dependent: :destroy
 
   before_save :set_slug
 

@@ -9,10 +9,12 @@ class Company < ActiveRecord::Base
   has_many :vector_data, as: :attachable, dependent: :destroy
 
   has_many :old_slugs, class_name: "OldSlug", as: :attachable, dependent: :destroy
+  has_many :former_infos, class_name: "FormerInfo", as: :attachable, dependent: :destroy
 
   belongs_to :country
 
   before_save :set_slug
+  before_destroy :destroy_instance
 
   def inspect
     self.name
@@ -71,5 +73,13 @@ class Company < ActiveRecord::Base
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
     ping
+  end
+  def destroy_instance
+    CCompany.where(:company_id=>self.id).each  &:destroy
+    PCompany.where(:company_id=>self.id).each  &:destroy
+    self.logo_images.each  &:destroy
+    self.old_slugs.each    &:destroy
+    self.former_infos.each &:destroy
+    $client.delete index: "atlas", type: "doc", id: "com_#{self.id}"
   end
 end

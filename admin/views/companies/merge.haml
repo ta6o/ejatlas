@@ -30,14 +30,22 @@
                   %input{:type=>'checkbox',:name=>"p_#{s[:id]}"}
                   &nbsp;
                 .pull-left
+                  -if s.has_key?(:former)
+                    %span.badge{:style=>"width: 32px; background-color: #666; border-radius: 0; cursor: default;",:title=>"This item is originating from the sub-platform in #{@iso639[s[:former].downcase]}."}=s[:former]
+                  -else
+                    %span.badge{:style=>"width: 32px; background-color: #f5f5f5; color: #333; cursor: default;",:title=>"This item is originating from the international platform."} EJ
+                  &nbsp;
                   -if s[:name].length > 48
                     %span{:title=>s[:name]}=s[:name][0..48]+"..."
                   -else
                     %span=s[:name]
-                  &nbsp;
-                  %small="[#{s[:country]}]"
-                  &nbsp;
-                  %span.badge{:title=>s[:confs]}=s[:count]
+                  -if s.has_key?(:acronym)
+                    %b{:style=>"color:#aaa"}="(#{s[:acronym]})"
+                  -if s.has_key?(:country)
+                    %small="[#{s[:country]}]"
+                    &nbsp;
+                  %span.badge{:style=>"background-color: #17a2b8; cursor: default;",:title=>"Approved conflicts:\n#{s[:appd]}"}=s[:appc]
+                  %span.badge{:style=>"background-color: #cccccc; cursor: default;",:title=>"Drafts:\n#{s[:rest]}"}=s[:resc]
                   %a{:target=>'_blank',:href=>"/companies/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
             %br/
             %input{:type=>'hidden',:value=>k,:name=>'token'}

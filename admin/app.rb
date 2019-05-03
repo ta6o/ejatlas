@@ -34,6 +34,8 @@ class Admin < Padrino::Application
   require "./lib/i18n-translate-override.rb"
 
   $title = 'EJAtlas'
+  $tkeys = []
+  Dir.foreach("#{Dir.pwd}/lib/locales") {|x| $tkeys << x.split(".")[0] unless x.match(/^\./)}
 
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
   if ENV["RACK_ENV"] == "production"

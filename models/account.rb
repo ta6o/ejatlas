@@ -9,6 +9,7 @@ class Account < ActiveRecord::Base
   has_many :filters
   has_many :featureds
   has_many :vector_data
+  has_many :former_infos, class_name: "FormerInfo", as: :attachable, dependent: :destroy
   has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
   accepts_nested_attributes_for :images, allow_destroy: true
 

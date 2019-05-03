@@ -1,25 +1,63 @@
 Admin.controllers :companies do
 
+  def self.filter_merged params
+    pp params
+    keywordz = params['keys'].strip.downcase.gsub(/\s*,\s*/,',').split(',')
+    filter = Admin.elasticify( { bool: { should: { match: { name: "*#{keywordz.join("*,*")}*"}}, must: { match: {type:"company"}}}} )
+    puts JSON.pretty_generate(filter).green
+    begin
+      # TODO: fix score filter, name => slug
+      result = $client.search(index: "atlas", type: "doc", body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_score"] >= 1 ? x["_source"]["id"] : nil} - [nil]
+    rescue =>e
+      puts e.to_s
+      pass
+    end
+    keywords = {}
+    key = []
+    Company.where(:id=>result).each do |comp|
+      ky = {:id => comp.id, :appc => comp.conflicts.where(:approval_status=>"approved").count, :resc => comp.conflicts.where("approval_status <> 'approved' or approval_status is null").count, :name => comp.name, :slug => comp.slug, :appd => comp.conflicts.where(:approval_status=>"approved").map{|c|"#{c.name} (##{c.id})"}.join("\n"), :rest => comp.conflicts.where("approval_status <> 'approved' or approval_status is null").map{|c|"#{c.name} (##{c.id})"}.join("\n")}
+      ky[:former] = comp.former_infos.last.former_db.upcase.sub(/^EJ/,"") if comp.former_infos.any?
+      ky[:country] = comp.country.name if comp.country
+      ky[:acronym] = comp.acronym if comp.acronym and comp.acronym.length > 0
+      key << ky
+    end
+    keywords[keywordz.join(", ").titlecase] = key
+    keywords
+  end
+
   def self.mergeCompanies src, trg
     begin
       source = Company.find src
       target = Company.find trg
       if source and target
         source.c_companies.each do |cc|
-          cc.company_id = target.id
-          cc.save
+          cc.update_attribute :company_id, target.id
         end
         source.old_slugs.each do |os|
-          os.company_id = target.id
-          os.save
+          os.update_attribute :company_id, target.id
+        end
+        if source.former_infos.any? and source.former_infos.last.former_db and lo = source.former_infos.last.former_db.sub(/^ej/,"") and $tkeys.include?(lo)
+          begin
+            ln = JSON.parse((target.local_names || "{}") == "" ? "{}" : (target.local_names || "{}"))
+          rescue
+            puts "Corrupt data: ".red
+            puts "  #{target.local_names}"
+            ln = {}
+          end
+          ln[lo] = {}
+          source.attributes.except("id","slug","logo_image","other_products","conflicts_marker","conflicts_json","conflicts_link","local_names").each do |k,v|
+            ln[lo][k] = v if v
+          end
+          target.update_attribute :local_names, ln.to_json
         end
         source.destroy
-        return "ok"
+        return true
       else
-        return 'no'
+        return false
       end
-    rescue => exc
-      return exc.to_s
+    rescue => e
+      puts e
+      return false
     end
   end
 
@@ -57,6 +95,7 @@ Admin.controllers :companies do
   end
 
   post :mergethem do
+    pp params
     action = params.delete 'act'
     token = params.delete 'token'
     if action == "delete"
@@ -83,40 +122,15 @@ Admin.controllers :companies do
         Admin.mergeCompanies i, master
       end
     end
-    slugz = ","
-    #puts token
-    Company.order('slug').each {|c| slugz += "#{c.slug},"}
-    key = []
-    modifier = -1
-    slugz.scan(/[^,]*#{token}[^,]*/).to_set.to_a.each do |slug,index|
-      Company.where(:slug=>slug).each do |comp|
-        country = ""
-        country = comp.country.name if comp.country
-        key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id}) [#{c.approval_status}]"}.join("\n"), :country => country}
-      end
-    end
-    @keywords = {}
-    @keywords[token] = key
-    return render 'companies/_merged', :layout => false
+    pa = {'keys'=>token}
+    @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).select {|x| $tkeys.include?(x)}
+    @keywords = Admin.filter_merged pa
+    render 'companies/merge_thin', :layout=>false
   end
 
   post :merging do
-    keywordz = params['keys'].downcase.gsub(/\s*,\s*/,',').split(',')
-    slugz = ","
-    Company.order('slug').each {|c| slugz += "#{c.slug},"}
-    @keywords = {}
-    keywordz.each do |keyword|
-      key = []
-      modifier = -1
-      slugz.scan(/[^,]*#{keyword}[^,]*/).to_set.to_a.each do |slug,index|
-        Company.where(:slug=>slug).each do |comp|
-          country = ""
-          country = comp.country.name if comp.country
-          key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id}) [#{c.approval_status}]"}.join("\n"), :country => country}
-        end
-      end
-      @keywords[keyword] = key
-    end
+    @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).select {|x| $tkeys.include?(x)}
+    @keywords = Admin.filter_merged params
     render 'companies/merge'
   end
 

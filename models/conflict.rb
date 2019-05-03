@@ -60,6 +60,7 @@ class Conflict < ActiveRecord::Base
   accepts_nested_attributes_for :documents
 
   has_many :old_slugs, class_name: "OldSlug", as: :attachable, dependent: :destroy
+  has_many :former_infos, class_name: "FormerInfo", as: :attachable, dependent: :destroy
 
   has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
   accepts_nested_attributes_for :images
