@@ -5,7 +5,7 @@
   %h3
     %b= k
     %small= " - #{v.length} results found"
-  %form.merge{:method=>'POST',:action=>"/companies/mergethem/"}
+  %form.merge{:method=>'POST',:action=>"/ifis/mergethem/"}
     %ul
     -v.each do |s|
       %li.clearfix{:style=>'list-style-type:none'}
@@ -34,7 +34,7 @@
             &nbsp;
           %span.badge{:style=>"background-color: #17a2b8; cursor: default;",:title=>"Approved conflicts:\n#{s[:appd]}"}=s[:appc]
           %span.badge{:style=>"background-color: #cccccc; cursor: default;",:title=>"Drafts:\n#{s[:rest]}"}=s[:resc]
-          %a{:target=>'_blank',:href=>"/companies/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
+          %a{:target=>'_blank',:href=>"/ifis/edit/#{s[:id]}",:title=>"#{s[:slug]} (##{s[:id]})"} edit
     %br/
     %input{:type=>'hidden',:value=>k,:name=>'token'}
     %button{:type=>'submit'} Merge

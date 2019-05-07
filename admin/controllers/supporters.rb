@@ -1,25 +1,62 @@
 Admin.controllers :ifis do
 
+  def self.filter_merged_ifis params
+    keywordz = params['keys'].strip.downcase.split(/\s*,\s*/).map(&:strip) - [""]
+    filter = Admin.elasticify( { bool: { must: { query_string: { query: "(*#{keywordz.join("*) OR (*")}*)", fields:["name"]}}, filter: { term: { type: "financial_institution"}}}} )
+    puts JSON.pretty_generate(filter).green
+    begin
+      # TODO: fix score filter, name => slug
+      result = $client.search(index: "atlas", type: "doc", body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_score"] >= 1 ? x["_source"]["id"] : nil} - [nil]
+      puts result.length.to_s.cyan
+    rescue =>e
+      puts e.to_s.red
+    end
+    keywords = {}
+    key = []
+    Supporter.where(:id=>result).each do |comp|
+      ky = {:id => comp.id, :appc => comp.conflicts.where(:approval_status=>"approved").count, :resc => comp.conflicts.where("approval_status <> 'approved' or approval_status is null").count, :name => comp.name, :slug => comp.slug, :appd => comp.conflicts.where(:approval_status=>"approved").map{|c|"#{c.name} (##{c.id})"}.join("\n"), :rest => comp.conflicts.where("approval_status <> 'approved' or approval_status is null").map{|c|"#{c.name} (##{c.id})"}.join("\n")}
+      ky[:former] = comp.former_infos.last.former_db.upcase.sub(/^EJ/,"") if comp.former_infos.any?
+      ky[:country] = comp.country.name if comp.country
+      ky[:acronym] = comp.acronym if comp.acronym and comp.acronym.length > 0
+      key << ky
+    end
+    keywords[keywordz.join(", ")] = key
+    keywords
+  end
+
   def self.mergeSupporters src, trg
     begin
       source = Supporter.find src
       target = Supporter.find trg
       if source and target
         source.c_supporters.each do |cc|
-          cc.supporter_id = target.id
-          cc.save
+          cc.update_attribute :supporter_id, target.id
         end
         source.old_slugs.each do |os|
-          os.supporter_id = target.id
-          os.save
+          os.update_attribute :supporter_id, target.id
+        end
+        if source.former_infos.any? and source.former_infos.last.former_db and lo = source.former_infos.last.former_db.sub(/^ej/,"") and $tkeys.include?(lo)
+          begin
+            ln = JSON.parse((target.local_names || "{}") == "" ? "{}" : (target.local_names || "{}"))
+          rescue
+            puts "Corrupt data: ".red
+            puts "  #{target.local_names}"
+            ln = {}
+          end
+          ln[lo] = {}
+          source.attributes.except("id","slug","logo_image","other_products","conflicts_marker","conflicts_json","conflicts_link","local_names").each do |k,v|
+            ln[lo][k] = v if v
+          end
+          target.update_attribute :local_names, ln.to_json
         end
         source.destroy
-        return "ok"
+        return true
       else
-        return 'no'
+        return false
       end
-    rescue => exc
-      return exc.to_s
+    rescue => e
+      puts e
+      return false
     end
   end
 
@@ -84,40 +121,13 @@ Admin.controllers :ifis do
         Admin.mergeSupporters i, master
       end
     end
-    slugz = ","
-    #puts token
-    Supporter.order('slug').each {|c| slugz += "#{c.slug},"}
-    key = []
-    modifier = -1
-    slugz.scan(/[^,]*#{token}[^,]*/).to_set.to_a.each do |slug,index|
-      Supporter.where(:slug=>slug).each do |comp|
-        country = ""
-        country = comp.country.name if comp.country
-        key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id}) [#{c.approval_status}]"}.join("\n"), :country => country}
-      end
-    end
-    @keywords = {}
-    @keywords[token] = key
-    return render 'supporters/_merged', :layout => false
+    pa = {'keys'=>token}
+    @keywords = Admin.filter_merged_ifis pa
+    render 'supporters/merge_thin', :layout=>false
   end
 
   post :merging do
-    keywordz = params['keys'].downcase.gsub(/\s*,\s*/,',').split(',')
-    slugz = ","
-    Supporter.order('slug').each {|c| slugz += "#{c.slug},"}
-    @keywords = {}
-    keywordz.each do |keyword|
-      key = []
-      modifier = -1
-      slugz.scan(/[^,]*#{keyword}[^,]*/).to_set.to_a.each do |slug,index|
-        Supporter.where(:slug=>slug).each do |comp|
-          country = ""
-          country = comp.country.name if comp.country
-          key << {:id => comp.id, :count => comp.conflicts.count, :name => comp.name, :slug => comp.slug, :confs => comp.conflicts.map{|c|"#{c.name} (##{c.id}) [#{c.approval_status}]"}.join("\n"), :country => country}
-        end
-      end
-      @keywords[keyword] = key
-    end
+    @keywords = Admin.filter_merged_ifis params
     render 'supporters/merge'
   end
 
@@ -130,6 +140,11 @@ Admin.controllers :ifis do
   end
 
   put :update, :with => :id do
+    local = params.delete "local"
+    local[local["new"].delete("locale")] = local["new"]
+    local.delete "new"
+    local.delete ""
+    params["supporter"]["local_names"] = local.to_json
     @supporter = Supporter.find(params[:id])
     if @supporter.update_attributes(params[:supporter])
       flash[:notice] = 'supporter was successfully updated.'

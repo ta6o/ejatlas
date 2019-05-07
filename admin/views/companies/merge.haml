@@ -1,6 +1,6 @@
 -# coding: utf-8
 .row.wide
-  .col-md-12
+  .col-md-6
     .hero-unit
       %h1.title
         =mt('Companies to merge')
@@ -10,13 +10,18 @@
         %textarea{:name=>'keys'}= @keywords.keys.join(', ')
         %button{:type=>'submit'} Submit
       %hr/
+.row.wide
+  .col-md-12
+    .inner
       -@keywords.each do |k,v|
         -unless v.any?
           .well
             %h3= "No data for #{k}"
           -next
         .well
-          %h3= k
+          %h3
+            %b= k
+            %small= " - #{v.length} results found"
           %form.merge{:method=>'POST',:action=>"/companies/mergethem/"}
             %ul
             -v.each do |s|
@@ -31,7 +36,7 @@
                   &nbsp;
                 .pull-left
                   -if s.has_key?(:former)
-                    %span.badge{:style=>"width: 32px; background-color: #666; border-radius: 0; cursor: default;",:title=>"This item is originating from the sub-platform in #{@iso639[s[:former].downcase]}."}=s[:former]
+                    %span.badge{:style=>"width: 32px; background-color: #666; border-radius: 0; cursor: default;",:title=>"This item is originating from the sub-platform in #{$iso639[s[:former].downcase]}."}=s[:former]
                   -else
                     %span.badge{:style=>"width: 32px; background-color: #f5f5f5; color: #333; cursor: default;",:title=>"This item is originating from the international platform."} EJ
                   &nbsp;

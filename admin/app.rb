@@ -36,6 +36,7 @@ class Admin < Padrino::Application
   $title = 'EJAtlas'
   $tkeys = []
   Dir.foreach("#{Dir.pwd}/lib/locales") {|x| $tkeys << x.split(".")[0] unless x.match(/^\./)}
+  $iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).select {|x| $tkeys.include?(x)}
 
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
   if ENV["RACK_ENV"] == "production"

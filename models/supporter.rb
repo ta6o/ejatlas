@@ -11,6 +11,7 @@ class Supporter < ActiveRecord::Base
   has_many :former_infos, class_name: "FormerInfo", as: :attachable, dependent: :destroy
 
   before_save :set_slug
+  before_destroy :destroy_instance
 
   def inspect
     self.name
@@ -69,5 +70,12 @@ class Supporter < ActiveRecord::Base
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
     ping
+  end
+  def destroy_instance
+    CSupporter.where(:supporter_id=>self.id).each  &:destroy
+    self.logo_images.each  &:destroy
+    self.old_slugs.each    &:destroy
+    self.former_infos.each &:destroy
+    $client.delete index: "atlas", type: "doc", id: "ifi_#{self.id}"
   end
 end

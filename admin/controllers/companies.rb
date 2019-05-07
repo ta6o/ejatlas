@@ -1,16 +1,14 @@
 Admin.controllers :companies do
 
-  def self.filter_merged params
-    pp params
-    keywordz = params['keys'].strip.downcase.gsub(/\s*,\s*/,',').split(',')
-    filter = Admin.elasticify( { bool: { should: { match: { name: "*#{keywordz.join("*,*")}*"}}, must: { match: {type:"company"}}}} )
+  def self.filter_merged_comps params
+    keywordz = params['keys'].strip.downcase.split(/\s*,\s*/).map(&:strip) - [""]
+    filter = Admin.elasticify( { bool: { must: { query_string: { query: "(*#{keywordz.join("*) OR (*")}*)", fields:["name"]}}, filter: { term: { type: "company"}}}} )
     puts JSON.pretty_generate(filter).green
     begin
       # TODO: fix score filter, name => slug
       result = $client.search(index: "atlas", type: "doc", body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_score"] >= 1 ? x["_source"]["id"] : nil} - [nil]
     rescue =>e
-      puts e.to_s
-      pass
+      puts e.to_s.red
     end
     keywords = {}
     key = []
@@ -21,7 +19,7 @@ Admin.controllers :companies do
       ky[:acronym] = comp.acronym if comp.acronym and comp.acronym.length > 0
       key << ky
     end
-    keywords[keywordz.join(", ").titlecase] = key
+    keywords[keywordz.join(", ")] = key
     keywords
   end
 
@@ -95,7 +93,6 @@ Admin.controllers :companies do
   end
 
   post :mergethem do
-    pp params
     action = params.delete 'act'
     token = params.delete 'token'
     if action == "delete"
@@ -123,14 +120,12 @@ Admin.controllers :companies do
       end
     end
     pa = {'keys'=>token}
-    @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).select {|x| $tkeys.include?(x)}
-    @keywords = Admin.filter_merged pa
+    @keywords = Admin.filter_merged_comps pa
     render 'companies/merge_thin', :layout=>false
   end
 
   post :merging do
-    @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).select {|x| $tkeys.include?(x)}
-    @keywords = Admin.filter_merged params
+    @keywords = Admin.filter_merged_comps params
     render 'companies/merge'
   end
 
@@ -158,6 +153,11 @@ Admin.controllers :companies do
   end
 
   put :update, :with => :id do
+    local = params.delete "local"
+    local[local["new"].delete("locale")] = local["new"]
+    local.delete "new"
+    local.delete ""
+    params["company"]["local_names"] = local.to_json
     @company = Company.find(params[:id])
     if @company.update_attributes(params[:company])
       flash[:notice] = 'Company was successfully updated.'

@@ -19,11 +19,6 @@
       =f.error_message_on :country_id
       =f.select :country_id, :collection => @countries, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
 
-    -#.group
-      =f.label :other_products
-      =f.error_message_on :other_products
-      ~f.text_area :other_products, :class => :text_area
-
   .col-md-4
     .group
       =f.label :acronym
@@ -31,7 +26,7 @@
       =f.text_field :acronym, :class => :text_field
 
     .group
-      =f.label :url
+      =f.label :website
       =f.error_message_on :url
       =f.text_field :url, :class => :text_field
 
@@ -45,3 +40,63 @@
 
     .group.navform.wat-cf
       =f.submit pat(:save), :class => 'btn pull-right'
+
+-unless @company.new_record?
+  -begin
+    - ln = @company.local_names || "{}"
+    -JSON.parse(ln).each do |k,v|
+      .row.whitebox
+        .col-md-12
+          %b="#{$iso639[k]} content" 
+        .col-md-4
+          .group
+            %label{:for=>"local_#{k}_name"}= t("v.filter.name",:locale=>k.to_sym)
+            %input.text_field{:type=>"text",:name=>"local[#{k}][name]",:id=>"local_#{k}_name",:value=>v["name"]}
+
+        .col-md-4
+          .group
+            %label{:for=>"local_#{k}_acronym"}= t("f.conflict.acronym",:locale=>k.to_sym)
+            %input.text_field{:type=>"text",:name=>"local[#{k}][acronym]",:id=>"local_#{k}_acronym",:value=>v["acronym"]}
+
+          .group
+            %label{:for=>"local_#{k}_url"}= t("f.conflict.website",:locale=>k.to_sym)
+            %input.text_field{:type=>"text",:name=>"local[#{k}][url]",:id=>"local_#{k}_url",:value=>v["url"]}
+
+        .col-md-4
+          .group
+            %label{:for=>"local_#{k}_description"}= t("v.filter.description",:locale=>k.to_sym)
+            %textarea.text_area{:type=>"text",:name=>"local[#{k}][description]",:id=>"local_#{k}_description",:rows=>5}= v["description"]
+
+          %br/
+
+    .row.whitebox
+      .col-md-4
+        .group
+          %b Create new local content
+          %select.basic_input#local_new_locale{:name=>"local[new][locale]"}
+            %option{:value=>nil}
+            -($tkeys-JSON.parse(ln).keys).each do |k|
+              %option{:value=>k}=$iso639[k]
+
+        .group
+          %label{:for=>"local_new_name"}= t("v.filter.name")
+          %input.text_field{:type=>"text",:name=>"local[new][name]",:id=>"local_new_name",:value=>@company.name}
+
+      .col-md-4
+        .group
+          %label{:for=>"local_new_acronym"}= t("f.conflict.acronym")
+          %input.text_field{:type=>"text",:name=>"local[new][acronym]",:id=>"local_new_acronym",:value=>@company.acronym}
+
+        .group
+          %label{:for=>"local_new_url"}= t("f.conflict.website")
+          %input.text_field{:type=>"text",:name=>"local[new][url]",:id=>"local_new_url",:value=>@company.url}
+
+      .col-md-4
+        .group
+          %label{:for=>"local_new_description"}= t("v.filter.description")
+          %textarea.text_area{:type=>"text",:name=>"local[new][description]",:id=>"local_new_description",:rows=>5}
+
+        %br/
+
+  -rescue
+    %p Corrupt local data
