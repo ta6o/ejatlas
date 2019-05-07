@@ -7,7 +7,10 @@
 
     .group
       =f.label :slug
-      %p= @supporter.slug
+      =f.error_message_on :slug
+      =f.text_field :slug, :class => "text_field danger"
+      %p
+        %b.danger DO NOT CHANGE UNLESS YOU ARE SURE
 
     .group
       =f.label :country_id

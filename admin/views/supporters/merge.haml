@@ -7,7 +7,7 @@
     .inner
       %p Please type the keywords below, separated by commas.
       %form{:method=>'POST',:action=>'/ifis/merging'}
-        %textarea{:name=>'keys'}= @keywords.keys.join(', ')
+        %textarea{:name=>'keys'}= @keywords.keys[0] == "blank search" ? "" : @keywords.keys.join(', ')
         %button{:type=>'submit'} Submit
       %hr/
 .row.wide
@@ -16,7 +16,7 @@
       -@keywords.each do |k,v|
         -unless v.any?
           .well
-            %h3= "No data for #{k}"
+            %h3= "No data for #{k}."
           -next
         .well
           %h3

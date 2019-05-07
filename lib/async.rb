@@ -700,7 +700,7 @@ class AsyncTask
         companies << [c.jsonize,lc] if lc >= 1
         c.save
         #client.index index: "atlas_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,type:"company"}
+        client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per company)"
       end
       puts
@@ -721,7 +721,7 @@ class AsyncTask
         supporters << [c.jsonize,lc] if lc >= 1
         c.save
         #client.index index: "atlas_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,type:"financial_institution"}
+        client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
       end
       puts
@@ -852,7 +852,7 @@ class AsyncTask
       t0 = Time.now
       Tag.all.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,type:"tag"}
+        client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per tag)"
       end
       cs = ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict : nil} - [nil]
@@ -862,7 +862,7 @@ class AsyncTask
       t0 = Time.now
       accs.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,type:"account"}
+        client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per account)"
       end
       puts

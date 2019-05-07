@@ -2,11 +2,11 @@ Admin.controllers :companies do
 
   def self.filter_merged_comps params
     keywordz = params['keys'].strip.downcase.split(/\s*,\s*/).map(&:strip) - [""]
-    filter = Admin.elasticify( { bool: { must: { query_string: { query: "(*#{keywordz.join("*) OR (*")}*)", fields:["name"]}}, filter: { term: { type: "company"}}}} )
-    puts JSON.pretty_generate(filter).green
+    filter = Admin.elasticify( { bool: { must: { query_string: { query: "(*#{keywordz.join("*) OR (*")}*)", fields:["name","slug"]}}, filter: { term: { type: "company"}}}} )
+    #puts JSON.pretty_generate(filter).green
     begin
       # TODO: fix score filter, name => slug
-      result = $client.search(index: "atlas", type: "doc", body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_score"] >= 1 ? x["_source"]["id"] : nil} - [nil]
+      result = $client.search(index: "atlas", type: "doc", body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_source"]["id"]}
     rescue =>e
       puts e.to_s.red
     end
@@ -125,7 +125,11 @@ Admin.controllers :companies do
   end
 
   post :merging do
-    @keywords = Admin.filter_merged_comps params
+    if params["keys"] == ""
+      @keywords = {"blank search"=>[]}
+    else
+      @keywords = Admin.filter_merged_comps params
+    end
     render 'companies/merge'
   end
 
