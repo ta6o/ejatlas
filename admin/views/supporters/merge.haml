@@ -5,11 +5,28 @@
       %h1.title
         =mt('Financial institutions to merge')
     .inner
-      %p Please type the keywords below, separated by commas.
+      %p Please type the keywords below, separated by commas
       %form{:method=>'POST',:action=>'/ifis/merging'}
-        %textarea{:name=>'keys'}= @keywords.keys[0] == "blank search" ? "" : @keywords.keys.join(', ')
-        %button{:type=>'submit'} Submit
-      %hr/
+        .row
+          .col-sm-10
+            %textarea{:name=>'keys'}= @keywords.keys[0] == "blank search" ? "" : @keywords.keys.join(', ')
+          .col-sm-2
+            %button{:type=>'submit'} Submit
+
+  .col-md-6
+    .hero-unit.hide-on-small
+      %h1.title &nbsp;
+    .inner
+      %p or select a sub-platform to see all items from that database.
+      %form{:method=>'POST',:action=>'/ifis/locale'}
+        .row
+          .col-sm-10
+            %select{:name=>'locale'}
+              %option{:disabled=>true, :selected=>true} Pick a platform
+              %option{:value=>:it} Italian
+              %option{:value=>:tr} Turkish
+          .col-sm-2
+            %button{:type=>'submit'} Submit
 .row.wide
   .col-md-12
     .inner

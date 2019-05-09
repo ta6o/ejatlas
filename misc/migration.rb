@@ -762,7 +762,7 @@ def check_it_conflicts verbose=false
               eval("c.#{rel.sub(/^it_/,"")}") << cm unless eval("c.#{rel.sub(/^it_/,"")}").include?(cm)
             else
               ejc = create_in_ejatlas comp, c.id
-              FormerInfo.attach(ejc,comp.id,:tr)
+              FormerInfo.attach(ejc,comp.id,:ejit)
             end
           end
         else

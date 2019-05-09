@@ -133,6 +133,25 @@ Admin.controllers :companies do
     render 'companies/merge'
   end
 
+  post :locale do
+    if params["locale"] == ""
+      @keywords = {"blank search"=>[]}
+    else
+      @keywords = {}
+      key = []
+      FormerInfo.where(:attachable_type=>"Company",:former_db=>"ej#{params["locale"]}").map do |fi|
+        comp = fi.attachable
+        ky = {:id => comp.id, :appc => comp.conflicts.where(:approval_status=>"approved").count, :resc => comp.conflicts.where("approval_status <> 'approved' or approval_status is null").count, :name => comp.name, :slug => comp.slug, :appd => comp.conflicts.where(:approval_status=>"approved").map{|c|"#{c.name} (##{c.id})"}.join("\n"), :rest => comp.conflicts.where("approval_status <> 'approved' or approval_status is null").map{|c|"#{c.name} (##{c.id})"}.join("\n")}
+        ky[:former] = comp.former_infos.last.former_db.to_s.upcase.sub(/^EJ/,"") if comp.former_infos.any?
+        ky[:country] = comp.country.name if comp.country
+        ky[:acronym] = comp.acronym if comp.acronym and comp.acronym.length > 0
+        key << ky
+      end
+    end
+    @keywords[$iso639[params["locale"]]] = key
+    render 'companies/merge'
+  end
+
   get :new do
     @company = Company.new
     @countries = Country.all.order :slug
