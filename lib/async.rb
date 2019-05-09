@@ -659,8 +659,6 @@ class AsyncTask
           #break unless ["RACK_ENV"] == "production"
         end
         puts
-        #pp times
-        puts
         ca.conflicts_marker = markers.to_json
         File.open("#{PADRINO_ROOT}/public/data/markers-#{locale}.json","w") {|f| f << markers.to_json }
       end
@@ -681,8 +679,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per country)"
       end
-      puts
-      puts
+      puts if cos.length > 0
       countries.sort_by! {|c| c[1]}
       countries.reverse!
       ca.countries = countries.to_json
@@ -703,8 +700,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per company)"
       end
-      puts
-      puts
+      puts if cos.length > 0
       companies.sort_by! {|c| c[1]}
       companies.reverse!
       ca.companies = companies.to_json
@@ -724,8 +720,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
       end
-      puts
-      puts
+      puts if cos.length > 0
       supporters.sort_by! {|c| c[1]}
       supporters.reverse!
       ca.supporters = supporters.to_json
@@ -741,8 +736,7 @@ class AsyncTask
         c.save
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per commodity)"
       end
-      puts
-      puts
+      puts if cos.length > 0
       commodities.sort_by! {|c| c[1]}
       commodities.reverse!
       ca.commodities = commodities.to_json
@@ -762,8 +756,7 @@ class AsyncTask
         t.save
         print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per category)"
       end
-      puts
-      puts
+      puts if cos.length > 0
       types.sort_by! {|c| c[1]}
       types.reverse!
       ca.types = types.to_json
@@ -804,7 +797,7 @@ class AsyncTask
           end
         end
       end
-      print "\r              "
+      print "\r                                    "
       puts
     end
 

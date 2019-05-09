@@ -3,7 +3,10 @@
   .col-md-12
     .hero-unit
       %h1.title
-        = t("f.conflict.editing")
+        -if @translate_only
+          = t("f.conflict.translating")
+        -else
+          = t("f.conflict.editing")
         = @conflict.name
         %small
           %a{:target=>'_blank',:href=>"/conflict/#{@conflict.slug}"}= t("v.menu.view")

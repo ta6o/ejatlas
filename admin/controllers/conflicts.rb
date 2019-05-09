@@ -22,9 +22,6 @@ Admin.controllers :conflicts do
   end
 
   def self.correctForm(params)
-    params["conflict"]["lon"] = params["conflict"]["lon"].gsub(",",".")
-    params["conflict"]["lat"] = params["conflict"]["lat"].gsub(",",".")
-    params["conflict"]["description"] = Sanitize.fragment((params["conflict"]["description"]||"").gsub(/\r\n/,"\n").gsub(/<p>\s*<\/p>/,"").gsub(/''/,"\""), :elements => ['p', 'b', 'i', 'a'])
     multies = {
       'mobilizing_group'=>[],
       'mobilizing_form'=>[],
@@ -54,28 +51,37 @@ Admin.controllers :conflicts do
       'image'=>{},
       'related'=>{},
     }
-    def stripDate prop, params
-      par = params['conflict'][prop+'_date']
-      matches = ['','01/','01/01/']
-      subs = [0,3,6]
-      n = 0
-      return if par.length == 0
-      begin
-        s = par[subs[n]..9]
-        d = Date.strptime matches[n]+s, '%d/%m/%Y'
-      rescue ArgumentError
-        n += 1
-        retry
-      ensure
-        params['conflict'][prop+'_datestamp'] = d
-        params['conflict'][prop+'_date'] = s
+
+    if params.has_key?("translate_only")
+      params['conflict']['approval_status'] = Conflict.find(params["id"].to_i).approval_status
+    else
+      def stripDate prop, params
+        par = params['conflict'][prop+'_date']
+        matches = ['','01/','01/01/']
+        subs = [0,3,6]
+        n = 0
+        return if par.length == 0
+        begin
+          s = par[subs[n]..9]
+          d = Date.strptime matches[n]+s, '%d/%m/%Y'
+        rescue ArgumentError
+          n += 1
+          retry
+        ensure
+          params['conflict'][prop+'_datestamp'] = d
+          params['conflict'][prop+'_date'] = s
+        end
       end
+
+      params["conflict"]["lon"] = params["conflict"]["lon"].gsub(",",".")
+      params["conflict"]["lat"] = params["conflict"]["lat"].gsub(",",".")
+      stripDate 'start', params if params['conflict']['start_date']
+      stripDate 'end', params if params['conflict']['end_date']
+      psi = params.delete('project_status').to_i
+      params['conflict']['project_status'] = ProjectStatus.find psi if psi > 0
     end
 
-    stripDate 'start', params if params['conflict']['start_date']
-    stripDate 'end', params if params['conflict']['end_date']
-    psi = params.delete('project_status').to_i
-    params['conflict']['project_status'] = ProjectStatus.find psi if psi > 0
+    params["conflict"]["description"] = Sanitize.fragment((params["conflict"]["description"]||"").gsub(/\r\n/,"\n").gsub(/<p>\s*<\/p>/,"").gsub(/''/,"\""), :elements => ['p', 'b', 'i', 'a'])
 
     params.each do |k,v|
       if v.is_a? Hash
@@ -97,9 +103,45 @@ Admin.controllers :conflicts do
           multies[root].push k.split('_')[-1].to_i
           params.delete k
         elsif refs.has_key? kk[0]
+          next unless kk.length == 3
           #p kk
           type = kk[-2]
-          id = kk[-1].to_i
+          if ["company","supporter"].include? kk[0]
+            id = kk[-1].to_i
+          elsif kk[0] == "image"
+            rr = Image.where(:attachable_type=>"Conflict", :attachable_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
+            if rr.any?
+              id = rr[0].id
+            else
+              oloc = Conflict.find(params["id"]).original_locale
+              rr = Image.where(:attachable_type=>"Conflict", :attachable_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>oloc)[0]
+              rd = rr.dup
+              rd.locale = I18n.locale
+              rd.remote_file_url = rr.file_url
+              rd.save
+              id = rd.id
+            end
+          elsif kk[0] == "document"
+            rr = Document.where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>Conflict.find(params["id"]).original_locale)[0]
+            if rr.any?
+              id = rr[0].id
+            else
+              oloc = Conflict.find(params["id"]).original_locale
+              rr = Document.where(:attachable_type=>"Conflict", :attachable_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>oloc)[0]
+              rd = rr.dup
+              rd.locale = I18n.locale
+              rd.remote_file_url = rr.file_url
+              rd.save
+              id = rd.id
+            end
+          else
+            rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
+            if rr.empty?
+              rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
+            end
+            id = rr.first.id
+          end
+          p k unless id
           params.delete k
           next if id == 0
           refs[kk[0]][id] = {} unless refs[kk[0]].has_key? id
@@ -108,21 +150,11 @@ Admin.controllers :conflicts do
           impacts[root][v].push k.split('_')[-1].to_i
           params.delete k
         else
-          ##puts (k.to_s+': ')+v.to_s
+          puts "#{k.to_s.red}: #{v.to_s.yellow}"
         end
       end
     end
 
-    multies.each do |k,v|
-      ##puts (k.to_s+': ')+v.to_s
-    end
-    ##puts ''
-    impacts.each do |k,v|
-      ##puts (k.to_s+': ')+v.to_s
-    end
-    refs.each do |k,v|
-      ##puts (k.to_s+': ')+v.to_s
-    end
     params['multies'] = multies
     params['impacts'] = impacts
     params['refs'] = refs
@@ -309,10 +341,9 @@ Admin.controllers :conflicts do
         pass
       end
       roles = current_account.roles.map(&:name)
-      if ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or (roles.include?("locale-#{I18n.locale}") and roles.include?("editor"))
-        #rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
-        rels = ConflictText.where(approval_status: 'approved').order('updated_at desc')
-        @cjson = rels.map {|ct| {:id=>ct.conflict_id,:value=>ct.name}}.to_json
+      p roles
+      if (["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or (roles.include?("locale-#{I18n.locale}") and roles.include?("editor"))) and not params.has_key?("translate")
+        @cjson = ConflictText.select("conflict_id","name").where(approval_status: 'approved',:locale=>I18n.locale).to_json
         @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
         @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
         @saves = []
@@ -320,16 +351,16 @@ Admin.controllers :conflicts do
           @saves << row if row[2] == @conflict.id.to_s
         end
         render 'conflicts/edit'
-      elsif roles.include?("locale-#{I18n.locale}") and roles.include?("translator")
+      elsif roles.include?("locale-#{I18n.locale}") and roles.include?("translator") or params.has_key?("translate")
         @translate_only = true
-        rels = Conflict.where(approval_status: 'approved').order('updated_at desc').map{|c| c.local_data } - [nil]
-        @cjson = rels.map {|ct| {:id=>ct.conflict_id,:value=>ct.name}}.to_json
+        @cjson = ConflictText.select("conflict_id","name").where(approval_status: 'approved',:locale=>I18n.locale).to_json
         @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
         @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
         @saves = []
         CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
           @saves << row if row[2] == @conflict.id.to_s
         end
+        render 'conflicts/edit'
       end
     else
       redirect to '/sessions/login'
@@ -427,11 +458,14 @@ Admin.controllers :conflicts do
   end
 
    put :update, :with => :id do
+    #Admin.color_pp params, "params", "yellow", true
     #pp params["id"]
     #pp params["conflict"]["slug"]
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
+
     updated = Admin.correctForm(params)
+    #Admin.color_pp updated, "updated", "green", true
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
@@ -441,7 +475,7 @@ Admin.controllers :conflicts do
       return {:status=>"error",:errors=>["Name on address bar has been taken by conflict ##{sameslug.first}"]}.to_json 
     end
 
-    unless params['conflict'].has_key?("approval_status")
+    unless updated['conflict'].has_key?("approval_status")
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
         file << "ERR,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
       end
@@ -525,7 +559,17 @@ Admin.controllers :conflicts do
         else
           v.each do |l,w|
             ##puts "#{k}: #{l},#{w}"
-            ref = multies[k][:class].find(l)
+            ref = multies[k][:class].where(:id=>l)
+            if ref.any?
+              ref = ref[0]
+            else
+              if l
+                puts "Could not find #{k} with id #{l}!".red
+              else
+                puts "Could not find #{k} without an id!".red
+              end
+              next
+            end
             if w['remove']
               multies[k][:attr].delete ref
               ref.save
@@ -570,8 +614,9 @@ Admin.controllers :conflicts do
             end
           end
         else
-          #puts k
+          #puts k.to_s.magenta
           ct = @conflict.local_data
+          ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale) unless ct
           unless ct.attributes[k] == v
             begin
               ct.update_attribute k, v 

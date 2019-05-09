@@ -38,7 +38,7 @@ class Company < ActiveRecord::Base
     json, marker, link = [], [], []
     self.conflicts.where(approval_status: 'approved').order("id asc").each do |c|
       #json << c.json
-      marker << JSON.parse(c.marker)
+      marker << JSON.parse(c.marker||c.as_marker.to_json)
       link << c.as_button
     end
     self.conflicts_json = json.to_json

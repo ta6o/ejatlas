@@ -3,7 +3,11 @@ Admin.controller do
 
   before do
     @layout = :full
-    @featureds = Featured.where(:id=>JSON.parse(Cached.where(:locale=>I18n.locale).first.featureds||"[]")).select("name, slug")
+    begin
+      @featureds = Featured.where(:id=>JSON.parse(Cached.where(:locale=>I18n.locale).first.featureds||"[]")).select("name, slug")
+    rescue
+      @featureds = []
+    end
   end
 
   post "/image" do
@@ -110,13 +114,14 @@ Admin.controller do
   get :index do
     ca = Cached.where(:locale=>I18n.locale).first
     #last_modified ca.updated_at
-    @filterform = JSON.parse(ca.filterdata)
+    @filterform = {}
+    @filterform = JSON.parse(ca.filterdata) if ca
     @filter = render "base/filter", :layout => false
     @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
-    countries = ca.countries ? JSON.parse(ca.countries) : []
-    companies = ca.countries ? JSON.parse(ca.companies)[0..100] : []
-    commodities = ca.countries ? JSON.parse(ca.commodities) : []
-    types = ca.countries ? JSON.parse(ca.types) : []
+    countries = ca and ca.countries ? JSON.parse(ca.countries) : []
+    companies = ca and ca.companies ? JSON.parse(ca.companies)[0..100] : []
+    commodities = ca and ca.commodities ? JSON.parse(ca.commodities) : []
+    types = ca and ca.types ? JSON.parse(ca.types) : []
     @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
     @maptitle = "World Map"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json

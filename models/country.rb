@@ -73,7 +73,7 @@ class Country < ActiveRecord::Base
   def ping
     json, marker, link = [], [], []
     self.conflicts.where(approval_status: 'approved').order("id asc").each do |c|
-      marker << JSON.parse(c.marker)
+      marker << JSON.parse(c.marker||c.as_marker.to_json)
       #json << c.json
       link << c.as_button
     end
@@ -164,7 +164,7 @@ class Region < ActiveRecord::Base
     json, marker, link = [], [], []
     if self.countries.any?
       self.countries.first.where(approval_status: 'approved').conflicts.order("id asc").each do |c|
-        marker << c.marker
+        marker << JSON.parse(c.marker||c.as_marker.to_json)
         json << c.json
         link << c.as_button
       end

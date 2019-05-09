@@ -94,11 +94,50 @@ class Admin < Padrino::Application
     end
   end
 
+  def self.cpp h,l,c,s
+    h.each do |k,v|
+      if v.is_a? String
+        if s and v.length > 64
+          puts "#{"  "*l}#{k.to_s.colorize(c)}#{":".red} #{"\"".magenta}#{v[0..64].gsub(/\n/,"↵")}#{"...\"".magenta}#{",".red}"
+        elsif v.strip.match(/\n/)
+          puts "#{"  "*l}#{k.to_s.colorize(c)}#{":".red} #{"\"\"\"".magenta}#{v.gsub(/\n/,"#{"↵".magenta}\n")}#{"\"\"\"".magenta}#{",".red}"
+        else
+          puts "#{"  "*l}#{k.to_s.colorize(c)}#{":".red} #{"\"".magenta}#{v}#{"\"".magenta}#{",".red}"
+        end
+      elsif v.is_a? Array
+        puts "#{"  "*l}#{k.to_s.colorize(c)}#{":".red} #{"[".cyan}#{v.join(", ".cyan)}#{"]".cyan}#{",".red}"
+      elsif v.is_a? Integer
+        puts "#{"  "*l}#{k.to_s.colorize(c)}#{":".red} #{v.to_s.blue}#{",".red}"
+      elsif v.is_a? Float
+        puts "#{"  "*l}#{k.to_s.colorize(c)}#{":".red} #{v.to_s.green}#{",".red}"
+      elsif v.is_a? Hash
+        puts "#{"  "*(l)}#{k.to_s.colorize(c)}#{": {".red}"
+        Admin.cpp v, l+1, c, s
+        puts "#{"  "*(l)}#{"}".red}"
+      end
+    end
+  end
+
+  def self.color_pp hash, header=nil, color=:yellow, short=false
+    if header
+      puts "#{header}: {".red
+    else
+      puts "{".red
+    end
+    Admin.cpp hash,1,color.to_sym,short
+    puts "}".red
+  end
+
   def self.slugify str
     str.slug if str
   end
 
   def self.send_mail user, subject, message
+    if ENV['RACK_ENV'] == "development" #and false
+      puts "SENDGRID omitting mail =>".yellow
+      puts subject
+      return
+    end
     require 'sendgrid-ruby'
     include SendGrid
 
@@ -124,10 +163,6 @@ class Admin < Padrino::Application
       }.to_json
     }
 
-    if ENV['RACK_ENV'] == "development" and false
-      puts "SENDGRID omitting mail =>\n#{pp message}"
-      return
-    end
     begin
       sending = sg.client.mail._('send').post(request_body: mail.to_json)
       puts "SENDGRID #{sending.status_code} #{sending.body.to_json}"
@@ -183,7 +218,7 @@ class Admin < Padrino::Application
       @collab = @conflict.account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
       #Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
-      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: c.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: c.name)), html)
+      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: @conflict.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: @conflict.name)), html)
     else
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_mod_msg.haml").render(self)
       #Admin.send_mail(Account.find(1), "New message from #{@account.name}", html)
@@ -194,7 +229,7 @@ class Admin < Padrino::Application
       next if @collab == @account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
       #Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
-      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: c.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: c.name)), html)
+      Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: @conflict.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: @conflict.name)), html)
     end
   end
 

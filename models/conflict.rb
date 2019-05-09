@@ -114,6 +114,14 @@ class Conflict < ActiveRecord::Base
     return self.slug
   end
 
+  def native_locale?
+    self.original_locale == I18n.locale.to_s
+  end
+
+  def original_locale
+    self.conflict_texts.order(:created_at).first.locale
+  end
+
   def local_data locale=I18n.locale
     self.conflict_texts.where(:locale=>locale).first
   end

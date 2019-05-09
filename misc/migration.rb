@@ -145,6 +145,9 @@ end
 
 def migrate_to_i18n
 
+  t00 = Time.now
+  puts "Starting migration procedure".yellow
+
   verbose = ActiveRecord::Migration.verbose
   ActiveRecord::Migration.verbose = false
 
@@ -155,9 +158,14 @@ def migrate_to_i18n
   create_table :conflict_texts
   add_column_to_table :conflict_texts, cols
 
+  t0 = Time.now
   tot = Conflict.count
   Conflict.all.order(:id).each_with_index do |con,ind|
-    print("\r#{ind+1} / #{tot}: #{con.id}")
+    if con.conflict_texts.any?
+      print("\r#{"Conflict:".yellow} #{(ind+1).to_s.green} / #{tot}")
+      next
+    end
+    print("\r#{"Conflict:".yellow} #{ind+1} / #{tot}: #{con.id}")
     #text = con.description
     #text = con.name if text.nil? or text.length <= 16
     #lang = id_language(text)
@@ -180,23 +188,50 @@ def migrate_to_i18n
       return
     end
   end
+  puts " - #{(Time.now - t0).to_i}s".yellow
   drop_column_from_table :conflicts, cols.reject{|k,v| ["approval_status","created_at","updated_at","modified_at"].include?(k)}
 
   add_column_to_table :companies, {:local_names=>"text"}
   add_column_to_table :supporters, {:local_names=>"text"}
   add_column_to_table :cacheds, {:locale=>"varchar(3)",:featureds=>"text"}
 
-  add_column_to_table :references, {:locale=>"varchar(3)"}
-  add_column_to_table :legislations, {:locale=>"varchar(3)"}
-  add_column_to_table :weblinks, {:locale=>"varchar(3)"}
-  add_column_to_table :medialinks, {:locale=>"varchar(3)"}
-  add_column_to_table :documents, {:locale=>"varchar(3)"}
-  add_column_to_table :images, {:locale=>"varchar(3)"}
+  add_column_to_table :references, {:locale=>"varchar(3)",:pid=>"integer"}
+  add_column_to_table :legislations, {:locale=>"varchar(3)",:pid=>"integer"}
+  add_column_to_table :weblinks, {:locale=>"varchar(3)",:pid=>"integer"}
+  add_column_to_table :medialinks, {:locale=>"varchar(3)",:pid=>"integer"}
+  add_column_to_table :documents, {:locale=>"varchar(3)",:pid=>"integer"}
+  add_column_to_table :images, {:locale=>"varchar(3)",:pid=>"integer"}
 
-  [Reference, Legislation, Weblink, Medialink, Document, Image].each do |model|
-    model.all.each do |instance|
-      instance.update_attribute :locale, "en"
+  [Reference, Legislation, Weblink, Medialink,Document].each do |model|
+    total = model.count
+    t0 = Time.now
+    model.all.each_with_index do |instance,index|
+      print "\r#{model.to_s.tableize.titlecase.green}#{":".green} #{index} / #{total}"
+      if instance.conflict
+        next if instance.pid
+        instance.update_attribute(:pid, (eval("instance.conflict.#{model.to_s.tableize}").where("pid is not null").count + 1))
+        instance.update_attribute :locale, "en"
+      else
+        instance.destroy
+      end
     end
+    puts " - #{(Time.now - t0).to_i}s".yellow
+  end
+
+  [Image].each do |model|
+    total = model.count
+    t0 = Time.now
+    model.where(:attachable_type=>"Conflict").each_with_index do |instance,index|
+      print "\r#{model.to_s.tableize.titlecase.green}#{":".green} #{index} / #{total}"
+      if instance.attachable
+        next if instance.pid
+        instance.update_attribute(:pid, (eval("instance.attachable.#{model.to_s.tableize}").where("pid is not null").count + 1))
+        instance.update_attribute :locale, "en"
+      else
+        instance.destroy
+      end
+    end
+    puts " - #{(Time.now - t0).to_i}s".yellow
   end
 
   drop_table :former_infos
@@ -204,7 +239,7 @@ def migrate_to_i18n
   add_column_to_table :former_infos, {:former_id=>"integer",:former_db=>"varchar(12)",:attachable_type=>"varchar(32)",:attachable_id=>"integer",:created_at=>"datetime",:updated_at=>"datetime"}
 
   # roles
-  
+
   drop_table :roles
   create_table :roles
   add_column_to_table :roles, {:name=>"varchar(32)",:description=>"varchar(255)"}
@@ -230,10 +265,19 @@ def migrate_to_i18n
   check_ar_conflicts
 
   # cache update
+  
+  update_all_cache
 
+  dur = t00 - Time.now
+  puts "Migration finished in #{(dur/60.0).floor}m #{dur % 60}s".magenta
+  puts "Check cache update process to make sure all is finished.".red
+
+end
+
+def update_all_cache
   cacheparams = {"filter"=>"on", "conflicts"=>"on", "countries"=>"on", "companies"=>"on", "ifis"=>"on", "commodities"=>"on", "categories"=>"on", "featureds"=>"on"}
 
-  tkeys.each do |loc|
+  $tkeys.each do |loc|
     cacheparams["locale"] = loc
     AsyncTask.new.setcache cacheparams
   end
@@ -304,8 +348,9 @@ def check_tr_conflicts verbose = false
   end
   ctat.delete 2
   coat[2] = "id"
+  t0 = Time.now
   TrAccount.all.order(:id).each_with_index do |tr,ind|
-    print "\r TrAccount #{ind+1}/#{TrAccount.count}"
+    print "\r#{"TrAccount:".cyan} #{ind+1} / #{TrAccount.count}"
     next if Account.find_by_email(tr.email)
     acc = create_in_ejatlas tr
     tr.tr_images.each do |img|
@@ -313,9 +358,11 @@ def check_tr_conflicts verbose = false
     end
     FormerInfo.attach(acc,tr.id.to_i,:ejtr)
   end
+  puts " - #{(Time.now - t0).to_i}s".yellow
   puts if verbose
+  t0 = Time.now
   csv.each_with_index do |row,ind|
-    print "\r TrConflict #{ind+1}/#{csv.length}"
+    print "\r#{"TrConflict:".cyan} #{ind+1} / #{csv.length}"
     puts if verbose
     found = false
     if row[1] and row[1].strip.length > 0
@@ -501,7 +548,7 @@ def check_tr_conflicts verbose = false
                 puts "    #{model.to_s.cyan} #{tt.id.to_s.cyan} found" if verbose
               end
             else
-              opts = {"conflict_id" => c.id, "url" => line[1][:url], "description" => name}
+              opts = {"conflict_id" => c.id, "url" => line[1][:url], "description" => name, "locale" => "tr", "pid" => eval("c.#{model.to_s.tableize}").count+1}
               tt = model.create opts
               puts "    #{model.to_s.green} #{tt.id.to_s.green} adding to case" if verbose
             end
@@ -525,7 +572,7 @@ def check_tr_conflicts verbose = false
               rescue
                 file = nil
               end
-              opts = {"attachable_type" => "Conflict", "attachable_id" => c.id, "title" => name, "file" => file}
+              opts = {"attachable_type" => "Conflict", "attachable_id" => c.id, "title" => name, "file" => file, "locale" => "tr", "pid" => c.images.count + 1}
               if file
                 begin
                   tt = model.create! opts
@@ -547,6 +594,7 @@ def check_tr_conflicts verbose = false
     end
     puts if verbose
   end
+  puts " - #{(Time.now - t0).to_i}s".yellow
   I18n.locale = lastlocale
   nil
 end
@@ -554,10 +602,13 @@ end
 def check_ar_conflicts
   found = 0
   header = []
-  CSV.read("../arabic_final.csv").each_with_index do |ar,ind|
+  t0 = Time.now
+  csv = CSV.read("../arabic_final.csv")
+  csv.each_with_index do |ar,ind|
     if ind == 0
       header = ar
     elsif en = Conflict.find_slug(ar[0].strip.split(/\//)[-1])
+      print "\r#{"ArConflicts:".magenta} #{ind+1} / #{csv.length}"
       found += 1
       ct = ConflictText.create :conflict_id => en.id, :locale => :ar
       ar.each_with_index do |val,i|
@@ -568,7 +619,8 @@ def check_ar_conflicts
       puts "not found: #{ar[0]}"
     end
   end
-  puts found
+  puts " - #{(Time.now - t0).to_i}s".yellow
+  #puts found
   nil
 end
 
@@ -576,8 +628,9 @@ def check_existing_it_conflicts
   load "#{Dir.pwd}/misc/it-models.rb"
   cols = parse_columns File.read("#{Dir.pwd}/misc/migrate.txt")
   lines = File.readlines("../it_cases.txt")
+  t0 = Time.now
   lines.each_with_index do |line,ind|
-    print "\r #{ind+1}/#{lines.length}"
+    print "\r#{"ItConflicts (existing):".blue} #{ind+1} / #{lines.length}"
     #puts
     line = line.split(" - ")
     #p line
@@ -601,6 +654,7 @@ def check_existing_it_conflicts
         rescue => e
           puts e
         end
+=begin
       else
         #puts "it: #{it.id}, en: none"
         begin
@@ -621,13 +675,15 @@ def check_existing_it_conflicts
         rescue => e
           puts e
         end
+=end
       end
     end
   end
+  puts " - #{(Time.now - t0).to_i}s".yellow
   nil
 end
 
-def check_it_conflicts verbose=true
+def check_it_conflicts verbose=false
   load "#{Dir.pwd}/misc/it-models.rb"
   lastlocale = I18n.locale
   I18n.locale = :it
@@ -635,8 +691,9 @@ def check_it_conflicts verbose=true
   puts if verbose
   puts "EJIT: Accounts" if verbose
   itslugs = File.readlines("../it_cases.txt").map{|l| l.split(" - ")[0]}
+  t0 = Time.now
   ItAccount.all.order(:id).each_with_index do |it,ind|
-    print "\r #{ind+1}/#{ItAccount.count}"
+    print "\r#{"ItAccount:".blue} #{ind+1} / #{ItAccount.count}"
     next if Account.find_by_email(it.email)
     acc = create_in_ejatlas it
     it.it_images.each do |img|
@@ -644,10 +701,12 @@ def check_it_conflicts verbose=true
     end
     FormerInfo.attach(acc,it.id,:ejit)
   end
+  puts " - #{(Time.now - t0).to_i}s".yellow
   puts if verbose
   puts "EJIT: Conflicts" if verbose
+  t0 = Time.now
   ItConflict.all.order(:id).each_with_index do |it,ind|
-    print "\r #{ind+1}/#{ItConflict.count}"
+    print "\r#{"ItConflict:".blue} #{ind+1} / #{ItConflict.count}"
     #puts
     #puts "#{it.name} (#{it.approval_status})"
     next if itslugs.include?(it.slug)
@@ -716,6 +775,7 @@ def check_it_conflicts verbose=true
     end
     #break if ind == 0
   end
+  puts " - #{(Time.now - t0).to_i}s".yellow
   I18n.locale = lastlocale
   nil
 end
@@ -745,7 +805,17 @@ def create_in_ejatlas obj, aid=nil
     begin
       ebj.save!
     rescue => e
-      puts e
+      #puts e
+    end
+  end
+  if ebj.has_attribute? :locale
+    ebj.update_attribute :locale, I18n.locale
+  end
+  if ebj.has_attribute? :pid
+    if ebj.is_a? Image
+      ebj.update_attribute :pid, ebj.attachable.images.where("pid is not null").count + 1
+    else
+      ebj.update_attribute :pid, eval("ebj.conflict.#{ebj.class.to_s.tableize}").where("pid is not null").count + 1
     end
   end
   ebj

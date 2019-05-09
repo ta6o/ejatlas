@@ -214,7 +214,7 @@
                   %select.type.basic_input{:name=>"type_#{type.type_id}",:id=>"type_#{i}"}= @alltypeoptions.html_safe
                   %br/
                   %br/
-            %a#add_type{:style=>'cursor:pointer',:onclick=>'addType()'}=t("f.conflict.add_another_type")
+            %a#add_type.notr{:style=>'cursor:pointer',:onclick=>'addType()'}=t("f.conflict.add_another_type")
             %br/
             %br/
             =f.label t("f.conflict.other_types_conflict")
@@ -402,20 +402,20 @@
               .col-md-10
                 %p.description=t("f.conflict.please_use_button_on_right")
               .col-md-2
-                %button#n_company.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company"}=t("f.conflict.add")
+                %button#n_company.btn.btn-inverse.notr{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company"}=t("f.conflict.add")
             %br/
             .company_list
               -@conflict.companies.each do |l|
                 .actor
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  %hr.notr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
                   .row{:style=>'margin-top:8px;'}
                     .col-md-8
                       %h5="#{l.name}"
                     .col-md-2
-                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company/#{l.id}"}=t("f.conflict.edit")
+                      %a.pull-right.btn.notr{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/company/#{l.id}"}=t("f.conflict.edit")
                     .col-md-2
                       %input{:type=>'hidden',:value=>l.id}
-                      %a.d_actor.pull-right.btn=t("f.conflict.remove")
+                      %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
             %hr/
 
           .group
@@ -432,20 +432,20 @@
               .col-md-10
                 %p.description=t("f.conflict.please_use_button_on_right")
               .col-md-2
-                %button#n_supporter.btn.btn-inverse{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter"}=t("f.conflict.add")
+                %button#n_supporter.btn.btn-inverse.notr{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter"}=t("f.conflict.add")
             %br/
             .supporter_list
               -@conflict.supporters.each do |l|
                 .actor
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                  %hr.notr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
                   .row{:style=>'margin-top:8px;'}
                     .col-md-8
                       %h5="#{l.name}"
                     .col-md-2
-                      %a.pull-right.btn{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter/#{l.id}"}=t("f.conflict.edit")
+                      %a.pull-right.btn.notr{'data-toggle'=>'modal','data-target'=>'#actor',:href=>"/conflicts/modal/#{@conflict.id}/supporter/#{l.id}"}=t("f.conflict.edit")
                     .col-md-2
                       %input{:type=>'hidden',:value=>l.id}
-                      %a.d_actor.pull-right.btn=t("f.conflict.remove")
+                      %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
             %hr/
 
             :javascript
@@ -955,20 +955,32 @@
           .group
             .row
               .col-md-12
-                -#%label Related laws and legislations
-                  %span.description - Juridical texts related to the conflict
                 %label=t("f.conflict.related_laws_legislations_juridical_texts")
-                %a#n_legislation.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_legislation'}=t("f.conflict.add")
+                %a#n_legislation.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_legislation'}=t("f.conflict.add")
             #current_legislations
-              -@conflict.legislations.each do |l|
+              -@conflict.legislations.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
                 .legislation
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  .row{:style=>'margin-top:8px;'}
-                    .col-md-10
-                      %textarea{:name=>'legislation_description_'+l.id.to_s}= l.description
-                    .col-md-2
-                      %a.d_legislation.pull-right.btn=t("f.conflict.remove")
-                  %input{:type=>'text',:name=>'legislation_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %br
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                  -if @conflict.native_locale?
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-10
+                        %textarea.yestr{:name=>'legislation_description_'+l.pid.to_s}= l.description
+                      .col-md-2
+                        %a.d_legislation.pull-right.btn.notr=t("f.conflict.remove")
+                  -else
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-12
+                        %p
+                          %b="#{$iso639[@conflict.original_locale]}:"
+                          = l.description
+                    .row
+                      .col-md-10
+                        %textarea.yestr{:name=>'legislation_description_'+l.pid.to_s}= @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
+                      .col-md-2
+                        %a.d_legislation.pull-right.btn.notr=t("f.conflict.remove")
+                  %input{:type=>'text',:name=>'legislation_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %br/
             :javascript
               $(document).ready(function(){
                 handleModal('legislation');
@@ -996,17 +1008,31 @@
             .row
               .col-md-12
                 %label=t("f.conflict.links_to_general_newspaper_articles")
-                %a#n_weblink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_weblink'}=t("f.conflict.add")
+                %a#n_weblink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_weblink'}=t("f.conflict.add")
             #current_weblinks
-              -@conflict.weblinks.each do |l|
+              -@conflict.weblinks.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
                 .weblink
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  .row{:style=>'margin-top:8px;'}
-                    .col-md-10
-                      %textarea{:name=>'weblink_description_'+l.id.to_s}= l.description
-                    .col-md-2
-                      %a.d_weblink.pull-right.btn=t("f.conflict.remove")
-                  %input{:type=>'text',:name=>'weblink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %br
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                  -if @conflict.native_locale?
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-10
+                        %textarea.yestr{:name=>'weblink_description_'+l.pid.to_s}= l.description
+                      .col-md-2
+                        %a.d_weblink.pull-right.btn.notr=t("f.conflict.remove")
+                  -else
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-12
+                        %p
+                          %b="#{$iso639[@conflict.original_locale]}:"
+                          = l.description
+                    .row
+                      .col-md-10
+                        %textarea.yestr{:name=>'weblink_description_'+l.pid.to_s}= @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
+                      .col-md-2
+                        %a.d_weblink.pull-right.btn.notr=t("f.conflict.remove")
+                    %input{:type=>'text',:name=>'weblink_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                    %br/
             :javascript
               $(document).ready(function(){
                 handleModal('weblink');
@@ -1040,58 +1066,37 @@
             .row
               .col-md-12
                 %label=t("f.conflict.references_to_published_books_academic")
-                %a#n_reference.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_reference'}=t("f.conflict.add")
+                %a#n_reference.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_reference'}=t("f.conflict.add")
             #current_references
-              -@conflict.references.each do |l|
+              -@conflict.references.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
                 .reference
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  .row{:style=>'margin-top:8px;'}
-                    .col-md-10
-                      %textarea{:name=>'reference_description_'+l.id.to_s}= l.description
-                    .col-md-2
-                      %a.d_reference.pull-right.btn=t("f.conflict.remove")
-                  %input{:type=>'text',:name=>'reference_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %br
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                  -if @conflict.native_locale?
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-10
+                        %textarea{:name=>'reference_description_'+l.pid.to_s}= l.description
+                      .col-md-2
+                        %a.d_reference.pull-right.btn.notr=t("f.conflict.remove")
+                  -else
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-12
+                        %p
+                          %b="#{$iso639[@conflict.original_locale]}:"
+                          = l.description
+                    .row
+                      .col-md-10
+                        %textarea.yestr{:name=>'reference_description_'+l.pid.to_s}= @conflict.references.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.references.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
+                      .col-md-2
+                        %a.d_reference.pull-right.btn.notr=t("f.conflict.remove")
+                  %input{:type=>'text',:name=>'reference_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                  %br/
             :javascript
               $(document).ready(function(){
                 handleModal('reference');
               });
             %hr/
 
-          .group
-            .row
-              .col-md-12
-                %label=t("f.conflict.upload_picture_here_you_can")
-                -unless @conflict.new_record?
-                  %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
-                -if @conflict.new_record?
-                  %p &nbsp;
-                  %p.description
-                    %strong=t("f.conflict.please_save_form_after_uploading")
-            #current_documents
-              -@conflict.images.each do |d|
-                .document
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  .row{:style=>'margin-top:8px;'}
-                    .col-md-3
-                      %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                      .center-text
-                        [[IMAGE]]
-                    .col-md-9
-                      .row
-                        .col-md-9
-                          %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
-                        .col-md-3
-                          %a.d_image.pull-right.btn=t("f.conflict.remove")
-                          -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
-                      %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
-
-              -@conflict.documents.each do |d|
-                -next if d and d.copied?
-                .document
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
-                    .row{:style=>'margin-top:8px;background:#aaa;'}
 
             #m_medialink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
               .modal-dialog
@@ -1114,17 +1119,31 @@
               .row
                 .col-md-12
                   %label=t("f.conflict.related_media_links_to_videos")
-                  %a#n_medialink.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_medialink'}=t("f.conflict.add")
+                  %a#n_medialink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_medialink'}=t("f.conflict.add")
               #current_medialinks
-                -@conflict.medialinks.each do |l|
+                -@conflict.medialinks.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
                   .medialink
-                    %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-10
-                        %textarea{:name=>'medialink_description_'+l.id.to_s}= l.description
-                      .col-md-2
-                        %a.d_medialink.pull-right.btn=t("f.conflict.remove")
-                    %input{:type=>'text',:name=>'medialink_url_'+l.id.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                    %br
+                    %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                    -if @conflict.native_locale?
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-10
+                          %textarea{:name=>'medialink_description_'+l.pid.to_s}= l.description
+                        .col-md-2
+                          %a.d_medialink.pull-right.btn.notr=t("f.conflict.remove")
+                    -else
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-12
+                          %p
+                            %b="#{$iso639[@conflict.original_locale]}:"
+                            = l.description
+                      .row
+                        .col-md-10
+                          %textarea.yestr{:name=>'medialink_description_'+l.pid.to_s}= @conflict.medialinks.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.medialinks.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
+                        .col-md-2
+                          %a.d_medialink.pull-right.btn.notr=t("f.conflict.remove")
+                    %input{:type=>'text',:name=>'medialink_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                    %br/
               :javascript
                 $(document).ready(function(){
                   handleModal('medialink');
@@ -1162,33 +1181,56 @@
             .row
               .col-md-12
                 %label=t("f.conflict.upload_picture_here_you_can")
-                -unless @conflict.new_record?
-                  %a#n_document.btn.pull-right{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
                 -if @conflict.new_record?
                   %p &nbsp;
                   %p.description
                     %strong=t("f.conflict.please_save_form_after_uploading")
+                -else
+                  %a#n_document.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
             #current_documents
-              -@conflict.images.each do |d|
+              -@conflict.images.where(:locale=>@conflict.original_locale).order(:pid).each do |d|
                 .document
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  .row{:style=>'margin-top:8px;'}
-                    .col-md-3
-                      %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                      .center-text
-                        [[IMAGE]]
-                    .col-md-9
-                      .row
-                        .col-md-9
-                          %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                          %input{:type=>'text',:name=>'image_title_'+d.id.to_s,:value=>d.title}
-                        .col-md-3
-                          %a.d_image.pull-right.btn=t("f.conflict.remove")
-                          -#%input{:type=>'radio',:name=>'image_prime',:value=>d.prime}
-                      %textarea{:name=>'image_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+                  %br
+                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                  -if @conflict.native_locale?
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-3
+                        %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                        .center-text
+                          [[IMAGE]]
+                      .col-md-9
+                        .row
+                          .col-md-9
+                            %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                            %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>d.title}
+                          .col-md-3
+                            %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
+                            %input{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                        %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+                  -else
+                    .row{:style=>'margin-top:8px;'}
+                      .col-md-3
+                        %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                        .center-text
+                          [[IMAGE]]
+                      .col-md-9
+                        .row
+                          .col-md-9
+                            %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                            %p
+                              %b="#{$iso639[@conflict.original_locale]}:"
+                              = d.title
+                            %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>(@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].title : "")}
+                          .col-md-3
+                            %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
+                            %input.yestr{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                        %p
+                          %b="#{$iso639[@conflict.original_locale]}:"
+                          = d.description
+                        %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= (@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].description : "")
 
-              -@conflict.documents.each do |d|
-                -next if d.copied?
+              -@conflict.documents.where(:locale=>@conflict.original_locale).order(:pid).each do |d|
+                -next if d and d.copied?
                 .document
                   %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
                   -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
@@ -1287,7 +1329,9 @@
         .col-md-4
           -unless @conflict.new_record?
             .group
-              %label= "#{t("f.conflict.conflict_id")} #{@conflict.id}"
+              %label= "#{t("f.conflict.conflict_id")}  <font style='font-weight:normal'>#{@conflict.id}</font>".html_safe
+              %br/
+              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| $iso639[x.locale]}.join(", ")}</font>".html_safe
 
           .group
             =f.label t("f.conflict.headline_text")
@@ -1491,6 +1535,30 @@
 
 
 
+
+  -if @translate_only
+    %input#translate_only{:type=>"hidden",:name=>"translate_only",:value=>"true"}
+    :javascript
+
+      tfields = [];
+      texts = "name, slug, site, province, project_area, project_length, other_types, description, other_products, project_details, investment_string, affected_people, other_supporters, related_conflict_string, other_mobilizing_groups, other_mobilizing_forms, other_env_impacts, other_hlt_impacts, other_sec_impacts, other_outcomes, suggested_alternatives, success_reason, other_comments, table, ejos, govt_actors, features, headline, notes, message, translate_only".split(/\s*,\s*/);
+      $.each (texts,function(i,e){
+        c = $("#conflict_"+e);
+        if(c.length == 0){
+          c = $("#"+e);
+        }
+        if(c.length > 0){
+          tfields.push(c[0])
+        }
+      });
+      $.each($("#conflict_form input, #conflict_form textarea, #conflict_form select"),function(i,e){
+        if (tfields.indexOf(e) == -1 && !$(e).hasClass("yestr")) {
+          $(e).prop("disabled",true)
+        }
+      });
+      $('.notr').hide();
+      $('.notr').removeAttr("href");
+      $('.notr').removeAttr("onclick");
 
 
 :javascript
@@ -1717,23 +1785,3 @@
       })
     })
         
--if @translate_only
-  :javascript
-
-    tfields = [];
-    texts = "name, slug, site, province, project_area, project_length, other_types, description, other_products, project_details, investment_string, affected_people, other_supporters, related_conflict_string, other_mobilizing_groups, other_mobilizing_forms, other_env_impacts, other_hlt_impacts, other_sec_impacts, other_outcomes, suggested_alternatives, success_reason, other_comments, table, ejos, govt_actors, features, headline, notes".split(/\s*,\s*/);
-    $.each (texts,function(i,e){
-      c = $("#conflict_"+e);
-      if(c.length == 0){
-        c = $("#"+e);
-      }
-      if(c.length > 0){
-        tfields.push(c[0])
-      }
-    });
-    $.each($("#conflict_form input, #conflict_form textarea, #conflict_form select"),function(i,e){
-      if (tfields.indexOf(e) == -1) {
-        $(e).prop("disabled",true)
-      }
-    });
-
