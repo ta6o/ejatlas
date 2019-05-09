@@ -54,7 +54,7 @@
           ~ t("f.conflict.fields_marked_with_are_required").sub("*","<span class='required large'>*</span>").html_safe
 
         .group
-          =f.label t("f.conflict.name_of_conflict")
+          %label{:for=>"conflict_name"}= t("f.conflict.name_of_conflict")
           %span.required.large *
           %p.description= t("f.conflict.eg_company_or_community_name")
           .required=f.error_message_on :name
@@ -62,13 +62,13 @@
 
         -if ["admin","editor"].include? current_account.role
           .group
-            =f.label t("f.conflict.name_visible_on_address_bar")
+            %label{:for=>"conflict_slug"}= t("f.conflict.name_visible_on_address_bar")
             %span.required.large *
             .required=f.error_message_on :slug
             =f.text_field :slug, :class => 'text_field basic_input'
 
         .group
-          =f.label t("f.conflict.country")
+          %label{:for=>"conflict_country_id"}= t("f.conflict.country")
           %span.required.large *
           .required=f.error_message_on :country_id
           -#=f.select :country_id, :collection => @countries, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
@@ -94,20 +94,20 @@
             })
 
         .group.local_fade
-          =f.label t("f.conflict.location_of_conflict")
+          %label{:for=>"conflict_site"}= t("f.conflict.location_of_conflict")
           %p.description= t("f.conflict.municipality_or_city_town")
           .required=f.error_message_on :site
           =f.text_field :site, :class => 'text_field'
 
         .group.local_fade
-          =f.label t("f.conflict.state_or_province")
+          %label{:for=>"conflict_province"}= t("f.conflict.state_or_province")
           .required=f.error_message_on :province
           =f.text_field :province, :class => 'text_field'
 
           .col-md-4
             .group
               .required=f.error_message_on :accuracy_level
-              =f.label t("f.conflict.accuracy_of_location")
+              %label{:for=>"conflict_accuracy_level"}= t("f.conflict.accuracy_of_location")
               %label.checkbox.inline.acc_lvl
                 %input.local_disable.mustcheck.acclvl{:type=>'radio',:value=>'1',:name=>'conflict[accuracy_level]'}=" &nbsp;#{t("m.accuracy_level.low_country_level")}".html_safe
               %label.checkbox.inline.acc_lvl
@@ -121,7 +121,7 @@
 
           .col-md-4
             .group
-              =f.label t("f.conflict.project_area")
+              %label{:for=>"conflict_project_area"}= t("f.conflict.project_area")
               %p.description= t("f.conflict.in_hectares_in_this_format")
               .required=f.error_message_on :project_area
               =f.text_field :project_area, :class => 'text_field'
@@ -131,7 +131,7 @@
           .col-md-4
             .group
               .required=f.error_message_on :population_type
-              =f.label t("f.conflict.type_of_population")
+              %label{:for=>"conflict_population_type"}= t("f.conflict.type_of_population")
               %label.checkbox.inline.pop_type
                 %input.local_disable.mustcheck.poptype{:type=>'radio',:value=>'0',:name=>'conflict[population_type]'}=" &nbsp;#{t("m.population_type.unknown")}".html_safe
               %label.checkbox.inline.pop_type
@@ -191,7 +191,7 @@
       .row
         .col-md-5
           .group
-            =f.label t("f.conflict.type_conflict_1st_level")
+            %label{:for=>"conflict_category_id"}= t("f.conflict.type_conflict_1st_level")
             %span.required.large *
             %p.description= t("f.conflict.pick_one_based_on_activity")
             .required=f.error_message_on :category_id
@@ -204,7 +204,7 @@
 
         .col-md-6
           .group
-            =f.label t("f.conflict.type_conflict_2nd_level")
+            %label{:for=>"conflict_type"}= t("f.conflict.type_conflict_2nd_level")
             %span.required.large *
             %p.description=t("f.conflict.select_all_relevant_does_not")
             .types
@@ -217,7 +217,7 @@
             %a#add_type.notr{:style=>'cursor:pointer',:onclick=>'addType()'}=t("f.conflict.add_another_type")
             %br/
             %br/
-            =f.label t("f.conflict.other_types_conflict")
+            %label{:for=>"conflict_other_types"}= t("f.conflict.other_types_conflict")
             %p.description= t("f.conflict.please_insert_other_types_conflict")
             ~f.text_area :other_types, :class => 'text_area', :rows=>1, :id => 'other_types'
         :javascript
@@ -286,7 +286,7 @@
       .row
         .col-md-4
           .group
-            =f.label t("f.conflict.description")
+            %label{:for=>"conflict_desciption"}= t("f.conflict.description")
             %span.required.large *
             .required=f.error_message_on :description
             %p.description= t("f.conflict.please_describe_project_point_conflict")
@@ -295,7 +295,7 @@
 
         .col-md-8
           .group
-            =f.label t("f.conflict.specific_commodities")
+            %label{:for=>"conflict_product_id"}= t("f.conflict.specific_commodities")
             %span.required.large *
             .required=f.error_message_on :product_id
             %br/
@@ -371,21 +371,21 @@
       .row
         .col-md-5
           .group
-            =f.label t("f.conflict.project_details")
+            %label{:for=>"conflict_project_retails"}= t("f.conflict.project_details")
             .required=f.error_message_on :project_details
             %p.description=t("f.conflict.please_insert_specific_details_on")
             ~f.text_area :project_details, :class => :text_area, :rows=>17
 
         .col-md-4
           .group
-            %label=t("f.conflict.level_of_investment")
+            %label{:for=>"conflict_investment_string"}=t("f.conflict.level_of_investment")
             .required=f.error_message_on :investment_string
             %p.description=t("f.conflict.please_enter_in_usd_in")
             =f.text_field :investment_string, :class => :text_field
 
         .col-md-4
           .group
-            %label=t("f.conflict.affected_population")
+            %label{:for=>"conflict_affected_people"}=t("f.conflict.affected_population")
             %p.description=t("f.conflict.it_may_also_be_range")
             .required=f.error_message_on :affected_people
             =f.text_field :affected_people, :class => :text_field, :maxlength => 255
@@ -420,7 +420,7 @@
 
           .group
             %br/
-            =f.label t("f.conflict.relevant_government_actors")
+            %label{:for=>"conflict_govt_actors"}= t("f.conflict.relevant_government_actors")
             .required=f.error_message_on :government_actor_id
             %br/
             %textarea#conflict_govt_actors.text-area{:rows=>4,:name=>'conflict[govt_actors]'}=@conflict.govt_actors
@@ -462,7 +462,7 @@
 
           .group
             %br/
-            =f.label t("f.conflict.environmental_justice_organizations_other_supporters")
+            %label{:for=>"conflict_ejos"}= t("f.conflict.environmental_justice_organizations_other_supporters")
             .required=f.error_message_on :justice_party_id
             %br/
             %textarea#conflict_ejos.text-area{:rows=>4,:name=>'conflict[ejos]'}=@conflict.ejos
@@ -492,7 +492,7 @@
       .row
         .col-md-9
           .group
-            =f.label t("f.conflict.intensity_of_conflict")
+            %label{:for=>"conflict_status_id"}= t("f.conflict.intensity_of_conflict")
             .required=f.error_message_on :status_id
             %p.description= t("f.conflict.at_highest_level")
             -#=f.select :status_id, :collection => @statuses, :fields=>[:name, :id], :include_blank => true, :id => 'status_id', :class => 'basic_input'
@@ -503,7 +503,7 @@
 
 
           .group
-            =f.label t("f.conflict.when_did_mobilization_begin")
+            %label{:for=>"conflict_reaction_id"}= t("f.conflict.when_did_mobilization_begin")
             .required=f.error_message_on :reaction_id
             -#=f.select :reaction_id, :collection => @reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
           %select.basic_input#conflict_reaction_id{:name=>"conflict[reaction_id]"}
@@ -532,13 +532,13 @@
 
         .col-md-3
           .group
-            =f.label t("f.conflict.start_conflict")
+            %label{:for=>"conflict_start_date"}= t("f.conflict.start_conflict")
             %span.required.large *
             .required=f.error_message_on :start_date
             =f.text_field :start_date, :class => 'text_field conflict_input datemask', :value => ( @conflict.get_start_date if @conflict.start_date )
 
           .group
-            =f.label t("f.conflict.end_conflict")
+            %label{:for=>"conflict_end_date"}= t("f.conflict.end_conflict")
             %p.description=t("f.conflict.leave_blank_if_ongoing")
             =f.text_field :end_date, :class => 'text_field datemask', :value => ( @conflict.get_end_date if @conflict.end_date )
 
@@ -547,7 +547,7 @@
         .col-md-12
           .group
             %br/
-            =f.label t("f.conflict.groups_mobilizing")
+            %label{:for=>"conflict_mobilizing_groups"}= t("f.conflict.groups_mobilizing")
             %p.description= t("f.conflict.check_all_that_apply")
             %table{:style=>'width:100%'}
               %tbody
@@ -574,7 +574,7 @@
             %br/
 
           .group
-            =f.label t("f.conflict.forms_of_mobilization")
+            %label{:for=>"conflict_mobilizing_forms"}= t("f.conflict.forms_of_mobilization")
             %p.description= t("f.conflict.check_all_that_apply")
             %table#mobform{:style=>'width:100%'}
               %tbody
@@ -626,7 +626,7 @@
           %p.lead= t("f.conflict.impacts_project")
           .group.row
             .col-md-3
-              =f.label t("m.env_impacts.environmental_impacts")
+              %label{:for=>"conflict_env_impact_id"}= t("m.env_impacts.environmental_impacts")
               .required=f.error_message_on :env_impact_id
             .col-md-9
               %table.imptab{:style=>'width:100%'}
@@ -658,14 +658,14 @@
           .group.row
             .col-md-3 &nbsp;
             .col-md-9
-              =f.label t("m.env_impacts.other_environmental_impacts")
+              %label{:for=>"conflict_other_env_impacts"}= t("m.env_impacts.other_environmental_impacts")
               .required=f.error_message_on :other_env_impacts
               ~f.text_area :other_env_impacts, :class => :text_area
           %hr/
 
           .group.row
             .col-md-3
-              =f.label t("m.hlt_impacts.health_impacts")
+              %label{:for=>"conflict_hlt_impact_id"}= t("m.hlt_impacts.health_impacts")
               .required=f.error_message_on :hlt_impact_id
             .col-md-9
               %table.imptab{:style=>'width:100%'}
@@ -697,14 +697,14 @@
           .group.row
             .col-md-3 &nbsp;
             .col-md-9
-              =f.label t("m.hlt_impacts.other_health_impacts")
+              %label{:for=>"conflict_other_hlt_impacts"}= t("m.hlt_impacts.other_health_impacts")
               .required=f.error_message_on :other_hlt_impacts
               ~f.text_area :other_hlt_impacts, :class => :text_area
           %hr/
 
           .group.row
             .col-md-3
-              =f.label t("m.sec_impacts.socio_economical_impacts")
+              %label{:for=>"conflict_sec_impact_id"}= t("m.sec_impacts.socio_economical_impacts")
               .required=f.error_message_on :sec_impact_id
             .col-md-9
               %table.imptab{:style=>'width:100%'}
@@ -736,7 +736,7 @@
           .group.row
             .col-md-3 &nbsp;
             .col-md-9
-              =f.label t("m.sec_impacts.other_socio_economic_impacts")
+              %label{:for=>"conflict_other_sec_impacts"}= t("m.sec_impacts.other_socio_economic_impacts")
               .required=f.error_message_on :other_sec_impacts
               ~f.text_area :other_sec_impacts, :class => :text_area
           %br/
@@ -779,7 +779,7 @@
         .col-md-4
           .group
             %br/
-            =f.label t("f.conflict.current_status_project_development")
+            %label{:for=>"conflict_project_status"}= t("f.conflict.current_status_project_development")
             .required=f.error_message_on :project_status
             %table{:style=>'width:100%'}
               %tbody
@@ -793,7 +793,7 @@
             %br/
 
           .group
-            =f.label t("f.conflict.development_of_alternatives")
+            %label{:for=>"conflict_suggested_alternatives"}= t("f.conflict.development_of_alternatives")
             %p.description=t("f.conflict.what_are_proposals_being_brought")
             ~f.text_area :suggested_alternatives, :class => :text_area, :rows=>9
             %br/
@@ -801,7 +801,7 @@
 
           .group
             .required=f.error_message_on :success_level
-            =f.label t("f.conflict.do_you_consider_this_an")
+            %label{:for=>"conflict_success_level"}= t("f.conflict.do_you_consider_this_an")
             %br/
             %table{:style=>'width:100%'}
               %tbody
@@ -823,7 +823,7 @@
           %br/
 
           .group
-            =f.label t("f.conflict.briefly_explain")
+            %label{:for=>"conflict_success_reason"}= t("f.conflict.briefly_explain")
             .required=f.error_message_on :success_reason
             ~f.text_area :success_reason, :class => :text_area, :rows=>6
 
@@ -831,7 +831,7 @@
         .col-md-8
           .group
             %br/
-            =f.label t("f.conflict.conflict_outcome_response")
+            %label{:for=>"conflict_conflict_event_id"}= t("f.conflict.conflict_outcome_response")
             %p.description=t("f.conflict.check_all_outcomes_that_apply")
             %table{:style=>'width:100%'}
               %tbody
@@ -1040,7 +1040,7 @@
             %hr/
 
           .group
-            =f.label t("f.conflict.other_comments")
+            %label{:for=>"conflict_other_comments"}= t("f.conflict.other_comments")
             .required=f.error_message_on :other_comments
             ~f.text_area :other_comments, :class => :text_area, :rows=>4
 
@@ -1334,7 +1334,7 @@
               %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| $iso639[x.locale]}.join(", ")}</font>".html_safe
 
           .group
-            =f.label t("f.conflict.headline_text")
+            %label{:for=>"conflict_headline"}= t("f.conflict.headline_text")
             .required=f.error_message_on :headline
             %p.description 
               =t("f.conflict.mainly_for_landing_page_appearance")
@@ -1342,7 +1342,7 @@
 
           .group
             .required=f.error_message_on :approval_status
-            =f.label t("f.conflict.approval_status")
+            %label{:for=>"conflict_approval_status"}= t("f.conflict.approval_status")
             %label.checkbox.inline.apstat
               %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.deleted")}".html_safe
             %label.checkbox.inline.apstat
@@ -1468,7 +1468,7 @@
 
           -if ["admin","editor"].include? current_account.role and @conflict.account
             .group
-              =f.label t("f.conflict.internal_notes")
+              %label{:for=>"conflict_notes"}= t("f.conflict.internal_notes")
               .required=f.error_message_on :notes
               %p.description=t("f.conflict.please_indicate_changes_you_have")
               ~f.text_area :notes, :class => :text_area, :rows=>4
@@ -1478,13 +1478,13 @@
                   %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
 
           .group
-            =f.label t("f.conflict.contributor")
+            %label{:for=>"conflict_contributor"}= t("f.conflict.contributor")
             .required=f.error_message_on :contributor
             %p.description=t("f.conflict.fill_in_your_name_organization")
             =f.text_field :contributor, :class => 'text_field basic_input'
 
           .group
-            =f.label t("f.conflict.translator")
+            %label{:for=>"conflict_translator"}= t("f.conflict.translator")
             .required=f.error_message_on :translator
             %p.description=t("f.conflict.fill_in_your_name_organization")
             =f.text_field :translator, :class => 'text_field basic_input'

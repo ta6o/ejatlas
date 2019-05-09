@@ -702,11 +702,11 @@ class Conflict < ActiveRecord::Base
       ]],
 
       [I18n.t('f.conflict.outcome',:locale=>loc), '10', [
-        [:name, 'v', 'project_status', I18n.t('m.project_status_id.project_status',:locale=>loc)],
+        [:name, 'c', 'project_status', I18n.t('m.project_status_id.project_status',:locale=>loc)],
         [:many, 'conflict_events', I18n.t('f.conflict.conflict_outcome_response',:locale=>loc)],
-        [:flat, 'v' ,'suggested_alternatives', I18n.t('f.conflict.development_of_alternatives',:locale=>loc)],
+        [:flat, 'ct' ,'suggested_alternatives', I18n.t('f.conflict.development_of_alternatives',:locale=>loc)],
         [:arra, 'c' ,'success_level', [I18n.t('f.conflict.yes',:locale=>loc),I18n.t('f.conflict.not_sure',:locale=>loc),I18n.t('f.conflict.no',:locale=>loc)], I18n.t('f.conflict.do_you_consider_this_an',:locale=>loc)],
-        [:flat, 'v' ,'success_reason', I18n.t('f.conflict.briefly_explain',:locale=>loc)],
+        [:flat, 'ct' ,'success_reason', I18n.t('f.conflict.briefly_explain',:locale=>loc)],
       ]],
 
       [I18n.t('f.conflict.sources_and_materials',:locale=>loc), '3', [
@@ -715,7 +715,7 @@ class Conflict < ActiveRecord::Base
         [:refs, 'weblinks', I18n.t('f.conflict.links_to_general_newspaper_articles',:locale=>loc)],
         [:refs, 'medialinks', I18n.t('f.conflict.related_media_links_to_videos',:locale=>loc)],
         [:refs, 'documents', I18n.t('f.conflict.other_documents',:locale=>loc)],
-        [:flat, 'v' ,'other_comments', I18n.t('f.conflict.other_comments',:locale=>loc)]
+        [:flat, 'ct' ,'other_comments', I18n.t('f.conflict.other_comments',:locale=>loc)]
       ]],
 
       [I18n.t('f.conflict.meta_information',:locale=>loc), '8', [
