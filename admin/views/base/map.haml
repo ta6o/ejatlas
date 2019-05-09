@@ -137,7 +137,7 @@
           .content{:style=>'display:none;'}
             %div{:id=>"browse#{k}"}
               %ul.columns
-                -(v||[]).each do |c|
+                -v.each do |c|
                   -j = JSON.parse c[0]
                   -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
                   -if k == "company"

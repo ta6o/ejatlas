@@ -268,8 +268,8 @@ def migrate_to_i18n
   
   update_all_cache
 
-  dur = t00 - Time.now
-  puts "Migration finished in #{(dur/60.0).floor}m #{dur % 60}s".magenta
+  dur = Time.now - t00
+  puts "Migration finished in #{(dur/60.0).floor}m #{(dur % 60).to_i}s".magenta
   puts "Check cache update process to make sure all is finished.".red
 
 end

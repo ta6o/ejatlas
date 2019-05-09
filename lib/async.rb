@@ -612,6 +612,7 @@ class AsyncTask
   handle_asynchronously :backup
 
   def setcache params
+    t00 = Time.now
     locale = params.delete("locale")
     puts
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
@@ -916,8 +917,9 @@ class AsyncTask
     end
 
     ca.save
+    dur = Time.now - t00
+    puts "Cache updated in #{"#{(dur/60.0).floor}m #{(dur % 60).to_i}s".magenta}"
     GC.start
-    puts "Cache updated."
 
   end
   handle_asynchronously :setcache
