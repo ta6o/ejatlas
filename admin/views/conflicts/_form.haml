@@ -18,22 +18,22 @@
 
 %ul#conflict-tabs.nav.nav-tabs{:style=>'margin-bottom:0'}
   %li.active
-    %a{:href=>'#basic'}=UnicodeUtils.upcase( t("f.conflict.basic_data"),I18n.locale)
+    %a{:href=>'#basic'}=UnicodeUtils.upcase( t("f.conflict.basic_data"),I18n.locale).split(/\s+/)[0]
   -unless @conflict.new_record?
     %li
-      %a{:href=>'#source'}=UnicodeUtils.upcase( t("f.conflict.source_of_conflict"),I18n.locale)
+      %a{:href=>'#source'}=UnicodeUtils.upcase( t("f.conflict.source_of_conflict"),I18n.locale).split(/\s+/)[0]
     %li
-      %a{:href=>'#project'}=UnicodeUtils.upcase( t("f.conflict.project_details"),I18n.locale)
+      %a{:href=>'#project'}=UnicodeUtils.upcase( t("f.conflict.project_details"),I18n.locale).split(/\s+/)[0]
     %li
-      %a{:href=>'#conflict'}=UnicodeUtils.upcase( t("f.conflict.conflict_and_mobilization"),I18n.locale)
+      %a{:href=>'#conflict'}=UnicodeUtils.upcase( t("f.conflict.conflict_and_mobilization"),I18n.locale).split(/\s+/)[0]
     %li
-      %a{:href=>'#impacts'}=UnicodeUtils.upcase( t("f.conflict.impacts_project"),I18n.locale)
+      %a{:href=>'#impacts'}=UnicodeUtils.upcase( t("f.conflict.impacts_project"),I18n.locale).split(/\s+/)[0]
     %li
-      %a{:href=>'#outcome'}=UnicodeUtils.upcase( t("f.conflict.outcome"),I18n.locale)
+      %a{:href=>'#outcome'}=UnicodeUtils.upcase( t("f.conflict.outcome"),I18n.locale).split(/\s+/)[0]
     %li
-      %a{:href=>'#materials'}=UnicodeUtils.upcase( t("f.conflict.sources_and_materials"),I18n.locale)
+      %a{:href=>'#materials'}=UnicodeUtils.upcase( t("f.conflict.sources_and_materials"),I18n.locale).split(/\s+/)[0]
     %li
-      %a{:href=>'#meta'}=UnicodeUtils.upcase( t("f.conflict.meta_information"),I18n.locale)
+      %a{:href=>'#meta'}=UnicodeUtils.upcase( t("f.conflict.meta_information"),I18n.locale).split(/\s+/)[0]
 
 
 .tab-content.whitebox
@@ -1205,7 +1205,7 @@
                             %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>d.title}
                           .col-md-3
                             %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
-                            %input{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                            -#%input{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
                         %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
                   -else
                     .row{:style=>'margin-top:8px;'}
@@ -1223,7 +1223,7 @@
                             %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>(@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].title : "")}
                           .col-md-3
                             %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
-                            %input.yestr{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                            -#%input.yestr{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
                         %p
                           %b="#{$iso639[@conflict.original_locale]}:"
                           = d.description

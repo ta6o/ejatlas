@@ -52,9 +52,7 @@ Admin.controllers :conflicts do
       'related'=>{},
     }
 
-    if params.has_key?("translate_only")
-      params['conflict']['approval_status'] = Conflict.find(params["id"].to_i).approval_status
-    else
+    unless params.has_key?("translate_only")
       def stripDate prop, params
         par = params['conflict'][prop+'_date']
         matches = ['','01/','01/01/']
@@ -457,7 +455,7 @@ Admin.controllers :conflicts do
     end
   end
 
-   put :update, :with => :id do
+  put :update, :with => :id do
     #Admin.color_pp params, "params", "yellow", true
     #pp params["id"]
     #pp params["conflict"]["slug"]
@@ -475,90 +473,22 @@ Admin.controllers :conflicts do
       return {:status=>"error",:errors=>["Name on address bar has been taken by conflict ##{sameslug.first}"]}.to_json 
     end
 
-    unless updated['conflict'].has_key?("approval_status")
-      File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
-        file << "ERR,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
-      end
-      return {:status=>"error",:errors=>["Request was not completed, omitting save.<br/><br/>Please try again."]}.to_json 
-    end
-
-    if  @conflict.save :validate=>false
-      File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
-        file << "UPD,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
-      end
-      multies = {
-        'company'=>{:attr=>@conflict.companies,:class=>Company,:join=>@conflict.c_companies},
-        'supporter'=>{:attr=>@conflict.supporters,:class=>Supporter,:join=>@conflict.supporters},
-        'mobilizing_group'=>{:attr=>@conflict.mobilizing_groups,:class=>MobilizingGroup,:join=>@conflict.c_mobilizing_groups},
-        'mobilizing_form'=>{:attr=>@conflict.mobilizing_forms,:class=>MobilizingForm,:join=>@conflict.c_mobilizing_forms},
-        'conflict_event'=>{:attr=>@conflict.conflict_events,:class=>ConflictEvent,:join=>@conflict.c_conflict_events},
-        'product'=>{:attr=>@conflict.products,:class=>Product,:join=>@conflict.c_products},
-        'type'=>{:attr=>@conflict.types,:class=>Type,:join=>@conflict.c_types},
-        'env_radio'=>{:attr=>@conflict.env_impacts,:class=>EnvImpact,:join=>@conflict.c_env_impacts},
-        'hlt_radio'=>{:attr=>@conflict.hlt_impacts,:class=>HltImpact,:join=>@conflict.c_hlt_impacts},
-        'sec_radio'=>{:attr=>@conflict.sec_impacts,:class=>SecImpact,:join=>@conflict.c_sec_impacts},
-        'reference'=>{:attr=>@conflict.references,:class=>Reference},
-        'legislation'=>{:attr=>@conflict.legislations,:class=>Legislation},
-        'weblink'=>{:attr=>@conflict.weblinks,:class=>Weblink},
-        'medialink'=>{:attr=>@conflict.medialinks,:class=>Medialink},
-        'document'=>{:attr=>@conflict.documents,:class=>Document},
-        'image'=>{:attr=>@conflict.images,:class=>Image},
-      }
-      multies.each do |k,v|
-        #v[:join].clear if v[:join]
-      end
-      updated['multies'].each do |k,v|
-        new = v
-        old = multies[k][:attr].map(&:id)
-        (old-new).each do |l|
-          multies[k][:attr].delete(multies[k][:class].find(l))
+    if params.has_key?("translate_only")
+      if @conflict.update_attributes(updated["conflict"])
+        File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
+          file << "TRN,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
         end
-        (new-old).each do |l|
-          begin
-            multies[k][:attr] << multies[k][:class].find(l)
-          rescue
-            #puts "no #{k} found with id #{l}"
-          end
-        end
-      end
-      updated['impacts'].each do |k,v|
-        new = v['g'] + v['p']
-        old = multies[k][:attr].map(&:id)
-        (old-new).each do |l|
-          multies[k][:attr].delete(multies[k][:class].find(l))
-        end
-        (new-old).each do |l|
-          begin
-            multies[k][:attr] << multies[k][:class].find(l)
-          rescue
-            #puts "no #{k} found with id #{l}"
-          end
-        end
-        v['g'].each do |l|
-          imp = multies[k][:join].where("#{k.sub('radio','impact')}_id = ?", l).first
-          imp.visible = true
-          imp.save
-        end
-        v['p'].each do |l|
-          imp = multies[k][:join].where("#{k.sub('radio','impact')}_id = ?", l).first
-          imp.visible = false
-          imp.save
-        end
-      end
-      updated['refs'].each do |k,v|
-        if k == "related"
+        multies = {
+          'reference'=>{:attr=>@conflict.references,:class=>Reference},
+          'legislation'=>{:attr=>@conflict.legislations,:class=>Legislation},
+          'weblink'=>{:attr=>@conflict.weblinks,:class=>Weblink},
+          'medialink'=>{:attr=>@conflict.medialinks,:class=>Medialink},
+          'document'=>{:attr=>@conflict.documents,:class=>Document},
+          'image'=>{:attr=>@conflict.images,:class=>Image},
+        }
+        updated['refs'].each do |k,v|
           v.each do |l,w|
-            rel = ConflictRelation.both(@conflict.id,l.to_i)
-            if w['remove'] and rel
-              rel.destroy
-              next 
-            elsif w['add'] and !rel
-              @conflict.related_to << Conflict.find(l.to_i)
-            end
-          end
-        else
-          v.each do |l,w|
-            ##puts "#{k}: #{l},#{w}"
+            #puts "#{k}: #{l},#{w}".green
             ref = multies[k][:class].where(:id=>l)
             if ref.any?
               ref = ref[0]
@@ -578,95 +508,212 @@ Admin.controllers :conflicts do
             ref.name = w['name'] if w['name']
             ref.title = w['title'] if w['title']
             ref.description = w['description'] if w['description']
-            ref.country_id = w['country'] if w['country']
             ref.url = w['url'] if w['url']
-            #ref.conflict = @conflict
             begin
               multies[k][:attr] << ref
             rescue
-              #puts "#{k} been taken!"
+              puts "#{k} has been taken!".red
             end
             ref.save
           end
         end
-      end
-
-      general = false
-      updated['conflict'].each do |k,v|
-        if k == 'name' and v.match(/"/)
-          quotes = ["“","","”"]
-          fi = -1
-          while v.match(/"/)
-            v = v.sub(/"/,quotes[fi+1])
-            fi *= -1
-          end
-        elsif k == "general" and v == "on"
-          general = true
-          next
-        end
-        if @conflict.attributes.has_key?(k) or @conflict.attributes.has_key?("#{k}_id") or k.match(/_id$/)
-          unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
-            begin
-              @conflict.update_attribute k, v 
-            rescue => e
-              p e.methods
-              return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
-            end
-          end
-        else
-          #puts k.to_s.magenta
-          ct = @conflict.local_data
-          ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale) unless ct
-          unless ct.attributes[k] == v
-            begin
-              ct.update_attribute k, v 
-            rescue => e
-              puts e
-              puts e.backtrace
-              return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
-            end
-          end
-        end
-      end
-
-      # puts "general: #{general}"
-      if general
-        capital = Country.find(updated['conflict']['country_id']).capital.gsub(',','.').split('|')
-        @conflict.lat = capital[1]
-        @conflict.lon = capital[2]
-      end
-
-      @conflict.general = general
-      @conflict.ping
-      @conflict.modified_at = Time.now
-      @conflict.commented = false;
-
-      begin
-        if @conflict.save :validate=>false
-          flash[:notice] = 'Conflict was successfully created.'
-          if ['admin','editor'].include?(current_account.role)
-            $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
-          end
-
-          if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
-            if ['admin','editor'].include?(current_account.role)
-              Admin.notify_collaborator @conflict
-            elsif ["queued","modified"].include?(@conflict.approval_status)
-              Admin.notify_moderator @conflict
-            end
-          end
-          #redirect "/conflicts/edit/#{@conflict.id}#{hash}"
-          response = {:status=>"success"}
-        end
-      rescue => e
-        puts e.backtrace
-        return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[e.message]}.to_json]]
+      else
+        return {:status=>"error",:errors=>["Conflict could not be saved."]}.to_json 
       end
     else
-      #render 'conflicts/edit'
-      response = {:status=>"error",:errors=>["Conflict could not be saved."]}
+      unless updated['conflict'].has_key?("approval_status")
+        File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
+          file << "ERR,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
+        end
+        return {:status=>"error",:errors=>["Request was not completed, omitting save.<br/><br/>Please try again."]}.to_json 
+      end
+
+      if @conflict.save :validate=>false
+        File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
+          file << "UPD,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
+        end
+        multies = {
+          'company'=>{:attr=>@conflict.companies,:class=>Company,:join=>@conflict.c_companies},
+          'supporter'=>{:attr=>@conflict.supporters,:class=>Supporter,:join=>@conflict.supporters},
+          'mobilizing_group'=>{:attr=>@conflict.mobilizing_groups,:class=>MobilizingGroup,:join=>@conflict.c_mobilizing_groups},
+          'mobilizing_form'=>{:attr=>@conflict.mobilizing_forms,:class=>MobilizingForm,:join=>@conflict.c_mobilizing_forms},
+          'conflict_event'=>{:attr=>@conflict.conflict_events,:class=>ConflictEvent,:join=>@conflict.c_conflict_events},
+          'product'=>{:attr=>@conflict.products,:class=>Product,:join=>@conflict.c_products},
+          'type'=>{:attr=>@conflict.types,:class=>Type,:join=>@conflict.c_types},
+          'env_radio'=>{:attr=>@conflict.env_impacts,:class=>EnvImpact,:join=>@conflict.c_env_impacts},
+          'hlt_radio'=>{:attr=>@conflict.hlt_impacts,:class=>HltImpact,:join=>@conflict.c_hlt_impacts},
+          'sec_radio'=>{:attr=>@conflict.sec_impacts,:class=>SecImpact,:join=>@conflict.c_sec_impacts},
+          'reference'=>{:attr=>@conflict.references,:class=>Reference},
+          'legislation'=>{:attr=>@conflict.legislations,:class=>Legislation},
+          'weblink'=>{:attr=>@conflict.weblinks,:class=>Weblink},
+          'medialink'=>{:attr=>@conflict.medialinks,:class=>Medialink},
+          'document'=>{:attr=>@conflict.documents,:class=>Document},
+          'image'=>{:attr=>@conflict.images,:class=>Image},
+        }
+        multies.each do |k,v|
+          #v[:join].clear if v[:join]
+        end
+        updated['multies'].each do |k,v|
+          new = v
+          old = multies[k][:attr].map(&:id)
+          (old-new).each do |l|
+            multies[k][:attr].delete(multies[k][:class].find(l))
+          end
+          (new-old).each do |l|
+            begin
+              multies[k][:attr] << multies[k][:class].find(l)
+            rescue
+              #puts "no #{k} found with id #{l}"
+            end
+          end
+        end
+        updated['impacts'].each do |k,v|
+          new = v['g'] + v['p']
+          old = multies[k][:attr].map(&:id)
+          (old-new).each do |l|
+            multies[k][:attr].delete(multies[k][:class].find(l))
+          end
+          (new-old).each do |l|
+            begin
+              multies[k][:attr] << multies[k][:class].find(l)
+            rescue
+              #puts "no #{k} found with id #{l}"
+            end
+          end
+          v['g'].each do |l|
+            imp = multies[k][:join].where("#{k.sub('radio','impact')}_id = ?", l).first
+            imp.visible = true
+            imp.save
+          end
+          v['p'].each do |l|
+            imp = multies[k][:join].where("#{k.sub('radio','impact')}_id = ?", l).first
+            imp.visible = false
+            imp.save
+          end
+        end
+        updated['refs'].each do |k,v|
+          if k == "related"
+            v.each do |l,w|
+              rel = ConflictRelation.both(@conflict.id,l.to_i)
+              if w['remove'] and rel
+                rel.destroy
+                next 
+              elsif w['add'] and !rel
+                @conflict.related_to << Conflict.find(l.to_i)
+              end
+            end
+          else
+            v.each do |l,w|
+              ##puts "#{k}: #{l},#{w}"
+              ref = multies[k][:class].where(:id=>l)
+              if ref.any?
+                ref = ref[0]
+              else
+                if l
+                  puts "Could not find #{k} with id #{l}!".red
+                else
+                  puts "Could not find #{k} without an id!".red
+                end
+                next
+              end
+              if w['remove']
+                multies[k][:attr].delete ref
+                ref.save
+                next 
+              end
+              ref.name = w['name'] if w['name']
+              ref.title = w['title'] if w['title']
+              ref.description = w['description'] if w['description']
+              ref.country_id = w['country'] if w['country']
+              ref.url = w['url'] if w['url']
+              #ref.conflict = @conflict
+              begin
+                multies[k][:attr] << ref
+              rescue
+                #puts "#{k} been taken!"
+              end
+              ref.save
+            end
+          end
+        end
+
+        general = false
+        updated['conflict'].each do |k,v|
+          if k == 'name' and v.match(/"/)
+            quotes = ["“","","”"]
+            fi = -1
+            while v.match(/"/)
+              v = v.sub(/"/,quotes[fi+1])
+              fi *= -1
+            end
+          elsif k == "general" and v == "on"
+            general = true
+            next
+          end
+          if @conflict.attributes.has_key?(k) or @conflict.attributes.has_key?("#{k}_id") or k.match(/_id$/)
+            unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
+              begin
+                @conflict.update_attribute k, v 
+              rescue => e
+                p e.methods
+                return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
+              end
+            end
+          else
+            #puts k.to_s.magenta
+            ct = @conflict.local_data
+            ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale) unless ct
+            unless ct.attributes[k] == v
+              begin
+                ct.update_attribute k, v 
+              rescue => e
+                puts e
+                puts e.backtrace
+                return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
+              end
+            end
+          end
+        end
+
+        # puts "general: #{general}"
+        if general
+          capital = Country.find(updated['conflict']['country_id']).capital.gsub(',','.').split('|')
+          @conflict.lat = capital[1]
+          @conflict.lon = capital[2]
+        end
+
+        @conflict.general = general
+        @conflict.ping
+        @conflict.modified_at = Time.now
+        @conflict.commented = false;
+
+        begin
+          if @conflict.save :validate=>false
+            flash[:notice] = 'Conflict was successfully created.'
+            if ['admin','editor'].include?(current_account.role)
+              $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+            end
+
+            if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
+              if ['admin','editor'].include?(current_account.role)
+                Admin.notify_collaborator @conflict
+              elsif ["queued","modified"].include?(@conflict.approval_status)
+                Admin.notify_moderator @conflict
+              end
+            end
+            #redirect "/conflicts/edit/#{@conflict.id}#{hash}"
+            response = {:status=>"success"}
+          end
+        rescue => e
+          puts e.backtrace
+          return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[e.message]}.to_json]]
+        end
+      else
+        #render 'conflicts/edit'
+        response = {:status=>"error",:errors=>["Conflict could not be saved."]}
+      end
+      response.to_json
     end
-    response.to_json
   end
 
   get :approve, :with => :id do
