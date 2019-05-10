@@ -706,9 +706,9 @@ class AsyncTask
 
     if params["ifis"] == "on" or params["reindex"] == "on"
       supporters = []
-      puts "Updating IFI's...".green
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.supporters : nil}.flatten.uniq - [nil])
       total = cos.length
+      puts "Updating IFI's...".green if total > 0
       t0 = Time.now
       cos.each_with_index do |c,counter|
         lc = c.local_conflicts_count(locale)
@@ -744,8 +744,8 @@ class AsyncTask
 
     if params["categories"] == "on"
       types = []
-      puts "Updating categories...".green
       total = Type.count
+      puts "Updating categories...".green if total > 0
       Type.all.each_with_index do |t,counter|
         next if t.name == "Other"
         ty = CType.where(:type_id=>t.id).map(&:conflict_id) - [nil]
@@ -765,9 +765,10 @@ class AsyncTask
 
     if params["featureds"] == "on"
       featureds = []
-      puts "Updating featureds...".green
       fids = Featured.all.map &:id
-      ConflictText.where(:locale=>locale).where('features is not null').each do |ct|
+      cs = ConflictText.where(:locale=>locale).where('features is not null')
+      puts "Updating featureds...".green if cs.any?
+      cs.each do |ct|
         c = ct.conflict
         f = JSON.parse(c.features)
         f.each do |k,v|
@@ -841,16 +842,17 @@ class AsyncTask
     end
 
     if params["filter"] == "on" or params["reindex"] == "on"
-      puts "Updating filter...".green
       total = Tag.count
+      puts "Updating tags...".green if total > 0
       t0 = Time.now
       Tag.all.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per tag)"
       end
+      puts if total > 0
       cs = ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict : nil} - [nil]
-
+      puts "Updating filter...".green if cs.any?
       accs = (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq - [nil]
       total = accs.length
       t0 = Time.now
@@ -859,8 +861,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per account)"
       end
-      puts
-      puts
+      puts if cs.any?
 
       filterdata = {}
 
