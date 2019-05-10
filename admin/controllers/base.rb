@@ -209,7 +209,7 @@ Admin.controller do
     ca = Cached.where(:locale=>I18n.locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    @markercount = Conflict.where(approval_status: 'approved').count
+    @markercount = JSON.parse(ca.conflicts_marker).length
     @markerinfo = ca.conflicts_marker
     @filterinfo = ca.conflicts_json
     info = eval("JSON.parse(ca.#{browseinfo[params[:model]]})")

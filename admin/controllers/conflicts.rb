@@ -489,6 +489,7 @@ Admin.controllers :conflicts do
         updated['refs'].each do |k,v|
           v.each do |l,w|
             #puts "#{k}: #{l},#{w}".green
+            next unless multies.has_key?(k)
             ref = multies[k][:class].where(:id=>l)
             if ref.any?
               ref = ref[0]

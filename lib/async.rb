@@ -22,7 +22,7 @@ class AsyncTask
       nfields = 0
       line = []
       #puts "#{conf.id} #{conf.name}"
-      print "\r #{(index/stack.length.to_f*100).to_i}% done."
+      print "\r  #{(index/stack.length.to_f*100).to_i}% done."
       conf.attributes.each do |k,v|
         next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
         if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
@@ -285,7 +285,7 @@ class AsyncTask
       nfields = 0
       line = []
       #puts "#{conf.id} #{conf.name}"
-      print "\r #{(index/stack.length.to_f*100).to_i}% done."
+      print "\r  #{(index/stack.length.to_f*100).to_i}% done."
       conf.attributes.each do |k,v|
         next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
         if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
@@ -513,7 +513,7 @@ class AsyncTask
     CSV.open(path,"w") do |csv|
       csv << ["company_name", "acronym", "country_of_origin", "conflict_name", "conflict_link", "description","environmental_impacts","health_impacts","socioeconomical_impacts"]
       Company.order(:name).includes(:conflicts).each_with_index do |c,i|
-        print "\r#{i} / #{Company.count}"
+        print "\r  #{i} / #{Company.count}"
         c.conflicts.where(approval_status: 'approved').each do |cc|
           row = [c.name, c.acronym, (c.country ? c.country.name : ""), cc.name,"https://ejatlas.org/conflict/#{cc.slug}"]
           if cc.headline and cc.headline.length > 12
@@ -614,14 +614,12 @@ class AsyncTask
   def setcache params
     t00 = Time.now
     locale = params.delete("locale")
-    puts
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
-    puts
     ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
     client = Elasticsearch::Client.new log: false
 
     if params["reindex"] == "on"
-      puts "Removing old indices".red
+      puts "Removing old indices...".red
       `curl -XDELETE localhost:9200/atlas_#{locale} 2> /dev/null`
       `curl -XPUT localhost:9200/atlas_#{locale} 2> /dev/null`
       `curl -XPUT localhost:9200/atlas_#{locale} -d '#{File.read("#{Dir.pwd}/lib/mapping.json").gsub(/\s*/,"")}' 2> /dev/null`
@@ -630,11 +628,11 @@ class AsyncTask
 
     if params["conflicts"] == "on" or params["reindex"] == "on"
       markers = []
-      puts "Updating conflicts...".green
       Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
       FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
       Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
       total = ConflictText.where(:locale=>locale).count
+      puts "Updating conflicts...".green if total > 0
       if total > 0
         counter = 0
         t0 = Time.now
@@ -655,11 +653,10 @@ class AsyncTask
             client.index index: "atlas_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
             times[:index] += Time.now - tc
             markers << c.as_marker if c.approval_status == "approved"
-            print "\r #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per case)"
+            print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per case)"
           end
-          #break unless ["RACK_ENV"] == "production"
         end
-        puts
+        puts if total > 0
         ca.conflicts_marker = markers.to_json
         File.open("#{PADRINO_ROOT}/public/data/markers-#{locale}.json","w") {|f| f << markers.to_json }
       end
@@ -668,17 +665,17 @@ class AsyncTask
 
     if params["countries"] == "on" or params["reindex"] == "on"
       countries = []
-      puts "Updating countries...".green
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.country : nil}.flatten.uniq - [nil])
       total = cos.length
+      puts "Updating countries...".green if total > 0
       t0 = Time.now
       cos.each_with_index do |c,counter|
         lc = c.local_conflicts_count(locale)
+        next if lc == 0
         countries << [c.jsonize(locale),lc] if lc >= 1
         c.save
-        #client.index index: "atlas_#{locale}", type: 'country', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
-        print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per country)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per country)"
       end
       puts if cos.length > 0
       countries.sort_by! {|c| c[1]}
@@ -688,18 +685,18 @@ class AsyncTask
 
     if params["companies"] == "on" or params["reindex"] == "on"
       companies = []
-      puts "Updating companies...".green
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.companies : nil}.flatten.uniq - [nil])
       total = cos.length
+      puts "Updating companies...".green if total > 0
       t0 = Time.now
       cos.each_with_index do |c,counter|
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
+        next if lc == 0
         companies << [c.jsonize,lc] if lc >= 1
         c.save
-        #client.index index: "atlas_#{locale}", type: 'company', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
-        print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per company)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per company)"
       end
       puts if cos.length > 0
       companies.sort_by! {|c| c[1]}
@@ -717,9 +714,8 @@ class AsyncTask
         lc = c.local_conflicts_count(locale)
         supporters << [c.jsonize,lc] if lc >= 1
         c.save
-        #client.index index: "atlas_#{locale}", type: 'financial_institution', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
-        print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
       end
       puts if cos.length > 0
       supporters.sort_by! {|c| c[1]}
@@ -729,13 +725,16 @@ class AsyncTask
 
     if params["commodities"] == "on"
       commodities = []
-      puts "Updating commodities...".green
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.products : nil}.flatten.uniq - [nil])
       total = cos.length
+      puts "Updating commodities...".green if total > 0
+      t0 = Time.now
       cos.each_with_index do |c,counter|
-        commodities << [c.jsonize(locale),c.conflicts.where(approval_status: 'approved').count] if c.conflicts.where(approval_status: 'approved').count >= 1 and c.name != "Other"
+        lc = c.local_conflicts_count(locale)
+        next if lc == 0
+        commodities << [c.jsonize(locale),lc] if lc >= 1 and c.name != "Other"
         c.save
-        print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per commodity)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per commodity)"
       end
       puts if cos.length > 0
       commodities.sort_by! {|c| c[1]}
@@ -751,11 +750,12 @@ class AsyncTask
         next if t.name == "Other"
         ty = CType.where(:type_id=>t.id).map(&:conflict_id) - [nil]
         cs = ConflictText.where(:conflict_id=>ty.uniq,:locale=>locale, :approval_status=>"approved")
+        next if cs.length == 0
         if cs.length >= 1
           types << [t.jsonize(locale),cs.count]
         end
         t.save
-        print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per category)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per category)"
       end
       puts if cos.length > 0
       types.sort_by! {|c| c[1]}
@@ -786,7 +786,7 @@ class AsyncTask
       ca.featureds = featureds.to_json
       if false
         Featured.all.each_with_index do |featured, index|
-          print "\r#{index+1} / #{Featured.count}"
+          print "\r  #{index+1} / #{Featured.count}"
           features = JSON.parse(featured.features || '{}')
           begin
             filter = "{}"
@@ -847,7 +847,7 @@ class AsyncTask
       Tag.all.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
-        print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per tag)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per tag)"
       end
       cs = ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict : nil} - [nil]
 
@@ -857,7 +857,7 @@ class AsyncTask
       accs.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
-        print "\r #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per account)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per account)"
       end
       puts
       puts
@@ -918,7 +918,8 @@ class AsyncTask
 
     ca.save
     dur = Time.now - t00
-    puts "Cache updated in #{"#{(dur/60.0).floor}m #{(dur % 60).to_i}s".magenta}"
+    puts "Cache updated #{"in #{(dur/60.0).floor}m #{(dur % 60).to_i}s".magenta}"
+    puts
     GC.start
 
   end
