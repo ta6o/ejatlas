@@ -656,7 +656,7 @@ class AsyncTask
             print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
           end
         end
-        print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+        print "#{(Time.now-t0).to_i}s".yellow if total > 0
         puts if total > 0
         ca.conflicts_marker = markers.to_json
         File.open("#{PADRINO_ROOT}/public/data/markers-#{locale}.json","w") {|f| f << markers.to_json }
@@ -762,8 +762,8 @@ class AsyncTask
         t.save
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per category)      "
       end
-      print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
-      puts if cos.length > 0
+      print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      puts if total > 0
       types.sort_by! {|c| c[1]}
       types.reverse!
       ca.types = types.to_json
@@ -773,8 +773,10 @@ class AsyncTask
       featureds = []
       fids = Featured.all.map &:id
       cs = ConflictText.where(:locale=>locale).where('features is not null')
-      puts "Updating featureds...".green if cs.any?
-      cs.each do |ct|
+      total = cs.length
+      puts "Updating featured data...".green if cs.any?
+      t0 = Time.now
+      cs.each_with_index do |ct,counter|
         c = ct.conflict
         f = JSON.parse(c.features)
         f.each do |k,v|
@@ -789,7 +791,10 @@ class AsyncTask
         end
         c.set_local_text "features", f.to_json, locale
         c.save
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
       end
+      print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      puts if total > 0
       ca.featureds = featureds.to_json
       if false
         Featured.all.each_with_index do |featured, index|
@@ -805,8 +810,6 @@ class AsyncTask
           end
         end
       end
-      print "\r                                          "
-      puts
     end
 
     if params["images"] == "on"
@@ -856,7 +859,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per tag)      "
       end
-      print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      print "#{(Time.now-t0).to_i}s".yellow if total > 0
       puts if total > 0
       cs = ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict : nil} - [nil]
       puts "Updating accounts...".green if cs.any?
@@ -868,7 +871,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per account)      "
       end
-      print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      print "#{(Time.now-t0).to_i}s".yellow if cs.any?
       puts if cs.any?
 
       filterdata = {}
