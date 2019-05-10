@@ -653,7 +653,7 @@ class AsyncTask
             client.index index: "atlas_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
             times[:index] += Time.now - tc
             markers << c.as_marker if c.approval_status == "approved"
-            print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per case)"
+            print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per case)      "
           end
         end
         puts if total > 0
@@ -675,7 +675,7 @@ class AsyncTask
         countries << [c.jsonize(locale),lc] if lc >= 1
         c.save
         client.index index: "atlas", type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per country)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per country)      "
       end
       puts if cos.length > 0
       countries.sort_by! {|c| c[1]}
@@ -696,7 +696,7 @@ class AsyncTask
         companies << [c.jsonize,lc] if lc >= 1
         c.save
         client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per company)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per company)      "
       end
       puts if cos.length > 0
       companies.sort_by! {|c| c[1]}
@@ -715,7 +715,7 @@ class AsyncTask
         supporters << [c.jsonize,lc] if lc >= 1
         c.save
         client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per IFI)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per IFI)      "
       end
       puts if cos.length > 0
       supporters.sort_by! {|c| c[1]}
@@ -734,7 +734,7 @@ class AsyncTask
         next if lc == 0
         commodities << [c.jsonize(locale),lc] if lc >= 1 and c.name != "Other"
         c.save
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per commodity)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per commodity)      "
       end
       puts if cos.length > 0
       commodities.sort_by! {|c| c[1]}
@@ -755,7 +755,7 @@ class AsyncTask
           types << [t.jsonize(locale),cs.count]
         end
         t.save
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per category)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per category)      "
       end
       puts if cos.length > 0
       types.sort_by! {|c| c[1]}
@@ -787,7 +787,7 @@ class AsyncTask
       ca.featureds = featureds.to_json
       if false
         Featured.all.each_with_index do |featured, index|
-          print "\r  #{index+1} / #{Featured.count}"
+          print "\r  #{index+1} / #{Featured.count}      "
           features = JSON.parse(featured.features || '{}')
           begin
             filter = "{}"
@@ -799,7 +799,7 @@ class AsyncTask
           end
         end
       end
-      print "\r                                    "
+      print "\r                                          "
       puts
     end
 
@@ -848,18 +848,18 @@ class AsyncTask
       Tag.all.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per tag)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per tag)      "
       end
       puts if total > 0
       cs = ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict : nil} - [nil]
-      puts "Updating filter...".green if cs.any?
+      puts "Updating accounts...".green if cs.any?
       accs = (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq - [nil]
       total = accs.length
       t0 = Time.now
       accs.each_with_index do |c,counter|
         #client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per account)"
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.yellow}/#{total.to_s.yellow}, #{((Time.now-t0)/counter).round(3)}s per account)      "
       end
       puts if cs.any?
 
