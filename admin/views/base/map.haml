@@ -132,7 +132,6 @@
     .title= t "v.index.browse_maps"
     .content{:style=>'display:none;'}
       -@browseinfo.each do |k,v|
-        -puts "#{k.red}: #{v}"
         .horipane.browse
           .title{:style=>'background:transparent'}= t "v.index.by_#{k.slug}"
           .content{:style=>'display:none;'}
