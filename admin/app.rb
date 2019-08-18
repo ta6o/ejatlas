@@ -1,6 +1,7 @@
 # coding: utf-8
 
 class Admin < Padrino::Application
+
   #use ActiveRecord::ConnectionAdapters::ConnectionManagement
   #use ConnectionPoolManagement
   #register Padrino::Rendering
