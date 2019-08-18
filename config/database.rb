@@ -20,7 +20,7 @@ ActiveRecord::Base.configurations = {
   :development => {
     :adapter  => 'postgresql',
     :encoding => 'utf8',
-    :database => 'ejatlas_staging',
+    :database => 'ejatlas',
     :username => 'yakup',
     :password => '***REMOVED***',
     :host     => '127.0.0.1'
@@ -32,7 +32,7 @@ ActiveRecord::Base.configurations = {
     username:     'root',
     port:         '5432',
     password:     '***REMOVED***',
-    database:     'ejatlas_staging',
+    database:     'ejatlas',
     encoding:     'utf8',
     pool:         ENV['DB_POOL'] || 6,
     connections:  ENV['DB_CONNECTIONS'] || 20,
