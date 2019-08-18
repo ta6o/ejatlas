@@ -16,28 +16,29 @@
 
 $gc_api_key = "***REMOVED***"
 
-ActiveRecord::Base.configurations[:development] = {
-  :adapter  => 'postgresql',
-  :encoding => 'utf8',
-  :database => 'ejatlas_staging',
-  :username => 'yakup',
-  :password => '***REMOVED***',
-  :host     => '127.0.0.1'
-}
+ActiveRecord::Base.configurations = {
+  :development => {
+    :adapter  => 'postgresql',
+    :encoding => 'utf8',
+    :database => 'ejatlas_staging',
+    :username => 'yakup',
+    :password => '***REMOVED***',
+    :host     => '127.0.0.1'
+  },
 
-ActiveRecord::Base.configurations[:production] = {
-  adapter:      'postgresql',
-  host:         '127.0.0.1',
-  username:     'root',
-  port:         '5432',
-  password:     '***REMOVED***',
-  database:     'ejatlas_staging',
-  encoding:     'utf8',
-  pool:         ENV['DB_POOL'] || 6,
-  connections:  ENV['DB_CONNECTIONS'] || 20,
-  reaping_frequency: ENV['DB_REAP_FREQ'] || 10
+  :production => {
+    adapter:      'postgresql',
+    host:         '127.0.0.1',
+    username:     'root',
+    port:         '5432',
+    password:     '***REMOVED***',
+    database:     'ejatlas_staging',
+    encoding:     'utf8',
+    pool:         ENV['DB_POOL'] || 6,
+    connections:  ENV['DB_CONNECTIONS'] || 20,
+    reaping_frequency: ENV['DB_REAP_FREQ'] || 10
+  }
 }
-
 
 # Setup our logger
 ActiveRecord::Base.logger = logger
