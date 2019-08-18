@@ -616,7 +616,7 @@ def check_ar_conflicts
         ct.update_attribute header[i], val
       end
     else
-      puts "not found: #{ar[0]}"
+      puts "not found: #{ar[0]}".red
     end
   end
   puts " - #{(Time.now - t0).to_i}s".yellow
