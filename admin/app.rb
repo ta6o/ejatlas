@@ -9,6 +9,8 @@ class Admin < Padrino::Application
   register Padrino::Helpers
   register Padrino::Admin::AccessControl
 
+  ActiveSupport::Deprecation.silenced = true
+
   ##
   # Application configuration options
   #
@@ -41,9 +43,9 @@ class Admin < Padrino::Application
 
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
   if ENV["RACK_ENV"] == "production"
-    $siteurl = 'https://ejatlas.org'
+    $siteurl = 'https://ejatlas.yakup.work'
     $filedir = '/mnt/data/ejatlas-static'
-    $fileurl = 'https://file.ejatlas.org'
+    $fileurl = 'https://file.ejatlas.yakup.work'
   else
     $siteurl = 'http://localhost:3000'
     $filedir = "#{Dir.pwd}/../file"
