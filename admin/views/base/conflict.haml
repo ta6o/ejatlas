@@ -49,6 +49,9 @@
             %li
               %a{:href=>"/conflicts/edit/#{@id}",:target=>"_blank",:title=>"Edit"}
                 %span.glyphicon.glyphicon-edit
+        %span#modified{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+          =@modified.strftime("%d/%m/%Y")
+
 
     .clearfix#disclaimer
       %h2= @maptitle

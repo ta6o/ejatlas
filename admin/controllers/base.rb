@@ -158,6 +158,7 @@ Admin.controller do
     @slug = c.slug
     @desc = c.description
     @headline = c.headline
+    @modified = c.modified_at
     @title = c.title
     @ogimage = c.images.first.file.url if c.images.any?
     @cid = c.id 
