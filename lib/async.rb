@@ -591,9 +591,9 @@ class AsyncTask
   def backup params
     now = Time.now.strftime('%y%m%d%H%M')
     if ENV["RACK_ENV"] == "production"
-      `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://root:***REMOVED***@0.0.0.0:5432/ejatlas_staging > #{$filedir}/../backup/ej-#{now}.dump`
+      `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://root:***REMOVED***@0.0.0.0:5432/ejatlas > #{$filedir}/../backup/ej-#{now}.dump`
     else
-      `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://yakup:***REMOVED***@0.0.0.0:5432/ejatlas_staging > #{$filedir}/../backup/ej-#{now}.dump`
+      `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://yakup:***REMOVED***@0.0.0.0:5432/ejatlas > #{$filedir}/../backup/ej-#{now}.dump`
     end
     begin
       bak = Backup.new
