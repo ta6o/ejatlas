@@ -158,7 +158,7 @@ Admin.controller do
     @slug = c.slug
     @desc = c.description
     @headline = c.headline
-    @modified = c.modified_at ? c.modified_at : c.updated_at
+    @modified = c.modified_at ? c.modified_at.strftime("%d/%m/%Y") : "&nbsp;"
     @title = c.title
     @ogimage = c.images.first.file.url if c.images.any?
     @cid = c.id 
