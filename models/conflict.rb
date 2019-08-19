@@ -289,6 +289,7 @@ class Conflict < ActiveRecord::Base
       next if v.nil? or v == "" or ['marker','table','json','notes','start_date','end_date'].include? k
       result[k] = v
     end
+    result["id"] = self.id
     self.methods.grep(/^validate_associated_records_for_.*$/).each do |m| 
       a = m.to_s.split("validate_associated_records_for_")[1]
       next if a[0..1] == "c_" or ['legislations','weblinks','medialinks','references','documents','images'].include? a
