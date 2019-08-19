@@ -249,11 +249,11 @@ Admin.controllers :conflicts do
   get :approved do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflictos = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(",")).map{|x| x["_source"]}
+        @conflicts = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(",")).map{|x| x["_source"]}
         @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-        @conflictos.sort_by! {|c| ( c["modified_at"] || Time.now ) }
-        @conflictos.reverse!
+        @conflicts.sort_by! {|c| ( c["modified_at"] || Time.now ) }
+        @conflicts.reverse!
       else
         @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       end
