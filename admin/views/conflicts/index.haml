@@ -21,7 +21,7 @@
                 %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
 
         %tbody
-          -if @conflictos
+          -if @conflictos or true
             -@conflictos.each do |conflict|
               -if conflict["approval_status"] == 'approved'
                 %tr

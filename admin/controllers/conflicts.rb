@@ -255,7 +255,7 @@ Admin.controllers :conflicts do
         @conflictos.sort_by! {|c| ( c["modified_at"] || Time.now ) }
         @conflictos.reverse!
       else
-        @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       end
     end
     render 'conflicts/index'
@@ -264,9 +264,9 @@ Admin.controllers :conflicts do
   get :modified do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'modified').order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(approval_status: 'modified').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       else
-        @conflicts = Conflict.where(:approval_status => 'modified', :account_id => current_account.id).order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(:approval_status => 'modified', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       end
     end
     render 'conflicts/index'
@@ -275,9 +275,9 @@ Admin.controllers :conflicts do
   get :queued do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'queued').order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(approval_status: 'queued').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       else
-        @conflicts = Conflict.where(:approval_status => 'queued', :account_id => current_account.id).order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(:approval_status => 'queued', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       end
     end
     render 'conflicts/index'
@@ -286,9 +286,9 @@ Admin.controllers :conflicts do
   get :draft do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'draft').order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(approval_status: 'draft').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       else
-        @conflicts = Conflict.where(:approval_status => 'draft', :account_id => current_account.id).order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(:approval_status => 'draft', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       end
     end
     render 'conflicts/index'
@@ -297,9 +297,9 @@ Admin.controllers :conflicts do
   get :deleted do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'deleted').order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(approval_status: 'deleted').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       else
-        @conflicts = Conflict.where(:approval_status => 'deleted', :account_id=> current_account.id).order('modified_at desc')#.map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
+        @conflicts = Conflict.where(:approval_status => 'deleted', :account_id=> current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data.attributes.slice("name","slug"))}
       end
     end
     render 'conflicts/index'
