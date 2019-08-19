@@ -237,9 +237,9 @@ Admin.controllers :conflicts do
         @conflicts.sort_by! {|c| ( c["modified_at"] || Time.now ) }
         @conflicts.reverse!
       else
-        proper = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id)
-        other =  Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(id: current_account.conflict_accounts.map(&:conflict_id))
-        @conflicts = proper.or(other).order('modified_at desc')
+        proper = Conflict.where(account_id: current_account.id)
+        other =  Conflict.where(id: current_account.conflict_accounts.map(&:conflict_id))
+        @conflicts = proper.or(other).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
         #pp @conflicts.class
       end
     end
