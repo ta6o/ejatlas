@@ -231,11 +231,11 @@ Admin.controllers :conflicts do
   get :index do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflictos = Admin.filter("{\"must_not\":{\"term\":{\"approval_status\":\"deleted\"}}}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),false).map{|x| x["_source"]}
+        @conflicts = Admin.filter("{\"must_not\":{\"term\":{\"approval_status\":\"deleted\"}}}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),false).map{|x| x["_source"]}
         @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-        @conflictos.sort_by! {|c| ( c["modified_at"] || Time.now ) }
-        @conflictos.reverse!
+        @conflicts.sort_by! {|c| ( c["modified_at"] || Time.now ) }
+        @conflicts.reverse!
       else
         proper = Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(account_id: current_account.id)
         other =  Conflict.select('id,name,slug,account_id,approval_status,category_id,modified_at').where(id: current_account.conflict_accounts.map(&:conflict_id))
