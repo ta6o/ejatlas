@@ -6371,10 +6371,7 @@ ul.sidelink li.active {
   padding: 0 15px 0 36px;
 }
 .rightpane .inner .summary_header .commands {
-  margin: 8px 0 -36px;
-}
-.rightpane .inner .summary_header .commands #commands {
-  margin-bottom: -20px;
+  margin: 8px 0 -56px;
 }
 .rightpane .inner .summary_header .commands #commands ul li {
   padding-left: 12px;
