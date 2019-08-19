@@ -186,6 +186,14 @@
                 .tagline
                   %p= t "v.menu.environmental_justice_atlas"
                 .ejatlas-logo
+
+      #maintenance_alert{:style=>"position:fixed;top:0;right:0;background-color:#cc0000;color:#eee;font-weight:bold;padding:8px 12px 0; "}
+        %p
+          -puts request.path
+          Testing mode - please
+          %a{:href=>"mailto:yakup.cetinkaya@gmail.com?cc=ejoltmap@gmail.com&subject=Ejatlas testing report on #{request.path}",:style=>"color:#eee;text-decoration:underline;"} report
+          any weird behaviour to the moderator.
+
       %header
         .container
           =yield_content :outer

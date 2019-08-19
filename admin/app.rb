@@ -45,7 +45,7 @@ class Admin < Padrino::Application
   if ENV["RACK_ENV"] == "production"
     $siteurl = 'https://ejatlas.yakup.work'
     $filedir = '/mnt/data/ejatlas-static'
-    $fileurl = 'https://file.ejatlas.yakup.work'
+    $fileurl = 'http://file.ejatlas.yakup.work'
   else
     $siteurl = 'http://localhost:3000'
     $filedir = "#{Dir.pwd}/../file"
