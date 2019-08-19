@@ -35,7 +35,7 @@
                       %span= Account.find(conflict["account_id"]).name
                 %td
                   -if conflict["modified_at"]
-                    %span=Time.parse(conflict["modified_at"]).strftime '%Y-%m-%d'
+                    %span=Time.parse(conflict["modified_at"].to_s).strftime '%Y-%m-%d'
                   -else
                     %span &nbsp;
                 %td
@@ -60,7 +60,7 @@
                       %span= Account.find(conflict["account_id"]).name
                   %td
                     -if conflict["modified_at"]
-                      %span=Time.parse(conflict["modified_at"]).strftime '%Y-%m-%d'
+                      %span=Time.parse(conflict["modified_at".to_s]).strftime '%Y-%m-%d'
                     -else
                       %span &nbsp;
                   %td
