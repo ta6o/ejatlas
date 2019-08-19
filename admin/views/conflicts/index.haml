@@ -29,8 +29,10 @@
                   %span=@categories[conflict["category_id"]]
                 %td
                   %span
-                    -if conflict["account_id"]
+                    -if conflict["account_id"] and @accounts
                       %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
+                    -elsif conflict["account_id"] 
+                      %span= Account.find(conflict["account_id"]).name
                 %td
                   -if conflict["modified_at"]
                     %span=Time.parse(conflict["modified_at"]).strftime '%Y-%m-%d'
@@ -52,8 +54,10 @@
                   %td
                     %span=@categories[conflict["category_id"]] if conflict["category_id"]
                   %td
-                    -if conflict["account_id"]
+                    -if conflict["account_id"] and @accounts
                       %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
+                    -elsif conflict["account_id"] 
+                      %span= Account.find(conflict["account_id"]).name
                   %td
                     -if conflict["modified_at"]
                       %span=Time.parse(conflict["modified_at"]).strftime '%Y-%m-%d'
