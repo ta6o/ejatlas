@@ -74,7 +74,7 @@
             -@conflicts.each do |conflict|
               -if conflict.approval_status == 'approved'
                 %tr
-                  %td.first=conflict.name
+                  %td.first=conflict.local_data.name
                   %td
                     %span=conflict.category.name if conflict.category
                   %td
@@ -91,14 +91,14 @@
                   %td.last
                     =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
                     |
-                    =link_to pat('View'), url(:conflict, :slug => conflict.slug), :method => :get
+                    =link_to pat('View'), url(:conflict, :slug => conflict.local_data.slug), :method => :get
                     -if ["admin","editor"].include? current_account.role
                       %br/
                       =link_to pat('Disapprove'), url(:conflicts, :disapprove, :id => conflict.id), :method => :get
               -else
                 -unless current_account.nil?
                   %tr{:style=>'color:#bbb'}
-                    %td.first=conflict.name
+                    %td.first=conflict.local_data.name
                     %td
                       %span=conflict.category.name if conflict.category
                     %td
@@ -114,7 +114,7 @@
                     %td.last
                       =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict.id), :method => :get
                       |
-                      =link_to pat('View'), url(:conflict, :slug => conflict.slug), :method => :get
+                      =link_to pat('View'), url(:conflict, :slug => conflict.local_data.slug), :method => :get
                       -if ["admin","editor"].include? current_account.role
                         %br/
                         =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict.id), :method => :get
