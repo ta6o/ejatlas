@@ -18,22 +18,22 @@
 
 %ul#conflict-tabs.nav.nav-tabs{:style=>'margin-bottom:0'}
   %li.active
-    %a{:href=>'#basic'}=UnicodeUtils.upcase( t("f.conflict.basic_data"),I18n.locale).split(/\s+/)[0]
+    %a{:href=>'#basic'}=UnicodeUtils.upcase( t("f.conflict.basic_data"),I18n.locale)#.split(/\s+/)[0]
   -unless @conflict.new_record?
     %li
-      %a{:href=>'#source'}=UnicodeUtils.upcase( t("f.conflict.source_of_conflict"),I18n.locale).split(/\s+/)[0]
+      %a{:href=>'#source'}=UnicodeUtils.upcase( t("f.conflict.source_of_conflict"),I18n.locale)#.split(/\s+/)[0]
     %li
-      %a{:href=>'#project'}=UnicodeUtils.upcase( t("f.conflict.project_details"),I18n.locale).split(/\s+/)[0]
+      %a{:href=>'#project'}=UnicodeUtils.upcase( t("f.conflict.project_details"),I18n.locale)#.split(/\s+/)[0]
     %li
-      %a{:href=>'#conflict'}=UnicodeUtils.upcase( t("f.conflict.conflict_and_mobilization"),I18n.locale).split(/\s+/)[0]
+      %a{:href=>'#conflict'}=UnicodeUtils.upcase( t("f.conflict.conflict_and_mobilization"),I18n.locale)#.split(/\s+/)[0]
     %li
-      %a{:href=>'#impacts'}=UnicodeUtils.upcase( t("f.conflict.impacts_project"),I18n.locale).split(/\s+/)[0]
+      %a{:href=>'#impacts'}=UnicodeUtils.upcase( t("f.conflict.impacts_project"),I18n.locale)#.split(/\s+/)[0]
     %li
-      %a{:href=>'#outcome'}=UnicodeUtils.upcase( t("f.conflict.outcome"),I18n.locale).split(/\s+/)[0]
+      %a{:href=>'#outcome'}=UnicodeUtils.upcase( t("f.conflict.outcome"),I18n.locale)#.split(/\s+/)[0]
     %li
-      %a{:href=>'#materials'}=UnicodeUtils.upcase( t("f.conflict.sources_and_materials"),I18n.locale).split(/\s+/)[0]
+      %a{:href=>'#materials'}=UnicodeUtils.upcase( t("f.conflict.sources_and_materials"),I18n.locale)#.split(/\s+/)[0]
     %li
-      %a{:href=>'#meta'}=UnicodeUtils.upcase( t("f.conflict.meta_information"),I18n.locale).split(/\s+/)[0]
+      %a{:href=>'#meta'}=UnicodeUtils.upcase( t("f.conflict.meta_information"),I18n.locale)#.split(/\s+/)[0]
 
 
 .tab-content.whitebox
