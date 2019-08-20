@@ -50,7 +50,7 @@
               %a{:href=>"/conflicts/edit/#{@id}",:target=>"_blank",:title=>"Edit"}
                 %span.glyphicon.glyphicon-edit
         %span#modified{:style=>"font-weight:bold;color:#666;",:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
-          =@modified
+          =@modified.html_safe
 
 
     .clearfix#disclaimer
