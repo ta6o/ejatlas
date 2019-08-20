@@ -525,7 +525,7 @@
                     %span= rel.name
                     %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
                     &nbsp;
-                    %input{:type=>"hidden",:name=>"related_add_#{rel.id}"}
+                    %input{:type=>"hidden",:name=>"related_conflict_add_#{rel.id}"}
               :javascript
                 var relateds = #{@cjson.html_safe};
 
