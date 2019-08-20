@@ -958,7 +958,7 @@
                 %label=t("f.conflict.related_laws_legislations_juridical_texts")
                 %a#n_legislation.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_legislation'}=t("f.conflict.add")
             #current_legislations
-              -@conflict.legislations.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
+              -@conflict.legislations.where(:locale=>I18n.locale).order(:pid).each do |l|
                 .legislation
                   %br
                   %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
@@ -1010,7 +1010,7 @@
                 %label=t("f.conflict.links_to_general_newspaper_articles")
                 %a#n_weblink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_weblink'}=t("f.conflict.add")
             #current_weblinks
-              -@conflict.weblinks.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
+              -@conflict.weblinks.where(:locale=>I18n.locale).order(:pid).each do |l|
                 .weblink
                   %br
                   %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
@@ -1068,7 +1068,7 @@
                 %label=t("f.conflict.references_to_published_books_academic")
                 %a#n_reference.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_reference'}=t("f.conflict.add")
             #current_references
-              -@conflict.references.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
+              -@conflict.references.where(:locale=>I18n.locale).order(:pid).each do |l|
                 .reference
                   %br
                   %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
@@ -1121,7 +1121,7 @@
                   %label=t("f.conflict.related_media_links_to_videos")
                   %a#n_medialink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_medialink'}=t("f.conflict.add")
               #current_medialinks
-                -@conflict.medialinks.where(:locale=>@conflict.original_locale).order(:pid).each do |l|
+                -@conflict.medialinks.where(:locale=>I18n.locale).order(:pid).each do |l|
                   .medialink
                     %br
                     %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
@@ -1188,7 +1188,7 @@
                 -else
                   %a#n_document.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
             #current_documents
-              -@conflict.images.where(:locale=>@conflict.original_locale).order(:pid).each do |d|
+              -@conflict.images.where(:locale=>I18n.locale).order(:pid).each do |d|
                 .document
                   %br
                   %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
@@ -1229,7 +1229,7 @@
                           = d.description
                         %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= (@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].description : "")
 
-              -@conflict.documents.where(:locale=>@conflict.original_locale).order(:pid).each do |d|
+              -@conflict.documents.where(:locale=>I18n.locale).order(:pid).each do |d|
                 -next if d and d.copied?
                 .document
                   %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
