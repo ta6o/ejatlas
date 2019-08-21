@@ -733,10 +733,10 @@ class Conflict < ActiveRecord::Base
     self.set_local_text("name",val,locale.to_s)
   end
 
-  def slug locale=nil
+  def slug locale=I18n.locale
     self.get_local_text("slug",locale.to_s)
   end
-  def slug= val, locale=nil
+  def slug= val, locale=I18n.locale
     self.set_local_text("slug",val,locale.to_s)
   end
 
