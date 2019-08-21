@@ -158,7 +158,7 @@ Admin.controller do
     @slug = c.slug
     @desc = c.description
     @headline = c.headline
-    @modified = c.modified_at ? "#{I18n.t('f.conflict.last_update',:locale=>I18n.locale)}: #{I18n.l(c.modified_at)}" : "&nbsp;"
+    @modified = c.modified_at ? "#{I18n.t('f.conflict.last_update',:locale=>I18n.locale)}: #{I18n.l(c.modified_at.to_date)}".gsub(/\s+/,"&nbsp;") : "&nbsp;"
     @title = c.title
     @ogimage = c.images.first.file.url if c.images.any?
     @cid = c.id 
