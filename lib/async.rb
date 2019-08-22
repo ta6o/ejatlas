@@ -669,8 +669,8 @@ class AsyncTask
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.country : nil}.flatten.uniq - [nil])
       total = cos.length
       puts "Updating countries...".green if total > 0
-      t0 = Time.now
       cos.each_with_index do |c,counter|
+        t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
         next if lc == 0
         countries << [c.jsonize(locale),lc] if lc >= 1
@@ -690,7 +690,6 @@ class AsyncTask
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.companies : nil}.flatten.uniq - [nil])
       total = cos.length
       puts "Updating companies...".green if total > 0
-      t0 = Time.now
       cos.each_with_index do |c,counter|
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
@@ -712,8 +711,8 @@ class AsyncTask
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.supporters : nil}.flatten.uniq - [nil])
       total = cos.length
       puts "Updating IFI's...".green if total > 0
-      t0 = Time.now
       cos.each_with_index do |c,counter|
+        t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
         supporters << [c.jsonize,lc] if lc >= 1
         c.save
@@ -732,8 +731,8 @@ class AsyncTask
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.products : nil}.flatten.uniq - [nil])
       total = cos.length
       puts "Updating commodities...".green if total > 0
-      t0 = Time.now
       cos.each_with_index do |c,counter|
+        t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
         next if lc == 0
         commodities << [c.jsonize(locale),lc] if lc >= 1 and c.name != "Other"
@@ -752,6 +751,7 @@ class AsyncTask
       total = Type.count
       puts "Updating categories...".green if total > 0
       Type.all.each_with_index do |t,counter|
+        t0 = Time.now if counter == 0
         next if t.name == "Other"
         ty = CType.where(:type_id=>t.id).map(&:conflict_id) - [nil]
         cs = ConflictText.where(:conflict_id=>ty.uniq,:locale=>locale, :approval_status=>"approved")
@@ -775,8 +775,8 @@ class AsyncTask
       cs = ConflictText.where(:locale=>locale).where('features is not null')
       total = cs.length
       puts "Updating featured data...".green if cs.any?
-      t0 = Time.now
       cs.each_with_index do |ct,counter|
+        t0 = Time.now if counter == 0
         c = ct.conflict
         f = JSON.parse(c.features)
         f.each do |k,v|
@@ -825,7 +825,9 @@ class AsyncTask
       end
       puts "Found #{docs.length} images to update..."
       iids = []
-      docs.each do |d|
+      total = docs.length
+      docs.each_with_index do |d,counter|
+        t0 = Time.now if counter == 0
         doc = Document.find d
         next unless doc.conflict
         fns = []
@@ -841,12 +843,13 @@ class AsyncTask
         doc.conflict.images << img
         begin
           img.save!
-          puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
+          #puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
           doc.update_attribute :copied?, true
         rescue => e
-          puts "  problem saving image at: \n#{doc.file.url}\n"
-          p e
+          #puts "  problem saving image at: #{doc.file.url}\n"
+          #p e
         end
+        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per image)      "
       end
     end
 

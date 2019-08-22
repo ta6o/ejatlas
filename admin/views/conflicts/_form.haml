@@ -67,6 +67,11 @@
             .required=f.error_message_on :slug
             =f.text_field :slug, :class => 'text_field basic_input'
 
+        -else
+          .group
+            =f.text_field :slug, :class => 'text_field basic_input'
+            %input#conflict_name.text_field.basic_input{:type=>"hidden", :name=>"conflict[name]"}
+
         .group
           %label{:for=>"conflict_country_id"}= t("f.conflict.country")
           %span.required.large *
