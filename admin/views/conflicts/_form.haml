@@ -66,14 +66,6 @@
             %span.required.large *
             .required=f.error_message_on :slug
             =f.text_field :slug, :class => 'text_field basic_input'
-
-        -#elsif @translate_only
-          .group
-            %label{:for=>"conflict_slug"}= t("f.conflict.name_visible_on_address_bar")
-            %span.required.large *
-            .required=f.error_message_on :slug
-            =f.text_field :slug, :class => 'text_field basic_input'
-
         -else
           .group
             %input#conflict_slug.text_field.basic_input{:type=>"hidden", :name=>"conflict[slug]",:value=>@conflict.slug}
