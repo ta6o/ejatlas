@@ -69,7 +69,7 @@
 
         -else
           .group
-            %input#conflict_name.text_field.basic_input{:type=>"hidden", :name=>"conflict[name]"}
+            %input#conflict_name.text_field.basic_input{:type=>"hidden", :name=>"conflict[name]",:value=>@conflict.slug}
 
         .group
           %label{:for=>"conflict_country_id"}= t("f.conflict.country")
