@@ -857,7 +857,7 @@ Admin.controller do
   end
 
   get :not_authorized do
-    render 'base/not_authorized'
+    render 'base/not_authorized', :layout => :application
   end
 
   not_found do
