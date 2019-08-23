@@ -797,7 +797,7 @@
 
           .group
             %label{:for=>"conflict_suggested_alternatives"}= t("f.conflict.development_of_alternatives")
-            %p.description=t("f.conflict.what_are_proposals_being_brought")
+            %p.description=t("f.conflict.please_specify_what_are_proposals")
             ~f.text_area :suggested_alternatives, :class => :text_area, :rows=>9
             %br/
             %br/
@@ -1183,7 +1183,7 @@
           .group
             .row
               .col-md-12
-                %label=t("f.conflict.upload_picture_here_you_can")
+                %label=t("f.conflict.upload_picture_here_in_jpg")
                 -if @conflict.new_record?
                   %p &nbsp;
                   %p.description
