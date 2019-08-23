@@ -90,7 +90,7 @@
           %br/
           %input{:type=>"hidden", :name=>"account[roles][#{role.name}]", :value=>"off"}
           %input{:type=>"checkbox", :name=>"account[roles][#{role.name}]", :value=>"on", :checked => (@account.roles.include?(role))}= role.name.unslug(:up)
-    -elsif current_account.roles.any?
+    -elsif current_account and current_account.roles.any?
       .group
         -current_account.roles.each do |role|
           %p= role.name.unslug
