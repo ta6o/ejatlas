@@ -3,9 +3,9 @@
   .col-md-6.col-md-offset-2
     .hero-unit
       %h1.title Become a Collaborator
+    %p If you are interested in contributing to the EJAtlas data base by filling in missing cases or in any other way, please register here and fill in this form with all required information. This information will be kept strictly confidential and will not be made public or otherwise disclosed. It will be accessible only to the editors of the EJAtlas for ensuring transparency and for any clarification needed in the process of moderation.
 .row.wide
   .col-md-12
     .inner
-      %p If you are interested in contributing to the EJAtlas data base by filling in missing cases or in any other way, please register here and fill in this form with all required information. This information will be kept strictly confidential and will not be made public or otherwise disclosed. It will be accessible only to the editors of the EJAtlas for ensuring transparency and for any clarification needed in the process of moderation.
       =form_for :account, url(:accounts, :create), :class => :form do |f|
         =partial "accounts/form", :locals => { :f => f }

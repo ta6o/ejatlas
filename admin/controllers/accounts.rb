@@ -31,13 +31,12 @@ Admin.controllers :accounts do
     render 'accounts/pwdreset'
   end
 
-  post :resetpassword do
-    @email = params[:email]
-    acc = Account.find_by_email @email
-    if acc
-      Admin.password_reset acc
-    end
-    render 'accounts/resetsent'
+  post :approve do
+    "APPROVE"
+  end
+
+  post :disapprove do
+    "DISAPPROVE"
   end
 
   get :reset do
