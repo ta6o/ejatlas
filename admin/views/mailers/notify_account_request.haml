@@ -1,0 +1,39 @@
+-# coding: utf-8
+%html{:lang => I18n.locale.to_s, :dir=>I18n.locale.to_s == "ar" ? "rtl" : "ltr"}
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+    -if I18n.locale.to_s == "ar"
+      :css
+        p { 
+          direction: rtl; 
+          text-align: right;
+        }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        = I18n.t("emails.general.dear_editor")
+        %br/
+        %br/
+        = I18n.t("emails.notify_account_request.user_var_has_just_finished", account_name: @account.name)
+        %br/
+        %br/
+        -if @account.intention
+          = I18n.t("emails.notify_account_request.their_intention_to_collaborate_is")
+          %br/
+          %blockquote
+            %em= @account.intention.gsub(/\n/,'<br />')
+          %br/
+        -if @account.comments
+          = I18n.t("emails.notify_account_request.they_left_following_comments_as")
+          %br/
+          %blockquote
+            %em= @account.comments.gsub(/\n/,'<br />')
+          %br/
+        = "#{$goodies.sample},"
+        %br/
+        = "#{$namies.sample} the EJAtlas Bot"
+        %br/
+
