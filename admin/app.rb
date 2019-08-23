@@ -184,6 +184,12 @@ class Admin < Padrino::Application
     Admin.send_mail(a, I18n.t("emails.confirm.welcome_to_ejatlas"), html)
   end
 
+  def self.notify_account_request(a)
+    @account = a
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_account_request.haml").render(self)
+    Admin.send_mail(Account.find(1), I18n.t("emails.notify_account_request.new_message_from_var", account_name: @account.name), html)
+  end
+
   def self.notify_new_account(a)
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_new_account.haml").render(self)

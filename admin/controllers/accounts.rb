@@ -51,6 +51,7 @@ Admin.controllers :accounts do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     account = Account.find(params[:id])
     account.update_attribute(:approved, true)
+    Admin.new_account account unless account.confirmed
     redirect to '/accounts/'
   end
 
@@ -93,7 +94,7 @@ Admin.controllers :accounts do
     @account.role = "user"
     #puts @account.id
     if @account.save
-      Admin.new_account @account
+      Admin.notify_account_request @account
       redirect to "/mailsent"
     else
       render 'accounts/new'

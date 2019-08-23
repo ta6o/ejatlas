@@ -6,7 +6,10 @@
   .col-md-12
     .hero-unit
       %h1.title
-        =mt('User Profiles')
+        -if @requests
+          =mt('User requests')
+        -else
+          =mt('User profiles')
     .inner
       %table.table.tablesorter#sortme
         %thead

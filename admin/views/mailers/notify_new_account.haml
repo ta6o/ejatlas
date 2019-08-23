@@ -17,21 +17,8 @@
         = I18n.t("emails.general.dear_editor")
         %br/
         %br/
-        = I18n.t("emails.notify_new_account.user_var_has_just_finished", account_name: @account.name)
+        = I18n.t("emails.notify_new_account.user_var_has_just_confirmed", account_name: @account.name)
         %br/
-        %br/
-        -if @account.intention
-          = I18n.t("emails.notify_new_account.their_intention_to_collaborate_is")
-          %br/
-          %blockquote
-            %em= @account.intention.gsub(/\n/,'<br />')
-          %br/
-        -if @account.comments
-          = I18n.t("emails.notify_new_account.they_left_following_comments_as")
-          %br/
-          %blockquote
-            %em= @account.comments.gsub(/\n/,'<br />')
-          %br/
         = "#{$goodies.sample},"
         %br/
         = "#{$namies.sample} the EJAtlas Bot"
