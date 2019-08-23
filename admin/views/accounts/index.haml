@@ -46,8 +46,13 @@
               %td=account.email
               %td.last
                 =link_to pat(:edit), url(:accounts, :edit, :id => account.id), :method => :get, :class => 'button_to pull-right'
-                %br/
-                =link_to pat(:delete), url(:accounts, :destroy, :id => account.id), :method => :delete, :class => 'button_to pull-right', :onsubmit => "return confirm('#{pat(:confirm)}')"
+                &nbsp;
+                =link_to pat(:delete), url(:accounts, :destroy, :id => account.id), :method => :delete, :class => 'button_to pull-right', :onsubmit => "confirm('#{pat(:confirm)}')"
+                &nbsp;
+                -if @requests
+                  =link_to pat(:approve), url(:accounts, :approve, :id => account.id), :method => :post, :class => 'button_to pull-right', :onsubmit => "confirm('#{pat(:confirm)}')"
+                -else
+                  =link_to pat(:disapprove), url(:accounts, :disapprove, :id => account.id), :method => :post, :class => 'button_to pull-right', :onsubmit => "confirm('#{pat(:confirm)}')"
 
       :javascript
         $(document).ready(function(){

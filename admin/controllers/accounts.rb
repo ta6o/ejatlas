@@ -7,8 +7,17 @@ Admin.controllers :accounts do
   get :index do
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
-    @accounts = Account.order "name"
+    @accounts = Account.where(:confirmed => true).order "name"
     @accounts = @accounts.where("role not like 'admin'") if current_account.role == "editor"
+    render 'accounts/index'
+  end
+
+  get :requests do
+    redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account
+    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    @accounts = Account.where(:confirmed => nil).order "name"
+    @accounts = @accounts.where("role not like 'admin'") if current_account.role == "editor"
+    @requests = true
     render 'accounts/index'
   end
 

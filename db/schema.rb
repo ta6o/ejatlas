@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "role", limit: 255
     t.string "phone", limit: 20
     t.boolean "approved"
+    t.boolean "confirmed"
     t.boolean "public"
     t.text "intention"
     t.text "comments"
