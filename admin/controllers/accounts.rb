@@ -32,11 +32,19 @@ Admin.controllers :accounts do
   end
 
   get :approve, :with => :id do
-    "APPROVE: #{Account.find(params[:id].name)}"
+    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    @method = "post"
+    @action = "approve"
+    @account = Account.find(params[:id])
+    render '/accounts/confirm'
   end
 
   get :disapprove, :with => :id do
-    "DISAPPROVE: #{Account.find(params[:id].name)}"
+    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    @method = "post"
+    @action = "disapprove"
+    @account = Account.find(params[:id])
+    render '/accounts/confirm'
   end
 
   get :reset do
@@ -170,6 +178,14 @@ Admin.controllers :accounts do
   end
 
   get :destroy, :with => :id do
+    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    @method = "delete"
+    @action = "destroy"
+    @account = Account.find(params[:id])
+    render '/accounts/confirm'
+  end
+
+  delete :destroy, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     account = Account.find(params[:id])
     if account != current_account && account.destroy
