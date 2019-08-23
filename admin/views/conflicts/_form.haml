@@ -998,7 +998,7 @@
                     %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
                     %h3=t("f.conflict.related_web_link")
                   .modal-body
-                    %label=t("f.conflict.name_description_link")
+                    %label=t("f.conflict.name_description_link_please_include")
                     %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
                     %br/
                     %label=t("f.conflict.address")
@@ -1040,7 +1040,7 @@
               $(document).ready(function(){
                 handleModal('weblink');
               });
-            %hr/
+          %hr/
 
           .group
             %label{:for=>"conflict_other_comments"}= t("f.conflict.other_comments")
