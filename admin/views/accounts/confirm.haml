@@ -7,5 +7,6 @@
         %b= @action
         the collaborator <b>#{@account.name}</b>?
     %form{:method=>@method,:action=>"/accounts/#{@action}/#{@account.id}"}
-      %button.btn{:type=>:submit} CONFIRM
+      %a.btn.btn-info{:onclick=>"window.history.back()"} CANCEL
+      %a.btn.btn-danger{:type=>:submit} CONFIRM
 

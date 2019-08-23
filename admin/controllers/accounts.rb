@@ -51,14 +51,14 @@ Admin.controllers :accounts do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     account = Account.find(params[:id])
     account.update_attribute(:approved, true)
-    render '/accounts'
+    redirect to '/accounts/'
   end
 
   post :disapprove, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     account = Account.find(params[:id])
     account.update_attribute(:approved, nil)
-    render '/accounts/confirm'
+    redirect to '/accounts/requests'
   end
 
   get :reset do
@@ -191,7 +191,7 @@ Admin.controllers :accounts do
     end
   end
 
-  get :destroy, :with => :id do
+  get :delete, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     @method = "delete"
     @action = "destroy"
