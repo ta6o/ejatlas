@@ -1,0 +1,8 @@
+.row
+  .col-md-4.col-md-offset-4
+    Are you sure you want to 
+    %b= @action
+    the collaborator <b>#{@account.name}</b>?
+    %form{:method=>@method,:action=>"/accounts/#{@action}/#{@account.id}"}
+      %button.btn{:type=>:submit,:value=>"CONFIRM"}
+
