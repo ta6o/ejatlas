@@ -1,5 +1,5 @@
 -# coding: utf-8
--content_for :include do
+-content_for :body_end do
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';
@@ -15,6 +15,7 @@
     window.onload = onLoad;
     function onLoad() {
       $.each(#{@markerinfo.html_safe}, function(i,e){
+        e = JSON.parse(e);
         if (e.l.match(/#{I18n.locale}/)) {
           markerinfo.push(e)
         }
