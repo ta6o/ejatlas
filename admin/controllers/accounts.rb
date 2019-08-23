@@ -31,12 +31,12 @@ Admin.controllers :accounts do
     render 'accounts/pwdreset'
   end
 
-  post :approve do
-    "APPROVE"
+  get :approve, :with => :id do
+    "APPROVE: #{Account.find(params[:id].name)}"
   end
 
-  post :disapprove do
-    "DISAPPROVE"
+  get :disapprove, :with => :id do
+    "DISAPPROVE: #{Account.find(params[:id].name)}"
   end
 
   get :reset do
@@ -169,7 +169,7 @@ Admin.controllers :accounts do
     end
   end
 
-  delete :destroy, :with => :id do
+  get :destroy, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     account = Account.find(params[:id])
     if account != current_account && account.destroy
