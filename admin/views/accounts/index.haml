@@ -66,10 +66,10 @@
               %td=account.role
               %td=account.email
               %td.last
-                -if @requests and not account.approved
-                  %a.btn.pull-right{:href=>"/accounts/approve/#{account.id}"} Approve
-                -else
+                -if account.approved
                   %a.btn.pull-right{:href=>"/accounts/disapprove/#{account.id}"} Disapprove
+                -else
+                  %a.btn.pull-right{:href=>"/accounts/approve/#{account.id}"} Approve
                 %a.btn.pull-right{:href=>"/accounts/delete/#{account.id}"} Delete
                 %a.btn.pull-right{:href=>"/accounts/edit/#{account.id}"} Edit
 

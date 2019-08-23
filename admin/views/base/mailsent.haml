@@ -1,12 +1,16 @@
 -#coding: utf-8
--if @account
-  %h2= "Hello, #{@account.name.split(/\s/)[0]}!"
-  %p
-    We have sent you the email with the link to confirm your account. Please check your inbox.
--else
-  %h2 Thank you very much for your interest. 
-  %p 
-    We will look at your proposal and get back to you as soon as possible. Please apologize, but if no due information is provided in this form, we will not get in touch with you. Thank you for your understanding.
+.row.wide
+  .col-md-6.col-md-offset-2
+    -if @account
+      .hero-unit
+        %h2= "Hello, #{@account.name.split(/\s/)[0]}!"
+      %p
+        We have sent you the email with the link to confirm your account. Please check your inbox.
+    -else
+      .hero-unit
+        %h2 Thank you very much for your interest. 
+      %p 
+        We will look at your proposal and get back to you as soon as possible. Please apologize, but if no due information is provided in this form, we will not get in touch with you. Thank you for your understanding.
 
 -content_for :sidebar do
   =partial("base/sidebar")
