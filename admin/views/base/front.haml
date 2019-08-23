@@ -12,8 +12,7 @@
     :javascript
       vectorinfo = #{@vectors};
   :javascript
-    window.onload = onLoad;
-    function onLoad() {
+    $(document).ready(function(){
       $.each(#{@markerinfo.html_safe}, function(i,e){
         if (e.l.match(/#{I18n.locale}/)) {
           markerinfo.push(e)
@@ -27,7 +26,7 @@
       } else {
         setTimeout(onLoad,10);
       }
-    }
+    })
 
 .front
   %svg{:style=>'height:0'}
