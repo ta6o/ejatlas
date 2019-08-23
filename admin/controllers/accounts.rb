@@ -52,14 +52,14 @@ Admin.controllers :accounts do
     account = Account.find(params[:id])
     account.update_attribute(:approved, true)
     Admin.new_account account unless account.confirmed
-    redirect to '/accounts/'
+    redirect to '/accounts/requests'
   end
 
   post :disapprove, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     account = Account.find(params[:id])
     account.update_attribute(:approved, nil)
-    redirect to '/accounts/requests'
+    redirect to '/accounts/'
   end
 
   get :reset do
@@ -75,7 +75,7 @@ Admin.controllers :accounts do
   get :confirm do
     @account = Account.find params['id']
     if @account.surname == params['hash']
-      @account.approved = true
+      @account.confirmed = true
       @account.save
       set_current_account @account
       Admin.notify_new_account @account
@@ -134,6 +134,7 @@ Admin.controllers :accounts do
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
     if ["admin",'editor'].include? current_account.role or @account == current_account
       roles = params["account"].delete("roles")
+      roles ||= []
       if @account.update_attributes(params[:account])
         #puts @account.crypted_password
         roles.each do |name,val|
@@ -178,7 +179,7 @@ Admin.controllers :accounts do
   put :confirm, :with => :id do
     @account = Account.find(params[:id])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
-    @account.approved = true
+    @account.confirmed = true
     @account.role = "user"
     if ["admin",'editor'].include? current_account.role or @account == current_account
       if @account.update_attributes(params[:account])
