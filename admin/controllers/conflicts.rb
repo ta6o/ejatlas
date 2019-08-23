@@ -198,6 +198,7 @@ Admin.controllers :conflicts do
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
+    redirect to "/not_authorized" unless current_account.approved and current_account.confirmed
     @countries = Country.all.order(:slug).select("name","id")
     @categories = Category.all.order :id
     @alltypes = Type.where('category_id is not null').order('name asc')

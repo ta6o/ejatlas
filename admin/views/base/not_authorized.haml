@@ -1,0 +1,21 @@
+.row
+  .col-md-6.col-md-offset-3
+    .hero-unit
+      %h1.title No access
+      %p
+        You are currently not authorized to access this page.
+      %ul
+
+        -unless current_account.approved
+          %li 
+            You need
+            %b approval
+            from the moderators.
+
+        -unless current_account.confirmed
+          %li 
+            You need to
+            %b confirm your email
+            after approval.
+      %p
+        %a.btn{:href=>"/"} Go to the homepage

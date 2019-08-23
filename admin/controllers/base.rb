@@ -856,6 +856,10 @@ Admin.controller do
     return send_file( file )
   end
 
+  get :not_authorized do
+    render 'base/not_authorized'
+  end
+
   not_found do
     @name = "Page not found"
     render 'base/404'
