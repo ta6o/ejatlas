@@ -195,12 +195,12 @@ Admin.controllers :accounts do
   get :delete, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     @method = "delete"
-    @action = "destroy"
+    @action = "post"
     @account = Account.find(params[:id])
     render '/accounts/confirm'
   end
 
-  delete :destroy, :with => :id do
+  post :destroy, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     account = Account.find(params[:id])
     if account != current_account && account.destroy
