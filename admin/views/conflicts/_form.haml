@@ -1370,6 +1370,12 @@
                 %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
                 %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
 
+            -if ["admin","editor"].include? current_account.role
+              .group
+                %label{:for=>"conflict_modified_at"}= t("f.conflict.modified_at")
+                .required=f.error_message_on :modified_at
+                %input#modified_at{:type=>"text",:style=>"modified_at",:value=>@conflict.modified_at}
+                %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString())"}= t("f.conflict.update_modified_date")
           %br/
 
           -if @saves and @saves.length > 0
@@ -1481,11 +1487,6 @@
                 %p
                   By
                   %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
-            .group
-              %label{:for=>"conflict_modified_at"}= t("f.conflict.modified_at")
-              .required=f.error_message_on :modified_at
-              %input#modified_at{:type=>"text",:style=>"modified_at",:value=>@conflict.modified_at}
-              %a.btn{:onclick=>"$('#modified_at').val('xxx')"}
 
           .group
             %label{:for=>"conflict_contributor"}= t("f.conflict.contributor")
