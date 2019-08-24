@@ -433,6 +433,13 @@ Admin.controllers :conflicts do
   end
 =end
 
+  post :stamp, :with=>:id do
+    return "nack" unless ["admin","editor"].include?(current_account.role)
+    @conflict = Conflict.find(params[:id])
+    "nack"
+    return "ack" if @conflict and @conflict.update_attribute("modified_at",Time.now) 
+  end
+
   post :create do
     pass unless current_account
     #params.each {|kk,vv| #puts; #puts kk; if vv.is_a? Hash then vv.each {|k,v| #puts "#{k.to_s}: #{v.to_s}"} else #puts vv end }
@@ -686,7 +693,7 @@ Admin.controllers :conflicts do
 
         @conflict.general = general
         @conflict.ping
-        @conflict.modified_at = Time.now
+        #@conflict.modified_at = Time.now
         @conflict.commented = false;
 
         begin

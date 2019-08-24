@@ -1326,6 +1326,8 @@
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
             %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")}= t("f.conflict.save")
+            -if ["admin","editor"].include? current_account.role
+              %button#stamp{:class=>"btn btn-inverse pn "+(@example ? "disable" : ""), :onclick=>"stamp()"}= t("f.conflict.update_date")
             %br/
 
       .row
@@ -1785,6 +1787,17 @@
             }
           }
         })
+        function stamp() {
+          $.ajax({
+            url : "/conflicts/stamp/#{@conflict.id}",
+            type : "POST"
+            success: function(data){
+              if(data=="ack") {
+                alert("Modified date updated.")
+              }
+            }
+          })
+        }
       })
     })
         
