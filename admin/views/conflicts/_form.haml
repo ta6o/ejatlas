@@ -1327,7 +1327,7 @@
             %button.btn.pn.prev= t("f.conflict.previous")
             %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")}= t("f.conflict.save")
             -if ["admin","editor"].include? current_account.role
-              %button#stamp{:class=>"btn btn-inverse pn "+(@example ? "disable" : ""), :onclick=>"stamp()"}= t("f.conflict.update_date")
+              %button#stamp{:class=>"btn btn-inverse pn "+(@example ? "disable" : ""), :onclick=>"stamp()"}= t("f.conflict.update_modified_date")
             %br/
 
       .row
