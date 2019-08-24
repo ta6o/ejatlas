@@ -1793,17 +1793,6 @@
             }
           }
         })
-        function stamp() {
-          $.ajax({
-            url : "/conflicts/stamp/#{@conflict.id}",
-            type : "POST"
-            success: function(data){
-              if(data=="ack") {
-                alert("Modified date updated.")
-              }
-            }
-          })
-        }
       })
     })
         
