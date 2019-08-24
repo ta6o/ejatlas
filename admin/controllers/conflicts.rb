@@ -437,7 +437,10 @@ Admin.controllers :conflicts do
     return "nack" unless ["admin","editor"].include?(current_account.role)
     @conflict = Conflict.find(params[:id])
     "nack"
-    return "ack" if @conflict and @conflict.update_attribute("modified_at",Time.now) 
+    if @conflict and @conflict.update_attribute("modified_at",Time.now) 
+      $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+      return "ack" 
+    end
   end
 
   post :create do
