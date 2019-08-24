@@ -1375,7 +1375,7 @@
                 %label{:for=>"conflict_modified_at"}= t("f.conflict.modified_at")
                 .required=f.error_message_on :modified_at
                 %input#modified_at{:type=>"text",:style=>"modified_at",:value=>@conflict.modified_at}
-                %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').replace(/\.\w{4}$/,' UTC'))"}= t("f.conflict.update_modified_date")
+                %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').replace(/\.\d+Z$/,' UTC'))"}= t("f.conflict.update_modified_date")
           %br/
 
           -if @saves and @saves.length > 0
