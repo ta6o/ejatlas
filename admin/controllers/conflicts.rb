@@ -125,7 +125,7 @@ Admin.controllers :conflicts do
               id = rr[0].id
             else
               oloc = Conflict.find(params["id"]).original_locale
-              rr = Document.where(:attachable_type=>"Conflict", :attachable_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>oloc)[0]
+              rr = Document.where(:conflict_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>oloc)[0]
               rd = rr.dup
               rd.locale = I18n.locale
               rd.remote_file_url = rr.file_url

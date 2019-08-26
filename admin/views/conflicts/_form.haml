@@ -1246,18 +1246,18 @@
                         .row
                           .col-md-9
                             %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                            %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                            %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
                           .col-md-3
                             %a.d_document.pull-right.btn=t("f.conflict.remove")
-                        %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+                        %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
                   -else
                     .row{:style=>'margin-top:8px;'}
                       .col-md-10
                         %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                        %input{:type=>'text',:name=>'document_title_'+d.id.to_s,:value=>d.title}
+                        %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
                       .col-md-2
                         %a.d_document.pull-right.btn=t("f.conflict.remove")
-                    %textarea{:name=>'document_description_'+d.id.to_s,:style=>'width:98%'}= d.description
+                    %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
 
             :javascript
               var uploading = false;
