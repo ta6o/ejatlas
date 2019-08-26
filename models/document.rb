@@ -11,7 +11,7 @@ class Document < ActiveRecord::Base
   def set_defaults
     self.update_attribute :locale, I18n.locale unless self.locale
     if self.conflict and not self.pid
-      self.update_attribute :pid, ((self.conflict.legislations.order(:pid).map(&:pid)-[nil]).last || 0) + 1
+      self.update_attribute :pid, ((self.conflict.documents.order(:pid).map(&:pid)-[nil]).last || 0) + 1
     end
   end
 end
