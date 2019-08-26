@@ -195,6 +195,13 @@ Admin.controllers :conflicts do
     return res
   end
 
+  get :example do
+    @conflict = Conflict.new
+    @cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:name)
+    @example = true
+    render 'conflicts/example'
+  end
+
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
@@ -323,13 +330,6 @@ Admin.controllers :conflicts do
       @cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:name)
       render 'conflicts/new'
     end
-  end
-
-  get :example do
-    @conflict = Conflict.new
-    @cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:name)
-    @example = true
-    render 'conflicts/example'
   end
 
   get :edit, :with => :id do
