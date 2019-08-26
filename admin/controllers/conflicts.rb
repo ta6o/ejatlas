@@ -120,9 +120,9 @@ Admin.controllers :conflicts do
               id = rd.id
             end
           elsif kk[0] == "document"
-            rr = Document.where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>Conflict.find(params["id"]).original_locale)[0]
-            if rr
-              id = rr.id
+            rr = Document.where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>Conflict.find(params["id"]).original_locale)
+            if rr.any?
+              id = rr[0].id
             else
               oloc = Conflict.find(params["id"]).original_locale
               rr = Document.where(:conflict_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>oloc)[0]
