@@ -19,7 +19,7 @@
 %ul#conflict-tabs.nav.nav-tabs{:style=>'margin-bottom:0'}
   %li.active
     %a{:href=>'#basic'}=UnicodeUtils.upcase( t("f.conflict.basic_data"),I18n.locale)#.split(/\s+/)[0]
-  -unless @conflict.new_record?
+  -if @example or not @conflict.new_record? 
     %li
       %a{:href=>'#source'}=UnicodeUtils.upcase( t("f.conflict.source_of_conflict"),I18n.locale)#.split(/\s+/)[0]
     %li
