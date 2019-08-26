@@ -250,7 +250,8 @@
       if (typeof initMap === 'function' ) {
         initMap();
         $.ajax({
-          url: "#{$fileurl}/markers/markers-#{I18n.locale}.json",
+          //url: "#{$fileurl}/markers/markers-#{I18n.locale}.json",
+          url: "/data/markers-#{I18n.locale}.json",
           type: "GET",
           dataType: 'json',
           cache: true,
