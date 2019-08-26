@@ -823,7 +823,7 @@ class AsyncTask
           docs << doc.id
         end
       end
-      puts "Found #{docs.length} images to update..."
+      #puts "Found #{docs.length} images to update..."
       iids = []
       total = docs.length
       docs.each_with_index do |d,counter|
