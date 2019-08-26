@@ -1376,7 +1376,7 @@
               .group
                 %label{:for=>"conflict_modified_at"}= t("f.conflict.modified_at")
                 .required=f.error_message_on :modified_at
-                %input#modified_at{:type=>"text",:style=>"modified_at",:value=>@conflict.modified_at}
+                %input#modified_at{:name=>"conflict[modified_at]",:type=>"text",:value=>@conflict.modified_at}
                 %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').split('.')[0]+' UTC')"}= t("f.conflict.update_modified_date")
           %br/
 
