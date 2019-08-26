@@ -41,116 +41,116 @@
                   %li.home
                     %a{:href => "/"}= t "v.menu.home"
                   -if current_account
-                    -if ["admin","editor"].include? current_account.role
+                    -if ['admin','editor'].include? current_account.role
                       %li.dropdown#conflicts
-                        %a.dropdown-toggle{"data-toggle"=>"dropdown",:href=>"#conflicts"}
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#conflicts'}
                           = t "f.menu.conflicts"
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/new"}= t "f.menu.add_new"
+                            %a{:href=>'/conflicts/new'}= t "f.menu.add_new"
                           %li.divider
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/approved"}= t "f.conflict.approved"
+                            %a{:href=>'/conflicts/approved'}= t "f.conflict.approved"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/modified"}= t "f.conflict.modified"
+                            %a{:href=>'/conflicts/modified'}= t "f.conflict.modified"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/queued"}= t "f.conflict.queued"
+                            %a{:href=>'/conflicts/queued'}= t "f.conflict.queued"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/draft"}= t "f.conflict.draft"
+                            %a{:href=>'/conflicts/draft'}= t "f.conflict.draft"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/deleted"}= t "f.conflict.deleted"
+                            %a{:href=>'/conflicts/deleted'}= t "f.conflict.deleted"
                           %li.divider
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts"}= t "f.menu.all_cases"
+                            %a{:href=>'/conflicts'}= t "f.menu.all_cases"
 
                       %li.dropdown#editor
-                        %a.dropdown-toggle{"data-toggle"=>"dropdown",:href=>"#editor"}
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#editor'}
                           = t "f.menu.moderation"
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/cache"}= t "f.menu.update_cache"
+                            %a{:href=>'/cache'}= t "f.menu.update_cache"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/export"}= t "f.menu.export_cases"
+                            %a{:href=>'/export'}= t "f.menu.export_cases"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/jobs"}= t "f.menu.jobs"
+                            %a{:href=>'/jobs'}= t "f.menu.jobs"
 
                       %li.dropdown#models
-                        %a.dropdown-toggle{"data-toggle"=>"dropdown",:href=>"#models"}
-                          = t "f.menu.models"
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
+                          = t 'f.menu.models'
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/filters"}= t "f.menu.filters"
+                            %a{:href=>'/filters'}= t "f.menu.filters"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/featureds"}= t "f.menu.featured_maps"
+                            %a{:href=>'/featureds'}= t "f.menu.featured_maps"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/types"}= t "f.menu.categories"
+                            %a{:href=>'/types'}= t "f.menu.categories"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/countries"}= t "f.menu.countries"
+                            %a{:href=>'/countries'}= t "f.menu.countries"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/companies"}= t "f.menu.companies"
+                            %a{:href=>'/companies'}= t "f.menu.companies"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/ifis"}= t "f.menu.ifis"
+                            %a{:href=>'/ifis'}= t "f.menu.ifis"
                           %li.divider
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/accounts"}= t "f.menu.collaborators"
+                            %a{:href=>'/accounts'}= t "f.menu.collaborators"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/accounts/requests"}= t "f.menu.collaboration_requests"
+                            %a{:href=>'/accounts/requests'}= t "f.menu.collaboration_requests"
                           %li.divider
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/vectors"}= t "f.menu.vectors"
+                            %a{:href=>'/vectors'}= t "f.menu.vectors"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/vectors/styles"}= t "f.menu.vector_styles"
+                            %a{:href=>'/vectors/styles'}= t "f.menu.vector_styles"
 
                     -else
                       %li
-                        %a{:href=>"//#{I18n.locale}.#{$domain}/accounts/edit/#{current_account.id}"}= t "v.menu.my_profile"
+                        %a{:href=>"/accounts/edit/#{current_account.id}"}= t "v.menu.my_profile"
                       %li
-                        %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts"}= t "v.menu.my_conflicts"
+                        %a{:href=>'/conflicts'}= t "v.menu.my_conflicts"
                       %li
-                        %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/new"}= t "v.menu.new_conflict"
+                        %a{:href=>'/conflicts/new'}= t "v.menu.new_conflict"
                       %li.dropdown#models
-                        %a.dropdown-toggle{"data-toggle"=>"dropdown",:href=>"#models"}
-                          = "Models"
+                        %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
+                          = 'Models'
                           %b.caret
                         %ul.dropdown-menu
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/filters"}= t "f.menu.filters"
+                            %a{:href=>'/filters'}= t "f.menu.filters"
                           %li.divider
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/featureds"}= t "f.menu.featured_maps"
+                            %a{:href=>'/featureds'}= t "f.menu.featured_maps"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/vectors"}= t "f.menu.vectors"
+                            %a{:href=>'/vectors'}= t "f.menu.vectors"
                           %li
-                            %a{:href=>"//#{I18n.locale}.#{$domain}/vectors/styles"}= t "f.menu.vector_styles"
+                            %a{:href=>'/vectors/styles'}= t "f.menu.vector_styles"
 
                     %li
-                      %form#signout.hide{:action=>"/sessions/destroy",:method=>"post"}
-                        %input{:value=>"delete",:name=>"_method",:type=>"hidden"}
-                      %a{:href=>"#",:onclick=>'$("#signout").submit()'}= t "v.menu.logout"
+                      %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
+                        %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
+                      %a{:href=>'#',:onclick=>'$("#signout").submit()'}= t "v.menu.logout"
                   -else
                     %li.dropdown#ejolt
-                      %a.dropdown-toggle{"data-toggle"=>"dropdown",:href=>"#ejolt"}
+                      %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#ejolt'}
                         =t "v.menu.ej_atlas"
                         %b.caret
                       %ul.dropdown-menu
                         %li
-                          %a{:href=>"/about"}= t "v.menu.about"
+                          %a{:href=>'/about'}= t "v.menu.about"
                         %li
-                          %a{:href=>"/disclaimer"}= t "v.menu.disclaimer"
+                          %a{:href=>'/disclaimer'}= t "v.menu.disclaimer"
                         %li
-                          %a{:href=>"/credits"}= t "v.menu.credits_collaborators"
+                          %a{:href=>'/credits'}= t "v.menu.credits_collaborators"
                         %li
-                          %a{:href=>"/contact"}= t "v.menu.contact"
+                          %a{:href=>'/contact'}= t "v.menu.contact"
                         %li.divider
                         %li
                           %a{:href => "http://acknowlej.org/"}= t "v.menu.acknowl_ej"
                         %li
                           %a{:href => "http://ejolt.org/"}= t "v.menu.ejolt"
                     %li.dropdown#maps
-                      %a.dropdown-toggle{"data-toggle"=>"dropdown",:href=>"#maps"}
+                      %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#maps'}
                         = t "v.menu.maps"
                         %b.caret
                       %ul.dropdown-menu
@@ -160,11 +160,11 @@
                               %a{:href=>"/featured/#{feat.slug}"}= feat.name
                           %li.divider
                         %li
-                          %a{:href=>"/country"}= t "v.menu.country_maps"
+                          %a{:href=>'/country'}= t "v.menu.country_maps"
                         %li
-                          %a{:href=>"/company"}= t "v.menu.company_maps"
+                          %a{:href=>'/company'}= t "v.menu.company_maps"
                         %li
-                          %a{:href=>"/commodity"}= t "v.menu.commodity_maps"
+                          %a{:href=>'/commodity'}= t "v.menu.commodity_maps"
 
                     -if current_account.nil?
                       %li.dropdown#login

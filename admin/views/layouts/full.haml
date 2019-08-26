@@ -133,14 +133,14 @@
                     %b.caret
                   %ul.dropdown-menu
                     %li
-                      %a{:href=>"//#{I18n.locale}.#{$domain}/accounts/edit/#{current_account.id}"}= t "v.menu.my_profile"
-                    -if ["admin","editor"].include? current_account.role
+                      %a{:href=>"/accounts/edit/#{current_account.id}"}= t "v.menu.my_profile"
+                    -if ['admin','editor'].include? current_account.role
                       %li
-                        %a{:href=>"//#{I18n.locale}.#{$domain}/cache"}= t "v.menu.cache"
+                        %a{:href=>'/cache'}= t "v.menu.cache"
                     %li
-                      %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts"}= t "v.menu.my_conflicts"
+                      %a{:href=>'/conflicts'}= t "v.menu.my_conflicts"
                     %li
-                      %a{:href=>"//#{I18n.locale}.#{$domain}/conflicts/new"}= t "v.menu.new_conflict"
+                      %a{:href=>'/conflicts/new'}= t "v.menu.new_conflict"
                     %li.divider
                     %li
                       %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
