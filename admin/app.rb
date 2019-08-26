@@ -414,7 +414,7 @@ class Admin < Padrino::Application
   def self.filter_recent offset=0, size=6
     filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     begin
-      result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+      result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
     rescue
       []
     end
