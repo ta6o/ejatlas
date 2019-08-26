@@ -879,6 +879,7 @@ Admin.controllers :conflicts do
 
   post :getfile do
     @file = Document.new(params['document'])
+    @file.locale = I18n.locale
     if @file.save
       return @file.to_json
     else

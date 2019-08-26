@@ -839,6 +839,7 @@ class AsyncTask
         img = Image.new
         img.remote_file_url = doc.file.url
         img.title = doc.title
+        img.locale = doc.locale
         img.description = doc.description
         doc.conflict.images << img
         begin

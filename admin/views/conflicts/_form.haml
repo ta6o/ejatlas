@@ -83,7 +83,9 @@
 
         .group
           %input#general{:type=>'checkbox',:name=>"conflict[general]", :checked=>(@conflict.general ? true : false)}=" &nbsp; #{t("f.conflict.this_is_country_wide_conflict")}".html_safe
+
           :javascript
+
             $('#general').on('change',function(){
               if ($(this).prop('checked')) {
                 $('.local_fade').fadeOut();
