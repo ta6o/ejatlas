@@ -17639,7 +17639,7 @@ function initMap () {
     //maxBounds: [[-90,-270],[90,270]],
     bounceAtZoomLimits: false,
     center: new L.latLng([16,26]),
-    zoom: 1,
+    zoom: 1.667,
     minZoom: 1,
     zoomSnap: 0,
     layers: initLayers,
