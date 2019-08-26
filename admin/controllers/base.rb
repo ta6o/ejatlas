@@ -240,8 +240,7 @@ Admin.controller do
         @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
       end
     end
-    @name = con.name
-    @name = I18n.t("countries.#{con.name.slug("_")}")
+    @name = I18n.t("countries.#{con.name.shorten_en}")
     @description = con.description
     @id = con.id
     @desc = con.description
