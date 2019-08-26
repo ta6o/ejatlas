@@ -39,5 +39,13 @@ class Image < ActiveRecord::Base
   def inspect
     self.file
   end
+
+  def set_defaults
+    self.update_attribute :locale, I18n.locale unless self.locale
+    if self.conflict and not self.pid
+      self.update_attribute :pid, ((self.conflict.legislations.order(:pid).map(&:pid)-[nil]).last || 0) + 1
+    end
+  end
+end
 end
 

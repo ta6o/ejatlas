@@ -4,7 +4,6 @@ class Legislation < ActiveRecord::Base
   #validates_presence_of :pid
   #validates_uniqueness_of :pid, scope: :conflict_id
 
-  private
   def set_defaults
     self.update_attribute :locale, I18n.locale unless self.locale
     if self.conflict and not self.pid
