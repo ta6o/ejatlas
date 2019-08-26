@@ -860,6 +860,13 @@ Admin.controller do
     render 'base/not_authorized', :layout => :application
   end
 
+  get :example do
+    @conflict = Conflict.new
+    @cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:name)
+    @example = true
+    render 'conflicts/example'
+  end
+
   not_found do
     @name = "Page not found"
     render 'base/404'
