@@ -47,5 +47,4 @@ class Image < ActiveRecord::Base
     end
   end
 end
-end
 
