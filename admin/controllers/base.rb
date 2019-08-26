@@ -888,7 +888,7 @@ Admin.controller do
     @conflict_events = Admin.setOrder 2, ConflictEvent.order('name asc')
     @lat = 0
     @lon = 0
-    render 'conflicts/example'
+    render 'conflicts/example', :layout => :application
   end
 
   not_found do
