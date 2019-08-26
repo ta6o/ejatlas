@@ -2,7 +2,7 @@
 .row
   .span12
     .hero-unit
-      %h1.title Yeni İhtilaf
+      %h1.title= @title
     .inner
       =form_for :conflict, '/', :method => :get, :class => :form do |f|
         =partial "conflicts/form", :locals => { :f => f }

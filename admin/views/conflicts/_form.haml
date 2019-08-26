@@ -181,7 +181,7 @@
           %br/
 
 
-  -if @example and not @conflict.new_record?
+  -if @example or not @conflict.new_record?
     #source.tab-pane
       .row
         .col-md-9
