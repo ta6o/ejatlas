@@ -108,7 +108,7 @@ Admin.controllers :conflicts do
             id = kk[-1].to_i
           elsif kk[0] == "image"
             rr = Image.where(:attachable_type=>"Conflict", :attachable_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
-            if rr
+            if rr.any?
               id = rr[0].id
             else
               oloc = Conflict.find(params["id"]).original_locale
@@ -122,7 +122,7 @@ Admin.controllers :conflicts do
           elsif kk[0] == "document"
             rr = Document.where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>Conflict.find(params["id"]).original_locale)[0]
             if rr
-              id = rr[0].id
+              id = rr.id
             else
               oloc = Conflict.find(params["id"]).original_locale
               rr = Document.where(:conflict_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>oloc)[0]
