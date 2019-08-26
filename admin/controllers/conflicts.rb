@@ -689,7 +689,7 @@ Admin.controllers :conflicts do
 
         @conflict.general = general
         @conflict.ping
-        #@conflict.modified_at = Time.now
+        @conflict.local_data.modified_at = @conflict.modified_at
         @conflict.commented = false;
 
         begin

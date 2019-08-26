@@ -290,7 +290,6 @@ class Conflict < ActiveRecord::Base
       result[k] = v
     end
     result["id"] = self.id
-    result["modified_at"] = self.modified_at
     self.methods.grep(/^validate_associated_records_for_.*$/).each do |m| 
       a = m.to_s.split("validate_associated_records_for_")[1]
       next if a[0..1] == "c_" or ['legislations','weblinks','medialinks','references','documents','images'].include? a
