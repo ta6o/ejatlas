@@ -25,7 +25,7 @@ class Country < ActiveRecord::Base
 
   def jsonize locale=:en
     @json = {}
-    @json[:name] = I18n.t("countries.#{self.name.slug("_")}",:locale=>locale).gsub(/\([^\)]+\)/,"")
+    @json[:name] = I18n.t("countries.#{self.name.shorten_en}",:locale=>locale).gsub(/\([^\)]+\)/,"")
     @json[:slug] = self.slug
     return @json.to_json
   end
