@@ -1462,7 +1462,7 @@
                     $(this).prop("disabled",true);
                     if ($("#message").val().length > 0 ) {
                       $.post("/conflicts/msg_create",
-                        {aid:#{current_account.id},cid:#{@conflict.new_record? ? 0 : @conflict.id}, content: $("#message").val()},
+                        {aid:#{current_account ? current_account.id : 0},cid:#{@conflict.new_record? ? 0 : @conflict.id}, content: $("#message").val()},
                         function(data){
                           if (data === "ok") {
                             html = '<li class="clearfix"> <div class="msg pull-right"> <div class="clearfix"> <small class="black pull-left">You wrote</small> <small class="pull-left">&nbsp;</small> <small class="pull-right">just now<small> </div> <div class="pull-right well"> <p>'+$("#message").val()+'</p> </div> </div> </li>';
