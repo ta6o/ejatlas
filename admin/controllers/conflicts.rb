@@ -460,7 +460,7 @@ Admin.controllers :conflicts do
   end
 
   put :update, :with => :id do
-    #Admin.color_pp params, "params", "yellow", true
+    Admin.color_pp params, "params", "yellow", true
     #pp params["id"]
     #pp params["conflict"]["slug"]
     hash = params.delete 'activetab'
