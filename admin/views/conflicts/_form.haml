@@ -60,7 +60,7 @@
           .required=f.error_message_on :name
           =f.text_field :name, :class => 'text_field basic_input'
 
-        -if ["admin","editor"].include? current_account.role
+        -if current_account and ["admin","editor"].include? current_account.role
           .group
             %label{:for=>"conflict_slug"}= t("f.conflict.name_visible_on_address_bar")
             %span.required.large *
@@ -1328,7 +1328,7 @@
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
             %button#save{:class=>"btn btn-inverse pn "+(@example ? "disable" : "")}= t("f.conflict.save")
-            -#if ["admin","editor"].include? current_account.role
+            -#if current_account and ["admin","editor"].include? current_account.role
               %button#stamp{:class=>"btn btn-inverse pn"), :onclick=>"stamp()"}= t("f.conflict.update_modified_date")
             %br/
 
@@ -1358,26 +1358,26 @@
               %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.submit_for_moderation")}".html_safe
             %label.checkbox.inline.apstat
               %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.modified")}".html_safe
-            -if ["admin","editor"].include? current_account.role
+            -if current_account and ["admin","editor"].include? current_account.role
               %label.checkbox.inline.apstat
                 %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.approved")}".html_safe
-            -if apstat = @conflict.approval_status
+            -if apstat = @conflict.approval_status and current_account
               -apstat = 'modified' if apstat == 'approved' and !["admin","editor"].include?(current_account.role)
             -else
               -apstat = 'draft'
             :javascript
               $('input.apstat[value=#{apstat}]').prop('checked',true);
-            -if ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
+            -if current_account and ["admin","editor"].include? current_account.role and @conflict.approval_status === "deleted"
               %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
                 %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
                 %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
 
-            -if ["admin","editor"].include? current_account.role
+            -if current_account and ["admin","editor"].include? current_account.role
               .group
                 %label{:for=>"conflict_modified_at"}= t("f.conflict.modified_at")
                 .required=f.error_message_on :modified_at
                 %input#modified_at{:type=>"text",:style=>"modified_at",:value=>@conflict.modified_at}
-                %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').replace(/\.\d+Z/,' UTC'))"}= t("f.conflict.update_modified_date")
+                %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').replace(/\.\d{3}Z/,' UTC'))"}= t("f.conflict.update_modified_date")
           %br/
 
           -if @saves and @saves.length > 0
@@ -1431,7 +1431,7 @@
                               %small.black.pull-left You wrote 
                             %small.pull-left &nbsp;
                             %small{:class => pull }= msg.created_at.strftime "on %B %d, %Y - %H:%M"
-                          -if ["admin","editor"].include?(current_account.role)
+                          -if current_account and ["admin","editor"].include?(current_account.role)
                             %a.delete{:class=>pull,:id=>"del-#{msg.id}"} &nbsp;X&nbsp;
                           .well{:class => pull}
                             %p= msg.content
@@ -1479,13 +1479,13 @@
                   });
 
 
-          -if ["admin","editor"].include? current_account.role and @conflict.account
+          -if current_account and ["admin","editor"].include? current_account.role and @conflict.account
             .group
               %label{:for=>"conflict_notes"}= t("f.conflict.internal_notes")
               .required=f.error_message_on :notes
               %p.description=t("f.conflict.please_indicate_changes_you_have")
               ~f.text_area :notes, :class => :text_area, :rows=>4
-              -if ["admin","editor"].include? current_account.role and @conflict.account
+              -if current_account and ["admin","editor"].include? current_account.role and @conflict.account
                 %p
                   By
                   %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
@@ -1510,13 +1510,13 @@
                 -@conflict.conflict_accounts.each do |ca|
                   %li
                     .pull-left= ca.account.email
-                    -if ["admin","editor"].include? current_account.role
+                    -if current_account and ["admin","editor"].include? current_account.role
                       .pull-left
                         &nbsp;
                         %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"}= t("f.conflict.revoke")
                     %br/
 
-            -if ["admin","editor"].include? current_account.role
+            -if current_account and ["admin","editor"].include? current_account.role
               %br/
               %label= t("f.conflict.invite_users_to_collaborate")
               .clearfix
