@@ -255,7 +255,7 @@ Admin.controller do
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown').to_json
     @image = nil
     @image = con.flag_images.first.file.url if con.flag_images.any?
-    @maptitle = I18n.t("v.index.environmental_conflicts_in_var",:country=>I18n.t("countries.#{con.name.slug("_")}"))
+    @maptitle = I18n.t("v.index.environmental_conflicts_in_var",:country=>I18n.t("countries.#{con.name.shorten_en}"))
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end

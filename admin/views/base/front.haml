@@ -46,6 +46,7 @@
         %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=#{CGI.escape($siteurl+request.path)}",:target=>"_blank",:title=>"Share on Facebook"}
           #share_fb 
             #img &nbsp;
+
     .clearfix
       -if @image and @image.length > 0
         %img{:class=>$dir=="ltr" ? "pull-left" : "pull-right",:src=>@image ,:style=>$dir=="ltr" ? 'max-height:20px;width:auto;margin:4px 12px 20px 0px;' : 'max-height:20px;width:auto;margin:4px 0 20px 12px;'}
