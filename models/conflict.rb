@@ -497,7 +497,7 @@ class Conflict < ActiveRecord::Base
           cnt = cnt.to_s
           cnt.gsub!(/\r/,"\n")
           cnt.gsub!(/\n\n/,"\n")
-          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.gsub(/\n/,"<br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
         when :mini
           cnt = eval(va[1]+'.'+va[2]).to_s
           cnt.gsub!(/\r/,"\n")
