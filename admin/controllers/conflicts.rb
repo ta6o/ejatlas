@@ -471,10 +471,13 @@ Admin.controllers :conflicts do
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
+    if params["conflict"]["slug"].nil? or params["conflict"]["slug"] == ""
+      return {:status=>"error",:errors=>["Name on address bar can not be blank"]}.to_json 
+    end
     oldstat = @conflict.approval_status
     sameslug = ConflictText.where(:slug=>params["conflict"]["slug"]).map(&:conflict_id) - [params["id"].to_i]
     if sameslug.any?
-      return {:status=>"error",:errors=>["Name on address bar has been taken by conflict ##{sameslug.first}"]}.to_json 
+      return {:status=>"error",:errors=>["Name on address bar has been taken by conflict#{sameslug.length > 1 ? 's' : ''}: ##{sameslug.join(', #')}"]}.to_json 
     end
 
     if params.has_key?("translate_only")

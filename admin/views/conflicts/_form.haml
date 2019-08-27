@@ -68,7 +68,9 @@
             =f.text_field :slug, :class => 'text_field basic_input'
         -else
           .group
-            %input#conflict_slug.text_field.basic_input{:type=>"hidden", :name=>"conflict[slug]",:value=>@conflict.slug}
+            -slug = @conflict.slug
+            -slug == nil or slug == "" ? slug = Admin.slugify(@conflict.name)
+            %input#conflict_slug.text_field.basic_input{:type=>"hidden", :name=>"conflict[slug]",:value=>slug}
 
         .group
           %label{:for=>"conflict_country_id"}= t("f.conflict.country")
