@@ -700,6 +700,7 @@ Admin.controllers :conflicts do
         begin
           if @conflict.save :validate=>false
             flash[:notice] = 'Conflict was successfully saved.'
+            puts current_account.role.yellow
             if ['admin','editor'].include?(current_account.role)
               $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
             end
