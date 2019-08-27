@@ -1331,8 +1331,6 @@
           .pull-right.btn-group.png
             %button.btn.pn.prev= t("f.conflict.previous")
             %button#save{:class=>"btn btn-inverse pn "+(@example ? "disabled" : "")}= t("f.conflict.save")
-            -#if current_account and ["admin","editor"].include? current_account.role
-              %button#stamp{:class=>"btn btn-inverse pn"), :onclick=>"stamp()"}= t("f.conflict.update_modified_date")
             %br/
 
       .row
@@ -1377,10 +1375,10 @@
 
             -if current_account and ["admin","editor"].include? current_account.role
               .group
-                %label{:for=>"conflict_modified_at"}= t("f.conflict.modified_at")
+                %label{:for=>"conflict_modified_at"}= t("f.conflict.last_update_this_case")
                 .required=f.error_message_on :modified_at
                 %input#modified_at{:name=>"conflict[modified_at]",:type=>"text",:value=>@conflict.modified_at}
-                %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').split('.')[0]+' UTC')"}= t("f.conflict.update_modified_date")
+                %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').split('.')[0]+' UTC')"}= t("f.conflict.update_as_today")
           %br/
 
           -if @saves and @saves.length > 0
