@@ -38,8 +38,6 @@
 
 .tab-content.whitebox
   #basic.tab-pane.active
-    -t0 = Time.now
-    -puts t0.to_s.green
     .row
       .col-md-10
         %p.lead= t("f.conflict.basic_data")
@@ -187,8 +185,6 @@
 
 
   -if @example or not @conflict.new_record?
-    -t1 = Time.now
-    -puts t1.to_s.cyan
     #source.tab-pane
       .row
         .col-md-9
@@ -370,8 +366,6 @@
 
 
     #project.tab-pane
-      -t2 = Time.now
-      -puts t2.to_s.blue
       .row
         .col-md-9
           %p.lead= t("f.conflict.project_details_actors")
@@ -493,8 +487,6 @@
 
 
     #conflict.tab-pane
-      -t3 = Time.now
-      -puts t3.to_s.magenta
       .row
         .col-md-9
           %p.lead=t("f.conflict.conflict_and_mobilization")
@@ -628,8 +620,6 @@
 
 
     #impacts.tab-pane
-      -t4 = Time.now
-      -puts t4.to_s.red
       .row
         .col-md-9 &nbsp;
         .col-md-3
@@ -783,8 +773,6 @@
             });
 
     #outcome.tab-pane
-      -t5 = Time.now
-      -puts t5.to_s.yellow
       .row
         .col-md-9
           %p.lead=t("f.conflict.outcome")
@@ -890,8 +878,6 @@
 
 
     #materials.tab-pane
-      -t6 = Time.now
-      -puts t6.to_s.green
       :javascript
         function handleModal(model) {
           $('#m_'+model).on('hidden.bs.modal', function () {
@@ -1338,8 +1324,6 @@
 
 
     #meta.tab-pane
-      -t7 = Time.now
-      -puts t7.to_s.cyan
       .row
         .col-md-9
           %p.lead=t("f.conflict.meta_information")
@@ -1564,8 +1548,6 @@
                   } 
                 });
 
-  -t8 = Time.now
-  -puts t8.to_s.blue
 
 
 
@@ -1594,8 +1576,6 @@
       $('.notr').removeAttr("onclick");
 
 
--t9 = Time.now
--puts t9.to_s.magenta
 :javascript
   var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict saved successfully. &nbsp; &nbsp; </div>"
   var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved: &nbsp; &nbsp;<br/><br/><b></b></div>"
@@ -1791,8 +1771,6 @@
   });
   */
 
--t10 = Time.now
--puts t10.to_s.red
 -if @conflict.new_record? 
   :javascript
     $('#conflict-tabs > li').not('.active').addClass('closed');

@@ -727,9 +727,11 @@ Admin.controllers :conflicts do
   end
 
   get :approve, :with => :id do
+    pass unless ["admin","editor"].include? current_account.role
     conflict = Conflict.find(params[:id])
     conflict.approval_status = 'approved'
     if conflict.save :validate=>false
+      $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: conflict.elastic
       flash[:notice] = 'Conflict was approved by your consent.'
     else
       flash[:error] = 'Unable to approve Conflict!'
@@ -738,9 +740,11 @@ Admin.controllers :conflicts do
   end
 
   get :disapprove, :with => :id do
+    pass unless ["admin","editor"].include? current_account.role
     conflict = Conflict.find(params[:id])
     conflict.approval_status = 'queued'
     if conflict.save :validate=>false
+      $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: conflict.elastic
       flash[:notice] = 'Conflict was disapproved by your consent.'
     else
       flash[:error] = 'Unable to disapprove Conflict!'
