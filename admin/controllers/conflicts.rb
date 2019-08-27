@@ -672,7 +672,8 @@ Admin.controllers :conflicts do
                 return [200, {'Content-Type' => 'application/json'}, [{status:"error",errors:[k,e.cause]}.to_json]]
               end
             end
-          else
+          end
+          if ct.attributes.has_key?(k) or ct.attributes.has_key?("#{k}_id")
             puts "#{k.red}: #{v.magenta}"
             #puts k.to_s.magenta
             unless ct.attributes[k] == v
