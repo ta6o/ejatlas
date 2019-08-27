@@ -14,7 +14,7 @@
             %th.first=mat(:conflict, :name)
             %th=mat(:conflict, 'type')
             %th=mat(:conflict, :submitted_by)
-            %th=mat(:conflict, 'last modified')
+            %th=mat(:conflict, 'last updated')
             %th=mat(:conflict, 'approval')
             %th.last
               %form#filter-form
@@ -35,8 +35,8 @@
                     -elsif conflict["account_id"] 
                       %span= Account.find(conflict["account_id"]).name
                 %td
-                  -if conflict["modified_at"]
-                    %span=Time.parse(conflict["modified_at"].to_s).strftime '%Y-%m-%d'
+                  -if conflict["updated_at"]
+                    %span=Time.parse(conflict["updated_at"].to_s).strftime '%Y-%m-%d'
                   -else
                     %span &nbsp;
                 %td
@@ -60,8 +60,8 @@
                     -elsif conflict["account_id"] 
                       %span= Account.find(conflict["account_id"]).name
                   %td
-                    -if conflict["modified_at"]
-                      %span=Time.parse(conflict["modified_at"].to_s).strftime '%Y-%m-%d'
+                    -if conflict["updated_at"]
+                      %span=Time.parse(conflict["updated_at"].to_s).strftime '%Y-%m-%d'
                     -else
                       %span &nbsp;
                   %td

@@ -232,15 +232,15 @@ Admin.controllers :conflicts do
   get :index do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Admin.filter("{\"must_not\":{\"term\":{\"approval_status\":\"deleted\"}}}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(","),false).map{|x| x["_source"]}
+        @conflicts = Admin.filter("{\"must_not\":{\"term\":{\"approval_status\":\"deleted\"}}}", true, 'id,name,slug,account_id,category_id,updated_at,approval_status'.split(","),false).map{|x| x["_source"]}
         @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-        @conflicts.sort_by! {|c| ( c["modified_at"] || Time.now ) }
+        @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
         @conflicts.reverse!
       else
         proper = Conflict.where(account_id: current_account.id)
         other =  Conflict.where(id: current_account.conflict_accounts.map(&:conflict_id))
-        @conflicts = proper.or(other).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = proper.or(other).order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
         #pp @conflicts.class
       end
     end
@@ -250,13 +250,13 @@ Admin.controllers :conflicts do
   get :approved do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,modified_at,approval_status'.split(",")).map{|x| x["_source"]}
+        @conflicts = Admin.filter("{}", true, 'id,name,slug,account_id,category_id,updated_at,approval_status'.split(",")).map{|x| x["_source"]}
         @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-        @conflicts.sort_by! {|c| ( c["modified_at"] || Time.now ) }
+        @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
         @conflicts.reverse!
       else
-        @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       end
     end
     render 'conflicts/index'
@@ -265,9 +265,9 @@ Admin.controllers :conflicts do
   get :modified do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'modified').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(approval_status: 'modified').order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       else
-        @conflicts = Conflict.where(:approval_status => 'modified', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(:approval_status => 'modified', :account_id => current_account.id).order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       end
     end
     render 'conflicts/index'
@@ -276,9 +276,9 @@ Admin.controllers :conflicts do
   get :queued do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'queued').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(approval_status: 'queued').order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       else
-        @conflicts = Conflict.where(:approval_status => 'queued', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(:approval_status => 'queued', :account_id => current_account.id).order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       end
     end
     render 'conflicts/index'
@@ -287,9 +287,9 @@ Admin.controllers :conflicts do
   get :draft do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'draft').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(approval_status: 'draft').order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       else
-        @conflicts = Conflict.where(:approval_status => 'draft', :account_id => current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(:approval_status => 'draft', :account_id => current_account.id).order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       end
     end
     render 'conflicts/index'
@@ -298,9 +298,9 @@ Admin.controllers :conflicts do
   get :deleted do
     if current_account
       if ["admin","editor"].include? current_account.role
-        @conflicts = Conflict.where(approval_status: 'deleted').order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(approval_status: 'deleted').order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       else
-        @conflicts = Conflict.where(:approval_status => 'deleted', :account_id=> current_account.id).order('modified_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,modified_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+        @conflicts = Conflict.where(:approval_status => 'deleted', :account_id=> current_account.id).order('updated_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,updated_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
       end
     end
     render 'conflicts/index'
