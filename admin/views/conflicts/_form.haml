@@ -1379,6 +1379,7 @@
                 .required=f.error_message_on :modified_at
                 %input#modified_at{:name=>"conflict[modified_at]",:type=>"text",:value=>@conflict.modified_at}
                 %a.btn{:onclick=>"$('#modified_at').val((new Date).toISOString().replace(/T/,' ').split('.')[0]+' UTC')"}= t("f.conflict.update_as_today")
+
           %br/
 
           -if @saves and @saves.length > 0
