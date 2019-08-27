@@ -442,6 +442,7 @@ Admin.controllers :conflicts do
     updated = Admin.correctForm(params)
     @conflict = Conflict.create
     @conflict.update_attributes(updated[:conflict])
+    @conflict.local_data.update_attribute(:slug, Admin.slugify(@conflict.local_data.name))
     #puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
     if @conflict.save :validate => false
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
