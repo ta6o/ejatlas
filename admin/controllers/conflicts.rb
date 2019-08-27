@@ -663,7 +663,7 @@ Admin.controllers :conflicts do
             next
           end
           if @conflict.attributes.has_key?(k) or @conflict.attributes.has_key?("#{k}_id") or k.match(/_id$/)
-            puts "#{k.cyan}: #{v.green}"
+            #puts "#{k.cyan}: #{v.green}"
             unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
               begin
                 @conflict.update_attribute k, v 
@@ -674,8 +674,7 @@ Admin.controllers :conflicts do
             end
           end
           if ct.attributes.has_key?(k) or ct.attributes.has_key?("#{k}_id")
-            puts "#{k.red}: #{v.magenta}"
-            #puts k.to_s.magenta
+            #puts "#{k.red}: #{v.magenta}"
             unless ct.attributes[k] == v
               begin
                 ct.update_attribute k, v 
@@ -703,7 +702,7 @@ Admin.controllers :conflicts do
         begin
           if @conflict.save :validate=>false
             flash[:notice] = 'Conflict was successfully saved.'
-            puts current_account.role.yellow
+            #puts current_account.role.yellow
             if ['admin','editor'].include?(current_account.role)
               $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
             end
@@ -731,11 +730,11 @@ Admin.controllers :conflicts do
   end
 
   get :approve, :with => :id do
-    puts current_account.role.green
     pass unless ["admin","editor"].include? current_account.role
     conflict = Conflict.find(params[:id])
     conflict.approval_status = 'approved'
-    if conflict.save :validate=>false
+    conflict.local_data.approval_status = 'approved'
+    if conflict.save(:validate=>false) and conflict.local_data.save(:validate=>false)
       $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: conflict.elastic
       flash[:notice] = 'Conflict was approved by your consent.'
     else
@@ -745,11 +744,11 @@ Admin.controllers :conflicts do
   end
 
   get :disapprove, :with => :id do
-    puts current_account.role.red
     pass unless ["admin","editor"].include? current_account.role
     conflict = Conflict.find(params[:id])
     conflict.approval_status = 'queued'
-    if conflict.save :validate=>false
+    conflict.local_data.approval_status = 'queued'
+    if conflict.save(:validate=>false) and conflict.local_data.save(:validate=>false)
       $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: conflict.elastic
       flash[:notice] = 'Conflict was disapproved by your consent.'
     else
