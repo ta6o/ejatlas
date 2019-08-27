@@ -283,7 +283,7 @@ Admin.controller do
     @desc = "Description of #{con.name}"#con.description
     @image = nil
     @image = con.logo_images.first.file.url if con.logo_images.any?
-    @maptitle = I18n.t("v.index.environmental_conflicts_of_var",:company=>con.name)
+    @maptitle = I18n.t("v.index.environmental_conflicts_var",:company=>con.name)
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
