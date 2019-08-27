@@ -648,6 +648,8 @@ Admin.controllers :conflicts do
         end
 
         general = false
+        ct = @conflict.local_data
+        ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale) unless ct
         updated['conflict'].each do |k,v|
           if k == 'name' and v.match(/"/)
             quotes = ["“","","”"]
@@ -661,6 +663,7 @@ Admin.controllers :conflicts do
             next
           end
           if @conflict.attributes.has_key?(k) or @conflict.attributes.has_key?("#{k}_id") or k.match(/_id$/)
+            puts "#{k.cyan}: #{v.green}"
             unless @conflict.attributes[k] == v or ( k.match(/_id$/) and @conflict.attributes[k] == v.to_i )
               begin
                 @conflict.update_attribute k, v 
@@ -670,9 +673,8 @@ Admin.controllers :conflicts do
               end
             end
           else
+            puts "#{k.red}: #{v.magenta}"
             #puts k.to_s.magenta
-            ct = @conflict.local_data
-            ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale) unless ct
             unless ct.attributes[k] == v
               begin
                 ct.update_attribute k, v 
