@@ -473,7 +473,8 @@ Admin.controllers :conflicts do
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
     if params["conflict"]["slug"].nil? or params["conflict"]["slug"] == ""
-      return {:status=>"error",:errors=>["Name on address bar can not be blank"]}.to_json 
+      #return {:status=>"error",:errors=>["Name on address bar can not be blank"]}.to_json 
+      params["conflict"]["slug"] = Admin.slugify(params["conflict"]["name"])
     end
     oldstat = @conflict.approval_status
     sameslug = ConflictText.where(:slug=>params["conflict"]["slug"]).map(&:conflict_id) - [params["id"].to_i]
