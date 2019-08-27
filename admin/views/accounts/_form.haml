@@ -159,7 +159,7 @@
     .group.navform.wat-cf{:style=>'margin-top:24px;'}
       %input.btn.pull-right{:type=>"submit",:value=>"Save"}
       -if current_account and ["admin","editor"].include?(current_account.role)
-        -if account.approved
+        -if @account.approved
           %a.btn.pull-right{:href=>"/accounts/disapprove/#{account.id}"} Disapprove
         -else
           %a.btn.pull-right{:href=>"/accounts/approve/#{account.id}"} Approve
