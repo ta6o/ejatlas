@@ -662,7 +662,7 @@ class Conflict < ActiveRecord::Base
         [:flat, 'ct' ,'name', I18n.t('f.conflict.name_of_conflict',:locale=>loc)],
         [:link, 'c', 'country', 'country', I18n.t('f.conflict.country',:locale=>loc)],
         [:flat, 'ct' ,'province', I18n.t('f.conflict.state_or_province',:locale=>loc)],
-        [:flat, 'ct' ,'site', I18n.t('f.conflict.municipality_or_city_town',:locale=>loc)],
+        [:flat, 'ct' ,'site', I18n.t('f.conflict.location_of_conflict',:locale=>loc)],
         [:arra, 'c' ,'accuracy_level', ['', I18n.t('m.accuracy_level.low_country_level',:locale=>loc), I18n.t('m.accuracy_level.medium_regional_level',:locale=>loc), I18n.t('m.accuracy_level.high_local_level',:locale=>loc)], I18n.t('f.conflict.accuracy_of_location',:locale=>loc)]
       ]],
 
