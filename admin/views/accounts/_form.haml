@@ -27,10 +27,10 @@
 
 .row
   -if current_account and ["admin","editor"].include?(current_account.role)
-    .col-sm-12
+    .col-md-10.col-md-offset-2
       %p{:style=>"color:#999;"}
         = @account.approved ? "Approved" : "Not approved"
-        &nbsp;-&nsbp;
+        &nbsp; - &nsbp;
         = @account.confirmed ? "email confirmed." : "email not confirmed."
   .col-md-4.col-md-offset-2
     .group
