@@ -727,6 +727,7 @@ Admin.controllers :conflicts do
   end
 
   get :approve, :with => :id do
+    puts current_account.role.green
     pass unless ["admin","editor"].include? current_account.role
     conflict = Conflict.find(params[:id])
     conflict.approval_status = 'approved'
@@ -740,6 +741,7 @@ Admin.controllers :conflicts do
   end
 
   get :disapprove, :with => :id do
+    puts current_account.role.red
     pass unless ["admin","editor"].include? current_account.role
     conflict = Conflict.find(params[:id])
     conflict.approval_status = 'queued'
