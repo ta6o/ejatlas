@@ -134,17 +134,7 @@ Admin.controllers :conflicts do
               id = rd.id
             end
           elsif kk[0] == "related"
-            rr = Conflict.where(:id=>kk[-1])
-            unless rr.empty?
-              rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
-            end
-            id = rr.first.id
           elsif kk[0] == "tag"
-            rr = Tag.where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
-            if rr.empty?
-              rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
-            end
-            id = rr.first.id
           else
             rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
             if rr.empty?
