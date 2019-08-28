@@ -1395,9 +1395,21 @@
                         %td=save[4]
                         %td
                           %small=Account.find(save[3].to_i).name
+              %br/
 
 
-          %br/
+          .group
+            %br/
+            %label= t("f.conflict.tags")
+            -if @conflict.tags.any?
+              %ul{:style=>"list-style-type: none; padding: 0;"}
+                -@conflict.tags.each do |t|
+                  %li.clearfix
+                    .pull-left= t.name
+                    %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
+            %a#atag.pull-right.btn=t("f.conflict.add_tag")
+            %a#ctag.pull-right.btn=t("f.conflict.create_tag")
+
 
         .col-md-8
           .group
@@ -1549,16 +1561,6 @@
                     ); 
                   } 
                 });
-
-          .group
-            %br/
-            %label= t("f.conflict.tags")
-            -if @conflict.tags.any?
-              %ul{:style=>"list-style-type: none; padding: 0;"}
-                -@conflict.tags.each do |t|
-                  %li
-                    .pull-left= t.name
-                    %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
 
 
 
