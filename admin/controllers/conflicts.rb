@@ -171,30 +171,6 @@ Admin.controllers :conflicts do
   end
 =end
 
-  def self.setOrder lgt, arr
-    arr = arr.to_a
-    other = nil
-    arr.each do |a|
-      if a.name == "Other"
-        other = arr.delete(a) 
-        break
-      end
-    end
-    res = []
-    stp = (arr.length/lgt).floor + 1
-    srp = arr.length % lgt
-    tur = 0
-    stp.times do |s|
-      tur = s - stp
-      lgt.times do |l|
-        l <= srp ? tur += stp : tur += stp - 1
-        res.push arr[tur] if l < srp or s < stp - 1
-      end
-    end
-    res << other unless other.nil?
-    return res
-  end
-
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
