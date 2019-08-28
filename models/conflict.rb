@@ -929,6 +929,10 @@ class Conflict < ActiveRecord::Base
     self.set_local_text("translator",val,locale.to_s)
   end
 
+  def inspect
+    "##{self.id.to_s.rjust(4,"0")}: #{self.name} (#{(self.attributes.values-[nil]).length}/#{self.attributes.length})"
+  end
+
   private
   def delete_index
   end
@@ -937,10 +941,6 @@ class Conflict < ActiveRecord::Base
     if self.conflict_texts.any?
       self.slug = Admin.slugify self.name unless self.slug
     end
-  end
-
-  def inspect
-    "##{self.id.to_s.rjust(4,"0")}: #{self.name} (#{(self.attributes.values-[nil]).length}/#{self.attributes.length})"
   end
 
 end
