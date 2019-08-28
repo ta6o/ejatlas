@@ -77,10 +77,10 @@
           %label{:for=>"conflict_country_id"}= t("f.conflict.country")
           %span.required.large *
           .required=f.error_message_on :country_id
-          -#=f.select :country_id, :collection => @countries, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
+          -#=f.select :country_id, :collection => $countries, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
           %select.basic_input#conflict_country_id{:name=>"conflict[country_id]"}
             %option
-            -@countries.each do |c|
+            -$countries.each do |c|
               %option{:value=>c.id,:selected=>c.id==@conflict.country_id}=t("countries.#{c.name.slug("_").shorten_en}")
 
 
@@ -203,10 +203,10 @@
             %span.required.large *
             %p.description= t("f.conflict.pick_one_based_on_activity")
             .required=f.error_message_on :category_id
-            -#=f.select :category_id, :collection => @categories, :fields => [:name, :id], :include_blank => true, :id => 'category', :class => 'basic_input'
+            -#=f.select :category_id, :collection => $categories, :fields => [:name, :id], :include_blank => true, :id => 'category', :class => 'basic_input'
             %select.basic_input#conflict_category_id{:name=>"conflict[category_id]"}
               %option
-              -@categories.each do |c|
+              -$categories.each do |c|
                 %option{:value=>c.id,:selected=>c.id==@conflict.category_id}=t("m.category_id.#{c.name.slug("_")}")
 
 
@@ -219,7 +219,7 @@
               -if @conflict.types.any?
                 .required=f.error_message_on "type_#{@conflict.c_types.order('ordering').first.type_id}"
                 -@conflict.c_types.order('ordering').each_with_index do |type,i|
-                  %select.type.basic_input{:name=>"type_#{type.type_id}",:id=>"type_#{i}"}= @alltypeoptions.html_safe
+                  %select.type.basic_input{:name=>"type_#{type.type_id}",:id=>"type_#{i}"}= $alltypeoptions.html_safe
                   %br/
                   %br/
             %a#add_type.notr{:style=>'cursor:pointer',:onclick=>'addType()'}=t("f.conflict.add_another_type")
@@ -231,16 +231,18 @@
         :javascript
           $(document).ready(function(){
             $('#category option[value=11]').remove();
-            types = #{@types.to_json.html_safe}
-            alltypes = #{@alltypes.to_json.html_safe}
-            categories = #{@categories.to_json.html_safe}
-            cats = {};
-            $.each(categories, function(i,v){
-              cats[v['category']['id']] = {name: v['category']['name'], types: []};
-            });
-            $.each(alltypes, function(i,v){
-              type = v['type'];
-              cats[type['category_id']]['types'].push([type['id'],type['name']])
+            $.getJSON("/data/types.json",function(data){
+              types = data[0];
+              alltypes = data[1];
+              categories = #{$categories.to_json.html_safe}
+              cats = {};
+              $.each(categories, function(i,v){
+                cats[v['category']['id']] = {name: v['category']['name'], types: []};
+              });
+              $.each(alltypes, function(i,v){
+                type = v['type'];
+                cats[type['category_id']]['types'].push([type['id'],type['name']])
+              });
             });
             if ($('#product_57').prop('checked')==false) {
               $('#other_products').hide();
@@ -257,7 +259,7 @@
             sel = document.createElement('select');
             $(sel).attr('id', 'type_'+id);
             $(sel).attr('class', 'type basic_input');
-            $(sel).html("#{@alltypeoptions.html_safe}");
+            $(sel).html("#{$alltypeoptions.html_safe}");
             $('.types').append(sel);
             $('.types').append('<br/><br/>');
           }
@@ -310,7 +312,7 @@
             %p.description= t("f.conflict.check_multiple_if_necessary")
             %table{:style=>'width:100%'}
               %tbody
-                -@products.each_with_index do |p,i|
+                -$products.each_with_index do |p,i|
                   -if i%4 == 0
                     %tr
                   %td.quart
@@ -503,20 +505,20 @@
             %label{:for=>"conflict_status_id"}= t("f.conflict.intensity_of_conflict")
             .required=f.error_message_on :status_id
             %p.description= t("f.conflict.at_highest_level")
-            -#=f.select :status_id, :collection => @statuses, :fields=>[:name, :id], :include_blank => true, :id => 'status_id', :class => 'basic_input'
+            -#=f.select :status_id, :collection => $statuses, :fields=>[:name, :id], :include_blank => true, :id => 'status_id', :class => 'basic_input'
           %select.basic_input#conflict_status_id{:name=>"conflict[status_id]"}
             %option
-            -@statuses.each do |c|
+            -$statuses.each do |c|
               %option{:value=>c.id,:selected=>c.id==@conflict.status_id}=t("m.status_id.#{c.name.slug("_")}")
 
 
           .group
             %label{:for=>"conflict_reaction_id"}= t("f.conflict.when_did_mobilization_begin")
             .required=f.error_message_on :reaction_id
-            -#=f.select :reaction_id, :collection => @reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
+            -#=f.select :reaction_id, :collection => $reactions, :fields=>[:name, :id], :include_blank => true, :id => 'reaction_id', :class => 'basic_input'
           %select.basic_input#conflict_reaction_id{:name=>"conflict[reaction_id]"}
             %option
-            -@reactions.each do |c|
+            -$reactions.each do |c|
               %option{:value=>c.id,:selected=>c.id==@conflict.reaction_id}=t("m.reaction_id.#{c.name.slug("_")}")
 
 
@@ -561,7 +563,7 @@
             %p.description= t("f.conflict.check_all_that_apply")
             %table{:style=>'width:100%'}
               %tbody
-                -@mobgroups.each_with_index do |p,i|
+                -$mobgroups.each_with_index do |p,i|
                   -if i%3 == 0
                     %tr
                   %td.third
@@ -588,7 +590,7 @@
             %p.description= t("f.conflict.check_all_that_apply")
             %table#mobform{:style=>'width:100%'}
               %tbody
-                -@mobforms.each_with_index do |p,i|
+                -$mobforms.each_with_index do |p,i|
                   -if i%3 == 0
                     %tr
                   %td.third
@@ -651,7 +653,7 @@
                     %th.imprad{:valign=>'bottom'}
                       = t("f.conflict.p")
                 %tbody
-                  -@impacts[0].each_with_index do |p,i|
+                  -$impacts[0].each_with_index do |p,i|
                     -if i%3 == 0
                       %tr
                     %td.implab{:valign=>'bottom'}
@@ -690,7 +692,7 @@
                     %th.imprad{:valign=>'bottom'}
                       = t("f.conflict.p")
                 %tbody
-                  -@impacts[1].each_with_index do |p,i|
+                  -$impacts[1].each_with_index do |p,i|
                     -if i%3 == 0
                       %tr
                     %td.implab{:valign=>'bottom'}
@@ -729,7 +731,7 @@
                     %th.imprad{:valign=>'bottom'}
                       = t("f.conflict.p")
                 %tbody
-                  -@impacts[2].each_with_index do |p,i|
+                  -$impacts[2].each_with_index do |p,i|
                     -if i%3 == 0
                       %tr
                     %td.implab{:valign=>'bottom'}
@@ -794,7 +796,7 @@
             %table{:style=>'width:100%'}
               %tbody
                 -ps = @conflict.project_status.id unless @conflict.project_status.nil?
-                -@project_statuses.each_with_index do |p,i|
+                -$project_statuses.each_with_index do |p,i|
                   %tr
                     %td
                       %input{:type=>'radio',:name=>'project_status',:id=>'project_status_'+p.id.to_s,:value=>p.id.to_s, :checked=>('checked' if ps and i==ps-1)}
@@ -845,7 +847,7 @@
             %p.description=t("f.conflict.check_all_outcomes_that_apply")
             %table{:style=>'width:100%'}
               %tbody
-                -@conflict_events.each_with_index do |p,i|
+                -$conflict_events.each_with_index do |p,i|
                   -if i%2 == 0
                     %tr
                   %td.half

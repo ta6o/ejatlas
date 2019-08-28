@@ -199,28 +199,6 @@ Admin.controllers :conflicts do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
     redirect to "/not_authorized" unless current_account.approved and current_account.confirmed
-    @countries = Country.all.order(:slug).select("name","id")
-    @categories = Category.all.order :id
-    @alltypes = Type.where('category_id is not null').order('name asc')
-    @types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
-    @alltypeoptions = ""
-    @categories.each do |c|
-      @types.push c.types.all
-      @alltypeoptions += "<option value='0' disabled='disabled'>#{t("m.category_id.#{c.name.slug("_")}")}</option>"
-      c.types.each do |ct|
-        @alltypeoptions += "<option value='#{ct.id.to_s}'>#{t("m.types.#{ct.name.slug("_")}")}</option>"
-      end
-      @alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
-    end
-    @alltypeoptions += "<option value='0'>Delete</option>"
-    @products = Admin.setOrder 4, Product.order('name asc')
-    @impacts = [EnvImpact.all, HltImpact.all, SecImpact.all]
-    @statuses = Status.all
-    @reactions = Reaction.all
-    @mobgroups = Admin.setOrder 3, MobilizingGroup.order('name asc')
-    @mobforms = Admin.setOrder 3, MobilizingForm.order('name asc')
-    @project_statuses = ProjectStatus.all.order :id
-    @conflict_events = Admin.setOrder 2, ConflictEvent.order('name asc')
     @lat = 0
     @lon = 0
   end

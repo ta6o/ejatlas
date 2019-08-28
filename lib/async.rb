@@ -855,6 +855,20 @@ class AsyncTask
     end
 
     if params["filter"] == "on" or params["reindex"] == "on"
+      alltypes = Type.where('category_id is not null').order('name asc')
+      types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
+      alltypeoptions = ""
+      categories.each do |c|
+        types.push c.types.all
+        alltypeoptions += "<option value='0' disabled='disabled'>#{t("m.category_id.#{c.name.slug("_")}")}</option>"
+        c.types.each do |ct|
+          alltypeoptions += "<option value='#{ct.id.to_s}'>#{t("m.types.#{ct.name.slug("_")}")}</option>"
+        end
+        alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
+      end
+      alltypeoptions += "<option value='0'>Delete</option>"
+      File.open("#{Dir.pwd}/public/data/types.json","w") {|f| f << [types,alltypes].to_json}
+      File.open("#{Dir.pwd}/public/data/alltypeoptions.html","w") {|f| f << alltypeoptions}
       total = Tag.count
       puts "Updating tags...".green if total > 0
       t0 = Time.now
