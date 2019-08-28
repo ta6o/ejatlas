@@ -1195,72 +1195,74 @@
                     %strong=t("f.conflict.please_save_form_after_uploading")
                 -else
                   %a#n_document.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
-            #current_documents
-              -@conflict.images.where(:locale=>I18n.locale).order(:pid).each do |d|
-                .document
-                  %br
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
-                  -if @conflict.native_locale?
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-3
-                        %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                        .center-text
-                          [[IMAGE]]
-                      .col-md-9
-                        .row
-                          .col-md-9
-                            %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                            %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>d.title}
+                #current_documents
+                  %h4=t("f.conflict.images")
+                  -@conflict.images.where(:locale=>I18n.locale).order(:pid).each do |d|
+                    .document
+                      %br
+                      %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                      -if @conflict.native_locale?
+                        .row{:style=>'margin-top:8px;'}
                           .col-md-3
-                            %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
-                            -#%input{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
-                        %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
-                  -else
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-3
-                        %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                        .center-text
-                          [[IMAGE]]
-                      .col-md-9
-                        .row
+                            %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                            .center-text
+                              [[IMAGE]]
                           .col-md-9
-                            %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                            .row
+                              .col-md-9
+                                %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                                %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>d.title}
+                              .col-md-3
+                                %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
+                                -#%input{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                            %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+                      -else
+                        .row{:style=>'margin-top:8px;'}
+                          .col-md-3
+                            %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                            .center-text
+                              [[IMAGE]]
+                          .col-md-9
+                            .row
+                              .col-md-9
+                                %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                                %p
+                                  %b="#{$iso639[@conflict.original_locale]}:"
+                                  = d.title
+                                %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>(@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].title : "")}
+                              .col-md-3
+                                %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
+                                -#%input.yestr{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
                             %p
                               %b="#{$iso639[@conflict.original_locale]}:"
-                              = d.title
-                            %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>(@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].title : "")}
-                          .col-md-3
-                            %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
-                            -#%input.yestr{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
-                        %p
-                          %b="#{$iso639[@conflict.original_locale]}:"
-                          = d.description
-                        %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= (@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].description : "")
+                              = d.description
+                            %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= (@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].description : "")
 
-              -@conflict.documents.where(:locale=>I18n.locale).order(:pid).each do |d|
-                -next if d and d.copied?
-                .document
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                  -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
-                    .row{:style=>'margin-top:8px;background:#aaa;'}
-                      .col-md-3
-                        %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                      .col-md-9
-                        .row
+                  %h4=t("f.conflict.documents")
+                  -@conflict.documents.where(:locale=>I18n.locale).order(:pid).each do |d|
+                    -next if d and d.copied?
+                    .document
+                      %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                      -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
+                        .row{:style=>'margin-top:8px;background:#aaa;'}
+                          .col-md-3
+                            %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
                           .col-md-9
+                            .row
+                              .col-md-9
+                                %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                                %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
+                              .col-md-3
+                                %a.d_document.pull-right.btn=t("f.conflict.remove")
+                            %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+                      -else
+                        .row{:style=>'margin-top:8px;'}
+                          .col-md-10
                             %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
                             %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
-                          .col-md-3
+                          .col-md-2
                             %a.d_document.pull-right.btn=t("f.conflict.remove")
                         %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
-                  -else
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-10
-                        %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                        %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
-                      .col-md-2
-                        %a.d_document.pull-right.btn=t("f.conflict.remove")
-                    %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
 
             :javascript
               var uploading = false;
@@ -1547,6 +1549,16 @@
                     ); 
                   } 
                 });
+
+          .group
+            %br/
+            %label= t("f.conflict.tags")
+            -if @conflict.tags.any?
+              %ul{:style=>"list-style-type: none; padding: 0;"}
+                -@conflict.tags.each do |t|
+                  %li
+                    .pull-left= t.name
+                    %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
 
 
 
