@@ -1400,15 +1400,16 @@
 
           .group
             %br/
-            %label= t("f.conflict.tags")
+            %label.pull-left= t("f.conflict.tags")
+            %a#atag.pull-right.btn=t("f.conflict.add_tag")
+            %a#ctag.pull-right.btn=t("f.conflict.create_tag")
+            %hr/
             -if @conflict.tags.any?
               %ul{:style=>"list-style-type: none; padding: 0;"}
                 -@conflict.tags.each do |t|
                   %li.clearfix
-                    .pull-left= t.name
+                    .pull-left{:title=>(t.descrition and t.description.length > 0 ? t.description : "No tag description")}= t.name
                     %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
-            %a#atag.pull-right.btn=t("f.conflict.add_tag")
-            %a#ctag.pull-right.btn=t("f.conflict.create_tag")
 
 
         .col-md-8
