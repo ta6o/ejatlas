@@ -535,6 +535,8 @@
                     &nbsp;
                     %input{:type=>"hidden",:name=>"related_conflict_add_#{rel.id}"}
               :javascript
+                var relateds = [];
+              -#:javascript
                 var relateds = #{@cjson.html_safe};
 
 
@@ -1406,7 +1408,7 @@
             .clearfix
               .pull-left
                 %input#tag.autocomplete{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags",'data-source'=>'tag_names'}
-              :javascript
+              -#:javascript
                 var tag_names = #{@tjson ? @tjson.to_json.html_safe : []};
 
               .pull-right
