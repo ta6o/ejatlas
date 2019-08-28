@@ -930,7 +930,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def inspect
-    "##{self.id.to_s.rjust(4,"0")}: #{self.name} (#{(self.attributes.values-[nil]).length}/#{self.attributes.length})"
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name.yellow} (#{(self.attributes.values-[nil]).length.to_s.green}/#{self.attributes.length.to_s.blue})"
   end
 
   private
@@ -958,7 +958,7 @@ class ConflictText < ActiveRecord::Base
   belongs_to :conflict
 
   def inspect
-    "##{self.conflict_id.to_s.rjust(4,"0")}-#{self.locale}-#{self.id}: #{self.name} (#{(self.attributes.values-[nil]).length}/#{self.attributes.length})"
+    "##{self.conflict_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.cyan}-#{self.id.to_s.green}: #{self.name.yellow} (#{(self.attributes.values-[nil]).length.to_s.green}/#{self.attributes.length.to_s.blue})"
   end
 end
 
