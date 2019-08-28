@@ -50,6 +50,7 @@ Admin.controllers :conflicts do
       'document'=>{},
       'image'=>{},
       'related'=>{},
+      'tag'=>{},
     }
 
     unless params.has_key?("translate_only")
@@ -561,6 +562,16 @@ Admin.controllers :conflicts do
                 next 
               elsif w['add'] and !rel
                 @conflict.related_to << Conflict.find(l.to_i)
+              end
+            end
+          elsif k == "tag"
+            v.each do |l,w|
+              rel = Tag.both(@conflict.id,l.to_i)
+              if w['remove'] and rel
+                rel.destroy
+                next 
+              elsif w['add'] and !rel
+                @conflict.tags << Tag.find(l.to_i)
               end
             end
           else

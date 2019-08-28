@@ -1412,11 +1412,12 @@
                 %a#atag.pull-right.btn=t("f.conflict.add_tag")
             %hr/
             %ul{:style=>"list-style-type: none; padding: 0;"}
-              -if @conflict.tags.any?
-                -@conflict.tags.each do |t|
-                  %li.clearfix
-                    .pull-left{:title=>(t.description and t.description.length > 0 ? t.description : "No tag description")}= t.name
-                    %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
+              -@conflict.tags.each do |t|
+                %li{:id=>"tag_#{t.id}"}
+                  %span= t.name
+                  %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{t.id})"} Remove
+                  &nbsp;
+                  %input{:type=>"hidden",:name=>"related_conflict_add_#{t.id}"}
 
 
         .col-md-8
