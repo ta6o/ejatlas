@@ -133,8 +133,19 @@ Admin.controllers :conflicts do
               rd.save
               id = rd.id
             end
+          elsif kk[0] == "related" and false
+            rr = Conflict.where(:id=>kk[-1])
+            unless rr.empty?
+              rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
+            end
+            id = rr.first.id
+          elsif kk[0] == "tag" and false
+            rr = Tag.where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
+            if rr.empty?
+              rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
+            end
+            id = rr.first.id
           else
-            puts kk
             rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
             if rr.empty?
               rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
@@ -450,7 +461,7 @@ Admin.controllers :conflicts do
         }
         updated['refs'].each do |k,v|
           v.each do |l,w|
-            #puts "#{k}: #{l},#{w}".green
+            puts "#{k}: #{l},#{w}".green
             next unless multies.has_key?(k)
             ref = multies[k][:class].where(:id=>l)
             if ref.any?
@@ -556,6 +567,7 @@ Admin.controllers :conflicts do
         end
         updated['refs'].each do |k,v|
           if k == "related"
+            puts v.join(", ").magenta
             v.each do |l,w|
               rel = ConflictRelation.both(@conflict.id,l.to_i)
               if w['remove'] and rel
@@ -566,6 +578,7 @@ Admin.controllers :conflicts do
               end
             end
           elsif k == "tag"
+            puts v.join(", ").cyan
             v.each do |l,w|
               rel = Tag.both(@conflict.id,l.to_i)
               if w['remove'] and rel
