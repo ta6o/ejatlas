@@ -133,18 +133,8 @@ Admin.controllers :conflicts do
               rd.save
               id = rd.id
             end
-          elsif kk[0] == "related" and false
-            rr = Conflict.where(:id=>kk[-1])
-            unless rr.empty?
-              rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
-            end
-            id = rr.first.id
-          elsif kk[0] == "tag" and false
-            rr = Tag.where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
-            if rr.empty?
-              rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
-            end
-            id = rr.first.id
+          elsif kk[0] == "related"
+          elsif kk[0] == "tag"
           else
             rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
             if rr.empty?
