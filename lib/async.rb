@@ -858,7 +858,7 @@ class AsyncTask
       alltypes = Type.where('category_id is not null').order('name asc')
       types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
       alltypeoptions = ""
-      categories.each do |c|
+      $categories.each do |c|
         types.push c.types.all
         alltypeoptions += "<option value='0' disabled='disabled'>#{t("m.category_id.#{c.name.slug("_")}")}</option>"
         c.types.each do |ct|
