@@ -855,11 +855,11 @@ class AsyncTask
     end
 
     if params["filter"] == "on" or params["reindex"] == "on"
-      alltypes = Type.where('category_id is not null').order('name asc')
+      alltypes = Type.where('category_id is not null').order('name asc').select("name,slug,id,category_id")
       types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
       alltypeoptions = ""
       $categories.each do |c|
-        types.push c.types.all
+        types.push c.types.all.select("name,slug,id,category_id")
         alltypeoptions += "<option value='0' disabled='disabled'>#{I18n.t("m.category_id.#{c.name.slug("_")}")}</option>"
         c.types.each do |ct|
           alltypeoptions += "<option value='#{ct.id.to_s}'>#{I18n.t("m.types.#{ct.name.slug("_")}")}</option>"
