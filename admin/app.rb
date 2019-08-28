@@ -64,7 +64,7 @@ class Admin < Padrino::Application
   if Conflict.table_exists?
     $countries = Country.all.order(:slug).select("name","id")
     $categories = Category.all.order :id
-    $alltypeoptions = File.read("#{Dir.pwd}/public/data/alltypeoptions.html")
+    $alltypeoptions = File.exists?("#{Dir.pwd}/public/data/alltypeoptions.html") ? File.read("#{Dir.pwd}/public/data/alltypeoptions.html") : ""
     $products = Admin.setOrder 4, Product.order('name asc')
     $impacts = [EnvImpact.all, HltImpact.all, SecImpact.all]
     $statuses = Status.all
