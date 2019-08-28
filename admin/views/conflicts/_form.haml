@@ -1403,13 +1403,12 @@
             %br/
             .clearfix
               %label.pull-left{:style=>"margin:0"}= t("f.conflict.tags")
-              %a#ctag.pull-right.btn=t("f.conflict.create_tag")
             .clearfix
               .pull-left
                 %input#tag.autocomplete{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags",'data-source'=>'tag_names'}
-
               .pull-right
-                %a#atag.pull-right.btn=t("f.conflict.add_tag")
+                %a#ctag.btn=t("f.conflict.create_tag")
+
             %hr/
             %ul{:style=>"list-style-type: none; padding: 0;"}
               -@conflict.tags.each do |t|

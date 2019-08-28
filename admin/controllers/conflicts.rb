@@ -427,14 +427,14 @@ Admin.controllers :conflicts do
   end
 
   put :update, :with => :id do
-    Admin.color_pp params, "params", "yellow", true
+    #Admin.color_pp params, "params", "yellow", true
     #pp params["id"]
     #pp params["conflict"]["slug"]
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
 
     updated = Admin.correctForm(params)
-    Admin.color_pp updated, "updated", "green", true
+    #Admin.color_pp updated, "updated", "green", true
     @conflict = Conflict.find(updated[:id])
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
@@ -463,7 +463,7 @@ Admin.controllers :conflicts do
         }
         updated['refs'].each do |k,v|
           v.each do |l,w|
-            puts "#{k}: #{l},#{w}".green
+            #puts "#{k}: #{l},#{w}".green
             next unless multies.has_key?(k)
             ref = multies[k][:class].where(:id=>l)
             if ref.any?
