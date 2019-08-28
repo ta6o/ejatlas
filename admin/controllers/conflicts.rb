@@ -569,7 +569,7 @@ Admin.controllers :conflicts do
         end
         updated['refs'].each do |k,v|
           if k == "related"
-            puts v.to_a.flatten.join(", ").magenta
+            #puts v.to_a.flatten.join(", ").magenta
             v.each do |l,w|
               rel = ConflictRelation.both(@conflict.id,l.to_i)
               if w['remove'] and rel
@@ -580,9 +580,9 @@ Admin.controllers :conflicts do
               end
             end
           elsif k == "tag"
-            puts v.to_a.flatten.join(", ").cyan
+            #puts v.to_a.flatten.join(", ").cyan
             v.each do |l,w|
-              rel = Tag.both(@conflict.id,l.to_i)
+              rel = CTag.where(conflict_id: @conflict.id, tag_id: l.to_i).first
               if w['remove'] and rel
                 rel.destroy
                 next 
