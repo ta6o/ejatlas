@@ -875,7 +875,7 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per account)      "
       end
-      print "\r  #{(((total+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/total).round(3)}s per account) #{"#{(Time.now-t0).to_i}s".yellow}" if cs.any?
+      print "\r  #{(((total+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(total).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/total).round(3)}s per account) #{"#{(Time.now-t0).to_i}s".yellow}" if cs.any?
       puts if cs.any?
 
       filterdata = {}
