@@ -271,7 +271,7 @@
               $source = eval($('.autocomplete:focus').attr('data-source'));
               var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
               response( $.grep( $source, function( value ) {
-                value = value.name || value;
+                value = value.value || value;
                 return matcher.test( value );
               }) );
             },

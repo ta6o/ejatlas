@@ -867,8 +867,8 @@ class AsyncTask
         alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
       end
       alltypeoptions += "<option value='0'>Delete</option>"
-      cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:attributes).map{|c|{"name":c["name"],"id":c["conflict_id"]}}
-      tjson = Tag.order('slug').select('name,id').to_a.map(&:attributes)
+      cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["conflict_id"]}}
+      tjson = Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}
       File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << [cjson,tjson].to_json}
       File.open("#{Dir.pwd}/public/data/types.json","w") {|f| f << [types,alltypes].to_json}
       File.open("#{Dir.pwd}/public/data/alltypeoptions.html","w") {|f| f << alltypeoptions}
