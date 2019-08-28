@@ -25,7 +25,7 @@
         = I18n.t("emails.confirm.please_mark_your_form_as")
         %br/
         %br/
-        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{I18n.locale == :en ? "" : I18n.locale.to_s+'.')}"}/accounts/confirm?id=#{@account.id}&hash=#{@account.surname}",:target=>'_blank'}
+        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{(I18n.locale == :en ? '' : I18n.locale.to_s+'.')}")}/accounts/confirm?id=#{@account.id}&hash=#{@account.surname}",:target=>'_blank'}
           %span= I18n.t("emails.confirm.please_click_here_to_confirm")
         %br/
         %br/
