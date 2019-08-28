@@ -1408,7 +1408,7 @@
               %ul{:style=>"list-style-type: none; padding: 0;"}
                 -@conflict.tags.each do |t|
                   %li.clearfix
-                    .pull-left{:title=>(t.descrition and t.description.length > 0 ? t.description : "No tag description")}= t.name
+                    .pull-left{:title=>(t.description and t.description.length > 0 ? t.description : "No tag description")}= t.name
                     %a.d_actor.pull-right.btn.notr=t("f.conflict.remove")
 
 
