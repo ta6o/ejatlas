@@ -280,7 +280,8 @@
               $item = $('.autocomplete:focus');
               $item.val( "" );
               $id = $item.attr('id');
-              $ul = $item.nextAll('ul')
+              $ul = $item.closest(".clearfix").nextAll('ul')
+              console.log($ul)
               $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
               $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
               return false;

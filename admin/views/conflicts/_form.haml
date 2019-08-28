@@ -527,7 +527,8 @@
               %label= t("f.conflict.is_this_conflict_directly_related")
               .required=f.error_message_on :related_conflict_id
               %p.description=t("f.conflict.please_enter_name_conflict_as")
-              %input#related.autocomplete{:type=>'text','data-source'=>'relateds'}
+              .clearfix
+                %input#related.autocomplete{:type=>'text','data-source'=>'relateds'}
               %br/
               %ul.autoc
                 -@conflict.related.each do |rel|
@@ -1410,8 +1411,8 @@
               .pull-right
                 %a#atag.pull-right.btn=t("f.conflict.add_tag")
             %hr/
-            -if @conflict.tags.any?
-              %ul{:style=>"list-style-type: none; padding: 0;"}
+            %ul{:style=>"list-style-type: none; padding: 0;"}
+              -if @conflict.tags.any?
                 -@conflict.tags.each do |t|
                   %li.clearfix
                     .pull-left{:title=>(t.description and t.description.length > 0 ? t.description : "No tag description")}= t.name
