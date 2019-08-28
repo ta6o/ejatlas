@@ -1400,9 +1400,14 @@
 
           .group
             %br/
-            %label.pull-left= t("f.conflict.tags")
-            %a#atag.pull-right.btn=t("f.conflict.add_tag")
-            %a#ctag.pull-right.btn=t("f.conflict.create_tag")
+            .clearfix
+              %label.pull-left= t("f.conflict.tags")
+              %a#ctag.pull-right.btn=t("f.conflict.create_tag")
+            .clearfix
+              .pull-left
+                %input#tag{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags"}
+              .pull-right
+                %a#atag.pull-right.btn=t("f.conflict.add_tag")
             %hr/
             -if @conflict.tags.any?
               %ul{:style=>"list-style-type: none; padding: 0;"}
