@@ -536,7 +536,7 @@
                     %span= rel.name
                     %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
                     &nbsp;
-                    %input{:type=>"hidden",:name=>"related_conflict_add_#{rel.id}"}
+                    %input{:type=>"hidden",:name=>"related_add_#{rel.id}"}
 
 
         .col-md-3
@@ -1415,9 +1415,9 @@
               -@conflict.tags.each do |t|
                 %li{:id=>"tag_#{t.id}"}
                   %span= t.name
-                  %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{t.id})"} Remove
+                  %a{:style=>'cursor:pointer',:onclick=>"remove_li('tag',#{t.id})"} Remove
                   &nbsp;
-                  %input{:type=>"hidden",:name=>"related_conflict_add_#{t.id}"}
+                  %input{:type=>"hidden",:name=>"tag_add_#{t.id}"}
 
 
         .col-md-8
