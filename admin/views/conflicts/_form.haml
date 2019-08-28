@@ -536,10 +536,6 @@
                     %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
                     &nbsp;
                     %input{:type=>"hidden",:name=>"related_conflict_add_#{rel.id}"}
-              :javascript
-                var relateds = [];
-              -#:javascript
-                var relateds = #{@cjson.html_safe};
 
 
         .col-md-3
@@ -1410,8 +1406,6 @@
             .clearfix
               .pull-left
                 %input#tag.autocomplete{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags",'data-source'=>'tag_names'}
-              -#:javascript
-                var tag_names = #{@tjson ? @tjson.to_json.html_safe : []};
 
               .pull-right
                 %a#atag.pull-right.btn=t("f.conflict.add_tag")

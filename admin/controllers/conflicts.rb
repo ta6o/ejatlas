@@ -274,8 +274,6 @@ Admin.controllers :conflicts do
       @title = 'New Conflict'
       @name = 'New Conflict'
       @conflict = Conflict.new
-      @cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id,id').to_a.map(&:name)
-      @tjson = Tag.order('slug').select('name').to_a.map(&:name)
       render 'conflicts/new'
     end
   end

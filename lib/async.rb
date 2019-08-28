@@ -867,6 +867,9 @@ class AsyncTask
         alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
       end
       alltypeoptions += "<option value='0'>Delete</option>"
+      cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id,id').to_a.map(&:name)
+      tjson = Tag.order('slug').select('name').to_a.map(&:name)
+      File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << [cjson,tjson].to_json}
       File.open("#{Dir.pwd}/public/data/types.json","w") {|f| f << [types,alltypes].to_json}
       File.open("#{Dir.pwd}/public/data/alltypeoptions.html","w") {|f| f << alltypeoptions}
       total = Tag.count

@@ -239,50 +239,55 @@
 
       :javascript
         $full = false;
-        (function( $ ) {
-          $.ui.autocomplete.prototype.options.autoSelect = true;
-          $( "body" ).on( "blur", ".autocomplete", function( event ) {
-            var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
-            if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
-            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
-            autocomplete.widget().children( ".ui-menu-item" ).each(function() {
-              var item = $( this )
-              if ( matcher.test( item.value || item ) ) {
-                autocomplete.selectedItem = item;
-                return false;
-              } else {
-                $('.autocomplete').val('');
-                return false
+        $.getJSON("/data/autocomplete.json",function(data){
+          relateds = data[0];
+          tag_names = data[1];
+          (function( $ ) {
+            $.ui.autocomplete.prototype.options.autoSelect = true;
+            $( "body" ).on( "blur", ".autocomplete", function( event ) {
+              var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
+              if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
+              var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
+              autocomplete.widget().children( ".ui-menu-item" ).each(function() {
+                var item = $( this )
+                if ( matcher.test( item.value || item ) ) {
+                  autocomplete.selectedItem = item;
+                  return false;
+                } else {
+                  $('.autocomplete').val('');
+                  return false
+                }
+              });
+              if ( autocomplete.selectedItem ) {
+                autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
               }
             });
-            if ( autocomplete.selectedItem ) {
-              autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
+
+          }( jQuery ));
+          $( ".autocomplete" ).autocomplete({
+            minLength: 2,
+            position: { my : "right top", at: "right bottom" },
+            source: function( request, response ) {
+              $source = eval($('.autocomplete:focus').attr('data-source'));
+              var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+              response( $.grep( $source, function( value ) {
+                value = value.value || value;
+                return matcher.test( value );
+              }) );
+            },
+            select: function( event, ui ) {
+              console.log(ui)
+              $item = $('.autocomplete:focus');
+              $item.val( "" );
+              $id = $item.attr('id');
+              $ul = $item.nextAll('ul')
+              $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
+              $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
+              return false;
             }
           });
-
-        }( jQuery ));
-        $( ".autocomplete" ).autocomplete({
-          minLength: 2,
-          position: { my : "right top", at: "right bottom" },
-          source: function( request, response ) {
-            $source = eval($('.autocomplete:focus').attr('data-source'));
-            var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
-            response( $.grep( $source, function( value ) {
-              value = value.value || value;
-              return matcher.test( value );
-            }) );
-          },
-          select: function( event, ui ) {
-            console.log(ui)
-            $item = $('.autocomplete:focus');
-            $item.val( "" );
-            $id = $item.attr('id');
-            $ul = $item.nextAll('ul')
-            $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
-            $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
-            return false;
-          }
         });
+
         function remove_li (name, id) { 
           $target = $('li#'+name+'_'+id) 
           $target.find('span').css('text-decoration','line-through');
