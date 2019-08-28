@@ -288,8 +288,6 @@ Admin.controllers :conflicts do
       roles = current_account.roles.map(&:name)
       p roles
       if (["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or (roles.include?("locale-#{I18n.locale}") and roles.include?("editor"))) and not params.has_key?("translate")
-        @cjson = ConflictText.select("conflict_id","name","id").where(approval_status: 'approved',:locale=>I18n.locale).to_json
-        @tjson = Tag.order('slug').select('name').to_a.map(&:name)
         @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
         @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
         @saves = []
@@ -299,8 +297,6 @@ Admin.controllers :conflicts do
         render 'conflicts/edit'
       elsif roles.include?("locale-#{I18n.locale}") and roles.include?("translator") or params.has_key?("translate")
         @translate_only = true
-        @cjson = ConflictText.select("conflict_id","name","id").where(approval_status: 'approved',:locale=>I18n.locale).to_json
-        @tjson = Tag.order('slug').select('name').to_a.map(&:name)
         @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
         @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
         @saves = []
