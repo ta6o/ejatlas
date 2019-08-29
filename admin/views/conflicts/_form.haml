@@ -1392,9 +1392,11 @@
               %div{:style=>"max-height:240px;overflow-y:auto"}
                 %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
                   %tdata
+                    -scols = {"NEW"=>"0C0","UPD"=>"333","ERR"=>"C00"}
                     -@saves.reverse.each do |save|
-                      -scols = {"NEW"=>"0C0","UPD"=>"333","ERR"=>"C00"}
-                      %tr{:style=>"color:##{scols[save[0]]};}"}
+                      -scol = scols[save[0]]
+                      -scol = "333" unless scol
+                      %tr{:style=>"color:##{scol};}"}
                         %td=save[4]
                         %td
                           %small=Account.find(save[3].to_i).name
