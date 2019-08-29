@@ -685,6 +685,8 @@ Admin.controllers :conflicts do
             #puts current_account.role.yellow
             if ['admin','editor'].include?(current_account.role)
               $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+            else
+              $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at:@conflict.saved_at}})
             end
 
             if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
