@@ -778,8 +778,10 @@ Admin.controllers :conflicts do
   end
 
   get "/modal/tag/:tid/:cid" do
-    @cid = params[:tid]
-    unless @tag = Tag.find(params[:tid])
+    @cid = params[:cid]
+    tid =  params[:tid]
+    if tid > 0 and @tag = Tag.find(tid)
+    else
       @tag = Tag.new
     end
     render 'conflicts/tag_modal', :layout => false
