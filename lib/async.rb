@@ -650,7 +650,7 @@ class AsyncTask
             c.save
             times[:save] += Time.now - tc
             tc = Time.now
-            client.index index: "atlas_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
+            client.update index: "atlas_#{locale}", type: 'conflict', id: c.id, body: {doc: c.elastic(locale})
             times[:index] += Time.now - tc
             markers << c.as_marker if c.approval_status == "approved"
             print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "

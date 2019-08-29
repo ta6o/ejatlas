@@ -397,7 +397,7 @@ Admin.controllers :conflicts do
     @conflict = Conflict.find(params[:id])
     "nack"
     if @conflict and @conflict.update_attribute("modified_at",Time.now) 
-      $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+      $client.update index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: { doc: @conflict.elastic }
       return "ack" 
     end
   end
@@ -725,7 +725,7 @@ Admin.controllers :conflicts do
     conflict.approval_status = 'approved'
     ct.approval_status = 'approved'
     if conflict.save(:validate=>false) and ct.save(:validate=>false)
-      $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: conflict.elastic
+      $client.update index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"approved"}}
       flash[:notice] = 'Conflict was approved by your consent.'
     else
       flash[:error] = 'Unable to approve Conflict!'
@@ -740,7 +740,7 @@ Admin.controllers :conflicts do
     conflict.approval_status = 'queued'
     ct.approval_status = 'queued'
     if conflict.save(:validate=>false) and ct.save(:validate=>false)
-      $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: conflict.elastic
+      $client.update index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"queued"}}
       flash[:notice] = 'Conflict was disapproved by your consent.'
     else
       flash[:error] = 'Unable to disapprove Conflict!'
