@@ -29,14 +29,13 @@
                 %td{:style=>"width:24%"}
                   %span=Category.find(conflict["category_id"]).name.gsub(/\s*\([^\)]+\)\s*/,"") if conflict["category_id"]
                 %td{:style=>"width:16%"}
-                  %span
-                    -if ["admin","editor"].include?(current_account.role) and conflict["edited_by"] and @accounts
-                      %a{:href=>"/accounts/edit/#{conflict["edited_by"]}"}=@accounts[conflict["edited_by"]]
-                    -else
-                      -if conflict["account_id"] and @accounts
-                        %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
-                      -elsif conflict["account_id"] 
-                        %span= Account.find(conflict["account_id"]).name
+                  -if ["admin","editor"].include?(current_account.role) and conflict["edited_by"] and @accounts
+                    %a{:href=>"/accounts/edit/#{conflict["edited_by"]}"}=@accounts[conflict["edited_by"]]
+                  -else
+                    -if conflict["account_id"] and @accounts
+                      %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
+                    -elsif conflict["account_id"] 
+                      %span= Account.find(conflict["account_id"]).name
                 %td{:style=>"width:92px"}
                   -if conflict["saved_at"]
                     %span=Time.parse(conflict["saved_at"].to_s).strftime '%Y-%m-%d'
@@ -58,10 +57,13 @@
                   %td{:style=>"width:24%"}
                     %span=Category.find(conflict["category_id"]).name.gsub(/\s*\([^\)]+\)\s*/,"") if conflict["category_id"]
                   %td{:style=>"width:16%"}
-                    -if conflict["account_id"] and @accounts
-                      %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
-                    -elsif conflict["account_id"] 
-                      %span= Account.find(conflict["account_id"]).name
+                    -if ["admin","editor"].include?(current_account.role) and conflict["edited_by"] and @accounts
+                      %a{:href=>"/accounts/edit/#{conflict["edited_by"]}"}=@accounts[conflict["edited_by"]]
+                    -else
+                      -if conflict["account_id"] and @accounts
+                        %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
+                      -elsif conflict["account_id"] 
+                        %span= Account.find(conflict["account_id"]).name
                   %td{:style=>"width:92px"}
                     -if conflict["saved_at"]
                       %span=Time.parse(conflict["saved_at"].to_s).strftime '%Y-%m-%d'
