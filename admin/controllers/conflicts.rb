@@ -778,8 +778,8 @@ Admin.controllers :conflicts do
   end
 
   get "/modal/tag/:tid/:cid" do
-    @cid = params[:cid]
-    tid =  params[:tid]
+    @cid = params[:cid].to_i
+    tid =  params[:tid].to_i
     if tid > 0 and @tag = Tag.find(tid)
     else
       @tag = Tag.new
