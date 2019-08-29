@@ -1,8 +1,8 @@
 class Tag < ActiveRecord::Base
-  has_many :c_tags
+  has_many :c_tags, :dependent => :destroy
   has_many :conflicts, :through => :c_tags
 
-  has_many :f_tags
+  has_many :f_tags, :dependent => :destroy
   has_many :featureds, :through => :f_tags
 
   has_many :old_slugs, class_name: "OldSlug", as: :attachable, dependent: :destroy

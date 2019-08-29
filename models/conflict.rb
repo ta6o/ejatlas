@@ -18,37 +18,37 @@ class Conflict < ActiveRecord::Base
   belongs_to :related_conflict
   has_one :related_conflict
 
-  has_many :c_tags
+  has_many :c_tags, :dependent => :destroy
   has_many :tags, :through => :c_tags
 
-  has_many :c_types
+  has_many :c_types, :dependent => :destroy
   has_many :types, :through => :c_types
 
-  has_many :c_products
+  has_many :c_products, :dependent => :destroy
   has_many :products, :through => :c_products
 
-  has_many :c_companies
+  has_many :c_companies, :dependent => :destroy
   has_many :companies, :through => :c_companies
 
-  has_many :c_supporters
+  has_many :c_supporters, :dependent => :destroy
   has_many :supporters, :through => :c_supporters
 
-  has_many :c_mobilizing_groups
+  has_many :c_mobilizing_groups, :dependent => :destroy
   has_many :mobilizing_groups, :through => :c_mobilizing_groups
 
-  has_many :c_mobilizing_forms
+  has_many :c_mobilizing_forms, :dependent => :destroy
   has_many :mobilizing_forms, :through => :c_mobilizing_forms
 
-  has_many :c_env_impacts
+  has_many :c_env_impacts, :dependent => :destroy
   has_many :env_impacts, :through => :c_env_impacts
 
-  has_many :c_hlt_impacts
+  has_many :c_hlt_impacts, :dependent => :destroy
   has_many :hlt_impacts, :through => :c_hlt_impacts
 
-  has_many :c_sec_impacts
+  has_many :c_sec_impacts, :dependent => :destroy
   has_many :sec_impacts, :through => :c_sec_impacts
 
-  has_many :c_conflict_events
+  has_many :c_conflict_events, :dependent => :destroy
   has_many :conflict_events, :through => :c_conflict_events
 
   has_many :legislations, :dependent => :destroy
