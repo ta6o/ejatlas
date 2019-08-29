@@ -688,7 +688,7 @@ Admin.controllers :conflicts do
             #puts current_account.role.yellow
             if ['admin','editor'].include?(current_account.role)
               $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
-              $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: { edited_by: current_account.id}})
+              $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
             else
               $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
             end
