@@ -220,6 +220,7 @@ Admin.controllers :conflicts do
     if current_account
       if ["admin","editor"].include? current_account.role
         @conflicts = Admin.filter("{}", true, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status".split(","),true,"conflict","saved_at","asc").map{|x| x["_source"]}
+        puts @conflicts.first.to_json.magenta
         @accounts = Admin.filter("{}", true, "id,name".split(","),false,"account").map{|x| [x["_source"]["id"], x["_source"]["name"]]}.to_h
         @categories = Category.all.map {|c| [c.id,c.name]}.to_h
         @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
