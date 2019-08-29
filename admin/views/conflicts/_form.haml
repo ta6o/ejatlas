@@ -1397,7 +1397,7 @@
                       -scol = scols[save[0]]
                       -unless scol
                         -scol = "333" 
-                      %tr{:style=>"color:##{scol};}"}
+                      %tr{:style=>"color:##{scol};"}
                         %td=save[4]
                         %td
                           %small=Account.find(save[3].to_i).name
