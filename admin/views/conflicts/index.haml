@@ -28,7 +28,7 @@
                 %td.first=conflict["name"]
                 %td
                   %span=Category.find(conflict["category_id"]).name if conflict["category_id"]
-                %td
+                %td{:style=>"max-width:16%"}
                   %span
                     -if conflict["account_id"] and @accounts
                       %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
@@ -54,7 +54,7 @@
                   %td.first=conflict["name"]
                   %td
                     %span=Category.find(conflict["category_id"]).name if conflict["category_id"]
-                  %td
+                  %td{:style=>"max-width:16%"}
                     -if conflict["account_id"] and @accounts
                       %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
                     -elsif conflict["account_id"] 
