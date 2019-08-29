@@ -1393,7 +1393,7 @@
                 %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
                   %tdata
                     -@saves.reverse.each do |save|
-                      %tr
+                      %tr{:style=>"color:##{{"NEW"=>"0C0","UPD"=>"333","ERR"=>"C00"};}"}
                         %td=save[4]
                         %td
                           %small=Account.find(save[3].to_i).name
