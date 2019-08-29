@@ -672,8 +672,11 @@ Admin.controllers :conflicts do
           @conflict.lat = capital[1]
           @conflict.lon = capital[2]
         elsif @conflict
-          @conflict.lat = @conlfict.lat.to_f
-          @conflict.lon = @conlfict.lon.to_f
+          begin
+            @conflict.lat = @conlfict.lat.to_f
+            @conflict.lon = @conlfict.lon.to_f
+          rescue
+          end
         end
 
         @conflict.general = general
