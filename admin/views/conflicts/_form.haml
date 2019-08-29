@@ -1395,7 +1395,8 @@
                     -scols = {"NEW"=>"0C0","UPD"=>"333","ERR"=>"C00"}
                     -@saves.reverse.each do |save|
                       -scol = scols[save[0]]
-                      -scol = "333" unless scol
+                      -unless scol
+                        -scol = "333" 
                       %tr{:style=>"color:##{scol};}"}
                         %td=save[4]
                         %td
