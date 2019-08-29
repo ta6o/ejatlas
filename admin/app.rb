@@ -465,7 +465,7 @@ class Admin < Padrino::Application
     end
   end
 
-  def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type='conflict', sort='id', order='asc'
+  def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type="conflict", sort="id", order="asc"
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
     if type == "conflict"
       #puts JSON.pretty_generate(JSON.parse(filter)).yellow
@@ -475,10 +475,12 @@ class Admin < Padrino::Application
         filter = Admin.elasticify( { bool: { filter: { bool: JSON.parse( filter ) }}} )
       end
       filter = Admin.cleanup(filter)
-      result = $client.search("index"=> "atlas_#{I18n.locale}", "type"=> type, "body"=> {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+      puts {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}}.to_json.green
+      result = $client.search("index" => "atlas_#{I18n.locale}", "type" => type, "body" => {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: JSON.parse( filter ) }}} )
       filter = Admin.cleanup(filter)
+      puts {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}}.to_json.yellow
       result = $client.search("index"=> "atlas", "type"=> "doc", "body"=> {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     end
   end
