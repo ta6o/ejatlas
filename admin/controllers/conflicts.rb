@@ -788,6 +788,7 @@ Admin.controllers :conflicts do
   end
 
   post :tag do
+    cid = params[:cid].to_i
     conflict = Conflict.find cid if cid > 0
     if params['id'] and tag = Tag.find(params['id'])
       tag.update_attributes!(params)
