@@ -686,7 +686,7 @@ Admin.controllers :conflicts do
             if ['admin','editor'].include?(current_account.role)
               $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
             else
-              $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at:@conflict.saved_at}})
+              $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status}})
             end
 
             if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
@@ -911,7 +911,8 @@ Admin.controllers :conflicts do
     c = Conflict.find(params[:id].to_i)
     if c.destroy
       #puts "DELETED: Conflict ##{c.id} (#{c.name}) is sent to the depths of history."
-      redirect to "/conflicts"
+      $client.delete index:"atlas_#{I18n.locale}", type:"conflict", id: params[:id].to_i
+      redirect to "/conflicts/deleted"
     else
       redirect to "/conflicts/edit/#{c.id}"
     end
