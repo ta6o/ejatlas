@@ -777,7 +777,8 @@ Admin.controllers :conflicts do
     render 'conflicts/view'
   end
 
-  get "/modal/tag/:tid" do
+  get "/modal/tag/:tid/:cid" do
+    @cid = params[:tid]
     unless @tag = Tag.find(params[:tid])
       @tag = Tag.new
     end

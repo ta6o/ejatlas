@@ -1408,7 +1408,7 @@
               .pull-left
                 %input#tag.autocomplete{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags",'data-source'=>'tag_names'}
               .pull-right
-                %button#n_tag.btn.btn-inverse.notr{'data-toggle'=>'modal','data-target'=>'#tag-modal',:href=>"/conflicts/modal/#{@conflict.id}/tag"}=t("f.conflict.create_tag")
+                %button#n_tag.btn.notr{'data-toggle'=>'modal','data-target'=>'#tag-modal',:href=>"/conflicts/modal/tag/0/#{@conflict.id}"}=t("f.conflict.create_tag")
 
             %hr/
             %ul{:style=>"list-style-type: none; padding: 0;"}
