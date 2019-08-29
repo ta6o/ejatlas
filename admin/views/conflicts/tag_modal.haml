@@ -1,0 +1,68 @@
+.modal-dialog
+  .modal-content
+    %form#tagform{:method=>'post',:action=>'/conflicts/tag'}
+      .modal-header
+        %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+        %input{:type=>'hidden',:name=>'cid',:value=>@cid.to_s}
+        -unless @tag.new_record?
+          %input{:type=>'hidden',:name=>'id',:value=>(@tag.id)}
+        -if @tag.new_record?
+          %h3= "New Tag"
+        -else
+          %h3
+            = "Editing Tag: #{@tag.name}"
+            %small= "(##{@tag.id})"
+      .modal-body
+        .row
+          .col-md-6
+            %label Name
+            %input.i_tag#tag_name{:type=>'text',:name=>'name',:value=>(@tag.name if @tag.name), :maxlength=>255, :validate=>true}
+            %label Description
+            %textarea.i_tag#tag_description{:type=>'text',:name=>'description',:rows=>6}
+              = @tag.description if @tag.description
+          .col-md-6
+            %br/
+            %br/
+      .modal-footer
+        -if @tag.new_record?
+          %button.btn#b_tag Create
+        -else
+          %button.btn#b_tag Update
+
+        :javascript
+          var $id, $name;
+          $('#tagform').on('submit',function(e){
+            e.preventDefault();
+            $.ajax({
+              type: 'POST',
+              url: '/conflicts/tag', 
+              data: $(e.target).serialize(), 
+              success: function(data,ts){
+                data = JSON.parse(data)
+                console.log(data)
+                console.log(data['name'] == $('#tag_name').val());
+                if (data['name'] == $('#tag_name').val()){
+                  console.log(data)
+                  $id = undefined;
+                  $name = "";
+                  if ($('.'+model+'_list input[value='+data['id']+']').length == 0) {
+                    html = '<div class="tag"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-8"> <h5>'+data['name']+'</h5> </div> <div class="col-md-2"> <a class="pull-right btn" data-target="#tag" data-toggle="modal" href="/conflicts/modal/'+cid+'/'+model+'/'+data['id']+'">Edit</a> </div> <div class="col-md-2"> <input type="hidden" value="'+data['id']+'"> <a class="d_tag pull-right btn">Remove</a> </div> </div> </div>'
+                    $('.'+model+'_list').append(html)
+                  }
+                }
+                $('#tag-modal').modal('hide');
+              },
+              error: function(data,ts,error){
+                alert(ts+' '+error)
+              }
+            });
+          });
+
+          $('body').on('hidden.bs.modal', '#tag-modal', function () {
+            $(this).removeData('bs.modal');
+            $('#tag-modal').html('');
+            if ($id != undefined && $id > 0 && $name != "") {
+              $('#tag-modal').modal({remote:"/conflicts/modal/tag/"+$id})
+            }
+            $id = undefined;
+          });
