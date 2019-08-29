@@ -31,7 +31,7 @@
                 %td{:style=>"width:16%"}
                   -if conflict["account_id"] and @accounts
                     %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
-                    -if conflict["edited_by"]
+                    -if conflict["edited_by"] and conflict["edited_by"].to_i != conflict["account_id"]
                       %br/
                       %span Last edit:
                       %a{:href=>"/accounts/edit/#{conflict["edited_by"]}"}=@accounts[conflict["edited_by"]]
@@ -60,7 +60,7 @@
                   %td{:style=>"width:16%"}
                     -if conflict["account_id"] and @accounts
                       %a{:href=>"/accounts/edit/#{conflict["account_id"]}"}=@accounts[conflict["account_id"]]
-                      -if conflict["edited_by"]
+                      -if conflict["edited_by"] and conflict["edited_by"].to_i != conflict["account_id"]
                         %br/
                         %span Last edit:
                         %a{:href=>"/accounts/edit/#{conflict["edited_by"]}"}=@accounts[conflict["edited_by"]]
