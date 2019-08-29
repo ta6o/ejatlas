@@ -39,15 +39,12 @@
               data: $(e.target).serialize(), 
               success: function(data,ts){
                 data = JSON.parse(data)
-                console.log(data)
-                console.log(data['name'] == $('#tag_name').val());
                 if (data['name'] == $('#tag_name').val()){
-                  console.log(data)
                   $id = undefined;
                   $name = "";
                   if ($('.'+model+'_list input[value='+data['id']+']').length == 0) {
-                    html = '<div class="tag"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-8"> <h5>'+data['name']+'</h5> </div> <div class="col-md-2"> <a class="pull-right btn" data-target="#tag" data-toggle="modal" href="/conflicts/modal/'+cid+'/'+model+'/'+data['id']+'">Edit</a> </div> <div class="col-md-2"> <input type="hidden" value="'+data['id']+'"> <a class="d_tag pull-right btn">Remove</a> </div> </div> </div>'
-                    $('.'+model+'_list').append(html)
+                    html = '<li id="tag_'+data.id+'"> <span>'+data.name+'</span> <a onclick="remove_li(\'tag\','+data.id+')" style="cursor:pointer">Remove</a> &nbsp; <input name="tag_add_'+data.id+'" type="hidden"> </li>'
+                    $('ul#tag_list').append(html)
                   }
                 }
                 $('#tag-modal').modal('hide');
