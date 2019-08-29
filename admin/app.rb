@@ -479,7 +479,7 @@ class Admin < Padrino::Application
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: JSON.parse( filter ) }}} )
       filter = Admin.cleanup(filter)
-      result = $client.search(index: "atlas", type: "doc", body: {from:0,size:Conflict.count,"_source":{includes:stored_fields},query:filter,sort:{sort:{"order":order}}})["hits"]["hits"]
+      result = $client.search("index"=> "atlas", "type"=> "doc", "body"=> {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order":order}}})["hits"]["hits"]
     end
   end
 
