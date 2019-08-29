@@ -860,9 +860,9 @@ class AsyncTask
       alltypeoptions = ""
       $categories.each do |c|
         types.push c.types.all.select("name,slug,id,category_id")
-        alltypeoptions += "<option value='0' disabled='disabled'>#{I18n.t("m.category_id.#{c.name.shorten_en}",:locale=>locale)}</option>"
+        alltypeoptions += "<option value='0' disabled='disabled'>#{I18n.t("m.category_id.#{c.name.slug("_")}",:locale=>locale)}</option>"
         c.types.each do |ct|
-          alltypeoptions += "<option value='#{ct.id.to_s}'>#{I18n.t("m.types.#{ct.name.shorten_en}",:locale=>locale)}</option>"
+          alltypeoptions += "<option value='#{ct.id.to_s}'>#{I18n.t("m.types.#{ct.name.slug("_")}",:locale=>locale)}</option>"
         end
         alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
       end
