@@ -88,7 +88,14 @@ class Admin < Padrino::Application
   if Conflict.table_exists?
     $countries = Country.all.order(:slug).select("name","id")
     $categories = Category.all.order :id
-    $alltypeoptions = File.exists?("#{Dir.pwd}/public/data/alltypeoptions.html") ? File.read("#{Dir.pwd}/public/data/alltypeoptions.html") : ""
+    if File.exists?("#{Dir.pwd}/public/data/alltypeoptions-en.html")
+      $alltypeoptions = {}
+      Dir.foreach("#{Dir.pwd}/public/data/").each do |file|
+        next unless file.match(/^alltypeoptions-\w\w\.html/)
+        loc = file.split("-")[1].split(".")[0]
+        $alltypeoptions[loc] = File.read("#{Dir.pwd}/public/data/#{file}")
+      end
+    end
     $products = Admin.setOrder 4, Product.order('name asc')
     $impacts = [EnvImpact.all, HltImpact.all, SecImpact.all]
     $statuses = Status.all

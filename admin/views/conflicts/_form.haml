@@ -219,7 +219,7 @@
               -if @conflict.types.any?
                 .required=f.error_message_on "type_#{@conflict.c_types.order('ordering').first.type_id}"
                 -@conflict.c_types.order('ordering').each_with_index do |type,i|
-                  %select.type.basic_input{:name=>"type_#{type.type_id}",:id=>"type_#{i}"}= $alltypeoptions.html_safe
+                  %select.type.basic_input{:name=>"type_#{type.type_id}",:id=>"type_#{i}"}= $alltypeoptions[I18n.locale.to_s].html_safe
                   %br/
                   %br/
             %a#add_type.notr{:style=>'cursor:pointer',:onclick=>'addType()'}=t("f.conflict.add_another_type")
@@ -259,7 +259,7 @@
             sel = document.createElement('select');
             $(sel).attr('id', 'type_'+id);
             $(sel).attr('class', 'type basic_input');
-            $(sel).html("#{$alltypeoptions.html_safe}");
+            $(sel).html("#{$alltypeoptions[I18n.locale.to_s].html_safe}");
             $('.types').append(sel);
             $('.types').append('<br/><br/>');
           }
