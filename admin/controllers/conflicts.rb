@@ -671,6 +671,9 @@ Admin.controllers :conflicts do
           capital = Country.find(updated['conflict']['country_id']).capital.gsub(',','.').split('|')
           @conflict.lat = capital[1]
           @conflict.lon = capital[2]
+        else
+          @conflict.lat = @conlfict.lat.to_f
+          @conflict.lon = @conlfict.lon.to_f
         end
 
         @conflict.general = general
