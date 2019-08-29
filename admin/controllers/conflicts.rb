@@ -777,6 +777,31 @@ Admin.controllers :conflicts do
     render 'conflicts/view'
   end
 
+  get "/modal/tag/:tid" do
+    unless @tag = Tag.find(params[:tid])
+      @tag = Tag.new
+    end
+    render 'conflicts/tag_modal', :layout => false
+  end
+
+  post :tag do
+    conflict = Conflict.find cid if cid > 0
+    if params['id'] and tag = Tag.find(params['id'])
+      tag.update_attributes!(params)
+    else
+      tag = Tag.new(params)
+    end
+    if conflict and not tag.conflicts.include? conflict
+      tag.conflicts << conflict
+      tag.save 
+    end
+    if tag.save
+      return tag.attributes.to_json
+    else
+      return 'tombik'
+    end
+  end
+
   get "/modal/:cid/:model" do
     @actor = eval("#{params[:model].gsub('_',' ').titlecase.gsub(' ','')}.new")
     @cid = params[:cid]

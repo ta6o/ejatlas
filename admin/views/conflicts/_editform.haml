@@ -116,7 +116,7 @@
               %span.required.large *
               .required=f.error_message_on :category_id
               %br/
-              =f.select :category_id, :collection => @categories, :fields => [:name, :id], :include_blank => true, :id => 'main_category', :class => 'basic_input'
+              =f.select :category_id, :collection => $categories, :fields => [:name, :id], :include_blank => true, :id => 'main_category', :class => 'basic_input'
               %p.description İhtilafa en çok uyan kategoriyi seçiniz.
               .well
                 %p - İhtilaf tipi için ana başlık belirlerken alt başlıklardaki kategorilerde uygun olan varsa onun ana başlığı yazılmalıdır. Arada kalınan durumlarda iki adet ana başlık yazmak, hatta “diğer” başlığını da doldurmak mümkündür.
@@ -153,7 +153,7 @@
               initMap();
               types = #{@types.to_json}
               alltypes = #{@alltypes.to_json}
-              categories = #{@categories.to_json}
+              categories = #{$categories.to_json}
               alltypeoptions = '<option value="0">&nbsp;</option>\n';
               ccat = 0;
               $.each(alltypes, function(i,v){

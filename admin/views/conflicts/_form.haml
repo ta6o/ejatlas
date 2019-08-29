@@ -231,7 +231,7 @@
         :javascript
           $(document).ready(function(){
             $('#category option[value=11]').remove();
-            $.getJSON("/data/types.json",function(data){
+            $.getJSON("/data/types-#{I18n.locale}.json",function(data){
               types = data[0];
               alltypes = data[1];
               categories = #{$categories.to_json.html_safe}
@@ -1327,6 +1327,7 @@
 
 
     #meta.tab-pane
+      #tag-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
       .row
         .col-md-9
           %p.lead=t("f.conflict.meta_information")
@@ -1407,7 +1408,7 @@
               .pull-left
                 %input#tag.autocomplete{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags",'data-source'=>'tag_names'}
               .pull-right
-                %a#ctag.btn=t("f.conflict.create_tag")
+                %button#n_tag.btn.btn-inverse.notr{'data-toggle'=>'modal','data-target'=>'#tag-modal',:href=>"/conflicts/modal/#{@conflict.id}/tag"}=t("f.conflict.create_tag")
 
             %hr/
             %ul{:style=>"list-style-type: none; padding: 0;"}

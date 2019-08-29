@@ -860,18 +860,18 @@ class AsyncTask
       alltypeoptions = ""
       $categories.each do |c|
         types.push c.types.all.select("name,slug,id,category_id")
-        alltypeoptions += "<option value='0' disabled='disabled'>#{I18n.t("m.category_id.#{c.name.slug("_")}")}</option>"
+        alltypeoptions += "<option value='0' disabled='disabled'>#{I18n.t("m.category_id.#{c.name.shorten_en}",:locale=>locale)}</option>"
         c.types.each do |ct|
-          alltypeoptions += "<option value='#{ct.id.to_s}'>#{I18n.t("m.types.#{ct.name.slug("_")}")}</option>"
+          alltypeoptions += "<option value='#{ct.id.to_s}'>#{I18n.t("m.types.#{ct.name.shorten_en}",:locale=>locale)}</option>"
         end
         alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
       end
       alltypeoptions += "<option value='0'>Delete</option>"
       cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["conflict_id"]}}
+      File.open("#{Dir.pwd}/public/data/types-#{locale}.json","w") {|f| f << [types,alltypes].to_json}
+      File.open("#{Dir.pwd}/public/data/alltypeoptions.html","w") {|f| f << alltypeoptions}
       tjson = Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}
       File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << [cjson,tjson].to_json}
-      File.open("#{Dir.pwd}/public/data/types.json","w") {|f| f << [types,alltypes].to_json}
-      File.open("#{Dir.pwd}/public/data/alltypeoptions.html","w") {|f| f << alltypeoptions}
       total = Tag.count
       puts "Updating tags...".green if total > 0
       t0 = Time.now
