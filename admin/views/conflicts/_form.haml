@@ -1546,8 +1546,7 @@
                         %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"}= t("f.conflict.revoke")
                     %br/
 
-            -#if current_account and ["admin","editor"].include? current_account.role
-            -if current_account and ["admin"].include? current_account.role
+            -if current_account and ["admin","editor"].include? current_account.role
               %br/
               %label= t("f.conflict.invite_users_to_collaborate")
               .clearfix
