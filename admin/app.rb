@@ -641,7 +641,7 @@ class Admin < Padrino::Application
     end
     locales.each do |k,v|
       next if v.empty?
-      next if k == ""master"
+      #next if k == "master"
       File.open("#{Dir.pwd}/lib/locales/#{k}.yml","w") do |file|
         file << {k => v}.to_yaml
       end
