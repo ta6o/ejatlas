@@ -62,6 +62,7 @@ def compare_models_with_translations prefix
     puts
     puts "#{table.classify.blue} #{eval("#{table.classify}.count")}"
     puts "#{prefix.titlecase.green}#{table.classify.green} #{eval("#{prefix.titlecase}#{table.classify}.count")}"
+
     [eval("#{table.classify}.order(:id).last.id"),eval("#{prefix.titlecase}#{table.classify}.order(:id).last.id")].max.times do |i|
       begin
         en = eval("#{table.classify}").find(i+1)
