@@ -114,7 +114,7 @@ class Admin < Padrino::Application
 
   before do
     if ["localhost","ejatlas"].include? (locale = request.host.split(".")[0])
-      I18n.locale = :en
+      I18n.locale = "en"
       $dir = "ltr"
     else
       I18n.locale = locale
