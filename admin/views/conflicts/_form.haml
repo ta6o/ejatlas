@@ -1706,6 +1706,7 @@
 
     $(".datemask").mask("99/99/9999");
     $('.datemask').attr('placeholder','__/__/____');
+
     $.validator.addMethod("minwords",
        function(value, element, params) {
           var trimmed = jQuery.trim(value).replace(/  +/g, ' ')
