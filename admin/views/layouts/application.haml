@@ -240,8 +240,11 @@
       :javascript
         $full = false;
         $.getJSON("/data/autocomplete.json",function(data){
+        var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> #{t("f.conflict.conflict_saved_successfully")} &nbsp; &nbsp; </div>"
+        var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> #{t("f.conflict.conflict_could_not_be_saved")} &nbsp; &nbsp;<br/><br/><b></b></div>"
           relateds = data[0];
           tag_names = data[1];
+          emails = data[2];
           (function( $ ) {
             $.ui.autocomplete.prototype.options.autoSelect = true;
             $( "body" ).on( "blur", ".autocomplete", function( event ) {
@@ -278,6 +281,7 @@
             select: function( event, ui ) {
               console.log(ui)
               $item = $('.autocomplete:focus');
+              console.log($item)
               $item.val( "" );
               $id = $item.attr('id');
               $ul = $item.closest(".clearfix").nextAll('ul')

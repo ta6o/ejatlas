@@ -1545,7 +1545,8 @@
                         %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"}= t("f.conflict.revoke")
                     %br/
 
-            -if current_account and ["admin","editor"].include? current_account.role
+            -#if current_account and ["admin","editor"].include? current_account.role
+            -if current_account and ["admin"].include? current_account.role
               %br/
               %label= t("f.conflict.invite_users_to_collaborate")
               .clearfix
@@ -1557,6 +1558,7 @@
                 .pull-left
                   %button.btn#invite-btn{:style=>"padding: 2px 12px;"}= t("f.conflict.invite")
               %p#invite-err.error
+
               :javascript
                 $("#invite-btn").on("click",function(e){
                   e.preventDefault();
@@ -1604,8 +1606,6 @@
 
 
 :javascript
-  var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict saved successfully. &nbsp; &nbsp; </div>"
-  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> Conflict could not be saved: &nbsp; &nbsp;<br/><br/><b></b></div>"
   function to_json() {
     formdata = $("form#conflict_form").serializeArray();
     var data = {};

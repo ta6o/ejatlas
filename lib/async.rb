@@ -855,6 +855,7 @@ class AsyncTask
     end
 
     if params["filter"] == "on" or params["reindex"] == "on"
+
       alltypes = Type.where('category_id is not null').order('name asc').select("name,slug,id,category_id")
       types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
       alltypeoptions = ""
@@ -867,11 +868,9 @@ class AsyncTask
         alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
       end
       alltypeoptions += "<option value='0'>#{I18n.t('m.types.delete',:locale=>locale)}</option>"
-      cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["conflict_id"]}}
       File.open("#{Dir.pwd}/public/data/types-#{locale}.json","w") {|f| f << [types,alltypes].to_json}
       File.open("#{Dir.pwd}/public/data/alltypeoptions-#{locale}.html","w") {|f| f << alltypeoptions}
-      tjson = Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}
-      File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << [cjson,tjson].to_json}
+
       total = Tag.count
       puts "Updating tags...".green if total > 0
       t0 = Time.now
@@ -882,6 +881,7 @@ class AsyncTask
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
       puts if total > 0
+
       cs = ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict : nil} - [nil]
       puts "Updating accounts...".green if cs.any?
       accs = (cs.map{|c| c.account }+cs.map{|c| c.conflict_accounts.map{|ca| ca.account}}).flatten.uniq - [nil]
@@ -892,6 +892,11 @@ class AsyncTask
         client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per account)      "
       end
+
+      cjson = ConflictText.where(approval_status: 'approved').order('slug').select('name,conflict_id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["conflict_id"]}}
+      tjson = Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}
+      ajson = Account.order('email').select('email,id').to_a.map(&:attributes).map{|c|{"value":c["email"],"id":c["id"]}}
+      File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << [cjson,tjson,ajson].to_json}
       print "\r  #{(((total+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(total).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/total).round(3)}s per account) #{"#{(Time.now-t0).to_i}s".yellow}" if cs.any?
       puts if cs.any?
 
