@@ -279,15 +279,14 @@
               }) );
             },
             select: function( event, ui ) {
-              console.log(ui)
               $item = $('.autocomplete:focus');
-              console.log($item)
-              $item.val( "" );
-              $id = $item.attr('id');
-              $ul = $item.closest(".clearfix").nextAll('ul')
-              console.log($ul)
-              $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
-              $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
+              if (!$item.closest("input").has_class("noaction")) {
+                $item.val( "" );
+                $id = $item.attr('id');
+                $ul = $item.closest(".clearfix").nextAll('ul')
+                $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
+                $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
+              }
               return false;
             }
           });
