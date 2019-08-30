@@ -1403,24 +1403,25 @@
               %br/
 
 
-          .group
-            %br/
-            .clearfix
-              %label.pull-left{:style=>"margin:0"}= t("f.conflict.tags")
-            .clearfix
-              .pull-left
-                %input#tag.autocomplete{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags",'data-source'=>'tag_names'}
-              .pull-right
-                %button#n_tag.btn.notr{'data-toggle'=>'modal','data-target'=>'#tag-modal',:href=>"/conflicts/modal/tag/0/#{@conflict.id}"}=t("f.conflict.create_tag")
+          -if current_account and ["admin","editor"].include?(current_account.role)
+            .group
+              %br/
+              .clearfix
+                %label.pull-left{:style=>"margin:0"}= t("f.conflict.tags")
+              .clearfix
+                .pull-left
+                  %input#tag.autocomplete{:type=>"text",:style=>"width:240px;",:placeholder=>"search for tags",'data-source'=>'tag_names'}
+                .pull-right
+                  %button#n_tag.btn.notr{'data-toggle'=>'modal','data-target'=>'#tag-modal',:href=>"/conflicts/modal/tag/0/#{@conflict.id}"}=t("f.conflict.create_tag")
 
-            %hr/
-            %ul#tag_list{:style=>"list-style-type: none; padding: 0;"}
-              -@conflict.tags.each do |t|
-                %li{:id=>"tag_#{t.id}"}
-                  %span= t.name
-                  %a{:style=>'cursor:pointer',:onclick=>"remove_li('tag',#{t.id})"} Remove
-                  &nbsp;
-                  %input{:type=>"hidden",:name=>"tag_add_#{t.id}"}
+              %hr/
+              %ul#tag_list{:style=>"list-style-type: none; padding: 0;"}
+                -@conflict.tags.each do |t|
+                  %li{:id=>"tag_#{t.id}"}
+                    %span= t.name
+                    %a{:style=>'cursor:pointer',:onclick=>"remove_li('tag',#{t.id})"} Remove
+                    &nbsp;
+                    %input{:type=>"hidden",:name=>"tag_add_#{t.id}"}
 
 
         .col-md-8
