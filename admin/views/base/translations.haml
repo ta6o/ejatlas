@@ -9,6 +9,7 @@
           %tr
             %th %
             -@tkeys.each do |k|
+              -next if k == "master"
               %th=k.upcase
 
         %tbody
@@ -20,17 +21,18 @@
               -@tkeys.each do |kk|
                 -val = ((v[kk].nil? or v[kk]==0) ? 0 : v[kk] - 1)
                 -totals[kk] += ((v[kk]||1)-1)
+                -next if kk == "master"
                 %td
-                  %a{:href=>"#",:title=>"#{@iso639[kk]} translations for #{k}","data-content"=>"#{val} / #{v["en"].to_i-1} <small>(#{(val.to_f / (v["en"]-1.0) * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (val.to_f / (v["en"]-1.0) * 100).to_i
+                  %a{:href=>"#",:title=>"#{@iso639[kk]} translations for #{k}","data-content"=>"#{val} / #{v["master"].to_i-1} <small>(#{(val.to_f / (v["master"]-1.0) * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (val.to_f / (v["master"]-1.0) * 100).to_i
 
           %tr
             %td
               %b TOTAL
             -totals.each do |k,v|
-              -next if ["","en"].include?(k)
+              -next if ["","master"].include?(k)
               %td
                 %b
-                  %a{:href=>"#",:title=>"#{@iso639[k]} translations in general","data-content"=>"#{v} / #{totals["en"]} <small>(#{(v.to_f / totals["en"].to_f * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (v.to_f / totals["en"].to_f * 100).to_i
+                  %a{:href=>"#",:title=>"#{@iso639[k]} translations in general","data-content"=>"#{v} / #{totals["master"]} <small>(#{(v.to_f / totals["master"].to_f * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (v.to_f / totals["master"].to_f * 100).to_i
 
       .pull-left
         %span Last updated at:

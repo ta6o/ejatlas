@@ -646,7 +646,7 @@ class Admin < Padrino::Application
         file << {k => v}.to_yaml
       end
     end
-    $tstatus.delete("master")
+    #$tstatus.delete("master")
     print "\rReloading"
     I18n.backend.reload!
     print "\rDone."
