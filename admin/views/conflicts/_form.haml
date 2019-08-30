@@ -1687,7 +1687,14 @@
   })
   $(document).ready(function(){
     initMap([#{@lat||0},#{@lon||0}],false);
-    wlh = $('#conflict-tabs > li > a[href='+window.location.hash.replace('#_','#')+']');
+    lochash = window.location.hash.replace('#_','#').split("&");
+    if (lochash[1] == "success") {
+      $("#fixed").css("opacity",0);
+      $("#fixed").html(asuccess);
+      $("#fixed").css("opacity",1);
+    }
+
+    wlh = $('#conflict-tabs > li > a[href='+lochash[0]+']');
     if (wlh.length > 0) {
       wlh.tab('show',function(){
         window.scrollTo(0,0);
