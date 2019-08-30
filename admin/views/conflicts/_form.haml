@@ -1606,6 +1606,8 @@
 
 
 :javascript
+  var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> #{t("f.conflict.conflict_saved_successfully")} &nbsp; &nbsp; </div>"
+  var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> #{t("f.conflict.conflict_could_not_be_saved")} &nbsp; &nbsp;<br/><br/><b></b></div>"
   function to_json() {
     formdata = $("form#conflict_form").serializeArray();
     var data = {};
