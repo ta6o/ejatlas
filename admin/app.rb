@@ -113,7 +113,7 @@ class Admin < Padrino::Application
   Delayed::Worker.destroy_failed_jobs = false
 
   before do
-    if ["localhost","ejatlas"].include? (locale = request.host.split(".")[0])
+    if ["localhost","ejatlas","test"].include? (locale = request.host.split(".")[0])
       I18n.locale = :en
       $dir = "ltr"
     else
