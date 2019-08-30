@@ -1686,6 +1686,7 @@
     }
   })
 
+
   $(document).ready(function(){
     initMap([#{@lat||0},#{@lon||0}],false);
     lochash = window.location.hash.replace('#_','#').split("&");
@@ -1702,6 +1703,7 @@
         window.scrollTo(0,0);
       });
     }
+
     $(".datemask").mask("99/99/9999");
     $('.datemask').attr('placeholder','__/__/____');
     $.validator.addMethod("minwords",
