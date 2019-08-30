@@ -109,7 +109,7 @@ class Admin < Padrino::Application
   Delayed::Worker.destroy_failed_jobs = false
 
   before do
-    if ["localhost","ejatlas","test"].include? (locale = request.host.split(".")[0])
+    if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0])
       I18n.locale = :en
       $dir = "ltr"
     else
@@ -593,7 +593,7 @@ class Admin < Padrino::Application
     locs = []
     keys = []
     $tstatus = {}
-    `rm #{Dir.pwd}/lib/locales/*`
+    `rm #{Dir.pwd}/lib/locales/* &> /dev/null`
 
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./
