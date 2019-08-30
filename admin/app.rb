@@ -35,6 +35,7 @@ class Admin < Padrino::Application
   set :login_page, "/sessions/login"
 
   require "./lib/i18n-translate-override.rb"
+  load "./config/vars.rb"
 
   $title = 'EJAtlas'
   $tkeys = []

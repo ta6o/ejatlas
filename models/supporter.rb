@@ -76,6 +76,6 @@ class Supporter < ActiveRecord::Base
     self.logo_images.each  &:destroy
     self.old_slugs.each    &:destroy
     self.former_infos.each &:destroy
-    $client.delete index: "atlas", type: "doc", id: "ifi_#{self.id}"
+    $client.delete index: $esindex, type: "doc", id: "ifi_#{self.id}"
   end
 end

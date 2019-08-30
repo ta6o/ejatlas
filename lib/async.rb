@@ -650,7 +650,7 @@ class AsyncTask
             c.save
             times[:save] += Time.now - tc
             tc = Time.now
-            client.update index: "atlas_#{locale}", type: 'conflict', id: c.id, body: {doc: c.elastic(locale)}
+            client.update index: "#{$esindex}_#{locale}", type: 'conflict', id: c.id, body: {doc: c.elastic(locale)}
             times[:index] += Time.now - tc
             markers << c.as_marker if c.approval_status == "approved"
             print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
@@ -675,7 +675,7 @@ class AsyncTask
         next if lc == 0
         countries << [c.jsonize(locale),lc] if lc >= 1
         c.save
-        client.index index: "atlas", type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
+        client.index index: $esindex, type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per country)      "
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
@@ -696,7 +696,7 @@ class AsyncTask
         next if lc == 0
         companies << [c.jsonize,lc] if lc >= 1
         c.save
-        client.index index: "atlas", type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
+        client.index index: $esindex, type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per company)      "
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
@@ -716,7 +716,7 @@ class AsyncTask
         lc = c.local_conflicts_count(locale)
         supporters << [c.jsonize,lc] if lc >= 1
         c.save
-        client.index index: "atlas", type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
+        client.index index: $esindex, type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per IFI)      "
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
@@ -875,8 +875,8 @@ class AsyncTask
       puts "Updating tags...".green if total > 0
       t0 = Time.now
       Tag.all.each_with_index do |c,counter|
-        #client.index index: "atlas_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
+        #client.index index: "#{$esindex}_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: $esindex, type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per tag)      "
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
@@ -888,8 +888,8 @@ class AsyncTask
       total = accs.length
       t0 = Time.now
       accs.each_with_index do |c,counter|
-        #client.index index: "atlas_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: "atlas", type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
+        #client.index index: "#{$esindex}_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
+        client.index index: $esindex, type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per account)      "
       end
 
