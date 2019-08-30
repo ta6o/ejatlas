@@ -1692,6 +1692,7 @@
       $("#fixed").css("opacity",0);
       $("#fixed").html(asuccess);
       $("#fixed").css("opacity",1);
+      window.location.hash = window.location.hash.split("&")[0]
     }
 
     wlh = $('#conflict-tabs > li > a[href='+lochash[0]+']');
@@ -1820,9 +1821,9 @@
           data : to_json(),
           success: function(data){
             if (data.status == "success") {
-              $("#fixed").css("opacity",0);
-              $("#fixed").html(asuccess);
-              $("#fixed").css("opacity",1);
+              atab = $("#conflict-tabs > li.active > a").attr("href").replace(/#/,"#_");
+              window.location.hash = atab+'&success';
+              window.location.reload();
             } else if (data.status == "error") {
               $("#fixed").css("opacity",0);
               $("#fixed").html(alerror);
