@@ -621,7 +621,7 @@ class Admin < Padrino::Application
         else
           scope = row[0].strip.split(/\./)
           if ["m","c"].include? domain
-            key = row[locs.index("master")].slug("_")
+            key = row[locs.index("master")].slug("_").split("_")[0..7].join("_")
           else
             key = row[locs.index("master")].shorten_en
           end
