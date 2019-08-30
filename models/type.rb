@@ -14,7 +14,7 @@ class Type < ActiveRecord::Base
 
   def jsonize locale=:en
     @json = {}
-    @json[:name] = I18n.t("m.types.#{self.name.slug("_")}",:locale=>locale).gsub(/\([^\)]+\)/,"")
+    @json[:name] = I18n.t("m.types.#{self.name.slug("_").split("_")[0..7].join("_")}",:locale=>locale).gsub(/\([^\)]+\)/,"")
     @json[:slug] = self.slug
     return @json.to_json
   end

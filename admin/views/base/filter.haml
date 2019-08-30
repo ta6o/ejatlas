@@ -36,29 +36,29 @@
                 -if options.has_key? 'model' then  model = options['model'] else model = field end
                 -if options['content'].is_a? Array
                   .body
-                    %h4= "#{t "v.filter.#{field.slug("_")}"}"
+                    %h4= "#{t "v.filter.#{field.shorten_en}"}"
                     %ul
                       -options['content'].each do |c|
                         %li
-                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-field"=>field,"data-value"=>c.keys.first}= t "m.#{name.slug('_')}.#{c.values.first.slug('_')}"
+                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-field"=>field,"data-value"=>c.keys.first}= t "m.#{name.slug('_')}.#{c.values.first.slug('_')}"
                 -elsif options['content'] == 'auto'
                   .body.auto
-                    %h4= "#{t "v.filter.#{field.slug("_")}"}"
-                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>model,"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-section"=>"field",:style=>'width:100%'}
+                    %h4= "#{t "v.filter.#{field.shorten_en}"}"
+                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>model,"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-section"=>"field",:style=>'width:100%'}
                     %ul
                 -elsif options['content'] == 'flat'
                   .body.flat
-                    %h4= "#{t "v.filter.#{field.slug("_")}"}"
+                    %h4= "#{t "v.filter.#{field.shorten_en}"}"
                     .row
                       .col-xs-9
                         %input.token{:id=>"#{field}-input",:type=>'text',:style=>'width:100%'}
                       .col-xs-3
-                        .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-section"=>"prefix"}
+                        .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-section"=>"prefix"}
                           %icon.glyphicon{:class=>"glyphicon-arrow-#{$dir == "ltr" ? "right":"left"}"}
                     %ul
                 -elsif options['content'].match(/\d+:\d+/)
                   -range = options['content'].split(':')
-                  %h4= "#{t "v.filter.#{field.slug("_")}"}"
+                  %h4= "#{t "v.filter.#{field.shorten_en}"}"
                   .slider{:id=>"#{field}-slider"}
                   .clearfix{:style=>'width:100%'}
                     -if name == 'investment_sum'
@@ -69,8 +69,8 @@
                       %input.lte{:type=>'number',:id=>"#{field}-lte",:value=>range[1]}
                   %ul
                     %li
-                      %span.drag.graybg{:id=>"#{field}-drag","data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.slug("_")}"),"data-value"=>"#{range[0]}:#{range[1]}"}
-                        %strong= "#{t "v.filter.#{field.slug("_")}"}:"
+                      %span.drag.graybg{:id=>"#{field}-drag","data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-value"=>"#{range[0]}:#{range[1]}"}
+                        %strong= "#{t "v.filter.#{field.shorten_en}"}:"
                         ="#{range[0]} - #{range[1]}"
                   -if name == 'investment_sum'
                     :javascript
@@ -121,7 +121,7 @@
                             $(".options ##{field}-gte").val(range[0]);
                             $(".options ##{field}-lte").val(range[1]);
                             $(".options ##{field}-drag").attr('data-value',range[ 0 ]+":"+range[ 1 ]);
-                            $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+range[ 0 ]+" - "+range[ 1 ]);
+                            $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.shorten_en}"}:</strong> "+range[ 0 ]+" - "+range[ 1 ]);
                           }
                         });
                         $(".options ##{field}-gte, .options ##{field}-lte").on('change',function(e){
@@ -129,7 +129,7 @@
                           comms = [commify($(".options ##{field}-gte").val()),commify($(".options ##{field}-lte").val())]
                           $("##{field}-slider").slider({values:range})
                           $(".options ##{field}-drag").attr('data-value',comms[0]+":"+comms[1]);
-                          $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+comms[0]+" - "+comms[1]);
+                          $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.shorten_en}"}:</strong> "+comms[0]+" - "+comms[1]);
                         });
                       });
 
@@ -145,14 +145,14 @@
                             $(".options ##{field}-gte").val(ui.values[0]);
                             $(".options ##{field}-lte").val(ui.values[1]);
                             $(".options ##{field}-drag").attr('data-value',ui.values[ 0 ]+":"+ui.values[ 1 ]);
-                            $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+ui.values[ 0 ]+" - "+ui.values[ 1 ]);
+                            $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.shorten_en}"}:</strong> "+ui.values[ 0 ]+" - "+ui.values[ 1 ]);
                           }
                         });
                         $(".options ##{field}-gte, .options ##{field}-lte").on('change',function(e){
                           range = [$(".options ##{field}-gte").val(),$(".options ##{field}-lte").val()]
                           $("##{field}-slider").slider({values:range})
                           $(".options ##{field}-drag").attr('data-value',range[0]+":"+range[1]);
-                          $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.slug("_")}"}:</strong> "+range[0]+" - "+range[1]);
+                          $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.shorten_en}"}:</strong> "+range[0]+" - "+range[1]);
                         });
                       });
 

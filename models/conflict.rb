@@ -537,10 +537,10 @@ class Conflict < ActiveRecord::Base
               if m.id == others[va[1]][0]
                 arr << others[va[1]][1]
               else
-                arr << I18n.t("m.#{va[1]}.#{m.name.slug("_")}",:locale=>loc)
+                arr << I18n.t("m.#{va[1]}.#{m.name.slug("_").split("_")[0..7].join("_")}",:locale=>loc)
               end
             else
-              arr << I18n.t("m.#{va[1]}.#{m.name.slug("_")}",:locale=>loc)
+              arr << I18n.t("m.#{va[1]}.#{m.name.slug("_").split("_")[0..7].join("_")}",:locale=>loc)
             end
           end
           cnt = arr.join '<br /> '

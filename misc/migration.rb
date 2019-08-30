@@ -65,7 +65,7 @@ def compare_models_with_translations prefix
     [eval("#{table.classify}.order(:id).last.id"),eval("#{prefix.titlecase}#{table.classify}.order(:id).last.id")].max.times do |i|
       begin
         en = eval("#{table.classify}").find(i+1)
-        tnm = I18n.t("m.#{trans}.#{en.name.slug("_")}",:tr)
+        tnm = I18n.t("m.#{trans}.#{en.name.slug("_").split("_")[0..7].join("_")}",:tr)
         begin
           lo = eval("#{prefix.titlecase}#{table.classify}").find_by_slug(tnm.slug)
         rescue

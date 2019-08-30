@@ -333,11 +333,11 @@ Admin.controller do
         @markercount += 1
       end
     end
-    @name = I18n.t("m.products.#{con.name.slug("_")}")
+    @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @id = con.id
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
-    @maptitle = I18n.t("v.index.environmental_conflicts_on_var",:commodity=>I18n.t("m.products.#{con.name.slug("_")}"))
+    @maptitle = I18n.t("v.index.environmental_conflicts_on_var",:commodity=>I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}"))
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
@@ -359,13 +359,13 @@ Admin.controller do
         @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
       end
     end
-    @name = I18n.t("m.types.#{con.name.slug("_")}")
+    @name = I18n.t("m.types.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @description = con.description
     @id = con.id
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
-    @maptitle = I18n.t("v.index.environmental_conflicts_about_var",:category=>I18n.t("m.types.#{con.name.slug("_")}"))
+    @maptitle = I18n.t("v.index.environmental_conflicts_about_var",:category=>I18n.t("m.types.#{con.name.slug("_").split("_")[0..7].join("_")}"))
     @baselayers = $baselayers
     render "base/front", :layout => @layout
   end
@@ -381,7 +381,7 @@ Admin.controller do
     @filterinfo = con.companies_json
     @load = con.companies_link
     @name = "Companies from #{con.name}"
-    @name = I18n.t("m.products.#{con.name.slug("_")}")
+    @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
@@ -398,7 +398,7 @@ Admin.controller do
     @markerinfo = con.supporters_marker
     @load = con.supporters_link
     @name = "Financial Institutions from #{con.name}"
-    @name = I18n.t("m.products.#{con.name.slug("_")}")
+    @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @id = con.id
     @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
@@ -870,9 +870,9 @@ Admin.controller do
     @alltypeoptions = ""
     @categories.each do |c|
       @types.push c.types.all
-      @alltypeoptions += "<option value='0' disabled='disabled'>#{t("m.category_id.#{c.name.slug("_")}")}</option>"
+      @alltypeoptions += "<option value='0' disabled='disabled'>#{t("m.category_id.#{c.name.slug("_").split("_")[0..7].join("_")}")}</option>"
       c.types.each do |ct|
-        @alltypeoptions += "<option value='#{ct.id.to_s}'>#{t("m.types.#{ct.name.slug("_")}")}</option>"
+        @alltypeoptions += "<option value='#{ct.id.to_s}'>#{t("m.types.#{ct.name.slug("_").split("_")[0..7].join("_")}")}</option>"
       end
       @alltypeoptions += "<option value='0' disabled='disabled'>&nbsp;</option>"
     end
