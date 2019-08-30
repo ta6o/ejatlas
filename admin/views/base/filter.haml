@@ -40,7 +40,7 @@
                     %ul
                       -options['content'].each do |c|
                         %li
-                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-field"=>field,"data-value"=>c.keys.first}= t "m.#{name.slug('_')}.#{c.values.first.slug('_')}"
+                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-field"=>field,"data-value"=>c.keys.first}= t "m.#{name.slug('_')}.#{c.values.first.slug('_').split("_")[0..7].join("_")}"
                 -elsif options['content'] == 'auto'
                   .body.auto
                     %h4= "#{t "v.filter.#{field.shorten_en}"}"
