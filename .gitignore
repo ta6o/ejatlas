@@ -11,6 +11,7 @@ vendor/gems/*
 .sass-cache/*
 config/database.rb
 config/puma.rb
+config/vars.rb
 db/*.db
 *.swp
 *.swo

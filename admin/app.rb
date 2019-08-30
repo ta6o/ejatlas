@@ -42,12 +42,7 @@ class Admin < Padrino::Application
   $iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).select {|x| $tkeys.include?(x)}
 
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
-  if ENV["RACK_ENV"] == "production"
-    $domain  = 'ejatlas.org'
-    $siteurl = 'https://ejatlas.org'
-    $filedir = '/mnt/data/ejatlas-static'
-    $fileurl = 'https://file.ejatlas.org'
-  else
+  if ENV["RACK_ENV"] != "production"
     $domain  = 'localhost:3000'
     $siteurl = 'http://localhost:3000'
     $filedir = "#{Dir.pwd}/../file"
@@ -459,7 +454,7 @@ class Admin < Padrino::Application
   def self.filter_recent offset=0, size=6
     filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     begin
-      result = $client.search(index: "atlas_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+      result = $client.search(index: "#{$esindex}_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
     rescue
       []
     end
@@ -474,11 +469,11 @@ class Admin < Padrino::Application
       else
         filter = Admin.elasticify( { bool: { filter: { bool: JSON.parse( filter ) }}} )
       end
-      result = $client.search(index:"atlas_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+      result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: JSON.parse( filter ) }}} )
       filter = Admin.cleanup(filter)
-      result = $client.search(index: "atlas", type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+      result = $client.search(index: $esindex, type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     end
   end
 

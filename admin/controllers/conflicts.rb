@@ -397,7 +397,7 @@ Admin.controllers :conflicts do
     @conflict = Conflict.find(params[:id])
     "nack"
     if @conflict and @conflict.update_attribute("modified_at",Time.now) 
-      $client.update index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: { doc: @conflict.elastic }
+      $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: { doc: @conflict.elastic }
       return "ack" 
     end
   end
@@ -690,10 +690,10 @@ Admin.controllers :conflicts do
             flash[:notice] = 'Conflict was successfully saved.'
             #puts current_account.role.yellow
             if ['admin','editor'].include?(current_account.role)
-              $client.index index: "atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
-              $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
+              $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+              $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
             else
-              $client.update(index:"atlas_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
+              $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
             end
 
             if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
@@ -725,7 +725,7 @@ Admin.controllers :conflicts do
     conflict.approval_status = 'approved'
     ct.approval_status = 'approved'
     if conflict.save(:validate=>false) and ct.save(:validate=>false)
-      $client.update index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"approved"}}
+      $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"approved"}}
       flash[:notice] = 'Conflict was approved by your consent.'
     else
       flash[:error] = 'Unable to approve Conflict!'
@@ -740,7 +740,7 @@ Admin.controllers :conflicts do
     conflict.approval_status = 'queued'
     ct.approval_status = 'queued'
     if conflict.save(:validate=>false) and ct.save(:validate=>false)
-      $client.update index: "atlas_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"queued"}}
+      $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"queued"}}
       flash[:notice] = 'Conflict was disapproved by your consent.'
     else
       flash[:error] = 'Unable to disapprove Conflict!'
@@ -918,7 +918,7 @@ Admin.controllers :conflicts do
     c = Conflict.find(params[:id].to_i)
     if c.destroy
       #puts "DELETED: Conflict ##{c.id} (#{c.name}) is sent to the depths of history."
-      $client.delete index:"atlas_#{I18n.locale}", type:"conflict", id: params[:id].to_i
+      $client.delete index:"#{$esindex}_#{I18n.locale}", type:"conflict", id: params[:id].to_i
       redirect to "/conflicts/deleted"
     else
       redirect to "/conflicts/edit/#{c.id}"
