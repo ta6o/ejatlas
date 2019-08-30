@@ -280,7 +280,9 @@
             },
             select: function( event, ui ) {
               $item = $('.autocomplete:focus');
-              if (!$item.closest("input").hasClass("noaction")) {
+              if ($item.closest("input").hasClass("noaction")) {
+                $item.closest("input").val(ui.item.value);
+              } else {
                 $item.val( "" );
                 $id = $item.attr('id');
                 $ul = $item.closest(".clearfix").nextAll('ul')
