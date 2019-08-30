@@ -34,22 +34,22 @@
         = @account.confirmed ? "email confirmed." : "email not confirmed."
   .col-md-4.col-md-offset-2
     .group
-      =f.label 'Name and Surname'
+      =f.label t("m.account.name_and_surname")
       =f.error_message_on :name
       =f.text_field :name, :class => :text_field
 
     .group
-      =f.label 'E-mail'
+      =f.label t("m.account.e_mail")
       =f.error_message_on :email
       =f.text_field :email, :class => :text_field
 
     .group
-      =f.label 'Phone'
+      =f.label t("m.account.phone")
       =f.error_message_on :phone
       =f.text_field :phone, :class => :text_field
 
     .group
-      =f.label 'Address'
+      =f.label t("m.account.address")
       =f.error_message_on :address
       =f.text_field :address, :class => :text_field
 
@@ -88,7 +88,7 @@
 
     -if current_account and ["admin","editor"].include?(current_account.role)
       .group
-        =f.label :role
+        =f.label t("m.account.role")
         =f.error_message_on :role
         =f.select :role, :options => access_control.roles
       .group
@@ -104,48 +104,48 @@
   .col-md-4
     .group
       -if @account.new_record?
-        =f.label 'Please enter here your organization, group, institution you are affiliated with (if any)'
+        =f.label t("m.account.please_enter_here_your_organization_group_institution_you")
       -else
-        =f.label 'Organization'
+        =f.label t("m.account.organization")
       =f.error_message_on :organization
       =f.text_field :organization, :class => :text_field
 
     .group
-      %label{:for=>"account_source"} How did you learn about the EJAtlas?
+      %label{:for=>"account_source"}= t("m.account.how_did_you_learn_about_the_ejatlas")
       =f.error_message_on :source
       =f.text_area :source, :class => :text_area
 
     .group
       -if @account.new_record?
-        =f.label 'Please tell us what conflicts you wish to enter and describe briefly your activity related to them'
+        =f.label t("m.account.please_tell_us_what_conflicts_you_wish_to")
       -else
-        =f.label 'Intentions'
+        =f.label t("m.account.intentions")
       =f.error_message_on :intention
       =f.text_area :intention, :class => :text_area
 
     .group
       -if @account.new_record?
-        =f.label 'Other comments to the EJatlas editors'
+        =f.label t("m.account.other_comments_to_the_ejatlas_editors")
       -else
-        =f.label 'Comments'
+        =f.label t("m.account.comments")
       =f.error_message_on :comments
       =f.text_area :comments, :class => :text_area
 
     -if @pass
       .group
-        =f.label 'Password'
+        =f.label t("m.account.password")
         =f.error_message_on :password
         =f.password_field :password, :class => :password_field
 
       .group
-        =f.label 'Password (again)'
+        =f.label t("m.account.password_again")
         =f.error_message_on :password_confirmation
         =f.password_field :password_confirmation, :class => :password_field
 
     -if @account.new_record?
       %br/
       %p 
-        %strong Thank you very much for your contribution. We’ll get back to you as soon as possible.
+        %strong= t("m.account.thank_you_very_much_for_your_contribution_well")
       %p 
         You can also collaborate to our work by
         %strong

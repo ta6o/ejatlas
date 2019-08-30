@@ -17,7 +17,7 @@
         = I18n.t("emails.general.dear_editor")
         %br/
         %br/
-        = I18n.t("emails.notify_moderator.user_var_has_flagged_case", account_name: "<a href='mailto:#{@account.email}'>#{@account.name}</a>", conflict_link: "<a href='http://ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>").html_safe
+        = I18n.t("emails.notify_moderator.user_var_has_flagged_case", account_name: "<a href='mailto:#{@account.email}'>#{@account.name}</a>", conflict_link: "<a href='https://ejatlas.org/conflicts/edit/#{@conflict.id}'>#{@conflict.name}</a>").html_safe
         %br/
         %blockquote
           %em= @msg.gsub(/\n/,'<br />')
