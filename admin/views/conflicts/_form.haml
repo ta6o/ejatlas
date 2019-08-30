@@ -519,7 +519,7 @@
           %select.basic_input#conflict_reaction_id{:name=>"conflict[reaction_id]"}
             %option
             -$reactions.each do |c|
-              %option{:value=>c.id,:selected=>c.id==@conflict.reaction_id}=t("m.reaction_id.#{c.slug("_").split("_")[0..7].join("_")}")
+              %option{:value=>c.id,:selected=>c.id==@conflict.reaction_id}=t("m.reaction_id.#{c.slug.slug("_").split("_")[0..7].join("_")}")
 
 
           -unless @conflict.new_record?
