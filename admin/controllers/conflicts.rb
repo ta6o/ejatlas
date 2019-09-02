@@ -433,11 +433,19 @@ Admin.controllers :conflicts do
     #pp params["conflict"]["slug"]
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
+    @conflict = Conflict.find(params[:id])
+
+    pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
+
+    if @conflict.documents.any? and ps = @conflict.documents.map(&:pid) and ps.length != (ps.uniq - [nil]).length
+      @conflict.documents.order(:id).each do |doc|
+        next unless doc.pid.nil?
+        doc.update_attribute(:pid, @conflict.documents.where("pid is not null").count+1)
+      end
+    end
 
     updated = Admin.correctForm(params)
     #Admin.color_pp updated, "updated", "green", true
-    @conflict = Conflict.find(updated[:id])
-    pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
     if params["conflict"]["slug"].nil? or params["conflict"]["slug"] == ""
       #return {:status=>"error",:errors=>["Name on address bar can not be blank"]}.to_json 
