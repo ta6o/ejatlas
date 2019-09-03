@@ -810,7 +810,7 @@ Admin.controllers :conflicts do
     else
       tag = Tag.new(params)
       au = JSON.parse(File.read("#{Dir.pwd}/public/data/autocomplete.json"))
-      au[1] = Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}
+      au = [au[0], Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}, au[2]]
       File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << au.to_json}
     end
     if conflict and not tag.conflicts.include? conflict
