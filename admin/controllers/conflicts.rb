@@ -443,6 +443,7 @@ Admin.controllers :conflicts do
         doc.update_attribute(:pid, @conflict.documents.where("pid is not null").count+1)
       end
       if ["admin"].include?(current_account.role)
+        @conflict = Conflict.find(params[:id])
         ps = @conflict.documents.map(&:pid).sort
         if ps.length != (ps.uniq - [nil]).length
           @conflict.documents.order(:id).order(:pid).each_with_index do |doc,ind|
