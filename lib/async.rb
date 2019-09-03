@@ -851,8 +851,8 @@ class AsyncTask
           #puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
           doc.update_attribute :copied?, true
         rescue => e
-          #puts "  problem saving image at: #{doc.file.url}\n"
-          #p e
+          puts "  problem saving image at: #{doc.file.url}\n"
+          p e
         end
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per image)      "
       end
