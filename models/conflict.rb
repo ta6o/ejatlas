@@ -929,6 +929,12 @@ class Conflict < ActiveRecord::Base
     self.set_local_text("translator",val,locale.to_s)
   end
 
+  def reset_doc_pids
+    self.documents.order(:id).order(:pid).each_with_index do |doc,ind|
+      doc.update_attribute(:pid,ind+1)
+    end
+  end
+
   def inspect
     "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.approval_status.magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
   end

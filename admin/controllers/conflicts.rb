@@ -437,22 +437,6 @@ Admin.controllers :conflicts do
 
     pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
 
-    if @conflict.documents.any? and ps = @conflict.documents.map(&:pid) and ps.length != (ps.uniq - [nil]).length
-      @conflict.documents.order(:id).each do |doc|
-        next unless doc.pid.nil?
-        doc.update_attribute(:pid, @conflict.documents.where("pid is not null").count+1)
-      end
-      if ["admin"].include?(current_account.role)
-        @conflict = Conflict.find(params[:id])
-        ps = @conflict.documents.map(&:pid).sort
-        if ps.length != (ps.uniq - [nil]).length
-          @conflict.documents.order(:id).order(:pid).each_with_index do |doc,ind|
-            doc.update_attribute(:pid, ind+1)
-          end
-        end
-      end
-    end
-
     updated = Admin.correctForm(params)
     #Admin.color_pp updated, "updated", "green", true
 
@@ -925,6 +909,12 @@ Admin.controllers :conflicts do
     @file = Document.new(params['document'])
     @file.locale = I18n.locale
     if @file.save
+      @conflict = @file.conflict
+      if ps = @conflict.documents.map(&:pid) and ps.length != (ps - [nil]).uniq.length
+        @conflict.documents.order(:id).order(:pid).each_with_index do |doc,ind|
+          doc.update_attribute(:pid,ind+1)
+        end
+      end
       return @file.to_json
     else
       return 'no'
