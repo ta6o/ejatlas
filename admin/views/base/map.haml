@@ -67,7 +67,7 @@
         %strong= t "v.index.#{@maptitle.shorten_en}"
       %p
         %strong= t "v.index.var_cases_reported", num_cases: @markercount
-      %h4{:style=>'padding:12px 0;font-weight:bold,font-size:14px;'}
+      %h4{:style=>'padding:12px 0;font-weight:bold;font-size:14px;'}
         =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
         =t("v.index.and_or").gsub(/\s+/,"&nbsp;").html_safe
@@ -125,7 +125,7 @@
   .horipane#filter-container
     .title= t "v.filter.filter"
     .content{:style=>'display:none;'}
-      #filter-row.block{'data-width'=>450}
+      #filter-row.block{'data-width'=>350}
         #filter= @filter
 
   .horipane
