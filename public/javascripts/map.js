@@ -343,9 +343,8 @@ function initMap () {
         perc = 100 - ((elWidth+82) / window.innerWidth * 100);
         $('.rightpane .inner').show();
         $('.leftpane').animate({'width':perc+"%"});
-        $('.rightpane').animate({'width':(100-perc)+'%'});
-        //$('.resize').animate({'left':perc+"%"},function(){
-        $('.resize').animate({$flo:perc+"%"},function(){
+        $('.resize').animate({$flo:perc+"%"});
+        $('.rightpane').animate({'width':(100-perc)+'%'},function(){
           $('.rightpane').css('overflow-x','hidden');
           $('.rightpane').css('overflow-y','auto');
           onResize();
@@ -433,7 +432,7 @@ function showMarkers(markers) {
   if (cluster) {
     markerClusters = {}
     var cats = categoryHash;
-    console.log(cats)
+    //console.log(cats)
     $.each(cats,function(i,e){
       markerClusters[i]= L.markerClusterGroup({
         showCoverageOnHover: false,
@@ -589,7 +588,6 @@ function onResize() {
     $('#map').css('height','100%');
     px = Math.max(Math.min(Math.max(parseInt($('#resize').css($flo)),500),window.innerWidth - 480),500);
     console.log(px)
-    console.log(px)
     $("#map").css('width',px+'px');
     $("#rightpane").css('width',(window.innerWidth-px)+'px');
     $("#resize").css($flo,px+'px');
@@ -675,7 +673,6 @@ function mapFit(){
   if (markerBounds.getSouthWest() == undefined) {
     map.setView([16,26],2);
   } else {
-    console.log("padme");
     map.fitBounds(markerBounds,{padding:[8,80]});
   }
 }
