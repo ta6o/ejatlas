@@ -6101,6 +6101,7 @@ ul.sidelink li.active {
   overflow: visible;
   position: relative;
   cursor: move;
+  z-index: 9px;
   -webkit-box-shadow: -5px -9px 11px -4px rgba(0, 0, 0, 0.3) inset;
   -moz-box-shadow: -5px -9px 11px -4px rgba(0, 0, 0, 0.3) inset;
   box-shadow: -5px -9px 11px -4px rgba(0, 0, 0, 0.3) inset;
