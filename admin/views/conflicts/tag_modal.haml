@@ -38,6 +38,8 @@
               url: '/conflicts/tag', 
               data: $(e.target).serialize(), 
               success: function(data,ts){
+                console.log(ts)
+                console.log(data)
                 data = JSON.parse(data)
                 if (data.status == "success") {
                   tag = data.tag

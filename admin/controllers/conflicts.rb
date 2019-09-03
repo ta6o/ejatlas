@@ -804,10 +804,11 @@ Admin.controllers :conflicts do
     conflict = Conflict.find cid if cid > 0
     if params['id'] and tag = Tag.find(params['id'])
       tag.update_attributes!(params)
-    elsif Tag.find_by_slug(Admin.slugify(params[:name]))
-      tag = Tag.new(params)
-    else
+      return {:status=>:success,:tag=>tag.attributes}.to_json
+    elsif Tag.find_by_slug(Admin.slugify(params["name"]))
       return {:status=>:error,:message=>"Found another tag with similar name"}.to_json
+    else
+      tag = Tag.new(params)
     end
     if conflict and not tag.conflicts.include? conflict
       tag.conflicts << conflict
