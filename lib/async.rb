@@ -854,10 +854,10 @@ class AsyncTask
           doc.update_attribute :copied?, true
         rescue => e
           if e.to_s.match("en.errors.messages.rmagick_processing_error")
-            puts "#{doc.id.to_s.red}  invalid image:   #{doc.file.url.red}\n"
+            puts "#{doc.id.to_s.red}(#{doc.conflict.id.to_s.cyan})  invalid image:   #{doc.file.url.red}\n"
             errors << doc.id
           else
-            puts "#{doc.id.to_s.magenta}  image not found: #{doc.file.url.magenta}\n"
+            puts "#{doc.id.to_s.magenta}(#{doc.conflict.id.to_s.cyan})  image not found: #{doc.file.url.magenta}\n"
             absents << doc.id
           end
         end
