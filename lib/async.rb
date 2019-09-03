@@ -819,6 +819,8 @@ class AsyncTask
     if params["images"] == "on"
       puts "Updating images...".green
       docs = []
+      errors = []
+      absents = []
 
       # TODO: use mimetypes
       ext = ["jpg", "bmp", "png", "jpeg", "gif"]
@@ -851,11 +853,17 @@ class AsyncTask
           #puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
           doc.update_attribute :copied?, true
         rescue => e
-          puts "  problem saving image at: #{doc.file.url}\n"
-          p e
+          if e.to_s.match("en.errors.messages.rmagick_processing_error")
+            puts "#{doc.conflict.id.to_s.magenta}  image not found: #{doc.file.url.magenta}\n"
+            absents << doc.id
+          else
+            puts "#{doc.conflict.id.to_s.red}  invalid image: #{doc.file.url.red}\n"
+            errors << doc.id
+          end
         end
-        print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per image)      "
+        #print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per image)      "
       end
+      p errors
     end
 
     if params["filter"] == "on" or params["reindex"] == "on"
