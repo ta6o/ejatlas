@@ -824,7 +824,7 @@ class AsyncTask
 
       # TODO: use mimetypes
       ext = ["jpg", "bmp", "png", "jpeg", "gif"]
-      Document.all.each do |doc|
+      Document.order(:id).each do |doc|
         if ext.include? doc.file.file.filename.split('.')[-1].downcase
           docs << doc.id
         end
@@ -854,10 +854,10 @@ class AsyncTask
           doc.update_attribute :copied?, true
         rescue => e
           if e.to_s.match("en.errors.messages.rmagick_processing_error")
-            puts "#{doc.conflict.id.to_s.red}  invalid image: #{doc.file.url.red}\n"
+            puts "#{doc.id.to_s.red}  invalid image:   #{doc.file.url.red}\n"
             errors << doc.id
           else
-            puts "#{doc.conflict.id.to_s.magenta}  image not found: #{doc.file.url.magenta}\n"
+            puts "#{doc.id.to_s.magenta}  image not found: #{doc.file.url.magenta}\n"
             absents << doc.id
           end
         end
