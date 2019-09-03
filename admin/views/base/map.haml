@@ -67,7 +67,7 @@
         %strong= t "v.index.#{@maptitle.shorten_en}"
       %p
         %strong= t "v.index.var_cases_reported", num_cases: @markercount
-      %h4{:style=>'padding:12px 0;font-weight:bold'}
+      %h4{:style=>'padding:12px 0;font-weight:bold,font-size:14px;'}
         =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
         =t("v.index.and_or").gsub(/\s+/,"&nbsp;").html_safe
@@ -125,7 +125,7 @@
   .horipane#filter-container
     .title= t "v.filter.filter"
     .content{:style=>'display:none;'}
-      #filter-row.block{'data-width'=>500}
+      #filter-row.block{'data-width'=>450}
         #filter= @filter
 
   .horipane
@@ -149,7 +149,7 @@
 
 
 
-  .horipane
+  -#.horipane
     .title= t "v.index.get_involved"
     .content.social{:style=>'display:none;'}
 
@@ -307,32 +307,4 @@
       });
       $('.popover').insertAfter("#welcome");
     }
-
-    $('.rightpane').on('click','.horipane .title',function(e){
-      if ($(this).parent().find('.content .block')) {
-        elWidth = parseInt($(this).parent().find('.content .block').attr('data-width'));
-        if ($('#rightpane .inner').width() < elWidth) {
-          perc = 100 - ((elWidth+82) / window.innerWidth * 100);
-          $('.rightpane .inner').show();
-          $('.leftpane').animate({'width':perc+"%"});
-          $('.resize').animate({$flo:perc+"%"});
-          $('.rightpane').animate({'width':(100-perc)+'%'},function(){
-            $('.rightpane').css('overflow-x','hidden');
-            $('.rightpane').css('overflow-y','auto');
-            //onResize();
-          });
-        }
-      }
-      if($(this).hasClass('active')){
-        $(this).next('.content').slideUp();
-        $(this).removeClass('active');
-      } else {
-        $(this).next('.content').slideDown();
-        $(this).addClass('active');
-        if ($(this).next('.content').find('.columns').length > 0) resetColumns();
-        /*$('#rightpane').animate({
-          scrollTop: $(this).offset().top
-        }, 200);*/
-      }
-    });
 
