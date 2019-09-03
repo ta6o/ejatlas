@@ -837,7 +837,7 @@ class AsyncTask
         doc = Document.find d
         next unless doc.conflict
         fns = []
-        doc.conflict.images.each {|i| fns << i.file.file.filename}
+        doc.conflict.images.each {|i| fns << i.file.file.filename unless i.lost}
         if fns.include? doc.file.file.filename
           #puts "\rimage already present: #{doc.file.file.filename}"
           next
