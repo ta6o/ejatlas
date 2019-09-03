@@ -41,7 +41,7 @@
                 data = JSON.parse(data)
                 if (data.status == "success") {
                   tag = data.tag
-                  $.getJSON("/data/autocomplete.json",function(data){
+                  $.getJSON("/data/autocomplete.json?"+(new Date().getTime()),function(data){
                     tag_names = data[1];
                     if (tag['name'] == $('#tag_name').val()){
                       $id = undefined;
