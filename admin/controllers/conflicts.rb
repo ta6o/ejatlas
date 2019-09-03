@@ -442,6 +442,14 @@ Admin.controllers :conflicts do
         next unless doc.pid.nil?
         doc.update_attribute(:pid, @conflict.documents.where("pid is not null").count+1)
       end
+      if ["admin"].include?(current_account.role)
+        ps = @conflict.documents.map(&:pid).sort
+        if ps.length != (ps.uniq - [nil]).length
+          @conflict.documents.order(:id).order(:pid).each_with_index do |doc,ind|
+            doc.update_attribute(:pid, ind+1)
+          end
+        end
+      end
     end
 
     updated = Admin.correctForm(params)
