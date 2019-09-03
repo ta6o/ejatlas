@@ -8,7 +8,7 @@ class Tag < ActiveRecord::Base
   has_many :old_slugs, class_name: "OldSlug", as: :attachable, dependent: :destroy
 
   def inspect
-    "#{self.name}|#{self.name}"
+    "#{self.id.to_s.cyan}: #{self.name}"
   end
 
   before_save :set_slug

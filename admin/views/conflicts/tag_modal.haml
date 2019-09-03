@@ -39,15 +39,23 @@
               data: $(e.target).serialize(), 
               success: function(data,ts){
                 data = JSON.parse(data)
-                if (data['name'] == $('#tag_name').val()){
-                  $id = undefined;
-                  $name = "";
-                  if ($('ul#tag_list input[name=tag_add_'+data['id']+']').length == 0) {
-                    html = '<li id="tag_'+data.id+'"> <span>'+data.name+'</span> <a onclick="remove_li(\'tag\','+data.id+')" style="cursor:pointer">Remove</a> &nbsp; <input name="tag_add_'+data.id+'" type="hidden"> </li>'
-                    $('ul#tag_list').append(html)
+                if (data.status == "success") {
+                  tag = data.tag
+                  $.getJSON("/data/autocomplete.json",function(data){
+                    tag_names = data[1];
+                    if (tag['name'] == $('#tag_name').val()){
+                      $id = undefined;
+                      $name = "";
+                      if ($('ul#tag_list input[name=tag_add_'+tag['id']+']').length == 0) {
+                        html = '<li id="tag_'+tag.id+'"> <span>'+tag.name+'</span> <a onclick="remove_li(\'tag\','+tag.id+')" style="cursor:pointer">Remove</a> &nbsp; <input name="tag_add_'+tag.id+'" type="hidden"> </li>'
+                        $('ul#tag_list').append(html)
+                      }
+                      $('#tag-modal').modal('hide');
+                    }
                   }
+                } else {
+                  $('#tagform .modal-footer').prepend("<b style='color:#c00'>"+data.message+"</b>")
                 }
-                $('#tag-modal').modal('hide');
               },
               error: function(data,ts,error){
                 alert(ts+' '+error)

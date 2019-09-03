@@ -804,17 +804,21 @@ Admin.controllers :conflicts do
     conflict = Conflict.find cid if cid > 0
     if params['id'] and tag = Tag.find(params['id'])
       tag.update_attributes!(params)
-    else
+    elsif Tag.find_by_slug(Admin.slugify(params[:name]))
       tag = Tag.new(params)
+    else
+      return {:status=>:error,:message=>"Found another tag with similar name"}.to_json
     end
     if conflict and not tag.conflicts.include? conflict
       tag.conflicts << conflict
-      tag.save 
-    end
-    if tag.save
-      return tag.attributes.to_json
-    else
-      return 'tombik'
+      if tag.save 
+        au = JSON.parse(File.read("#{Dir.pwd}/public/data/autocomplete.json"))
+        au[1] = Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}
+        File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << au.to_json}
+        return {:status=>:success,:tag=>tag.attributes}.to_json
+      else
+        return {:status=>:error,:message=>"Tag could not be created"}.to_json
+      end
     end
   end
 
