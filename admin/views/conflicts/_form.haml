@@ -1282,7 +1282,7 @@
                 console.log(dat)
                 filare = dat['file']['url'].split('/');
                 filename = filare[filare.length-1];
-                html = '<div class="document"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <a href="'+dat['file']['url']+'" target="_blank">'+filename+'</a> <input name="document_title_'+dat['id']+'" type="text" value="'+dat['title']+'"> </div> <div class="col-md-2"> <a class="d_document pull-right btn">Remove</a> </div> </div> <textarea name="document_description_'+dat['id']+'" style="width:98%">'+dat['description']+'</textarea> </div>'
+                html = '<div class="document"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <a href="'+dat['file']['url']+'" target="_blank">'+filename+'</a> <input name="document_title_'+dat['pid']+'" type="text" value="'+dat['title']+'"> </div> <div class="col-md-2"> <a class="d_document pull-right btn">Remove</a> </div> </div> <textarea name="document_description_'+dat['pid']+'" style="width:98%">'+dat['description']+'</textarea> </div>'
                 $('#current_documents').append(html);
                 $('#m_document').modal('hide');
               }

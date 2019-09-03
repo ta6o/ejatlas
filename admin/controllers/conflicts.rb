@@ -915,6 +915,7 @@ Admin.controllers :conflicts do
           doc.update_attribute(:pid,ind+1)
         end
       end
+      @file = Document.find(@file.id)
       return @file.to_json
     else
       return 'no'
