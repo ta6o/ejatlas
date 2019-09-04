@@ -142,7 +142,7 @@
         =f.error_message_on :password_confirmation
         =f.password_field :password_confirmation, :class => :password_field
 
-    -if @account.new_record? and current_account.role == "admin"
+    -if @account.new_record?
       %br/
       .group
         #privacy{:style=>"display:none;"}
