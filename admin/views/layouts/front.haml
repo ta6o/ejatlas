@@ -207,13 +207,10 @@
           text-decoration: none;
         }
       :javascript
-        console.log("opened")
         if (localStorage.getItem("cookies_accepted")!="true") {
-          console.log("not accepted")
           $("#cookies_disclaimer").fadeIn(500);
         }
         function acceptCookies() {
-          console.log("accepted");
           $("#cookies_disclaimer").fadeOut(500);
           $.post("/accept_cookies");
           localStorage.setItem("cookies_accepted","true");
