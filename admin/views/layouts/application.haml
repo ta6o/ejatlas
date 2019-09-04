@@ -219,18 +219,6 @@
                 %a{:href=>"/legal#cookies"} más información.
               %td
                 %button.btn{:onclick=>"acceptCookies();"} Accept cookies
-        :javascript
-          console.log("opened")
-          if (localStorage.getItem("cookies_accepted")!="true") {
-            console.log("not accepted")
-            $("#cookies_disclaimer").fadeIn(500);
-          }
-          function acceptCookies() {
-            console.log("accepted");
-            $("#cookies_disclaimer").fadeOut(500);
-            $.post("/accept_cookies");
-            localStorage.setItem("cookies_accepted","true");
-          }
         :css
           #cookies_disclaimer {
             display: none;
@@ -253,6 +241,18 @@
           #cookies_disclaimer a:hover {
             color: white;
             text-decoration: none;
+          }
+        :javascript
+          console.log("opened")
+          if (localStorage.getItem("cookies_accepted")!="true") {
+            console.log("not accepted")
+            $("#cookies_disclaimer").fadeIn(500);
+          }
+          function acceptCookies() {
+            console.log("accepted");
+            $("#cookies_disclaimer").fadeOut(500);
+            $.post("/accept_cookies");
+            localStorage.setItem("cookies_accepted","true");
           }
 
       :javascript
