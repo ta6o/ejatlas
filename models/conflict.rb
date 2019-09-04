@@ -468,7 +468,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def as_table(options={})
-    loc = options["locale"] || options[:locale] || I18n.locale
+    loc = (options["locale"] || options[:locale] || I18n.locale).to_sym
     c = self
     v = self
     ct = self.local_data(loc)
@@ -591,9 +591,9 @@ class Conflict < ActiveRecord::Base
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :refs
           if va[1] == "documents" and false
-            man = v.documents.where("copied?"=>nil)
+            man = v.documents.where("copied?"=>nil,:locale=>loc)
           else
-            man = eval 'v.'+va[1]
+            man = eval "v.#{va[1]}.where(:locale=>:#{loc})"
           end
           arr = []
           man.each do |m|
