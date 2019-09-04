@@ -206,8 +206,7 @@
           %br/
 
       =yield_content :body_end
-      -#if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
-      -if current_account and current_account.role == "admin"
+      -if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
         #cookies_disclaimer
           %table
             %tr
