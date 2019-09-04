@@ -205,6 +205,17 @@
           %br/
           %br/
 
+        -if current_account and current_account.role == "admin"
+          #cookies{:style=>"position:fixed; bottom: 0px; right:24px; transition:250; z-index: 9999; width: 100%;"}
+            %p 
+              We use cookies for statistical purposes and to improve our services. By clicking "Accept cookies" you consent to place cookies when visiting the website. For more information, and to find out how to change the configuration of cookies, please read our 
+              %a{:href=>"/legal#cookies"} cookie policy.
+            %p
+              Utilizamos cookies para realizar el análisis de la navegación de los usuarios y mejorar nuestros servicios. Al pulsar "Accept cookies" consiente dichas cookies. Puede obtener más información, o bien conocer cómo cambiar la configuración, pulsando en 
+              %a{:href=>"/legal#cookies"} más información.
+            %p
+              %button.btn{:onclick=>"acceptCookies();"} Accept cookies
+
       =yield_content :body_end
       :javascript
         var _gaq = _gaq || [];
@@ -238,6 +249,10 @@
           };  
 
       :javascript
+        function acceptCookies() {
+          console.log("accepted");
+          $("#cookies").fadeOut(500);
+        }
         $full = false;
         $.getJSON("/data/autocomplete.json",function(data){
           relateds = data[0];
