@@ -219,41 +219,41 @@
                 %a{:href=>"/legal#cookies"} más información.
               %td
                 %button.btn{:onclick=>"acceptCookies();"} Accept cookies
-          :javascript
-            console.log("opened")
-            if (localStorage.getItem("cookies_accepted")!="true") {
-              console.log("not accepted")
-              $("#cookies_disclaimer").fadeIn(500);
-            }
-            function acceptCookies() {
-              console.log("accepted");
-              $("#cookies_disclaimer").fadeOut(500);
-              $.post("/accept_cookies");
-              localStorage.setItem("cookies_accepted");
-            }
-          :css
-            #cookies_disclaimer {
-              display: none;
-              position:fixed;
-              bottom: 0px;
-              right: 0px;
-              z-index: 9999;
-              width: 100%;
-              background: #0380a5;
-              color: white;
-            }
-            #cookies_disclaimer td {
-              padding: 12px;
-            }
-            #cookies_disclaimer a,
-            #cookies_disclaimer a:focus {
-              color: white;
-              text-decoration: underline;
-            }
-            #cookies_disclaimer a:hover {
-              color: white;
-              text-decoration: none;
-            }
+        :javascript
+          console.log("opened")
+          if (localStorage.getItem("cookies_accepted")!="true") {
+            console.log("not accepted")
+            $("#cookies_disclaimer").fadeIn(500);
+          }
+          function acceptCookies() {
+            console.log("accepted");
+            $("#cookies_disclaimer").fadeOut(500);
+            $.post("/accept_cookies");
+            localStorage.setItem("cookies_accepted","true");
+          }
+        :css
+          #cookies_disclaimer {
+            display: none;
+            position:fixed;
+            bottom: 0px;
+            right: 0px;
+            z-index: 9999;
+            width: 100%;
+            background: #0380a5;
+            color: white;
+          }
+          #cookies_disclaimer td {
+            padding: 12px;
+          }
+          #cookies_disclaimer a,
+          #cookies_disclaimer a:focus {
+            color: white;
+            text-decoration: underline;
+          }
+          #cookies_disclaimer a:hover {
+            color: white;
+            text-decoration: none;
+          }
 
       :javascript
         var _gaq = _gaq || [];
