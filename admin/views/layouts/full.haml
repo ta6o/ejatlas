@@ -298,6 +298,9 @@
             #img.pull-left
 
     -if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
+      -if current_account and current_account.cookies_accepted.nil?
+        :javascript
+          localStorage.removeItem("cookies_accepted");
       #cookies_disclaimer
         %table
           %tr
