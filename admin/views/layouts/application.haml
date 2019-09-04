@@ -205,8 +205,9 @@
           %br/
           %br/
 
+        -#if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
         -if current_account and current_account.role == "admin"
-          #cookies
+          #cookies_disclaimer
             %table
               %tr
                 %td
@@ -217,6 +218,16 @@
                   %a{:href=>"/legal#cookies"} más información.
                 %td
                   %button.btn{:onclick=>"acceptCookies();"} Accept cookies
+            :javascript
+              if (localStorage.getItem("cookies_accepted")!="true") {
+                $("#cookies_disclaimer").fadeIn(500);
+              }
+              function acceptCookies() {
+                console.log("accepted");
+                $("#cookies_disclaimer").fadeOut(500);
+                $.post("/accept_cookies");
+                localStorage.setItem("cookies_accepted");
+              }
             :css
               #cookies {
                 position:fixed;
@@ -273,10 +284,6 @@
           };  
 
       :javascript
-        function acceptCookies() {
-          console.log("accepted");
-          $("#cookies").fadeOut(500);
-        }
         $full = false;
         $.getJSON("/data/autocomplete.json",function(data){
           relateds = data[0];
