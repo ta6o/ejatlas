@@ -220,7 +220,7 @@
               %td
                 %button.btn{:onclick=>"acceptCookies();"} Accept cookies
           :javascript
-            $window.onLoad = function(){
+            window.onLoad = function(){
               if (localStorage.getItem("cookies_accepted")!="true") {
                 $("#cookies_disclaimer").fadeIn(500);
               }
