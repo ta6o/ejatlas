@@ -14,7 +14,7 @@
   %body{:style=>'background:#fff'}
     %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
       %p
-        = I18n.t("emails.general.dear_var", account_name: @account.name)
+        = I18n.t("emails.general.dear_var", account_name: @collab.name)
         %br/
         %br/
         =I18n.t("emails.notify_collaborator.please_note_that_ejatlas_editors")

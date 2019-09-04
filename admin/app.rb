@@ -256,6 +256,7 @@ class Admin < Padrino::Application
     return
     @account = c.account
     return unless @account
+    @collab = c.account
     @conflict = c
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
     Admin.send_mail(@account, (c.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: c.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: c.name)), html)

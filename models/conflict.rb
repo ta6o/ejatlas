@@ -590,7 +590,11 @@ class Conflict < ActiveRecord::Base
           cnt = arr.join "<br />"
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :refs
-          man = eval 'v.'+va[1]
+          if va[1] == "documents" and false
+            man = v.documents.where("copied?"=>nil)
+          else
+            man = eval 'v.'+va[1]
+          end
           arr = []
           man.each do |m|
             url = ''
