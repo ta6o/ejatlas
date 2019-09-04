@@ -86,10 +86,10 @@ Admin.controllers :accounts do
   end
 
   post :create do
-    pp params
     pwd = (0..8).map{ (('a'..'z').to_a+('A'..'Z').to_a+(0..9).to_a)[rand(62)] }.join
     params['account']['password'] = pwd
     params['account']['password_confirmation'] = pwd
+    params['account']['privacy_accepted'] = Time.now if params['account']['privacy_accepted'] == "on"
     @account = Account.new(params[:account])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.role = "user"
