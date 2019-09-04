@@ -286,80 +286,75 @@
             return true;
           };  
 
-      -if current_account
+      -if request.path.match(/edit/)
         :javascript
-          console.log("#{request.path}")
-          console.log("#{current_account.name}")
-          console.log("#{current_account.cookies_accepted}")
-          console.log("#{current_account.cookies_accepted.nil?}")
-      :javascript
-        $full = false;
-        $.getJSON("/data/autocomplete.json",function(data){
-          relateds = data[0];
-          tag_names = data[1];
-          emails = data[2];
-          (function( $ ) {
-            $.ui.autocomplete.prototype.options.autoSelect = true;
-            $( "body" ).on( "blur", ".autocomplete", function( event ) {
-              var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
-              if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
-              var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
-              autocomplete.widget().children( ".ui-menu-item" ).each(function() {
-                var item = $( this )
-                if ( matcher.test( item.value || item ) ) {
-                  autocomplete.selectedItem = item;
-                  return false;
-                } else {
-                  $('.autocomplete').val('');
-                  return false
+          $full = false;
+          $.getJSON("/data/autocomplete.json",function(data){
+            relateds = data[0];
+            tag_names = data[1];
+            emails = data[2];
+            (function( $ ) {
+              $.ui.autocomplete.prototype.options.autoSelect = true;
+              $( "body" ).on( "blur", ".autocomplete", function( event ) {
+                var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
+                if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
+                var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
+                autocomplete.widget().children( ".ui-menu-item" ).each(function() {
+                  var item = $( this )
+                  if ( matcher.test( item.value || item ) ) {
+                    autocomplete.selectedItem = item;
+                    return false;
+                  } else {
+                    $('.autocomplete').val('');
+                    return false
+                  }
+                });
+                if ( autocomplete.selectedItem ) {
+                  autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
                 }
               });
-              if ( autocomplete.selectedItem ) {
-                autocomplete._trigger( "select", event, { item: autocomplete.selectedItem } );
+
+            }( jQuery ));
+            $( ".autocomplete" ).autocomplete({
+              minLength: 2,
+              position: { my : "right top", at: "right bottom" },
+              source: function( request, response ) {
+                $source = eval($('.autocomplete:focus').attr('data-source'));
+                var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( $.grep( $source, function( value ) {
+                  value = value.value || value;
+                  return matcher.test( value );
+                }) );
+              },
+              select: function( event, ui ) {
+                $item = $('.autocomplete:focus');
+                if ($item.closest("input").hasClass("noaction")) {
+                  $item.closest("input").val(ui.item.value);
+                } else {
+                  $item.val( "" );
+                  $id = $item.attr('id');
+                  $ul = $item.closest(".clearfix").nextAll('ul')
+                  $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
+                  $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
+                }
+                return false;
               }
             });
-
-          }( jQuery ));
-          $( ".autocomplete" ).autocomplete({
-            minLength: 2,
-            position: { my : "right top", at: "right bottom" },
-            source: function( request, response ) {
-              $source = eval($('.autocomplete:focus').attr('data-source'));
-              var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
-              response( $.grep( $source, function( value ) {
-                value = value.value || value;
-                return matcher.test( value );
-              }) );
-            },
-            select: function( event, ui ) {
-              $item = $('.autocomplete:focus');
-              if ($item.closest("input").hasClass("noaction")) {
-                $item.closest("input").val(ui.item.value);
-              } else {
-                $item.val( "" );
-                $id = $item.attr('id');
-                $ul = $item.closest(".clearfix").nextAll('ul')
-                $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
-                $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
-              }
-              return false;
-            }
           });
-        });
 
-        function remove_li (name, id) { 
-          $target = $('li#'+name+'_'+id) 
-          $target.find('span').css('text-decoration','line-through');
-          $target.find('input').attr('name',name+"_remove_"+id);
-          $target.find('a').text('Add back');
-          $target.find('a').attr('onclick',"add_li('"+name+"',"+id+")");
-        }
-        function add_li (name, id) { 
-          $target = $('li#'+name+'_'+id) 
-          $target.find('span').css('text-decoration','none');
-          $target.find('input').attr('name',name+"_add_"+id);
-          $target.find('a').text('Remove');
-          $target.find('a').attr('onclick',"remove_li('"+name+"',"+id+")");
-        }
+          function remove_li (name, id) { 
+            $target = $('li#'+name+'_'+id) 
+            $target.find('span').css('text-decoration','line-through');
+            $target.find('input').attr('name',name+"_remove_"+id);
+            $target.find('a').text('Add back');
+            $target.find('a').attr('onclick',"add_li('"+name+"',"+id+")");
+          }
+          function add_li (name, id) { 
+            $target = $('li#'+name+'_'+id) 
+            $target.find('span').css('text-decoration','none');
+            $target.find('input').attr('name',name+"_add_"+id);
+            $target.find('a').text('Remove');
+            $target.find('a').attr('onclick',"remove_li('"+name+"',"+id+")");
+          }
 
 
