@@ -205,54 +205,56 @@
           %br/
           %br/
 
-        -#if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
-        -if current_account and current_account.role == "admin"
-          #cookies_disclaimer
-            %table
-              %tr
-                %td
-                  We use cookies for statistical purposes and to improve our services. By clicking "Accept cookies" you consent to place cookies when visiting the website. For more information, and to find out how to change the configuration of cookies, please read our 
-                  %a{:href=>"/legal#cookies"} cookie policy.
-                %td
-                  Utilizamos cookies para realizar el análisis de la navegación de los usuarios y mejorar nuestros servicios. Al pulsar "Accept cookies" consiente dichas cookies. Puede obtener más información, o bien conocer cómo cambiar la configuración, pulsando en 
-                  %a{:href=>"/legal#cookies"} más información.
-                %td
-                  %button.btn{:onclick=>"acceptCookies();"} Accept cookies
-            :javascript
+      =yield_content :body_end
+      -#if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
+      -if current_account and current_account.role == "admin"
+        #cookies_disclaimer
+          %table
+            %tr
+              %td
+                We use cookies for statistical purposes and to improve our services. By clicking "Accept cookies" you consent to place cookies when visiting the website. For more information, and to find out how to change the configuration of cookies, please read our 
+                %a{:href=>"/legal#cookies"} cookie policy.
+              %td
+                Utilizamos cookies para realizar el análisis de la navegación de los usuarios y mejorar nuestros servicios. Al pulsar "Accept cookies" consiente dichas cookies. Puede obtener más información, o bien conocer cómo cambiar la configuración, pulsando en 
+                %a{:href=>"/legal#cookies"} más información.
+              %td
+                %button.btn{:onclick=>"acceptCookies();"} Accept cookies
+          :javascript
+            $window.onLoad = function(){
               if (localStorage.getItem("cookies_accepted")!="true") {
                 $("#cookies_disclaimer").fadeIn(500);
               }
-              function acceptCookies() {
-                console.log("accepted");
-                $("#cookies_disclaimer").fadeOut(500);
-                $.post("/accept_cookies");
-                localStorage.setItem("cookies_accepted");
-              }
-            :css
-              #cookies_disclaimer {
-                display: none;
-                position:fixed;
-                bottom: 0px;
-                right: 0px;
-                z-index: 9999;
-                width: 100%;
-                background: #0380a5;
-                color: white;
-              }
-              #cookies_disclaimer td {
-                padding: 12px;
-              }
-              #cookies_disclaimer a,
-              #cookies_disclaimer a:focus {
-                color: white;
-                text-decoration: underline;
-              }
-              #cookies_disclaimer a:hover {
-                color: white;
-                text-decoration: none;
-              }
+            }
+            function acceptCookies() {
+              console.log("accepted");
+              $("#cookies_disclaimer").fadeOut(500);
+              $.post("/accept_cookies");
+              localStorage.setItem("cookies_accepted");
+            }
+          :css
+            #cookies_disclaimer {
+              display: none;
+              position:fixed;
+              bottom: 0px;
+              right: 0px;
+              z-index: 9999;
+              width: 100%;
+              background: #0380a5;
+              color: white;
+            }
+            #cookies_disclaimer td {
+              padding: 12px;
+            }
+            #cookies_disclaimer a,
+            #cookies_disclaimer a:focus {
+              color: white;
+              text-decoration: underline;
+            }
+            #cookies_disclaimer a:hover {
+              color: white;
+              text-decoration: none;
+            }
 
-      =yield_content :body_end
       :javascript
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-49025282-1']);
