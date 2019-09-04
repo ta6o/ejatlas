@@ -1198,7 +1198,10 @@
                   %a#n_document.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
                 #current_documents
                   %h4=t("f.conflict.images")
+                  -ifs = []
                   -@conflict.images.where(:locale=>I18n.locale).order(:pid).each do |d|
+                    -if d and d.file
+                      -ifs << d.file.file.filename
                     .document
                       %br
                       %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
@@ -1241,7 +1244,7 @@
 
                   %h4=t("f.conflict.documents")
                   -@conflict.documents.where(:locale=>I18n.locale).order(:pid).each do |d|
-                    -next if d and d.copied?
+                    -next if d and d.copied? and ifs.include?(d.file.file.filename)
                     .document
                       %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
                       -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
