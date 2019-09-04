@@ -16,6 +16,15 @@ Admin.controller do
     return 'ok'
   end
 
+  get :legal do
+    @name = "Aviso legal"   
+    if File.exists? "#{Dir.pwd}/admin/views/base/legal_#{I18n.locale}.haml"
+      render "base/legal_#{I18n.locale}", :layout => :application
+    else
+      render "base/legal_es", :layout => :application
+    end
+  end
+
   get :about do
     @name = "About"   
     if File.exists? "#{Dir.pwd}/admin/views/base/about_#{I18n.locale}.haml"
@@ -24,6 +33,7 @@ Admin.controller do
       render "base/about_en", :layout => :application
     end
   end
+
   get :faq do
     @name = "Frequently Asked Questions"   
     if File.exists? "#{Dir.pwd}/admin/views/base/faq_#{I18n.locale}.haml"
@@ -32,6 +42,7 @@ Admin.controller do
       render "base/faq_en", :layout => :application
     end
   end
+
   get :disclaimer do
     @name = "Disclaimer"   
     if File.exists? "#{Dir.pwd}/admin/views/base/disclaimer_#{I18n.locale}.haml"
