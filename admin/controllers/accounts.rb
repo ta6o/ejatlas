@@ -86,6 +86,7 @@ Admin.controllers :accounts do
   end
 
   post :create do
+    pp params
     pwd = (0..8).map{ (('a'..'z').to_a+('A'..'Z').to_a+(0..9).to_a)[rand(62)] }.join
     params['account']['password'] = pwd
     params['account']['password_confirmation'] = pwd

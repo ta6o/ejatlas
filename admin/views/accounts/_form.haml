@@ -143,6 +143,7 @@
         =f.password_field :password_confirmation, :class => :password_field
 
     -if @account.new_record? and current_account.role == "admin"
+      %br/
       .group
         #privacy{:style=>"display:none;"}
           .row
@@ -176,8 +177,8 @@
                 %b
                   %a{:href=>"/legal#privacy"} https://ejatlas.org/legal.
 
-        %input#general{:type=>'checkbox',:name=>"account[privacy_accepted]", :checked=>false}
-          %a{:onclick=>"showPrivacyPolicy()"}=" &nbsp; #{t("f.account.i_accept_privacy_policy")}".html_safe
+        %input#general{:type=>'checkbox',:name=>"account[privacy_accepted]", :checked=>false, :validate=>true, :required=>true}
+          %a{:onclick=>"showPrivacyPolicy();"}=" &nbsp; #{t("f.account.i_accept_privacy_policy")}".html_safe
       %br/
       %p 
         %strong= t("m.account.thank_you_very_much_for_your_contribution_well")
@@ -222,10 +223,10 @@
     $('.images').append(html);
     $('#m_image').modal('hide');
   }
+  function showPrivacyPolicy() {
+    $("#privacy").slideDown();
+  }
   $(document).ready(function(){
-    function showPrivacyPolicy() {
-      $("#privacy").slideDown();
-    }
     $('#m_image').on('hidden.bs.modal', function () {
       $('.i_image').val('');
       $('#b_image').removeClass('disabled');
