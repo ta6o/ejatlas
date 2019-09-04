@@ -286,9 +286,14 @@
             return true;
           };  
 
+      -if current_account
+        :javascript
+          console.log("#{request.path}")
+          console.log("#{current_account.name}")
+          console.log("#{current_account.cookies_accepted}")
+          console.log("#{current_account.cookies_accepted.nil?}")
       :javascript
         $full = false;
-        console.log("#{request.path}")
         $.getJSON("/data/autocomplete.json",function(data){
           relateds = data[0];
           tag_names = data[1];
