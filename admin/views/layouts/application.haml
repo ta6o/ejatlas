@@ -206,6 +206,7 @@
           %br/
 
       =yield_content :body_end
+
       -if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
         #cookies_disclaimer
           %table
@@ -287,6 +288,7 @@
 
       :javascript
         $full = false;
+        console.log("#{request.path}")
         $.getJSON("/data/autocomplete.json",function(data){
           relateds = data[0];
           tag_names = data[1];
