@@ -148,40 +148,41 @@
         #privacy{:style=>"display:none;"}
           .row
             .col-sm-12
-              %ul.tabs
-                %li.pull-left 
-                  %a.active{:href=>"#privacy_en"} EN
-                %li.pull-left 
-                  %a{:href=>"#privacy_es"} ES
-              #privacy_en
-                %p
-                  In accordance with current EU Regulation 2016/679, we inform you that the personal data you provide to us will be processed for the 
-                  %b preparation of the EJAtlas
-                  – Global Atlas of Environmental Justice. 
-                %p
-                  Processing of your data will be protected by your own consent. By pressing the 
-                  %b "SAVE" 
-                  button, you will consent to the treatment described above.  We also inform you that, except for legal obligation or express consent on your part, we will not transfer your data to third parties.  Likewise, we wish to inform you that at any time you can exercise the rights of access, rectification or deletion of data, as well as other rights recognized in this document and regulated in Regulation (EU) 2016/679. You can do so by sending an email with a copy of your ID to the following email address: 
-                  %b
-                    %a{:href=>"mailto:ejoltmap@gmail.com"} ejoltmap@gmail.com.
-                  Additional and detailed information on Data Protection on our website: 
-                  %b
-                    %a{:href=>"/legal#privacy"} https://ejatlas.org/legal.
-              #privacy_es
-                %p
-                  De conformidad con el vigente Reglamento (UE) 2016/679, informamos que los datos de carácter personal que nos proporcione se tratarán para lo siguiente: 
-                  %b Para la elaboración del Atlas de Justicia Ambiental.
-                %p
-                  Dicho tratamiento de sus datos estará amparado en su propio consentimiento. Al pulsar el botón “ENVIAR”, el Usuario consiente el tratamiento arriba descrito.
-                %p
-                  Asimismo, le informamos que, salvo obligación legal o consentimiento expreso por su parte, no cederemos sus datos a terceros.
-                %p
-                  Igualmente, se informa al Usuario que en cualquier momento puede ejercitar los derechos de acceso, rectificación o supresión de datos, así como disponer de otros derechos reconocidos en el presente documento y regulados en el Reglamento (UE) 2016/679, enviando un correo electrónico con copia de su NIF a la siguiente dirección electrónica:
-                  %b
-                    %a{:href=>"mailto:ejoltmap@gmail.com"} ejoltmap@gmail.com.
-                  Información adicional y detallada sobre Protección de Datos en nuestra página web:
-                  %b
-                    %a{:href=>"/legal#privacy"} https://ejatlas.org/legal.
+              %ul.nav.nav-tabs{:role=>"tablist"}
+                %li{:role=>"presentation"}
+                  %a.active{:href=>"#privacy_en","aria_controls"=>"privacy_en",:role=>"tab","data-toggle"=>"tab"} EN
+                %li{:role=>"presentation"}
+                  %a{:href=>"#privacy_es","aria_controls"=>"privacy_es",:role=>"tab","data-toggle"=>"tab"} ES
+              .tab-content
+                #privacy_en.tab-pane.active{:role=>"tabpanel"}
+                  %p
+                    In accordance with current EU Regulation 2016/679, we inform you that the personal data you provide to us will be processed for the 
+                    %b preparation of the EJAtlas
+                    – Global Atlas of Environmental Justice. 
+                  %p
+                    Processing of your data will be protected by your own consent. By pressing the 
+                    %b "SAVE" 
+                    button, you will consent to the treatment described above.  We also inform you that, except for legal obligation or express consent on your part, we will not transfer your data to third parties.  Likewise, we wish to inform you that at any time you can exercise the rights of access, rectification or deletion of data, as well as other rights recognized in this document and regulated in Regulation (EU) 2016/679. You can do so by sending an email with a copy of your ID to the following email address: 
+                    %b
+                      %a{:href=>"mailto:ejoltmap@gmail.com"} ejoltmap@gmail.com.
+                    Additional and detailed information on Data Protection on our website: 
+                    %b
+                      %a{:href=>"/legal#privacy"} https://ejatlas.org/legal.
+                #privacy_es.tab-pane{:role=>"tabpanel"}
+                  %p
+                    De conformidad con el vigente Reglamento (UE) 2016/679, informamos que los datos de carácter personal que nos proporcione se tratarán para lo siguiente: 
+                    %b Para la elaboración del Atlas de Justicia Ambiental.
+                  %p
+                    Dicho tratamiento de sus datos estará amparado en su propio consentimiento. Al pulsar el botón “ENVIAR”, el Usuario consiente el tratamiento arriba descrito.
+                  %p
+                    Asimismo, le informamos que, salvo obligación legal o consentimiento expreso por su parte, no cederemos sus datos a terceros.
+                  %p
+                    Igualmente, se informa al Usuario que en cualquier momento puede ejercitar los derechos de acceso, rectificación o supresión de datos, así como disponer de otros derechos reconocidos en el presente documento y regulados en el Reglamento (UE) 2016/679, enviando un correo electrónico con copia de su NIF a la siguiente dirección electrónica:
+                    %b
+                      %a{:href=>"mailto:ejoltmap@gmail.com"} ejoltmap@gmail.com.
+                    Información adicional y detallada sobre Protección de Datos en nuestra página web:
+                    %b
+                      %a{:href=>"/legal#privacy"} https://ejatlas.org/legal.
 
         %input#general{:type=>'checkbox',:name=>"account[privacy_accepted]", :checked=>false, :validate=>true, :required=>true}
           %a{:onclick=>"showPrivacyPolicy();"}=" &nbsp; #{t("f.account.i_accept_privacy_policy")}".html_safe
