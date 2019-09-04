@@ -333,8 +333,10 @@
           text-decoration: none;
         }
       :javascript
-        if (localStorage.getItem("cookies_accepted")!="true") {
-          $("#cookies_disclaimer").fadeIn(500);
+        window.onLoad = function() {
+          if (localStorage.getItem("cookies_accepted")!="true") {
+            $("#cookies_disclaimer").fadeIn(500);
+          }
         }
         function acceptCookies() {
           $("#cookies_disclaimer").fadeOut(500);
