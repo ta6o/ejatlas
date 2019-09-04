@@ -848,11 +848,13 @@ class AsyncTask
         img.locale = doc.locale
         img.description = doc.description
         doc.conflict.images << img
+        img.pid = doc.conflict.images.where("pid is not null").count + 1
         begin
           img.save!
           #puts "\r#{img.title} (#{img.file.file.filename}) - #{img.attachable.name}"
           doc.update_attribute :copied?, true
         rescue => e
+          doc.update_attribute :copied?, nil
           if e.to_s.match("en.errors.messages.rmagick_processing_error")
             puts "#{doc.id.to_s.red}(#{doc.conflict.id.to_s.cyan})  invalid image:   #{doc.file.url.red}\n"
             errors << doc.id
