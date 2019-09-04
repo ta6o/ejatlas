@@ -1200,6 +1200,7 @@
                   %h4=t("f.conflict.images")
                   -ifs = []
                   -@conflict.images.where(:locale=>I18n.locale).order(:pid).each do |d|
+                    -next if d.lost
                     -if d and d.file
                       -ifs << d.file.file.filename
                     .document

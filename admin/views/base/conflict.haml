@@ -65,6 +65,7 @@
           %ul#carousel_ul
             -@images.order(:created_at).each do |image|
               -#next unless File.exists?("#{image.file.store_path}#{i.file.file.filename}")
+              -next if image.lost
               %li
                 %a{:href=>image.file.url,:target=>'_blank'}
                   %img{:src=>image.file.thumb_url,:style=>'height:240px;width:auto;display:none;'}
