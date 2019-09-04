@@ -229,7 +229,8 @@
                 localStorage.setItem("cookies_accepted");
               }
             :css
-              #cookies {
+              #cookies_disclaimer {
+                display: none;
                 position:fixed;
                 bottom: 0px;
                 right: 0px;
@@ -238,15 +239,15 @@
                 background: #0380a5;
                 color: white;
               }
-              #cookies td {
+              #cookies_disclaimer td {
                 padding: 12px;
               }
-              #cookies a,
-              #cookies a:focus {
+              #cookies_disclaimer a,
+              #cookies_disclaimer a:focus {
                 color: white;
                 text-decoration: underline;
               }
-              #cookies a:hover {
+              #cookies_disclaimer a:hover {
                 color: white;
                 text-decoration: none;
               }
