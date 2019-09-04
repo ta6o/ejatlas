@@ -335,6 +335,7 @@
       :javascript
         window.onLoad = function() {
           if (localStorage.getItem("cookies_accepted")!="true") {
+            console.log("not accepted")
             $("#cookies_disclaimer").fadeIn(500);
           }
         }
