@@ -1,11 +1,12 @@
 .container
   %br/
-  .row
-    .col-sm-12
-      %h4
-        = I18n.t("emails.general.dear_var", account_name: current_account.name)
-      %p
-        %b= I18n.t("v.info.please_accept_privacy_policy_below")
+  -if current_account.privacy_accepted.nil?
+    .row
+      .col-sm-12
+        %h4
+          = I18n.t("emails.general.dear_var", account_name: current_account.name)
+        %p
+          %b= I18n.t("v.info.please_accept_privacy_policy_below")
   .row
     .col-sm-6
       %p
@@ -37,14 +38,15 @@
         %b
           %a{:href=>"/legal#privacy",:target=>"_blank"} https://ejatlas.org/legal.
 
-  .row
-    .col-sm-4
-      &nbsp;
-    .col-sm-4
-      %br/
-      %button.btn.btn-info{:onclick=>"privacyAccepted();",:style=>"width:100%;font-size:16px"}= t("f.account.i_accept_privacy_policy")
-    .col-sm-4
-      &nbsp;
+  -if current_account.privacy_accepted.nil?
+    .row
+      .col-sm-4
+        &nbsp;
+      .col-sm-4
+        %br/
+        %button.btn.btn-info{:onclick=>"privacyAccepted();",:style=>"width:100%;font-size:16px"}= t("f.account.i_accept_privacy_policy")
+      .col-sm-4
+        &nbsp;
 -content_for :body_end do
   :javascript
     function privacyAccepted() {
