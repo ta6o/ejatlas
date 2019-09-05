@@ -47,7 +47,7 @@
 -content_for :body_end do
   :javascript
     function privacyAccepted() {
-      $.post("/accept_privacy",{redirect:window.location.search,.account_id:#{current_account.id}},function(data){
+      $.post("/accept_privacy",{redirect:window.location.search,account_id:#{current_account.id}},function(data){
         console.log(window.location.search)
         console.log(data)
       })
