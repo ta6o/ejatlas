@@ -549,7 +549,7 @@ class Admin < Padrino::Application
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo"]
 
   before do
-    if current_account and current_account.privacy_accepted.nil? and current_account.role == "admin" and not request.path.match(/^\/privacy_policy/)
+    if current_account and current_account.privacy_accepted.nil? and not request.path.match(/^\/(privacy_policy|accept_privacy)/) and current_account.role == "admin"
       redirect to "/privacy_policy?return=#{request.path.sub(/^\//,'')}"
     end
   end
