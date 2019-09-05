@@ -100,7 +100,7 @@ Admin.controller do
     return "{'status':'error','message':'No account registered'}" unless current_account
     return "{'status':'error','message':'Current account is different'}" if current_account.id != params["account_id"].to_i
     if current_account.update_attribute :privacy_accepted, Time.now
-      result = params["redirect"].sub(/^\?/,"").split("&").map{|r| r.match(/=\.*/) ? r.split("=") : [r.sub(/=/,""), ""]}.to_h
+      result = params["redirect"].sub(/^\?/,"").split("&").map{|r| r.match(/=.*$/) ? r.split("=") : [r.sub(/=/,""), ""]}.to_h
       result["status"] = "success"
       return result.to_json
     end
