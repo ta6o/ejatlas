@@ -1,4 +1,5 @@
 .container
+  %br/
   .row
     .col-sm-12
       %h4
@@ -46,5 +47,8 @@
 -content_for :body_end do
   :javascript
     function privacyAccepted() {
-      console.log($);
+      $.post("/accept_privacy",{redirect:window.location.search,.account_id:#{current_account.id}},function(data){
+        console.log(window.location.search)
+        console.log(data)
+      })
     }

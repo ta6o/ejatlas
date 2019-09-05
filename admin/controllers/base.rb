@@ -96,6 +96,12 @@ Admin.controller do
     current_account.update_attribute :cookies_accepted, Time.now
   end
 
+  post :accept_privacy do
+    return unless current_account
+    return params.to_json
+    current_account.update_attribute :privacy_accepted, Time.now
+  end
+
   get "/manifest.txt" do
     content_type :manifest
     man = "CACHE MANIFEST\n# #{File.read("./lib/stamp").strip}\n\nCACHE:\n"
