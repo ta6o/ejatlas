@@ -435,20 +435,25 @@
         conflict = false;
         $full = true;
         jQl.loadjQ('/javascripts/main.js'); 
+
+    :javascript
+      $(document).ready(function(){
+        console.log("loaded")
+        if (localStorage.getItem("cookies_accepted")!="true") {
+          console.log("not accepted")
+          $("#cookies_disclaimer").fadeIn(500);
+        }
+      });
+      function acceptCookies() {
+        $("#cookies_disclaimer").fadeOut(500);
+        $.post("/accept_cookies");
+        localStorage.setItem("cookies_accepted","true");
+      }
+
     -if @color and @color.length > 1
       :javascript
         $(document).ready(function(){
           $('#map').css('background','#{@color}')
-          console.log("loaded")
-          if (localStorage.getItem("cookies_accepted")!="true") {
-            console.log("not accepted")
-            $("#cookies_disclaimer").fadeIn(500);
-          }
         });
-        function acceptCookies() {
-          $("#cookies_disclaimer").fadeOut(500);
-          $.post("/accept_cookies");
-          localStorage.setItem("cookies_accepted","true");
-        }
 
     =yield_content :body_end
