@@ -41,7 +41,8 @@
     .col-sm-4
       &nbsp;
     .col-sm-4
-      %button.btn.btn-info{:onclick=>"privacyAccepted();"}= t("f.account.i_accept_privacy_policy")
+      %br/
+      %button.btn.btn-info{:onclick=>"privacyAccepted();",:style=>"width:100%;font-size:16px"}= t("f.account.i_accept_privacy_policy")
     .col-sm-4
       &nbsp;
 -content_for :body_end do
