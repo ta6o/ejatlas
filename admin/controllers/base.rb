@@ -98,7 +98,7 @@ Admin.controller do
 
   post :accept_privacy do
     return "{'status':'error','message':'No account registered'}" unless current_account
-    return "{'status':'error','message':'Current account is different'}" unless current_account.id != params["account_id"].to_i
+    return "{'status':'error','message':'Current account is different'}" if current_account.id != params["account_id"].to_i
     redirect = params["redirect"].sub(/^\?/,"").split("&").map{|r| r.split("=")}.to_h
     return redirect.to_json
     if current_account.update_attribute :privacy_accepted, Time.now
