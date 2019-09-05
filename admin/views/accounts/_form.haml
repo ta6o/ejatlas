@@ -167,7 +167,7 @@
                       %a{:href=>"mailto:ejoltmap@gmail.com"} ejoltmap@gmail.com.
                     Additional and detailed information on Data Protection on our website: 
                     %b
-                      %a{:href=>"/legal#privacy"} https://ejatlas.org/legal.
+                      %a{:href=>"/legal#privacy",:target=>"_blank"} https://ejatlas.org/legal.
                 #privacy_es.tab-pane{:role=>"tabpanel"}
                   %p
                     De conformidad con el vigente Reglamento (UE) 2016/679, informamos que los datos de carácter personal que nos proporcione se tratarán para lo siguiente: 
@@ -182,7 +182,7 @@
                       %a{:href=>"mailto:ejoltmap@gmail.com"} ejoltmap@gmail.com.
                     Información adicional y detallada sobre Protección de Datos en nuestra página web:
                     %b
-                      %a{:href=>"/legal#privacy"} https://ejatlas.org/legal.
+                      %a{:href=>"/legal#privacy",:target=>"_blank"} https://ejatlas.org/legal.
 
         %input#general{:type=>'checkbox',:name=>"account[privacy_accepted]", :checked=>false, :validate=>true, :required=>true}
           %a{:onclick=>"showPrivacyPolicy();"}=" &nbsp; #{t("f.account.i_accept_privacy_policy")}".html_safe

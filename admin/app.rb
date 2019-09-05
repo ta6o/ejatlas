@@ -549,6 +549,12 @@ class Admin < Padrino::Application
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo"]
 
   before do
+    if current_account and current_account.privacy_accepted.nil? and current_account.role == "admin"
+      redirect to "/privacy_policy?return=#{request.path}"
+    end
+  end
+
+  before do
     puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params.keys}" unless request.path_info == "/error"
   end
 

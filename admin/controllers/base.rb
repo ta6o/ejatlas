@@ -25,6 +25,16 @@ Admin.controller do
     end
   end
 
+  get :privacy_policy do
+    pass unless current_account
+    @name = "Privacy policy"   
+    if File.exists? "#{Dir.pwd}/admin/views/base/accept_privacy_#{I18n.locale}.haml"
+      render "base/accept_privacy_#{I18n.locale}", :layout => :application
+    else
+      render "base/accept_privacy", :layout => :application
+    end
+  end
+
   get :about do
     @name = "About"   
     if File.exists? "#{Dir.pwd}/admin/views/base/about_#{I18n.locale}.haml"
