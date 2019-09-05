@@ -55,7 +55,8 @@
       $.post("/accept_privacy",{redirect:window.location.search,account_id:#{current_account.id}},function(data){
         data = JSON.parse(data);
         if (data.status == "success") {
-          window.location = window.location.origin+"/"+data.return;
+          console.log(data)
+          //window.location = window.location.origin+"/"+data.return;
         } else {
 
         }
