@@ -207,6 +207,9 @@
 
       =yield_content :body_end
 
+      #aviso{:style=>"position:fixed;bottom:0;left:0;z-index:1000;background-color:rgba(255,255,255,0.7);padding:0 5px;"}
+        %a{:href=>"/legal",:style=>"font-size:11px;font-weight:bold;display:block;", :target=>"_blank"} Legal notice / Aviso legal
+
       -if current_account.nil? or ( current_account and current_account.cookies_accepted.nil? )
         #cookies_disclaimer
           %table
