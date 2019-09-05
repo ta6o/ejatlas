@@ -2,11 +2,13 @@
   %br/
   -if current_account.privacy_accepted.nil?
     .row
-      .col-sm-12
+      .col-sm-4 &nbsp;
+      .col-sm-4
         %h4
           = I18n.t("emails.general.dear_var", account_name: current_account.name)
         %p
           %b= I18n.t("v.info.please_accept_privacy_policy_below")
+      .col-sm-4 &nbsp;
   .row
     .col-sm-6
       %p
