@@ -572,7 +572,7 @@ class Admin < Padrino::Application
         s = ss > 0 ? (dd > 1 ? "#{ss} seconds" : "1 second" ) : ""
       end
       if detail
-        "#{d}#{h}#{m}#{s}".strip
+        "#{d}#{h}#{m}#{s}".strip.sub(/,$/,"")
       elsif shorten
         "#{d}#{h}#{m}#{s}".strip.split(/\s+/)[0]
       else
