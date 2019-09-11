@@ -578,11 +578,11 @@ class Admin < Padrino::Application
         s = ss > 0 ? (ss > 1 ? "#{ss} seconds" : "1 second" ) : ""
       end
       if detail
-        "#{d}#{h}#{m}#{s}".strip.sub(/,$/,"")
+        "#{y}#{o}#{d}#{h}#{m}#{s}".strip.sub(/,$/,"")
       elsif shorten
-        "#{d}#{h}#{m}#{s}".strip.split(/\s+/)[0]
+        "#{y}#{o}#{d}#{h}#{m}#{s}".strip.split(/\s+/)[0]
       else
-        "#{d}#{h}#{m}#{s}".strip.split(/,\s+/)[0]
+        "#{y}#{o}#{d}#{h}#{m}#{s}".strip.split(/,\s+/)[0]
       end
     end
   end
