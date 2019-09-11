@@ -17,7 +17,7 @@
           -run_by = arguments.delete("run_by")
           %tr
             %td
-              %strong= {:backup_without_delay=>'Backup',:odsexport_without_delay=>'Export',:csvexport_without_delay=>'Export',:setcache_without_delay=>'Cache update',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
+              %strong= {:backup_without_delay=>'Backup',:odsexport_without_delay=>'ODS Export',:csvexport_without_delay=>'CSV Export',:setcache_without_delay=>'Cache update',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
             %td= (j.created_at.utc+1.hours).strftime("%b %d, %H:%M CET")
             -if j.locked_at != nil
               %td= "Started at #{(j.locked_at.utc+1.hours).strftime('%H:%M')}"
@@ -48,7 +48,7 @@
             -elsif method_name == :vectorupload_without_delay
               %td= arguments[1].name
             -else
-              %td - none -
+              %td &nbsp;
             %td= run_by ? run_by : "system"
     :javascript
       setTimeout(function(){location.reload()}, 30000);
