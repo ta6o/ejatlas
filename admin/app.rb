@@ -566,10 +566,10 @@ class Admin < Padrino::Application
         m = mm > 0 ? "#{mm}m " : ""
         s = "#{ss}s"
       else
-        d = dd > 0 ? "#{dd} days, " : ""
-        h = hh > 0 ? "#{hh} hours, " : ""
-        m = mm > 0 ? "#{mm} minutes, " : ""
-        s = "#{ss} seconds"
+        d = dd > 0 ? (dd > 1 ? "#{dd} days, " : "1 day, " ) : ""
+        h = hh > 0 ? (dd > 1 ? "#{hh} hours, " : "1 hour, " ) : ""
+        m = mm > 0 ? (dd > 1 ? "#{mm} minutes, " : "1 minute, " ) : ""
+        s = ss > 0 ? (dd > 1 ? "#{ss} seconds" : "1 second" ) : ""
       end
       if detail
         "#{d}#{h}#{m}#{s}".strip
