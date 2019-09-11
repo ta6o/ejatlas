@@ -158,7 +158,7 @@
 
   %body.embed{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
     #map.map
-    -if ENV['RACK_ENV'] == 'development'
+    -if ENV['RACK_ENV'] == 'development' or true
       :javascript
         conflict = false;
         $full = true;
