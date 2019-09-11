@@ -587,6 +587,19 @@ class Admin < Padrino::Application
     end
   end
 
+	def self.human_bytes number
+		units = %W(B KiB MiB GiB TiB).freeze
+		if number.to_i < 1024
+			exponent = 0
+		else
+			max_exp  = units.size - 1
+			exponent = ( Math.log( number ) / Math.log( 1024 ) ).to_i
+			exponent = max_exp if exponent > max_exp
+			number  /= 1024 ** exponent
+		end
+		"#{number} #{units[exponent]}"
+	end
+
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo"]
 

@@ -1,9 +1,10 @@
 class AsyncTask
   def odsexport params
+    t0 = Time.now
     require 'rodf'
     job_id = "no job id"
     Delayed::Job.all.each do |job|
-      p [self, job.payload_object.object]
+      p [t0.to_s, job.locked_at.utc.to_s]
       if self == job.payload_object.object
         job_id = job.id
         break
