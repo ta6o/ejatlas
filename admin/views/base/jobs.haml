@@ -20,7 +20,10 @@
               %strong= {:backup_without_delay=>'Backup',:odsexport_without_delay=>'ODS Export',:csvexport_without_delay=>'CSV Export',:setcache_without_delay=>'Cache update',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
             %td= (j.created_at.utc+1.hours).strftime("%b %d, %H:%M CET")
             -if j.locked_at != nil
-              %td= "Started at #{(j.locked_at.utc+1.hours).strftime('%H:%M')}"
+              -if File.exists?("#{Dir.pwd}/public/data/delayed/#{j.id}.txt")
+                %td= File.read("#{Dir.pwd}/public/data/delayed/#{j.id}.txt")
+              -else
+                %td= "Started at #{(j.locked_at.utc+1.hours).strftime('%H:%M')}"
             -elsif j.last_error != nil
               %td= "Failed <small>(#{j.attempts})</small>".html_safe
             -elsif j.locked_at.nil? and j.attempts == 0 
