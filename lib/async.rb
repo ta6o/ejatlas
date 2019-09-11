@@ -109,10 +109,7 @@ class AsyncTask
           end
           inv = cm.involvement and cm.involvement.length > 0 ? ":#{cm.involvement}" : ""
           lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
-          unless actors[mod].has_key? m.id
-            actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil],
-                                  :invs => {}} 
-          end
+          actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil], :invs => {}} unless actors[mod].has_key? m.id
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           actors[mod][m.id][:invs][conf.id] = inv
         end
@@ -221,11 +218,11 @@ class AsyncTask
           end
         end
       end
-      actors.each do |many,lines|
-        next if many == :ids
+      actors.each do |actor,lines|
+        next if actor == :ids
         header = ["id", "name", "slug", "description", "url", "acronym", "country"]
         actors[:ids].uniq.each {|c| header << c}
-        sheet.table many.to_s.downcase do
+        sheet.table actor.to_s.downcase do
           row do
             header.each {|x| cell x }
           end
@@ -255,7 +252,7 @@ class AsyncTask
 =end
       end
     end
-    puts "Done."
+    puts "\rDone."
     GC.start
   end
   handle_asynchronously :odsexport
@@ -373,10 +370,7 @@ class AsyncTask
           end
           inv = cm.involvement and cm.involvement.length > 0 ? ":#{cm.involvement}" : ""
           lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
-          unless actors[mod].has_key? m.id
-            actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil],
-                                  :invs => {}} 
-          end
+          actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil], :invs => {}} unless actors[mod].has_key? m.id
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           actors[mod][m.id][:invs][conf.id] = inv
         end
@@ -483,7 +477,7 @@ class AsyncTask
         lines.each do |id, comp|
           line = comp[:attrs]
           step = 7
-          pp comp[:invs]
+          #pp comp[:invs]
           comp[:invs].each do |conf, inv|
             next unless header.include?(conf)
             (header.index(conf)-step).times { line << nil }
@@ -502,6 +496,7 @@ class AsyncTask
         zio.write File.read("/tmp/export/#{c.split('/')[-1]}")
       end
     end
+    puts "\rDone."
     GC.start
   end
   handle_asynchronously :csvexport
