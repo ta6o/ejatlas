@@ -22,7 +22,7 @@
             -if j.locked_at != nil
               %td= "Started at #{(j.locked_at.utc+1.hours).strftime('%H:%M')}"
             -elsif j.last_error != nil
-              %td= "Failed <small>(#{j.attempts})</small>"
+              %td= "Failed <small>(#{j.attempts})</small>".html_safe
             -elsif j.locked_at.nil? and j.attempts == 0 
               %td Pending
             -else

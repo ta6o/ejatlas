@@ -1,8 +1,9 @@
 class AsyncTask
   def odsexport params
     require 'rodf'
-    pp self.as_json
-    pp self.to_json
+    pp self.object_id
+    pp self.first
+    pp self.first.methods
     locale = params.delete("locale").to_s
     I18n.locale = locale
     limit = params.delete("limit").to_i
