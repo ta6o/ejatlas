@@ -1061,7 +1061,7 @@ class AsyncTask
     GC.start
 
     FileUtils.rm("#{Dir.pwd}/public/data/delayed/#{job_id}.txt")
-    File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.json","w") {|f| f << timigs.to_json}
+    File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.json","w") {|f| f << timings.to_json}
   end
   handle_asynchronously :setcache
 
