@@ -1,9 +1,13 @@
 class AsyncTask
   def odsexport params
     require 'rodf'
-    pp self.object_id
-    pp self.first
-    pp self.first.methods
+    job_id = nil
+    Delayed::Job.each do |job|
+      if self == job.payload_object.object
+        job_id = job.id
+        break
+      end
+    end
     locale = params.delete("locale").to_s
     I18n.locale = locale
     limit = params.delete("limit").to_i
