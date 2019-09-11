@@ -567,9 +567,9 @@ class Admin < Padrino::Application
         s = "#{ss}s"
       else
         d = dd > 0 ? (dd > 1 ? "#{dd} days, " : "1 day, " ) : ""
-        h = hh > 0 ? (dd > 1 ? "#{hh} hours, " : "1 hour, " ) : ""
-        m = mm > 0 ? (dd > 1 ? "#{mm} minutes, " : "1 minute, " ) : ""
-        s = ss > 0 ? (dd > 1 ? "#{ss} seconds" : "1 second" ) : ""
+        h = hh > 0 ? (hh > 1 ? "#{hh} hours, " : "1 hour, " ) : ""
+        m = mm > 0 ? (mm > 1 ? "#{mm} minutes, " : "1 minute, " ) : ""
+        s = ss > 0 ? (ss > 1 ? "#{ss} seconds" : "1 second" ) : ""
       end
       if detail
         "#{d}#{h}#{m}#{s}".strip.sub(/,$/,"")
