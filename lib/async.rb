@@ -25,7 +25,11 @@ class AsyncTask
       nfields = 0
       line = []
       #puts "#{conf.id} #{conf.name}"
-      print "\r  #{(index/stack.length.to_f*100).to_i}% done."
+      begin
+        print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{self.job_id}"
+      rescue
+        print "\r  #{(index/stack.length.to_f*100).to_i}% done. no job id"
+      end
       conf.attributes.each do |k,v|
         next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
         if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
