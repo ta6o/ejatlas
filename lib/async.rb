@@ -637,7 +637,7 @@ class AsyncTask
         break
       end
     end
-    timigs = {}
+    timings = {}
     locale = params.delete("locale")
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
     ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
@@ -714,7 +714,7 @@ class AsyncTask
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per country)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
-          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating countries: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per country) #{Admin.divtime(Time.now-t00)} passed."}
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating countries: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per country) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
@@ -742,7 +742,7 @@ class AsyncTask
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per company)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
-          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating companies: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per company) #{Admin.divtime(Time.now-t00)} passed."}
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating companies: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per company) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
@@ -769,7 +769,7 @@ class AsyncTask
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per IFI)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
-          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating financial institutions: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per institution) #{Admin.divtime(Time.now-t00)} passed."}
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating financial institutions: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per institution) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
@@ -826,7 +826,7 @@ class AsyncTask
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per category)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
-          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating categories: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per category) #{Admin.divtime(Time.now-t00)} passed."}
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating categories: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per category) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
@@ -864,7 +864,7 @@ class AsyncTask
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
-          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating featured maps: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per map) #{Admin.divtime(Time.now-t00)} passed."} 
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating featured maps: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per map) #{Admin.divtime(Time.now-t00)} passed."} 
         end
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
@@ -943,7 +943,7 @@ class AsyncTask
         #print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per image)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
-          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating images: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per image) #{Admin.divtime(Time.now-t00)} passed."}
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating images: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per image) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
       timings[:images] = Time.now - t1
