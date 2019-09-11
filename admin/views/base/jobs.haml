@@ -15,7 +15,7 @@
           -arguments = j.payload_object.args
           %tr
             %td
-              %strong= {:csvexport_without_delay=>'Export',:setcache_without_delay=>'Cache',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
+              %strong= {:odsexport_without_delay=>'Export',:csvexport_without_delay=>'Export',:setcache_without_delay=>'Cache',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
             %td= (j.created_at.utc+1.hours).strftime("%b %d, %H:%M CET")
             -if j.locked_at != nil
               %td= "Started at #{(j.locked_at.utc+1.hours).strftime('%H:%M')}"
@@ -30,7 +30,7 @@
               %td
                 %strong Update:
                 =args
-            -elsif method_name == :csvexport_without_delay
+            -elsif [:csvexport_without_delay,:odsexport_without_delay].include?(method_name)
               -order = arguments[0].delete("order")
               -ascdsc = arguments[0].delete("ascdsc")
               -limit = arguments[0].delete("limit").to_i
