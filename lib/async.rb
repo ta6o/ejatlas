@@ -1,15 +1,14 @@
 class AsyncTask
   def odsexport params
     t0 = Time.now
-    require 'rodf'
-    job_id = "no job id"
+    job_id = nil
     Delayed::Job.all.each do |job|
-      p [t0.to_i, job.locked_at.to_i]
-      if self == job.payload_object.object
+      if t0.to_i == job.locked_at.to_i
         job_id = job.id
         break
       end
     end
+    require 'rodf'
     locale = params.delete("locale").to_s
     I18n.locale = locale
     limit = params.delete("limit").to_i
@@ -269,6 +268,14 @@ class AsyncTask
   handle_asynchronously :odsexport
 
   def csvexport params
+    t0 = Time.now
+    job_id = nil
+    Delayed::Job.all.each do |job|
+      if t0.to_i == job.locked_at.to_i
+        job_id = job.id
+        break
+      end
+    end
     require 'csv'
     locale = params.delete("locale").to_s
     I18n.locale = locale
@@ -622,6 +629,15 @@ class AsyncTask
   handle_asynchronously :backup
 
   def setcache params
+    t0 = Time.now
+    job_id = nil
+    Delayed::Job.all.each do |job|
+      p [ t0.to_i , job.locked_at.to_i]
+      if t0.to_i == job.locked_at.to_i
+        job_id = job.id
+        break
+      end
+    end
     t00 = Time.now
     locale = params.delete("locale")
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
