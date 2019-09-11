@@ -3,7 +3,7 @@ class AsyncTask
     t0 = Time.now
     job_id = nil
     Delayed::Job.all.each do |job|
-      if t0.to_i == job.locked_at.to_i
+      if (t0.to_i - job.locked_at.to_i).abs < 3
         job_id = job.id
         break
       end
@@ -271,7 +271,7 @@ class AsyncTask
     t0 = Time.now
     job_id = nil
     Delayed::Job.all.each do |job|
-      if t0.to_i == job.locked_at.to_i
+      if (t0.to_i - job.locked_at.to_i).abs < 3
         job_id = job.id
         break
       end
@@ -629,16 +629,15 @@ class AsyncTask
   handle_asynchronously :backup
 
   def setcache params
-    t0 = Time.now
+    t00 = Time.now
     job_id = nil
     Delayed::Job.all.each do |job|
-      p [ t0.to_i , job.locked_at.to_i]
-      if t0.to_i == job.locked_at.to_i
+      if (t00.to_i - job.locked_at.to_i).abs < 3
         job_id = job.id
         break
       end
     end
-    t00 = Time.now
+    timigs = {}
     locale = params.delete("locale")
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
     ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
@@ -646,6 +645,7 @@ class AsyncTask
 
     if params["reindex"] == "on"
       puts "Removing old indices...".red
+      File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Removing old indices..."} if job_id
       `curl -XDELETE localhost:9200/atlas_#{locale} 2> /dev/null`
       `curl -XPUT localhost:9200/atlas_#{locale} 2> /dev/null`
       `curl -XPUT localhost:9200/atlas_#{locale} -d '#{File.read("#{Dir.pwd}/lib/mapping.json").gsub(/\s*/,"")}' 2> /dev/null`
@@ -654,6 +654,7 @@ class AsyncTask
 
     if params["conflicts"] == "on" or params["reindex"] == "on"
       markers = []
+      t1 = Time.now
       Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
       FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
       Dir.mkdir "#{PADRINO_ROOT}/tmp/cache" 
@@ -662,31 +663,33 @@ class AsyncTask
       if total > 0
         counter = 0
         t0 = Time.now
-        times = {:ping => [0,0,0], :save => 0, :index => 0}
+        #times = {:ping => [0,0,0], :save => 0, :index => 0}
         ConflictText.where(:locale=>locale).find_in_batches(batch_size: 64) do |batch|
           batch.each do |ct|
             c = ct.conflict
             next unless c
             counter += 1
             tc = c.ping(locale)
-            times[:ping][0] += tc[0]
-            times[:ping][1] += tc[1]
-            times[:ping][2] += tc[2]
+            #times[:ping][0] += tc[0]
+            #times[:ping][1] += tc[1]
+            #times[:ping][2] += tc[2]
             tc = Time.now
             c.save
-            times[:save] += Time.now - tc
+            #times[:save] += Time.now - tc
             tc = Time.now
             begin
               client.update index: "#{$esindex}_#{locale}", type: 'conflict', id: c.id, body: {doc: c.elastic(locale)}
             rescue
               client.index index: "#{$esindex}_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
             end
-            times[:index] += Time.now - tc
+            #times[:index] += Time.now - tc
             markers << c.as_marker if c.approval_status == "approved"
             print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
           end
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating conflicts: #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per case) #{Admin.divtime(Time.now-t00)} passed."} if job_id
         end
         print "#{(Time.now-t0).to_i}s".yellow if total > 0
+        timings[:conflicts] = Time.now - t1
         puts if total > 0
         ca.conflicts_marker = markers.to_json
         File.open("#{PADRINO_ROOT}/public/data/markers-#{locale}.json","w") {|f| f << markers.to_json }
@@ -696,9 +699,11 @@ class AsyncTask
 
     if params["countries"] == "on" or params["reindex"] == "on"
       countries = []
+      t1 = Time.now
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.country : nil}.flatten.uniq - [nil])
       total = cos.length
       puts "Updating countries...".green if total > 0
+      tu = Time.now - 12
       cos.each_with_index do |c,counter|
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
@@ -707,8 +712,13 @@ class AsyncTask
         c.save
         client.index index: $esindex, type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per country)      "
+        if job_id and Time.now - tu >= 12
+          tu = Time.now
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating countries: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per country) #{Admin.divtime(Time.now-t00)} passed."}
+        end
       end
-      print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      timings[:countries] = Time.now - t1
       puts if cos.length > 0
       countries.sort_by! {|c| c[1]}
       countries.reverse!
@@ -717,9 +727,11 @@ class AsyncTask
 
     if params["companies"] == "on" or params["reindex"] == "on"
       companies = []
+      t1 = Time.now
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.companies : nil}.flatten.uniq - [nil])
       total = cos.length
       puts "Updating companies...".green if total > 0
+      tu = Time.now - 12
       cos.each_with_index do |c,counter|
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
@@ -728,8 +740,13 @@ class AsyncTask
         c.save
         client.index index: $esindex, type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per company)      "
+        if job_id and Time.now - tu >= 12
+          tu = Time.now
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating companies: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per company) #{Admin.divtime(Time.now-t00)} passed."}
+        end
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      timings[:companies] = Time.now - t1
       puts if cos.length > 0
       companies.sort_by! {|c| c[1]}
       companies.reverse!
@@ -739,8 +756,10 @@ class AsyncTask
     if params["ifis"] == "on" or params["reindex"] == "on"
       supporters = []
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.supporters : nil}.flatten.uniq - [nil])
+      t1 = Time.now
       total = cos.length
       puts "Updating IFI's...".green if total > 0
+      tu = Time.now - 12
       cos.each_with_index do |c,counter|
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
@@ -748,8 +767,13 @@ class AsyncTask
         c.save
         client.index index: $esindex, type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per IFI)      "
+        if job_id and Time.now - tu >= 12
+          tu = Time.now
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating financial institutions: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per institution) #{Admin.divtime(Time.now-t00)} passed."}
+        end
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      timings[:financial_institutions] = Time.now - t1
       puts if cos.length > 0
       supporters.sort_by! {|c| c[1]}
       supporters.reverse!
@@ -758,9 +782,11 @@ class AsyncTask
 
     if params["commodities"] == "on"
       commodities = []
+      t1 = Time.now
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.products : nil}.flatten.uniq - [nil])
       total = cos.length
       puts "Updating commodities...".green if total > 0
+      tu = Time.now - 12
       cos.each_with_index do |c,counter|
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
@@ -768,8 +794,13 @@ class AsyncTask
         commodities << [c.jsonize(locale),lc] if lc >= 1 and c.name != "Other"
         c.save
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per commodity)      "
+        if job_id and Time.now - tu >= 12
+          tu = Time.now
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating commodities: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per commodity) #{Admin.divtime(Time.now-t00)} passed."} 
+        end
       end
       print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      timings[:commodities] = Time.now - t1
       puts if cos.length > 0
       commodities.sort_by! {|c| c[1]}
       commodities.reverse!
@@ -778,8 +809,10 @@ class AsyncTask
 
     if params["categories"] == "on"
       types = []
+      t1 = Time.now
       total = Type.count
       puts "Updating categories...".green if total > 0
+      tu = Time.now - 12
       Type.all.each_with_index do |t,counter|
         t0 = Time.now if counter == 0
         next if t.name == "Other"
@@ -791,8 +824,13 @@ class AsyncTask
         end
         t.save
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per category)      "
+        if job_id and Time.now - tu >= 12
+          tu = Time.now
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating categories: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per category) #{Admin.divtime(Time.now-t00)} passed."}
+        end
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      timings[:categories] = Time.now - t1
       puts if total > 0
       types.sort_by! {|c| c[1]}
       types.reverse!
@@ -801,10 +839,12 @@ class AsyncTask
 
     if params["featureds"] == "on"
       featureds = []
+      t1 = Time.now
       fids = Featured.all.map &:id
       cs = ConflictText.where(:locale=>locale).where('features is not null')
       total = cs.length
       puts "Updating featured data...".green if cs.any?
+      tu = Time.now - 12
       cs.each_with_index do |ct,counter|
         t0 = Time.now if counter == 0
         c = ct.conflict
@@ -822,8 +862,13 @@ class AsyncTask
         c.set_local_text "features", f.to_json, locale
         c.save
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
+        if job_id and Time.now - tu >= 12
+          tu = Time.now
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating featured maps: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per map) #{Admin.divtime(Time.now-t00)} passed."} 
+        end
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      timings[:featured_maps] = Time.now - t1
       puts if total > 0
       ca.featureds = featureds.to_json
       if false
@@ -844,6 +889,7 @@ class AsyncTask
 
     if params["images"] == "on"
       puts "Updating images...".green
+      t1 = Time.now
       docs = []
       errors = []
       absents = []
@@ -858,6 +904,11 @@ class AsyncTask
       #puts "Found #{docs.length} images to update..."
       iids = []
       total = docs.length
+      File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating images: checking if source files exist. #{Admin.divtime(Time.now-t00)} passed."}
+      Image.order(:id).each do |img|
+        img.update_attribute(:lost, true) unless File.exists?("#{i.file.store_path}#{i.file.file.filename}")
+      end
+      tu = Time.now - 12
       docs.each_with_index do |d,counter|
         t0 = Time.now if counter == 0
         doc = Document.find d
@@ -890,13 +941,19 @@ class AsyncTask
           end
         end
         #print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per image)      "
+        if job_id and Time.now - tu >= 12
+          tu = Time.now
+          File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating images: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per image) #{Admin.divtime(Time.now-t00)} passed."}
+        end
       end
+      timings[:images] = Time.now - t1
       puts "[#{errors.join(',')}]".red
       puts "[#{absents.join(',')}]".magenta
     end
 
     if params["filter"] == "on" or params["reindex"] == "on"
 
+      t1 = Time.now
       alltypes = Type.where('category_id is not null').order('name asc').select("name,slug,id,category_id")
       types = [[{:type=>{:id=>'',:name=>'Please select a first level type.'}}]]
       alltypeoptions = ""
@@ -912,6 +969,7 @@ class AsyncTask
       File.open("#{Dir.pwd}/public/data/types-#{locale}.json","w") {|f| f << [types,alltypes].to_json}
       File.open("#{Dir.pwd}/public/data/alltypeoptions-#{locale}.html","w") {|f| f << alltypeoptions}
 
+      File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating filter: just a little more patience. #{Admin.divtime(Time.now-t00)} passed."}
       total = Tag.count
       puts "Updating tags...".green if total > 0
       t0 = Time.now
@@ -994,6 +1052,7 @@ class AsyncTask
 
       ca.filterdata = filterdata.to_json
     end
+    timings[:filter] = Time.now - t1
 
     ca.save
     dur = Time.now - t00
@@ -1001,6 +1060,8 @@ class AsyncTask
     puts
     GC.start
 
+    FileUtils.rm("#{Dir.pwd}/public/data/delayed/#{job_id}.txt")
+    File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.json","w") {|f| f << timigs.to_json}
   end
   handle_asynchronously :setcache
 
