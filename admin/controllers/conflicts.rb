@@ -420,6 +420,7 @@ Admin.controllers :conflicts do
       @conflict.modified_at = Time.now
       if @conflict.save :validate=>false
         flash[:notice] = 'Conflict was successfully created.'
+        $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
         redirect url(:conflicts, :edit, :id => @conflict.id)
       end
     else
@@ -694,7 +695,11 @@ Admin.controllers :conflicts do
               $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
               $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
             else
-              $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
+              if Admin.get_elastic @conflict.id
+                $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
+              else
+                $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+              end
             end
 
             if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 

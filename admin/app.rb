@@ -465,17 +465,25 @@ class Admin < Padrino::Application
   def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type="conflict", sort="id", order="asc"
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
     if type == "conflict"
-      #puts JSON.pretty_generate(JSON.parse(filter)).yellow
       if approved
         filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}} )
       else
         filter = Admin.elasticify( { bool: { filter: { bool: JSON.parse( filter ) }}} )
       end
+      #puts JSON.pretty_generate(filter).yellow
       result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: JSON.parse( filter ) }}} )
       filter = Admin.cleanup(filter)
       result = $client.search(index: $esindex, type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+    end
+  end
+
+  def self.get_elastic id
+    begin
+      return $client.get(index:"atlas_en", type:"conflict", id:id)["found"]
+    rescue
+      return false
     end
   end
 
