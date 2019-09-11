@@ -881,7 +881,11 @@ Admin.controller do
     redirect back unless ["admin","editor"].include? current_account.role
     @jobs = Delayed::Job.all
     if ENV["RACK_ENV"] == "production"
-      @exports = Dir.foreach("/mnt/data/exports").to_a - [".",".."]
+      @exports = []
+      Dir.foreach("/mnt/data/exports").sort.reverse.each do |file|
+        next if file.match(/^\./)
+        @exports << [file, File.size("/mnt/data/exports/#{file}")]
+      end
     elsif File.directory? "/tmp/export"
       @exports = Dir.foreach("/tmp/export").to_a - [".",".."]
     end

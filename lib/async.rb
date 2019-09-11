@@ -1,8 +1,9 @@
 class AsyncTask
   def odsexport params
     require 'rodf'
-    job_id = nil
+    job_id = "no job id"
     Delayed::Job.all.each do |job|
+      p [self, job.payload_object.object]
       if self == job.payload_object.object
         job_id = job.id
         break
