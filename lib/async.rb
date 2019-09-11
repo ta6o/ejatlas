@@ -2,7 +2,7 @@ class AsyncTask
   def odsexport params
     require 'rodf'
     job_id = nil
-    Delayed::Job.each do |job|
+    Delayed::Job.all.each do |job|
       if self == job.payload_object.object
         job_id = job.id
         break
@@ -32,11 +32,7 @@ class AsyncTask
       nfields = 0
       line = []
       #puts "#{conf.id} #{conf.name}"
-      begin
-        print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{self.job_id}"
-      rescue
-        print "\r  #{(index/stack.length.to_f*100).to_i}% done. #{"no job id".red}"
-      end
+      print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{job_id}"
       conf.attributes.each do |k,v|
         next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
         if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
