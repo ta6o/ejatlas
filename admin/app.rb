@@ -575,7 +575,7 @@ class Admin < Padrino::Application
         "#{d}#{h}#{m}#{s}".strip
       elsif shorten
         "#{d}#{h}#{m}#{s}".strip.split(/\s+/)[0]
-      end
+      else
         "#{d}#{h}#{m}#{s}".strip.split(/,\s+/)[0]
       end
     end
