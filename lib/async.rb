@@ -28,7 +28,7 @@ class AsyncTask
       begin
         print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{self.job_id}"
       rescue
-        print "\r  #{(index/stack.length.to_f*100).to_i}% done. no job id"
+        print "\r  #{(index/stack.length.to_f*100).to_i}% done. #{"no job id".red}"
       end
       conf.attributes.each do |k,v|
         next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k

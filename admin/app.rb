@@ -553,6 +553,34 @@ class Admin < Padrino::Application
     result
   end
 
+  def self.divtime si, shorten=false, detail=true
+    if si.to_i == 0
+      "no time"
+    else
+      mm, ss = si.to_i.divmod(60)
+      hh, mm = mm.divmod(60)
+      dd, hh = hh.divmod(24)
+      if shorten
+        d = dd > 0 ? "#{dd}d " : ""
+        h = hh > 0 ? "#{hh}h " : ""
+        m = mm > 0 ? "#{mm}m " : ""
+        s = "#{ss}s"
+      else
+        d = dd > 0 ? "#{dd} days, " : ""
+        h = hh > 0 ? "#{hh} hours, " : ""
+        m = mm > 0 ? "#{mm} minutes, " : ""
+        s = "#{ss} seconds"
+      end
+      if detail
+        "#{d}#{h}#{m}#{s}".strip
+      elsif shorten
+        "#{d}#{h}#{m}#{s}".strip.split(/\s+/)[0]
+      end
+        "#{d}#{h}#{m}#{s}".strip.split(/,\s+/)[0]
+      end
+    end
+  end
+
   $goodies = [ "Dandelions", "Flowers and beetles", "A clean kitchen", "Blossoms", "Glitters", "Kisses and stuff", "Clean air", "A deep breath", "Power to the people"]
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo"]
 

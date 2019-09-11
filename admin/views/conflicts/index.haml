@@ -39,7 +39,8 @@
                     %span= Account.find(conflict["account_id"]).name
                 %td{:style=>"width:92px"}
                   -if conflict["saved_at"]
-                    %span=Time.parse(conflict["saved_at"].to_s).strftime '%Y-%m-%d'
+                    -#%span=Time.parse(conflict["saved_at"].to_s).strftime '%Y-%m-%d'
+                    %span=Admin.divtime(Time.now-Time.parse(conflict["saved_at"].to_s))
                   -else
                     %span &nbsp;
                 %td
