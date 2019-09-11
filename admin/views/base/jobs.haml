@@ -75,6 +75,6 @@
       -else
         -changed = false
       %a{:href=>"/exports/#{exp[0]}",:style=>"margin-left:#{changed ? 12 : 28}px;"}= exp[0]
-      = "- #{Admin.human_bytes(exp[1])}"
+      = Admin.human_bytes(exp[1])
       %br/
 

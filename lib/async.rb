@@ -4,7 +4,7 @@ class AsyncTask
     require 'rodf'
     job_id = "no job id"
     Delayed::Job.all.each do |job|
-      p [t0.to_s, job.locked_at.utc.to_s]
+      p [t0.to_i, job.locked_at.to_i]
       if self == job.payload_object.object
         job_id = job.id
         break
