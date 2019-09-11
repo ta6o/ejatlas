@@ -624,7 +624,7 @@ Admin.controller do
   post :cache do
     redirect to "/sessions/login?return=cache" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    p params
+    params["run_by"] = current_account.name
     AsyncTask.new.setcache params
     redirect to 'jobs'
   end
@@ -693,6 +693,7 @@ Admin.controller do
         prms = {"id"=>id,"name"=>params["name"],"subtitle"=>params["subtitle"],"description"=>params["desc"]}
         prms["cons"] = result.map{|x| x["_id"]}
         prms["fields"] = {}
+        prms["run_by"] = current_account.name
         response["_names"].each do |key,val|
           prms["fields"][key.sub(/_id$/,"").classify] = val.keys
         end
@@ -832,6 +833,7 @@ Admin.controller do
     puts params
     params.delete("filter")
     params["locale"] = I18n.locale
+    params["run_by"] = current_account.name
     if params.delete("filetype") == "csv"
       AsyncTask.new.csvexport params
     else
@@ -868,6 +870,7 @@ Admin.controller do
     redirect back unless ["admin","editor"].include? current_account.role
     file = params[:master]
     puts master = File.read(file[:tempfile])
+    params["run_by"] = current_account.name
     AsyncTask.new.parsedata master
     redirect to 'jobs'
   end
