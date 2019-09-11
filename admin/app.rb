@@ -561,11 +561,17 @@ class Admin < Padrino::Application
       hh, mm = mm.divmod(60)
       dd, hh = hh.divmod(24)
       if shorten
+        y = ""
+        o = ""
         d = dd > 0 ? "#{dd}d " : ""
         h = hh > 0 ? "#{hh}h " : ""
         m = mm > 0 ? "#{mm}m " : ""
         s = "#{ss}s"
       else
+        mo, dd = dd.divmod(30)
+        yr, mo = mo.divmod(12)
+        y = yr > 0 ? (yr > 1 ? "#{yr} years, " : "1 year, " ) : ""
+        o = mo > 0 ? (mo > 1 ? "#{mo} months, " : "1 month, " ) : ""
         d = dd > 0 ? (dd > 1 ? "#{dd} days, " : "1 day, " ) : ""
         h = hh > 0 ? (hh > 1 ? "#{hh} hours, " : "1 hour, " ) : ""
         m = mm > 0 ? (mm > 1 ? "#{mm} minutes, " : "1 minute, " ) : ""
