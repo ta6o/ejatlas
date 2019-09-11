@@ -61,7 +61,7 @@
     -ly = ""
     -lm = ""
     -changed = false
-    -@exports.reverse.each do |exp|
+    -@exports.each do |exp|
       -date = exp[0].match(/\d{4}-\d{2}/).to_s.split("-")
       -if ly != date[0]
         -ly = date[0]
@@ -75,5 +75,6 @@
       -else
         -changed = false
       %a{:href=>"/exports/#{exp[0]}",:style=>"margin-left:#{changed ? 12 : 28}px;"}= "#{exp[0]} - #{exp[1]}"
+      %p=exp
       %br/
 
