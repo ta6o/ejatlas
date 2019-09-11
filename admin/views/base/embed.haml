@@ -77,41 +77,6 @@
 
       var categoryHash = #{CGI.unescapeHTML($cathash.to_json).html_safe};
       function resetColumns() { }
-      blocks = document.getElementsByClassName('block');
-      rightWidth = parseInt(getStyle('rightpane','width').replace(/px$/,''));
-      for (var i=0;i<blocks.length;i++) {
-        el = blocks[i];
-        elWidth = parseInt(el.getAttribute('data-width'));
-        cols = Math.floor(rightWidth / elWidth);
-        hori = el.parentNode.parentNode;
-        siblings = hori.getElementsByClassName('block').length;
-        if (cols == 0) {
-          titles = hori.getElementsByClassName('title')
-          for (var j=0;j<titles.length;j++) {
-            titles[j].className = "title";
-          }
-          contents = hori.getElementsByClassName('content')
-          for (var j=0;j<contents.length;j++) {
-            contents[j].style.display = 'block';
-          }
-        } else if (cols == 1) {
-          el.style.width = '100%';
-          el.style.float = 'none';
-          blockeds = el.getElementsByClassName('blocked');
-          for (var j=0;j<blockeds.length;j++) {
-            blockeds[j].style.display = 'inline-block';
-          }
-        } else if (siblings > 1){
-          perc = Math.floor(100/Math.min(cols,siblings))
-          el.style.width = (perc-2)+'%';
-          el.style.margin = '0 2% 0 0';
-          el.style.float = 'left';
-          blockeds = el.getElementsByClassName('blocked');
-          for (var j=0;j<blockeds.length;j++) {
-            blockeds[j].style.display = 'none';
-          }
-        }
-      };
       var $locale = "#{I18n.locale}";
 
       img = new Image(330,30);
