@@ -831,6 +831,7 @@ Admin.controller do
     end
     puts params
     params.delete("filter")
+    params["locale"] = I18n.locale
     if params.delete("filetype") == "csv"
       AsyncTask.new.csvexport params
     else

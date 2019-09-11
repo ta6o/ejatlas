@@ -1,6 +1,7 @@
 class AsyncTask
   def odsexport params
     require 'rodf'
+    locale = params.delete("locale").to_s
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
@@ -181,8 +182,8 @@ class AsyncTask
     Dir.mkdir "/tmp/export" unless File.directory? "/tmp/export"
     tata = Time.now
     odsname = "#{$filedir}/../exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.ods"
-    RODF::Spreadsheet.file(odsname) do
-      table 'conflicts' do
+    RODF::Spreadsheet.file(odsname) do |sheet|
+      sheet.table 'conflicts' do
         row do
           header.each {|x| cell x }
         end
@@ -195,7 +196,7 @@ class AsyncTask
       mania.each do |many,lines|
         header = ["id"]
         many.order(:id).each {|h| header << h.name}
-        table many.to_s.downcase do
+        sheet.table many.to_s.downcase do
           row do
             header.each {|x| cell x }
           end
@@ -209,7 +210,7 @@ class AsyncTask
       imps.each do |many,lines|
         header = ["id"]
         many.order(:id).each {|h| header << h.name}
-        table many.to_s.downcase do
+        sheet.table many.to_s.downcase do
           row do
             header.each {|x| cell x }
           end
@@ -224,7 +225,7 @@ class AsyncTask
         next if many == :ids
         header = ["id", "name", "slug", "description", "url", "acronym", "country"]
         actors[:ids].uniq.each {|c| header << c}
-        table many.to_s.downcase do
+        sheet.table many.to_s.downcase do
           row do
             header.each {|x| cell x }
           end
@@ -261,6 +262,7 @@ class AsyncTask
 
   def csvexport params
     require 'csv'
+    locale = params.delete("locale").to_s
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
