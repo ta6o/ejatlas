@@ -2,6 +2,7 @@ class AsyncTask
   def odsexport params
     require 'rodf'
     locale = params.delete("locale").to_s
+    I18n.locale = locale
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
@@ -20,6 +21,7 @@ class AsyncTask
     lines = []
     header = []
     stack.each_with_index do |conf,index|
+      next unless conf.conflict_texts.where(:locale=>locale).any?
       nfields = 0
       line = []
       #puts "#{conf.id} #{conf.name}"
@@ -260,6 +262,7 @@ class AsyncTask
   def csvexport params
     require 'csv'
     locale = params.delete("locale").to_s
+    I18n.locale = locale
     limit = params.delete("limit").to_i
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
@@ -281,6 +284,7 @@ class AsyncTask
     lines = []
     header = []
     stack.each_with_index do |conf,index|
+      next unless conf.conflict_texts.where(:locale=>locale).any?
       nfields = 0
       line = []
       #puts "#{conf.id} #{conf.name}"
