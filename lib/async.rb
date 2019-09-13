@@ -906,7 +906,7 @@ class AsyncTask
       total = docs.length
       File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating images: checking if source files exist. #{Admin.divtime(Time.now-t00)} passed."}
       Image.order(:id).each do |img|
-        img.update_attribute(:lost, true) unless File.exists?("#{i.file.store_path}#{i.file.file.filename}")
+        img.update_attribute(:lost, true) unless File.exists?("#{img.file.store_path}#{img.file.file.filename}")
       end
       tu = Time.now - 12
       docs.each_with_index do |d,counter|
