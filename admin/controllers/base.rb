@@ -711,11 +711,10 @@ Admin.controller do
     model = params[:model]
     p [token, model]
     model = "country" if model == "country_of_company"
-    if model == "country"
-      res = Country.all.map{|c| {:value=>c.id, :label=>I18n.t("countries.#{c.name.slug('_')}")}}
-    else
-      filter = {bool:{must:[{query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}},{match:{type: model}}]}}
-      res = $client.search(index: $esindex, type: "doc", body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
+    filter = {bool:{must:[{query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}},{match:{type: model}}]}}
+    res = $client.search(index: $esindex, type: "doc", body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
+    if ["country","region"].include?(model)
+      res = res.map{|c| {:value=>c["value"], :label=>I18n.t("countries.#{c["label"].shorten_en}")}}
     end
     res.to_json
   end
