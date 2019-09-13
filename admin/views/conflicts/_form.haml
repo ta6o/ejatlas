@@ -81,7 +81,7 @@
           %select.basic_input#conflict_country_id{:name=>"conflict[country_id]"}
             %option
             -$countries.each do |c|
-              %option{:value=>c.id,:selected=>c.id==@conflict.country_id}=t("countries.#{c.name.slug("_")}")
+              %option{:value=>c.id,:selected=>c.id==@conflict.country_id}=t("countries.#{c.name.shorten_en}")
 
 
         .group
