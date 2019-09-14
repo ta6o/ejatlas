@@ -937,7 +937,7 @@ Admin.controller do
   end
 
   not_found do
-    File.open("#{Dir.home}/ejatlas.logs/404.log","a") {|f| f << "#{Time.now.to_s},#{request.xhr? ? 'XHR' : ''},#{request.env["SERVER_PROTOCOL"]},#{request.host},#{request.port},#{request.path},#{request.ip},#{request.referer}\n"}
+    File.open("#{Dir.home}/ejatlas.logs/404.log","a") {|f| f << "#{Time.now.to_s},#{request.xhr? ? 'XHR' : ''},#{request.env["SERVER_PROTOCOL"]},#{request.port},#{request.url},#{request.ip},#{request.referer}\n"}
     @name = "Page not found"
     render 'base/404'
   end
