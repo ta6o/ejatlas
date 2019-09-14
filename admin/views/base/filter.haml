@@ -25,11 +25,14 @@
                 -if options.has_key? 'model' then  model = options['model'] else model = field end
                 -if options['content'].is_a? Array
                   .body
-                    %h4= "#{t "v.filter.#{field.shorten_en}"}"
+                    %h4= t "v.filter.#{field.shorten_en}"
                     %ul
                       -options['content'].each do |c|
                         %li
-                          %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-field"=>field,"data-value"=>c.keys.first}= t "m.#{name.slug('_')}.#{c.values.first.slug('_').split("_")[0..7].join("_")}"
+                          -if field == "region"
+                            %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-field"=>field,"data-value"=>c.keys.first}= t "country.#{c.values.first.shorten_en}"
+                          -else
+                            %span.drag.graybg{"data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-field"=>field,"data-value"=>c.keys.first}= t "m.#{name.slug('_')}.#{c.values.first.slug('_').split("_")[0..7].join("_")}"
                 -elsif options['content'] == 'auto'
                   .body.auto
                     %h4= "#{t "v.filter.#{field.shorten_en}"}"
