@@ -39,7 +39,7 @@
   .summary_header
     .clearfix#share
       %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
-        %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out ‘#{@title.split(',')[0]}‘ on #EJAtlas: ")}&url=#{$siteurl+request.path}",:target=>"_blank",:title=>"Tweet"}
+        %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out ‘#{@title}‘ on #EJAtlas: ")}&url=#{$siteurl+request.path}",:target=>"_blank",:title=>"Tweet"}
           #share_tw 
             #img &nbsp;
       %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
