@@ -936,6 +936,13 @@ Admin.controller do
     render 'conflicts/example', :layout => :application
   end
 
+  get :sitemap do
+    pass unless current_account
+    pass unless ["admin","editor"].include? current_account.role
+    @name = "Sitemap"
+    @routes = (Admin.routes.map{|r| r.verb != "HEAD" ? r : nil }-[nil]).sort_by{|r|r.path}
+  end
+
   not_found do
     File.open("#{Dir.home}/ejatlas.logs/404.log","a") {|f| f << "#{Time.now.to_s},#{request.xhr? ? 'XHR' : ''},#{request.env["SERVER_PROTOCOL"]},#{request.port},#{request.url},#{request.ip},#{request.referer}\n"}
     @name = "Page not found"
