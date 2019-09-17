@@ -61,7 +61,7 @@ class Featured < ActiveRecord::Base
     end
     conflicts.each do |c|
       next unless c
-      cmarker = JSON.parse(c.as_marker)
+      cmarker = c.as_marker
       JSON.parse(c.features||"{}").each do |k,v|
         if v and v.strip.match(/(?:(?:http|https|Http|HTTP|Https|HTTPS):\/\/)?([-a-zA-Z0-9.]{2,256}\.[a-z]{2,4})\b(?:\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/)
           if v.strip.match(/\s/)
