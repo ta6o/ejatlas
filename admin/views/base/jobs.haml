@@ -17,7 +17,7 @@
           -run_by = arguments[0] and arguments[0].is_a?(Hash) and arguments[0].has_key? "run_by" ? arguments[0].delete("run_by") : "system"
           %tr
             %td
-              %strong= {:backup_without_delay=>'Backup',:odsexport_without_delay=>'ODS Export',:csvexport_without_delay=>'CSV Export',:setcache_without_delay=>'Cache update',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
+              %strong= {:backup_without_delay=>'Backup',:odsexport_without_delay=>'ODS Export',:csvexport_without_delay=>'CSV Export',:export_companies_without_delay=>'Companies Export',:setcache_without_delay=>'Cache update',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]
             %td= (j.created_at.utc+1.hours).strftime("%b %d, %H:%M CET")
             -if j.locked_at != nil
               -if File.exists?("#{Dir.pwd}/public/data/delayed/#{j.id}.txt")

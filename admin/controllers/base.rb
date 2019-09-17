@@ -845,7 +845,9 @@ Admin.controller do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     puts "aman"
-    AsyncTask.new.export_companies("")
+    params = {}
+    params["run_by"] = current_account.name
+    AsyncTask.new.export_companies(params)
     redirect to 'jobs'
   end
 
