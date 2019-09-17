@@ -526,7 +526,7 @@ class AsyncTask
     puts "xportin"
     tata = Time.now
     path = "#{$filedir}/../exports/ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
-    path = "#{Dir.pwd}/../ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
+    #path = "#{Dir.pwd}/../ejatlas-companies-export-#{tata.strftime('%Y-%m-%d-%H%M')}.csv"
     CSV.open(path,"w") do |csv|
       csv << ["company_name", "acronym", "country_of_origin", "conflict_name", "conflict_link", "description","environmental_impacts","health_impacts","socioeconomical_impacts"]
       Company.order(:name).includes(:conflicts).each_with_index do |c,i|
