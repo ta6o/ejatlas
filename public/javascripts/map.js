@@ -921,6 +921,8 @@ function showVector(v) {
     //console.log('fail - no pn');
     return 0
   }
+  console.log("vi")
+  console.log(vectorinfo)
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
   //console.log(vect)
   if(vect.length == 0) {
