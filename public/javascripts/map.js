@@ -336,6 +336,36 @@ function initMap () {
     }
   })
 
+  $('.rightpane').on('click','.horipane .title',function(e){
+    if ($(this).parent().find('.content .block')) {
+      elWidth = parseInt($(this).parent().find('.content .block').attr('data-width'));
+      if ($('#rightpane .inner').width() < elWidth) {
+        perc = 100 - ((elWidth+82) / window.innerWidth * 100);
+        $('.rightpane .inner').show();
+        $('.leftpane').animate({'width':perc+"%"});
+        $('.rightpane').animate({'width':(100-perc)+'%'});
+        //$('.resize').animate({'left':perc+"%"},function(){
+        $('.resize').animate({$flo:perc+"%"},function(){
+          $('.rightpane').css('overflow-x','hidden');
+          $('.rightpane').css('overflow-y','auto');
+          onResize();
+        });
+      }
+    }
+    if($(this).hasClass('active')){
+      $(this).next('.content').slideUp();
+      $(this).removeClass('active');
+    } else {
+      $(this).next('.content').slideDown();
+      $(this).addClass('active');
+      if ($(this).next('.content').find('.columns').length > 0) resetColumns();
+      /*$('#rightpane').animate({
+        scrollTop: $(this).offset().top
+      }, 200);*/
+    }
+  });
+
+
   $('#conflict_summary, .horipane.description').on('click','.seemore',function(e){
     e.preventDefault();
     more = $(this).next('.more');
@@ -921,10 +951,7 @@ function showVector(v) {
     //console.log('fail - no pn');
     return 0
   }
-  console.log("vi")
-  console.log(vectorinfo)
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
-  //console.log(vect)
   if(vect.length == 0) {
     //console.log('fail - no vect');
     return 0
