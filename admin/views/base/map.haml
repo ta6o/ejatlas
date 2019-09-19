@@ -67,16 +67,16 @@
         %strong= t "v.index.#{@maptitle.shorten_en}"
       %p
         %strong= t "v.index.var_cases_reported", num_cases: @markercount
+      -if current_account and (current_account.role === "admin" or current_account.role === "editor")
+        %p
+          .form-group{:style=>"font-size:16px;"}
+            %input.search{:type=>"text",:style=>"font-size:12px",:placeholder=>"Quick search"}
+            %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
       %h4{:style=>'padding:12px 0;font-weight:bold;font-size:14px;'}
         =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
         =t("v.index.and_or").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}=t("v.index.fill_out_our_survey").gsub(/\s+/,"&nbsp;").html_safe
-      -if current_account and current_account.role === "admin"
-        %p
-          .form-group{:style=>"font-size:16px;"}
-            %input.search{:type=>"text",:style=>"font-size:12px",:placeholder=>"Quick search"}
-            %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
 
   .horipane{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>t("v.help.drop_down_each_pane")}
     .title= t "v.index.legend"
@@ -266,7 +266,16 @@
         updateInfo(1,"<h3>#{@maptitle}</h3><p>#{t("index.var_cases_reported", num_cases:@markercount)}</p>")
         $(".search-button").on("click",function(){
           $.post("/search",{token:$("input.search").val()},function(data){
-            console.log(data);
+            data = JSON.parse(data);
+            //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
+            if (data.length == 0) {
+              $('#head p strong').text("#{t 'v.filter.no_cases_found'}")
+            } else if (data.length == 1) {
+              $('#head p strong').text("#{t 'v.filter.one_case_filtered'}")
+            } else {
+              $('#head p strong').text("#{t 'v.filter.var_cases_filtered',num_cases:'data_length'}".replace("data_length",data.length))
+            }
+            filterMarkers(data);
           })
         })
       } else {
