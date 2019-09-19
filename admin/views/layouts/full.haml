@@ -429,7 +429,7 @@
 
       var categoryHash = #{CGI.unescapeHTML($cathash.to_json).html_safe};
 
-    -if ENV['RACK_ENV'] == 'development' or true
+    -if ENV['RACK_ENV'] == 'development'
       :javascript
         conflict = false;
         $full = true;

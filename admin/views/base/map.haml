@@ -72,6 +72,9 @@
         %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
         =t("v.index.and_or").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}=t("v.index.fill_out_our_survey").gsub(/\s+/,"&nbsp;").html_safe
+      -if current_account and current_account.role === "admin"
+        %input.search{:type=>"text"}
+        %span.glyphicon.glyphicon-search.search-button
 
   .horipane{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>t("v.help.drop_down_each_pane")}
     .title= t "v.index.legend"
@@ -259,6 +262,9 @@
           }
         });
         updateInfo(1,"<h3>#{@maptitle}</h3><p>#{t("index.var_cases_reported", num_cases:@markercount)}</p>")
+        $(".search-button").on("click",function(){
+          console.log($("input.search").val())
+        })
       } else {
         setTimeout(onLoad,10);
       }
