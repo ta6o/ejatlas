@@ -3,6 +3,6 @@
   .col-md-4
     -@routes.each do |route|
       %p
-        %strong= route[:verb]
-        %span= route[:path]
+        %strong= route.verb
+        %span= route.path
   .col-md-4 &nbsp;
