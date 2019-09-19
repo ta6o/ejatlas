@@ -955,7 +955,7 @@ Admin.controller do
     pass unless current_account
     pass unless ["admin","editor"].include? current_account.role
     @name = "Sitemap"
-    @routes = (Admin.routes.map{|r| r.verb != "HEAD" ? r : nil }-[nil]).sort_by{|r|r.path}
+    @routes = (Admin.routes.map{|r| r.verb != "HEAD" ? r : nil }-[nil]).sort_by{|r|r.path}.map{|r| {:path=>r.path.to_s,:verb=>r.verb.to_s}}
   end
 
   not_found do
