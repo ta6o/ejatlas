@@ -711,12 +711,10 @@ Admin.controller do
     token = params.delete("token")
     pass if token.nil? or token === ""
     filter = {
-      "should": {
-        "term": {
-          "name":token,
-          "description":token
-        }
-      }
+      "should": [
+        "match_phrase": { "name":token },
+        "match_phrase": { "description":token }
+      ]
     }
     Admin.filter(filter.to_json).map{|i| i['_id'].to_i }.to_json
   end
