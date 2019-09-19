@@ -952,13 +952,14 @@ function showVector(v) {
     return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
+  console.log(vect)
   if(vect.length == 0) {
-    //console.log('fail - no vect');
+    console.log('fail - no vect');
     return 0
   }
   vect = vect[0].vector_datum;
   if(vect['url']==="" || vect.loaded) {
-    //console.log('fail - no url');
+    console.log('fail - no url');
     return 0
   }
   vectorinfo[vect.rank - 1].vector_datum.loaded = true;
