@@ -17,7 +17,7 @@
             %th=mat(:conflict, 'last modified')
             %th=mat(:conflict, 'approval')
             -if ["admin,editor"].include?(current_account.role)
-              %th=mat(:conflict, 'approval')
+              %th=mat(:conflict, 'tags')
             %th.last
               %form#filter-form
                 %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
