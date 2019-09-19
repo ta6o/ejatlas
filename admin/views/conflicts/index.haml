@@ -16,7 +16,7 @@
             %th=mat(:conflict, :submitted_by)
             %th=mat(:conflict, 'last modified')
             %th=mat(:conflict, 'approval')
-            -if ["admin,editor"].include?(current_account.role)
+            -if ["admin","editor"].include?(current_account.role)
               %th=mat(:conflict, 'tags')
             %th.last
               %form#filter-form
@@ -47,11 +47,8 @@
                     %span &nbsp;
                 %td
                   %span=conflict["approval_status"]
-                -if ["admin,editor"].include?(current_account.role)
-                  -begin
-                    %td=conflict.tags
-                  -rescue
-                    %td=conflict["tags"]
+                -if ["admin","editor"].include?(current_account.role)
+                  %td=conflict["tags"]
                 %td.last
                   =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                   |
@@ -82,10 +79,7 @@
                       %span &nbsp;
                   %td
                     %span=conflict["approval_status"]
-                -if ["admin,editor"].include?(current_account.role)
-                  -begin
-                    %td=conflict.tags
-                  -rescue
+                  -if ["admin","editor"].include?(current_account.role)
                     %td=conflict["tags"]
                   %td.last
                     =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
