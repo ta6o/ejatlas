@@ -956,7 +956,7 @@ Admin.controller do
     pass unless ["admin","editor"].include? current_account.role
     @name = "Sitemap"
     @routes = (Admin.routes.map{|r| r.verb != "HEAD" ? r : nil }-[nil]).sort_by{|r|r.path}
-    render 'base/sitemap'
+    render 'base/sitemap', :layout => :application
   end
 
   not_found do

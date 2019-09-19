@@ -4,5 +4,5 @@
     -@routes.each do |route|
       %p
         %strong= route.verb
-        %span= route.path
+        %span= route.path.sub(/^$/,"/")
   .col-md-4 &nbsp;
