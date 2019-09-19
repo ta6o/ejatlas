@@ -48,7 +48,8 @@
                 %td
                   %span=conflict["approval_status"]
                 -if ["admin","editor"].include?(current_account.role)
-                  %td=conflict["tags"]
+                  %td
+                    =conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
                 %td.last
                   =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                   |
@@ -80,7 +81,8 @@
                   %td
                     %span=conflict["approval_status"]
                   -if ["admin","editor"].include?(current_account.role)
-                    %td=conflict["tags"]
+                    %td
+                      =conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
                   %td.last
                     =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                     |
