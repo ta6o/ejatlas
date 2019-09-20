@@ -1155,6 +1155,7 @@ class AsyncTask
       end
       if params['stat_json'] and id
         cat = params['stat_json'][id].delete("category") if params['stat_json'].has_key? id
+        print "\r#{ params['stat_json'][id]}"
         hash = {'type'=>'Feature', 'properties'=>{'id'=>id,'pn'=>vd.name,'data'=>params['stat_json'][id]},'geometry'=>pts}
         hash["properties"]["category"] = cat if cat
       else
