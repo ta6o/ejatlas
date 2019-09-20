@@ -294,9 +294,10 @@ class Admin < Padrino::Application
       batch.each do |ct|
         c = ct.conflict
         next unless c
+        next unless c.approval_status == "approved"
         print "\rProcessing conflict ##{c.id.to_s.red} (#{counter.to_s.green}/#{total.to_s.green})"
         counter += 1
-        feats << {"type":"Feature","properties":{"id":c.id,"cat":c.category_id,"name":ct.name},"geometry":{"type":"MultiPoint","coordinates":[[c.lon.to_f.round(5),c.lat.to_f.round(5)]]}}
+        feats << {"type":"Feature","properties":{"id":c.id,"category_id":c.category_id,"name":ct.name},"geometry":{"type":"MultiPoint","coordinates":[[c.lon.to_f.round(5),c.lat.to_f.round(5)]]}}
       end
     end
     File.open("#{Dir.pwd}/public/data/ejatlas-cases_#{locale}.json","w") do |f|
