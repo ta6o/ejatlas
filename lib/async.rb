@@ -1135,8 +1135,7 @@ class AsyncTask
           defn_ref = feat.get_defn_ref
           field_defn = defn_ref.get_field_defn(field_index)
           field_name = field_defn.get_name
-          field_value = feat.get_field(field_name)
-          puts "Value = #{field_value.to_s.green} for field named #{field_name.to_s.yellow}"
+          puts "field name: #{field_name.to_s.yellow}"
         end
       end
       next unless feat
