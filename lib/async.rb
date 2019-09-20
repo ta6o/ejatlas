@@ -1130,6 +1130,15 @@ class AsyncTask
         puts "Error in feature: #{e}"
         next
       end
+      if i == 0
+        feat.get_field_count.times do |field_index|
+          defn_ref = feat.get_defn_ref
+          field_defn = defn_ref.get_field_defn(field_index)
+          field_name = field_defn.get_name
+          field_value = feat.get_field(field_index)
+          puts "Value = #{field_value.to_s.green} for field named #{field_name.to_s.yellow}"
+        end
+      end
       next unless feat
       geom = feat.get_geometry_ref
       next unless geom
@@ -1139,7 +1148,7 @@ class AsyncTask
       rescue
         id = nil
       end
-      print "\r#{ params['stat_json'].length} #{id} #{id.class}"
+      puts "#{ params['stat_json'].length} #{feat.get_field("feature_id")} #{id} #{id.class}"
       if precision > 0
         pts = JSON.parse(geom.export_to_json.gsub(/\d+\.\d+/) {|x|x.match(/\d+\.\d{#{[precision,x.split('.')[1].length].min}}/)}.gsub(/\s/,''))
       else
