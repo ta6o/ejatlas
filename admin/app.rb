@@ -286,6 +286,24 @@ class Admin < Padrino::Application
     end
   end
 
+  def self.export_markers locale=:en
+    feats = []
+    counter = 1
+    total = ConflictText.where(:locale=>locale).count
+    ConflictText.where(:locale=>locale).find_in_batches(batch_size: 64) do |batch|
+      batch.each do |ct|
+        c = ct.conflict
+        next unless c
+        print "\rProcessing conflict ##{c.id.to_s.red} (#{counter.to_s.green}/#{total.to_s.green})"
+        counter += 1
+        feats << {"type":"Feature","properties":{"id":c.id,"cat":c.category_id,"name":ct.name},"geometry":{"type":"MultiPoint","coordinates":[[c.lon.to_f.round(5),c.lat.to_f.round(5)]]}}
+      end
+    end
+    File.open("#{Dir.pwd}/public/data/ejatlas-cases_#{locale}.json","w") do |f|
+      f << {"type":"FeatureCollection","features":feats}.to_json
+    end
+  end
+
   def self.newsletter(a)
     @account = Account.find a
     return 0 unless @account
