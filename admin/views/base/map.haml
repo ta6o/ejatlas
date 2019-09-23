@@ -74,6 +74,38 @@
               %input.search{:type=>"text",:style=>"font-size:14px; width: calc( 100% - 48px ); min-width: calc( 100% - 48px ); max-width: calc( 100% - 48px ); margin-right: 16px;",:placeholder=>"Word search"}
               %a{:type=>"submit"}
                 %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
+                %span.glyphicon.glyphicon-refresh.spin{:style=>"color:#0380a5;cursor:default;display:none;"}
+                :css
+                  .spin {
+                    -webkit-animation: spin 2s infinite linear;
+                    -moz-animation: spin 2s infinite linear;
+                    -o-animation: spin 2s infinite linear;
+                    animation: spin 2s infinite linear;
+                  }
+                  @-moz-keyframes spin {
+                    from {
+                      -moz-transform: rotate(0deg);
+                    }
+                    to {
+                      -moz-transform: rotate(360deg);
+                    }
+                  }
+                  @-webkit-keyframes spin {
+                    from {
+                      -webkit-transform: rotate(0deg);
+                    }
+                    to {
+                      -webkit-transform: rotate(360deg);
+                    }
+                  }
+                  @keyframes spin {
+                    from {
+                      transform: rotate(0deg);
+                    }
+                    to {
+                      transform: rotate(360deg);
+                    }
+                  }
       %h4{:style=>'padding:12px 0;font-weight:bold;font-size:14px;'}
         =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
@@ -274,6 +306,8 @@
           search();
         })
         function search(){
+          $("form#search a span.search-button").hide();
+          $("form#search a span.spin").show();
           $.post("/search",{token:$("input.search").val()},function(data){
             data = JSON.parse(data);
             //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
@@ -285,6 +319,8 @@
               $('#head p strong').text("#{t 'v.filter.var_cases_filtered',num_cases:'data_length'}".replace("data_length",data.length))
             }
             filterMarkers(data);
+            $("form#search a span.search-button").show();
+            $("form#search a span.spin").hide();
           })
         }
       } else {
