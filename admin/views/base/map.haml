@@ -306,6 +306,9 @@
           search();
         })
         function search(){
+          if ($("input.search").val() == "") {
+            return false;
+          }
           $("form#search a span.search-button").hide();
           $("form#search a span.spin").show();
           $.post("/search",{token:$("input.search").val()},function(data){
