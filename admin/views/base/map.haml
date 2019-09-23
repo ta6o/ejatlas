@@ -307,24 +307,25 @@
         })
         function search(){
           if ($("input.search").val() == "") {
-            return false;
+            console.log("empty!");
+          } else {
+            $("form#search a span.search-button").hide();
+            $("form#search a span.spin").show();
+            $.post("/search",{token:$("input.search").val()},function(data){
+              data = JSON.parse(data);
+              //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
+              if (data.length == 0) {
+                $('#head p strong').text("#{t 'v.filter.no_cases_found'}")
+              } else if (data.length == 1) {
+                $('#head p strong').text("#{t 'v.filter.one_case_filtered'}")
+              } else {
+                $('#head p strong').text("#{t 'v.filter.var_cases_filtered',num_cases:'data_length'}".replace("data_length",data.length))
+              }
+              $("form#search a span.search-button").show();
+              $("form#search a span.spin").hide();
+              filterMarkers(data);
+            })
           }
-          $("form#search a span.search-button").hide();
-          $("form#search a span.spin").show();
-          $.post("/search",{token:$("input.search").val()},function(data){
-            data = JSON.parse(data);
-            //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
-            if (data.length == 0) {
-              $('#head p strong').text("#{t 'v.filter.no_cases_found'}")
-            } else if (data.length == 1) {
-              $('#head p strong').text("#{t 'v.filter.one_case_filtered'}")
-            } else {
-              $('#head p strong').text("#{t 'v.filter.var_cases_filtered',num_cases:'data_length'}".replace("data_length",data.length))
-            }
-            $("form#search a span.search-button").show();
-            $("form#search a span.spin").hide();
-            filterMarkers(data);
-          })
         }
       } else {
         setTimeout(onLoad,10);
