@@ -86,8 +86,8 @@
                   -if ["admin","editor"].include?(current_account.role)
                     %td
                       -if conflict["tags"]
-                        =conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
-                        %span{:style=>"display:none;"}=conflict["tags"].map{|t| "tag_#{Tag.find(t).name.downcase.gsub(/\s+/,"_")/}"}.join(" ")
+                        %span=conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
+                        %span{:style=>"display:none;"}=conflict["tags"].map{|t| "tag_#{Tag.find(t).name.downcase.gsub(/\s+/,'_')}"}.join(" ")
                       -else
                         &nbsp;
                   %td.last
