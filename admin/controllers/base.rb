@@ -713,7 +713,9 @@ Admin.controller do
     filter = {
       "should": [
         "match_phrase": { "name":token },
-        "match_phrase": { "description":token }
+        "match_phrase": { "description":token },
+        "match_phrase": { "project_details":token },
+        "match_phrase": { "suggested_alternatives":token },
       ]
     }
     Admin.filter(filter.to_json).map{|i| i['_id'].to_i }.to_json
