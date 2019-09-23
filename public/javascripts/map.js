@@ -665,7 +665,9 @@ function markerFit(ids){
     }
   })
   //console.log(arr)
-  map.fitBounds(arr,{maxZoom:16});
+  if (arr.length > 0) {
+    map.fitBounds(arr,{maxZoom:16});
+  }
 }
 
 function mapFit(){

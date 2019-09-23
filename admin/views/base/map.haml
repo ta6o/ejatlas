@@ -318,9 +318,9 @@
             } else {
               $('#head p strong').text("#{t 'v.filter.var_cases_filtered',num_cases:'data_length'}".replace("data_length",data.length))
             }
-            filterMarkers(data);
             $("form#search a span.search-button").show();
             $("form#search a span.spin").hide();
+            filterMarkers(data);
           })
         }
       } else {
