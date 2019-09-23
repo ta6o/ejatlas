@@ -37,6 +37,14 @@
                       %br/
                       %span Last edit:
                       %a{:href=>"/accounts/edit/#{conflict["edited_by"]}"}=@accounts[conflict["edited_by"]]
+                    -if conflict["collaborators"] and conflict["collaborators"].any?
+                      %br/
+                      %span Collaborators:
+                      -conflict["collaborators"].each_with_index do |account,index|
+                        -if @accounts[account]
+                          %a{:href=>"/accounts/edit/#{account}"}=@accounts[account]
+                          -if index < conflict["collaborators"].length - 1
+                            ,
                   -elsif conflict["account_id"] 
                     %span= Account.find(conflict["account_id"]).name
                 %td{:style=>"width:92px"}
