@@ -107,7 +107,7 @@
                         %span{:style=>"display:none;"}=conflict["tags"].map{|t| "tag_#{Tag.find(t).name.downcase.gsub(/\s+/,'_')}"}.join(" ")
                       -else
                         &nbsp;
-                  %td.last.clearfix{:style=>"min-width:90px;"}
+                  %td.last.clearfix{:style=>"min-width:120px;"}
                     .pull-left
                       =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                       |
@@ -116,7 +116,7 @@
                         %br/
                         =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
                       -if ["admin"].include?(current_account.role)
-                        .pull-right
+                        .pull-right{:style=>"margin:1px 0 -4px"}
                           %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
 
       -unless current_account.nil?
@@ -137,6 +137,10 @@
                 return false;
               }).focus(); 
             });
+            function select () {
+              ids = $("input.multiselect:checked").map(function(i,e){ e.data("id") })
+              console.log(ids)
+            }
         -else
           :javascript
             $(document).ready(function(){
