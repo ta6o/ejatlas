@@ -709,7 +709,7 @@ Admin.controller do
   post :search do
     pass unless params.has_key?("token")
     token = params.delete("token")
-    pass if token.nil? or token === ""
+    return "[]" if token.nil? or token === ""
     filter = {
       "should": [
         "match_phrase": { "name":token },
