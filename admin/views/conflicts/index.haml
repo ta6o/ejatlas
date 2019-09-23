@@ -50,7 +50,8 @@
                 -if ["admin","editor"].include?(current_account.role)
                   %td
                     -if conflict["tags"]
-                      =conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
+                      %span=conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
+                      %span{:style=>"display:none;"}=conflict["tags"].map{|t| "tag_#{Tag.find(t).name.downcase.gsub(/\s+/,'_')}"}.join(" ")
                     -else
                       &nbsp;
                 %td.last
@@ -90,7 +91,7 @@
                         %span{:style=>"display:none;"}=conflict["tags"].map{|t| "tag_#{Tag.find(t).name.downcase.gsub(/\s+/,'_')}"}.join(" ")
                       -else
                         &nbsp;
-                  %td.last
+                  %td.last{:style=>"min-width:90px;"}
                     =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                     |
                     =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
