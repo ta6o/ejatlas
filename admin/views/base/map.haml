@@ -69,9 +69,11 @@
         %strong= t "v.index.var_cases_reported", num_cases: @markercount
       -if current_account and (current_account.role === "admin" or current_account.role === "editor")
         %p
-          .form-group{:style=>"font-size:18px;"}
-            %input.search{:type=>"text",:style=>"font-size:12px",:placeholder=>"Word search"}
-            %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
+          %form#search
+            .form-group{:style=>"font-size:18px;"}
+              %input.search{:type=>"text",:style=>"font-size:14px",:placeholder=>"Word search"}
+              %a{:type=>"submit"}
+                %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
       %h4{:style=>'padding:12px 0;font-weight:bold;font-size:14px;'}
         =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
@@ -264,7 +266,8 @@
           }
         });
         updateInfo(1,"<h3>#{@maptitle}</h3><p>#{t("index.var_cases_reported", num_cases:@markercount)}</p>")
-        $(".search-button").on("click",function(){
+        $("form#search").on("submit",function(e){
+          e.preventDefault();
           $.post("/search",{token:$("input.search").val()},function(data){
             data = JSON.parse(data);
             //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
