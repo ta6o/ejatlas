@@ -71,7 +71,7 @@
         %p
           %form#search
             .form-group{:style=>"font-size:18px;"}
-              %input.search{:type=>"text",:style=>"font-size:14px",:placeholder=>"Word search"}
+              %input.search{:type=>"text",:style=>"font-size:14px; width: calc( 100% - 48px ); min-width: calc( 100% - 48px ); max-width: calc( 100% - 48px ); margin-right: 16px;",:placeholder=>"Word search"}
               %a{:type=>"submit"}
                 %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
       %h4{:style=>'padding:12px 0;font-weight:bold;font-size:14px;'}
@@ -268,6 +268,12 @@
         updateInfo(1,"<h3>#{@maptitle}</h3><p>#{t("index.var_cases_reported", num_cases:@markercount)}</p>")
         $("form#search").on("submit",function(e){
           e.preventDefault();
+          search();
+        })
+        $(".search-button").on("click",function(){
+          search();
+        })
+        function search(){
           $.post("/search",{token:$("input.search").val()},function(data){
             data = JSON.parse(data);
             //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
@@ -280,7 +286,7 @@
             }
             filterMarkers(data);
           })
-        })
+        }
       } else {
         setTimeout(onLoad,10);
       }
