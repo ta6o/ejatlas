@@ -114,6 +114,8 @@
                     -if ["admin","editor"].include? current_account.role
                       %br/
                       =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
+                    -if ["admin"].include?(current_account.role)
+                      %input{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
 
       -unless current_account.nil?
         -if ["admin","editor"].include? current_account.role
