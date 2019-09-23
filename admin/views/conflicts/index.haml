@@ -107,15 +107,17 @@
                         %span{:style=>"display:none;"}=conflict["tags"].map{|t| "tag_#{Tag.find(t).name.downcase.gsub(/\s+/,'_')}"}.join(" ")
                       -else
                         &nbsp;
-                  %td.last{:style=>"min-width:90px;"}
-                    =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
-                    |
-                    =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
-                    -if ["admin","editor"].include? current_account.role
-                      %br/
-                      =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
-                    -if ["admin"].include?(current_account.role)
-                      %input{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
+                  %td.last.clearfix{:style=>"min-width:90px;"}
+                    .pull-left
+                      =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
+                      |
+                      =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
+                      -if ["admin","editor"].include? current_account.role
+                        %br/
+                        =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
+                      -if ["admin"].include?(current_account.role)
+                        .pull-right
+                          %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
 
       -unless current_account.nil?
         -if ["admin","editor"].include? current_account.role
