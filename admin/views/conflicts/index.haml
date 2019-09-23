@@ -115,9 +115,9 @@
                       -if ["admin","editor"].include? current_account.role
                         %br/
                         =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
-                      -if ["admin"].include?(current_account.role)
-                        .pull-right{:style=>"margin:1px 0 -4px"}
-                          %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
+                    -if ["admin"].include?(current_account.role)
+                      .pull-right{:style=>"margin:1px 0 -4px"}
+                        %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
 
       -unless current_account.nil?
         -if ["admin","editor"].include? current_account.role
