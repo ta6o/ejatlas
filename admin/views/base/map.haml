@@ -67,45 +67,45 @@
         %strong= t "v.index.#{@maptitle.shorten_en}"
       %p
         %strong= t "v.index.var_cases_reported", num_cases: @markercount
-      -if current_account and (current_account.role === "admin" or current_account.role === "editor")
-        %p
-          %form#search
-            .form-group{:style=>"font-size:18px;",:title=>"Search thorugh Title, Description, Project Details, Alternatives"}
-              %input.search{:type=>"text",:style=>"font-size:14px; width: calc( 100% - 48px ); min-width: calc( 100% - 48px ); max-width: calc( 100% - 48px ); margin-right: 16px;",:placeholder=>"Word search"}
-              %a{:type=>"submit"}
-                %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
-                %span.glyphicon.glyphicon-refresh.spin{:style=>"color:#0380a5;cursor:default;display:none;"}
-                :css
-                  .spin {
-                    -webkit-animation: spin 2s infinite linear;
-                    -moz-animation: spin 2s infinite linear;
-                    -o-animation: spin 2s infinite linear;
-                    animation: spin 2s infinite linear;
+      -#if current_account and (current_account.role === "admin" or current_account.role === "editor")
+      %p
+        %form#search
+          .form-group{:style=>"font-size:18px;",:title=>"Search through Title, Description, Project Details, Alternatives"}
+            %input.search{:type=>"text",:style=>"font-size:14px; width: calc( 100% - 48px ); min-width: calc( 100% - 48px ); max-width: calc( 100% - 48px ); margin-right: 16px;",:placeholder=>"Word search"}
+            %a{:type=>"submit"}
+              %span.glyphicon.glyphicon-search.search-button{:style=>"color:#0380a5;cursor:pointer;"}
+              %span.glyphicon.glyphicon-refresh.spin{:style=>"color:#0380a5;cursor:default;display:none;"}
+              :css
+                .spin {
+                  -webkit-animation: spin 2s infinite linear;
+                  -moz-animation: spin 2s infinite linear;
+                  -o-animation: spin 2s infinite linear;
+                  animation: spin 2s infinite linear;
+                }
+                @-moz-keyframes spin {
+                  from {
+                    -moz-transform: rotate(0deg);
                   }
-                  @-moz-keyframes spin {
-                    from {
-                      -moz-transform: rotate(0deg);
-                    }
-                    to {
-                      -moz-transform: rotate(360deg);
-                    }
+                  to {
+                    -moz-transform: rotate(360deg);
                   }
-                  @-webkit-keyframes spin {
-                    from {
-                      -webkit-transform: rotate(0deg);
-                    }
-                    to {
-                      -webkit-transform: rotate(360deg);
-                    }
+                }
+                @-webkit-keyframes spin {
+                  from {
+                    -webkit-transform: rotate(0deg);
                   }
-                  @keyframes spin {
-                    from {
-                      transform: rotate(0deg);
-                    }
-                    to {
-                      transform: rotate(360deg);
-                    }
+                  to {
+                    -webkit-transform: rotate(360deg);
                   }
+                }
+                @keyframes spin {
+                  from {
+                    transform: rotate(0deg);
+                  }
+                  to {
+                    transform: rotate(360deg);
+                  }
+                }
       %h4{:style=>'padding:12px 0;font-weight:bold;font-size:14px;'}
         =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
         %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
