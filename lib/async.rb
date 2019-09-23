@@ -654,7 +654,6 @@ class AsyncTask
 
     if params["conflicts"] == "on" or params["reindex"] == "on"
       markers = []
-      feats = []
       t1 = Time.now
       Dir.mkdir "#{PADRINO_ROOT}/tmp"  unless File.directory? "#{PADRINO_ROOT}/tmp"
       FileUtils.rmtree "#{PADRINO_ROOT}/tmp/cache" if File.directory? "#{PADRINO_ROOT}/tmp/cache"
