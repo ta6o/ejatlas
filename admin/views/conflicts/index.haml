@@ -138,7 +138,7 @@
               }).focus(); 
             });
             function select () {
-              ids = $("input.multiselect:checked").map(function(i,e){ e.data("id") })
+              ids = $("input.multiselect:checked").map(function(i,e){ $(e).data("id") })
               console.log(ids)
             }
         -else
