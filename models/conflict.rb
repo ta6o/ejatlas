@@ -300,8 +300,8 @@ class Conflict < ActiveRecord::Base
         result[a] << ass.id
       end
     end
-    result[:region_id] = self.country.region_id if self.country
-    result[:collaborators] = self.conflict_accounts.map(&:account_id)
+    result["region_id"] = self.country.region_id if self.country
+    result["collaborators"] = ConflictAccount.where(:conflict_id=>self.id).map(&:account_id)
     result
   end
 
