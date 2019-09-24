@@ -5579,6 +5579,10 @@ ul.sidelink li.active {
   margin: -3px 0 0 -3px !important;
   background-image: none !important;
 }
+.ui-widget-content,
+.ui-front {
+  z-index: 1200 !important;
+}
 .front .feat {
   position: relative;
   margin-bottom: 12px;

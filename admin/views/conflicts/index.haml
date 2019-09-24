@@ -167,6 +167,9 @@
             }
             $("#collab").on("shown.bs.modal",function(){
               $("#numsel").text(select().length);
+              $.each(select(),function(i,e){
+                $("ul#caselist").append("<li>"+$("#tr_"+e+" td").eq(0).text()+"</li>");
+              })
             })
         -else
           :javascript

@@ -7383,7 +7383,8 @@ ul.sidelink li.active {
   background: #3c5081;
   color: white;
 }
-.ui-widget-content {
+.ui-widget-content,
+.ui-front {
   z-index: 1200 !important;
 }
 .feat {
