@@ -933,7 +933,7 @@ Admin.controllers :conflicts do
     end
   end
 
-  post :acc_collaborators do
+  post :add_collaborators do
     return params.to_json
   end
 
