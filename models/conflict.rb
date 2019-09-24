@@ -305,6 +305,10 @@ class Conflict < ActiveRecord::Base
     result
   end
 
+  def index loc=I18n.locale
+    $client.update index: "#{$esindex}_#{loc}", type: "conflict", id: self.id, body: { doc: self.elastic }
+  end
+
   def print
     self.attributes.each do |k,v|
       next if v.nil? or v == "" or ['marker','table','json'].include? k
