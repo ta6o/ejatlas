@@ -11,18 +11,19 @@
           %input{:type=>'hidden',:name=>'model',:value=>(@actor.class.to_s)}
           %input{:type=>'hidden',:name=>'cid',:value=>@cid.to_s}
           %h3= "Add collaborator(s) to conflicts"
+          %a.btn.notr.btn-info{:type=>"submit"} Add selected collaborator(s) to selected conflicts
         .modal-body
           .row
             .col-md-6
               %h5 Select accounts below:
               .clearfix
                 %input.autocomplete#account{:type=>"email",:style=>"width:100%;",:placeholder=>"Find email address","data-source"=>"emails"}
-              %ul{:style=>"list-style-type:none;padding:0;"}
+              %ul#collablist{:style=>"list-style-type:none;padding:0;"}
             .col-md-6
               %p
                 %b#numsel
                 %b cases selected:
-              %ul#caselist{:style=>"list-style-type:none;padding:0;"}
+              %ul#caselist{:style=>";padding:0;"}
 
 .row.wide
   .col-md-12
@@ -32,7 +33,7 @@
     .inner
       -if ["admin"].include?(current_account.role)
         .pull-right
-          %a.btn.notr{'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
+          %a.btn.notr.btn-info{'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
       %table.table.tablesorter#sortme
         %thead
           %tr
@@ -165,8 +166,15 @@
             function select () {
               return $.map($("input.multiselect:checked"),function(e,i){ return $(e).data("id") });
             }
+            $("#collabform").on("submit",function(){
+              e.preventDefault();
+              console.log(select())
+              accs = $.map($("ul#collablist"),function(e,i){ return $(e).attr("id").split("_")[1] });
+              console.log(accs)
+            })
             $("#collab").on("shown.bs.modal",function(){
               $("#numsel").text(select().length);
+              $("ul#caselist").html("");
               $.each(select(),function(i,e){
                 $("ul#caselist").append("<li>"+$("#tr_"+e+" td").eq(0).text()+"</li>");
               })
