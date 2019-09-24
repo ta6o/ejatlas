@@ -34,7 +34,7 @@
       %h1.title
         =mt('Conflicts')
     .inner
-      -if ["admin"].include?(current_account.role)
+      -if ["admin","editor"].include?(current_account.role)
         .pull-right
           %a.btn.notr.btn-info{'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
       %table.table.tablesorter#sortme
@@ -91,13 +91,17 @@
                       %span{:style=>"display:none;"}=conflict["tags"].map{|t| "tag_#{Tag.find(t).name.downcase.gsub(/\s+/,'_')}"}.join(" ")
                     -else
                       &nbsp;
-                %td.last
-                  =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
-                  |
-                  =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
-                  -if ["admin","editor"].include? current_account.role
-                    %br/
-                    =link_to pat('Disapprove'), url(:conflicts, :disapprove, :id => conflict["id"]), :method => :get
+                %td.last.clearfix{:style=>"min-width:120px;"}
+                  .pull-left
+                    =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
+                    |
+                    =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
+                    -if ["admin","editor"].include? current_account.role
+                      %br/
+                      =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
+                  -if ["admin","editor"].include?(current_account.role)
+                    .pull-right{:style=>"margin:1px 0 -4px"}
+                      %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
             -else
               -unless current_account.nil?
                 %tr{:id=>"tr_#{conflict["id"]}",:style=>'color:#bbb'}
@@ -144,7 +148,7 @@
                       -if ["admin","editor"].include? current_account.role
                         %br/
                         =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
-                    -if ["admin"].include?(current_account.role)
+                    -if ["admin","editor"].include?(current_account.role)
                       .pull-right{:style=>"margin:1px 0 -4px"}
                         %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
 
