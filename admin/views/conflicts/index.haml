@@ -2,12 +2,32 @@
 -content_for :include do
   =stylesheet_link_tag 'tablesorter/style'
   =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+#collab.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+  .modal-dialog
+    .modal-content
+      %form#collabform{:method=>'post',:action=>'/conflicts/add-collaborator'}
+        .modal-header
+          %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+          %input{:type=>'hidden',:name=>'model',:value=>(@actor.class.to_s)}
+          %input{:type=>'hidden',:name=>'cid',:value=>@cid.to_s}
+          %h3= "Add collaborator(s) to conflicts"
+        .modal-body
+          .row
+            .col-md-6
+              %p
+                %span#numsel
+                %span cases selected.
+            .col-md-6
+              %input.autocomplete.noaction{:type=>"email",:style=>"width:100%;",:placeholder=>"Find email address","data-source"=>"emails"}
 .row.wide
   .col-md-12
     .hero-unit
       %h1.title
         =mt('Conflicts')
     .inner
+      -if ["admin"].include?(current_account.role)
+        .pull-right
+          %a.btn.notr{'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
       %table.table.tablesorter#sortme
         %thead
           %tr
@@ -138,9 +158,11 @@
               }).focus(); 
             });
             function select () {
-              ids = $.map($("input.multiselect:checked"),function(e,i){ return $(e).data("id") })
-              console.log(ids)
+              return $.map($("input.multiselect:checked"),function(e,i){ return $(e).data("id") });
             }
+            $("#collab").on("shown.bs.modal",function(){
+              $("#numsel").text(select().length);
+            })
         -else
           :javascript
             $(document).ready(function(){
