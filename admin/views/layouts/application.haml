@@ -335,7 +335,7 @@
                   $id = $item.attr('id');
                   $ul = $item.closest(".clearfix").nextAll('ul')
                   $html = "<span>"+ui.item.value+"</span> &nbsp; <a style='cursor:pointer' onclick=remove_li('"+$id+"',"+ui.item.id+")>Remove</a><input type='hidden' name='"+$id+"_add_"+ui.item.id+"'></input>"
-                  $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html}));
+                  $($ul).append($('<li>', { id: $id+'_'+ui.item.id, html: $html, class:"on"}));
                 }
                 return false;
               }
@@ -344,6 +344,7 @@
 
           function remove_li (name, id) { 
             $target = $('li#'+name+'_'+id) 
+            $target.removeClass("on").addClass("off");
             $target.find('span').css('text-decoration','line-through');
             $target.find('input').attr('name',name+"_remove_"+id);
             $target.find('a').text('Add back');
@@ -351,6 +352,7 @@
           }
           function add_li (name, id) { 
             $target = $('li#'+name+'_'+id) 
+            $target.removeClass("off").addClass("on");
             $target.find('span').css('text-decoration','none');
             $target.find('input').attr('name',name+"_add_"+id);
             $target.find('a').text('Remove');

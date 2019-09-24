@@ -933,6 +933,10 @@ Admin.controllers :conflicts do
     end
   end
 
+  post :acc_collaborators do
+    return params.to_json
+  end
+
   delete "/destroy/:id" do
     c = Conflict.find(params[:id].to_i)
     if c.destroy
