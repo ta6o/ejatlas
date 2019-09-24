@@ -172,9 +172,9 @@
             $("#collabform").on("submit",function(ev){
               ev.preventDefault();
               accs = $.map($("ul#collablist li.on"),function(e,i){ return parseInt($(e).attr("id").split("_")[1]) });
-              $.post("/conflicts/add_collaborators",{conflicts:select(),accounts:accs},function(data{
+              $.post("/conflicts/add_collaborators",{conflicts:select(),accounts:accs},function(data){
                 condole.log(data);
-              }))
+              });
             })
             $("#collab").on("shown.bs.modal",function(){
               $("#numsel").text(select().length);
