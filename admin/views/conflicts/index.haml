@@ -175,6 +175,8 @@
               $.post("/conflicts/add_collaborators",{conflicts:select(),accounts:accs},function(data){
                 if (data == "ack") {
                   window.location.reload();
+                } else {
+                  console.log(data);
                 }
               });
             })

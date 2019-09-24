@@ -941,11 +941,12 @@ Admin.controllers :conflicts do
             ConflictAccount.create(conflict_id:cid,account_id:aid)
           end
         end
-        $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: { doc: @conflict.elastic }
+        conflict = Conflict.find(cid)
+        $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: conflict.id, body: { doc: conflict.elastic }
       end
       return "ack"
-    rescue
-      return "nack"
+    rescue => e
+      return e.to_s
     end
   end
 
