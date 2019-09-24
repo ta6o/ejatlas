@@ -934,7 +934,18 @@ Admin.controllers :conflicts do
   end
 
   post :add_collaborators do
-    return params.to_json
+    begin
+      params["conflicts"].map(&:to_i).each do |cid|
+        params["accounts"].map(&:to_i).each do |aid|
+          if ConflictAccount.where(conflict_id:cid,account_id:aid).empty?
+            ConflictAccount.create(conflict_id:cid,account_id:aid)
+          end
+        end
+      end
+      return "ack"
+    rescue
+      return "nack"
+    end
   end
 
   delete "/destroy/:id" do
