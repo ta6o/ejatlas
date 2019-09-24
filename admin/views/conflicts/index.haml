@@ -10,8 +10,11 @@
           %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
           %input{:type=>'hidden',:name=>'model',:value=>(@actor.class.to_s)}
           %input{:type=>'hidden',:name=>'cid',:value=>@cid.to_s}
-          %h3= "Add collaborator(s) to conflicts"
-          %a.btn.notr.btn-info{:type=>"submit"} Add selected collaborator(s) to selected conflicts
+          .clearfix
+            .pull-left
+              %h3= "Add collaborator(s) to conflicts"
+            .pull-right
+              %button.btn.notr.btn-info{:type=>"submit"} Add selected collaborator(s) to selected conflicts
         .modal-body
           .row
             .col-md-6
@@ -166,8 +169,8 @@
             function select () {
               return $.map($("input.multiselect:checked"),function(e,i){ return $(e).data("id") });
             }
-            $("#collabform").on("submit",function(){
-              e.preventDefault();
+            $("#collabform").on("submit",function(ev){
+              ev.preventDefault();
               console.log(select())
               accs = $.map($("ul#collablist"),function(e,i){ return $(e).attr("id").split("_")[1] });
               console.log(accs)
