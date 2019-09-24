@@ -29,10 +29,10 @@ lessc bootstrap-full.less > app-full.css
 lessc bootstrap-rtl.less > app-rtl.css
 lessc bootstrap-full-rtl.less > app-full-rtl.css
 
-cat app.css leaflet.css leaflet-loading.css jquery-ui.min.css > all.css
-cat app-full.css leaflet.css leaflet-loading.css jquery-ui.min.css > all-full.css
-cat app-rtl.css leaflet.css leaflet-loading.css jquery-ui.min.css > all-rtl.css
-cat app-full-rtl.css leaflet.css leaflet-loading.css jquery-ui.min.css > all-full-rtl.css
+cat jquery-ui.min.css app.css leaflet.css leaflet-loading.css > all.css
+cat jquery-ui.min.css app-full.css leaflet.css leaflet-loading.css > all-full.css
+cat jquery-ui.min.css app-rtl.css leaflet.css leaflet-loading.css > all-rtl.css
+cat jquery-ui.min.css app-full-rtl.css leaflet.css leaflet-loading.css > all-full-rtl.css
 
 java -jar ../../lib/yui.jar --type css ./all.css > ./main.css
 java -jar ../../lib/yui.jar --type css ./all-full.css > ./main-full.css
