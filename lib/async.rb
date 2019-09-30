@@ -34,8 +34,15 @@ class AsyncTask
       line = []
       #puts "#{conf.id} #{conf.name}"
       print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{job_id}"
+      cont = conf.conflict_texts.where(:locale=>locale).first
+      cont.attributes.each do |k,v|
+        next if ["id","conflict_id","locale","table","features","approval_status","updated_at"].include? k
+        header << k.to_s.gsub("_"," ").titlecase if index == 0
+        line << v.to_s
+        nfields += 1
+      end
       conf.attributes.each do |k,v|
-        next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
+        next if ["json","table","marker","licence","ready","affected_min","affected_max"].include? k
         if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
           begin
             ass = eval "conf."+k.to_s[0...-3]
@@ -305,8 +312,15 @@ class AsyncTask
       line = []
       #puts "#{conf.id} #{conf.name}"
       print "\r  #{(index/stack.length.to_f*100).to_i}% done."
+      cont = conf.conflict_texts.where(:locale=>locale).first
+      cont.attributes.each do |k,v|
+        next if ["id","conflict_id","locale","table","features","approval_status","updated_at"].include? k
+        header << k.to_s.gsub("_"," ").titlecase if index == 0
+        line << v.to_s
+        nfields += 1
+      end
       conf.attributes.each do |k,v|
-        next if ["json","table","marker",'licence','ready','affected_min','affected_max'].include? k
+        next if ["json","table","marker","licence","ready","affected_min","affected_max","updated_at"].include? k
         if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
           begin
             ass = eval "conf."+k.to_s[0...-3]
