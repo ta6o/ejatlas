@@ -286,7 +286,7 @@
             return true;
           };  
 
-      -if request.path.match(/edit/) or ["admin","editor"].include?(current_account.role)
+      -if request.path.match(/edit/) or (current_account and ["admin","editor"].include?(current_account.role))
         :javascript
           $full = false;
           $.getJSON("/data/autocomplete.json",function(data){
