@@ -408,7 +408,7 @@ class AsyncTask
           actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil]} unless actors[mod].has_key? m.id
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           conflict_actors[mod][conf.id] = [] unless conflict_actors[mod].has_key?(conf.id)
-          conflict_actors[mod][conf.id] << [m.id, m.name, m.country ? m.county.name : nil, inv]
+          conflict_actors[mod][conf.id] << [m.id, m.name, m.country ? m.country.name : nil, inv]
         end
         line << lin
         nfields += 1
