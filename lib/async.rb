@@ -408,7 +408,7 @@ class AsyncTask
           actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil]} unless actors[mod].has_key? m.id
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           conflict_actors[mod][conf.id] = [] unless conflict_actors[mod].has_key?(conf.id)
-          conflict_actors[mod][conf.id] << [m.id, m.name, m.country, inv]
+          conflict_actors[mod][conf.id] << [m.id, m.name, m.country ? m.county.name : nil, inv]
         end
         line << lin
         nfields += 1
@@ -657,6 +657,9 @@ class AsyncTask
   end
   handle_asynchronously :backup
 
+  def print_progress(counter, total, t0, case)
+    print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
+  end
   def setcache params
     t00 = Time.now
     job_id = nil
@@ -668,6 +671,7 @@ class AsyncTask
     end
     timings = {}
     locale = params.delete("locale")
+    puts
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
     ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
     client = Elasticsearch::Client.new log: false
@@ -717,7 +721,7 @@ class AsyncTask
           end
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating conflicts: #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per case) #{Admin.divtime(Time.now-t00)} passed."} if job_id
         end
-        print "#{(Time.now-t0).to_i}s".yellow if total > 0
+        print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
         timings[:conflicts] = Time.now - t1
         puts if total > 0
         ca.conflicts_marker = markers.to_json
@@ -746,7 +750,7 @@ class AsyncTask
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating countries: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per country) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
-      print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:countries] = Time.now - t1
       puts if cos.length > 0
       countries.sort_by! {|c| c[1]}
@@ -774,7 +778,7 @@ class AsyncTask
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating companies: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per company) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
-      print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:companies] = Time.now - t1
       puts if cos.length > 0
       companies.sort_by! {|c| c[1]}
@@ -801,7 +805,7 @@ class AsyncTask
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating financial institutions: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per institution) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
-      print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:financial_institutions] = Time.now - t1
       puts if cos.length > 0
       supporters.sort_by! {|c| c[1]}
@@ -828,7 +832,7 @@ class AsyncTask
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating commodities: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter).round(3)}s per commodity) #{Admin.divtime(Time.now-t00)} passed."} 
         end
       end
-      print "#{(Time.now-t0).to_i}s".yellow if cos.length > 0
+      print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:commodities] = Time.now - t1
       puts if cos.length > 0
       commodities.sort_by! {|c| c[1]}
@@ -858,7 +862,7 @@ class AsyncTask
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating categories: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per category) #{Admin.divtime(Time.now-t00)} passed."}
         end
       end
-      print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:categories] = Time.now - t1
       puts if total > 0
       types.sort_by! {|c| c[1]}
@@ -897,7 +901,7 @@ class AsyncTask
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating featured maps: #{((counter+1)/total.to_f*1000).to_i/10.0}% done. (#{counter+1}/#{total}, #{((Time.now-t0)/counter+1).round(3)}s per map) #{Admin.divtime(Time.now-t00)} passed."} 
         end
       end
-      print "#{(Time.now-t0).to_i}s".yellow if total > 0
+      print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:featured_maps] = Time.now - t1
       puts if total > 0
       ca.featureds = featureds.to_json
