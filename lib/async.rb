@@ -303,6 +303,7 @@ class AsyncTask
     mania = {Type=>[],Product=>[],ConflictEvent=>[],ConflictEvent=>[],MobilizingGroup=>[],MobilizingForm=>[]}
     imps = {EnvImpact=>[],HltImpact=>[],SecImpact=>[]}
     actors = {Company=>{},Supporter=>{},:ids=>[]}
+    conflict_actors = {Company=>{},Supporter=>{}}
     numfields = []
     lines = []
     header = []
@@ -404,9 +405,10 @@ class AsyncTask
           end
           inv = cm.involvement and cm.involvement.length > 0 ? ":#{cm.involvement}" : ""
           lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
-          actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil], :invs => {}} unless actors[mod].has_key? m.id
+          actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil]} unless actors[mod].has_key? m.id
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
-          actors[mod][m.id][:invs][conf.id] = inv
+          conflict_actors[mod][conf.id] = [] unless conflict_actors[mod].has_key?(conf.id)
+          conflict_actors[mod][conf.id] << [m.id, m.name, m.country, inv]
         end
         line << lin
         nfields += 1
@@ -505,24 +507,37 @@ class AsyncTask
     actors.each do |many,lines|
       next if many == :ids
       header = ["id", "name", "slug", "description", "url", "acronym", "country"]
-      actors[:ids].uniq.each {|c| header << c}
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
         lines.each do |id, comp|
-          line = comp[:attrs]
-          step = 7
-          #pp comp[:invs]
-          comp[:invs].each do |conf, inv|
-            next unless header.include?(conf)
-            (header.index(conf)-step).times { line << nil }
-            inv ||= '-'
-            line << inv
-            #step = header.index#{$filedir}/../exports(conf)
+          output << comp[:attrs]
+        end
+      end
+      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
+    end
+    conflict_actors.each do |many,lines|
+      header = ["conflict_id"]
+      maxx = lines.values.map(&:length).max
+      maxx.times do |maxi|
+        header << "id_company_#{maxi+1}"
+        header << "name_company_#{maxi+1}"
+        header << "country_company_#{maxi+1}"
+        header << "involvement_company_#{maxi+1}"
+      end
+      ::CSV.open("/tmp/export/#{many.to_s.downcase}_conflicts.csv","w") do |output|
+        output << header
+        lines.each do |id, comp|
+          line = [id]
+          comp.each do |da|
+            line << da[0]
+            line << da[1]
+            line << da[2]
+            line << da[3]
           end
           output << line
         end
       end
-      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
+      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}_conflicts.csv"
     end
     Zip::ZipOutputStream.open("#{$filedir}/../exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
       csvs.each do |c|
