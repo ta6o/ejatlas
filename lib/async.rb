@@ -877,6 +877,7 @@ class AsyncTask
       cs.each_with_index do |ct,counter|
         t0 = Time.now if counter == 0
         c = ct.conflict
+        next unless c.features
         f = JSON.parse(c.features)
         f.each do |k,v|
           id = k.split(':')[0]
