@@ -304,6 +304,7 @@ class AsyncTask
     imps = {EnvImpact=>[],HltImpact=>[],SecImpact=>[]}
     actors = {Company=>{},Supporter=>{},:ids=>[]}
     conflict_actors = {Company=>{},Supporter=>{}}
+    actor_conflicts = {Company=>{},Supporter=>{}}
     numfields = []
     lines = []
     header = []
@@ -409,6 +410,7 @@ class AsyncTask
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           conflict_actors[mod][conf.id] = [] unless conflict_actors[mod].has_key?(conf.id)
           conflict_actors[mod][conf.id] << [m.id, m.name, m.country ? m.country.name : nil, inv]
+          actor_conflicts[mod][m.id] = m.conflicts.map(&:id) unless actor_conflicts[mod].has_key?(m.id)
         end
         line << lin
         nfields += 1
@@ -519,10 +521,10 @@ class AsyncTask
       header = ["conflict_id"]
       maxx = lines.values.map(&:length).max
       maxx.times do |maxi|
-        header << "id_company_#{maxi+1}"
-        header << "name_company_#{maxi+1}"
-        header << "country_company_#{maxi+1}"
-        header << "involvement_company_#{maxi+1}"
+        header << "id_#{many.to_s.downcase}_#{maxi+1}"
+        header << "name_#{many.to_s.downcase}_#{maxi+1}"
+        header << "country_#{many.to_s.downcase}_#{maxi+1}"
+        header << "involvement_#{many.to_s.downcase}_#{maxi+1}"
       end
       ::CSV.open("/tmp/export/#{many.to_s.downcase}_conflicts.csv","w") do |output|
         output << header
@@ -538,6 +540,24 @@ class AsyncTask
         end
       end
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}_conflicts.csv"
+    end
+    actor_conflicts.each do |many,lines|
+      header = ["#{many.to_s.downcase}_id"]
+      maxx = lines.values.map(&:length).max
+      maxx.times do |maxi|
+        header << "conflict_id_#{maxi+1}"
+      end
+      ::CSV.open("/tmp/export/conflict_#{many.to_s.downcase}s.csv","w") do |output|
+        output << header
+        lines.each do |id, comp|
+          line = [id]
+          comp.each do |da|
+            line << da
+          end
+          output << line
+        end
+      end
+      csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/conflict_#{many.to_s.downcase}s.csv"
     end
     Zip::ZipOutputStream.open("#{$filedir}/../exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.zip") do |zio|
       csvs.each do |c|
