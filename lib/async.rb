@@ -346,6 +346,7 @@ class AsyncTask
     else
       stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
     end
+    stack = stack[0..(limit-1)] if limit > 0
     puts "#{stack.length} cases to be exported."
     puts ::CSV
     if limit > 0
