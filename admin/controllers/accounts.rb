@@ -31,6 +31,13 @@ Admin.controllers :accounts do
     render 'accounts/pwdreset'
   end
 
+  post :resetpassword do
+    if a = Account.find_by_email(params['email'])
+      Admin.password_reset(a)
+    end
+    render 'account/resetsent'
+  end
+
   get :approve, :with => :id do
     redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
     @method = "post"
