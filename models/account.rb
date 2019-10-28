@@ -40,6 +40,19 @@ class Account < ActiveRecord::Base
     ::BCrypt::Password.new(crypted_password) == password
   end
 
+  def editor? locale=I18n.locale
+    ["admin","editor"].include? self.role or self.roles.map(&:name).sort.join(",").match(/editor.+locale-#{locale}/)
+  end
+
+  def contributor? conflict, locale=I18n.locale
+    return false unless conflict
+    ["admin","editor"].include?(self.role) or conflict.account_id == self.id or conflict.conflict_accounts.map(&:account_id).include?(self.id) or self.roles.map(&:name).sort.join(",").match(/editor.+locale-#{locale}/)
+  end
+
+  def translator? locale=I18n.locale
+    self.roles.map(&:name).sort.join(",").match(/locale-#{locale}.+translator/)
+  end
+
   def full_name
     return self.name
   end

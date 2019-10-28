@@ -188,7 +188,7 @@ Admin.controllers :conflicts do
 
   before /^(?!\/(off))/ do
     #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
-    redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" if current_account.nil?
+    redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account
     redirect to "/not_authorized" unless current_account.approved and current_account.confirmed
     @lat = 0
     @lon = 0
@@ -199,80 +199,66 @@ Admin.controllers :conflicts do
   end
 
   get :index do
-    if current_account
-      puts "#{current_account.roles.map(&:name).sort.join(",").yellow} #{I18n.locale.to_s.green}"
-      puts current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/).to_s.cyan
-      if ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
-        @conflicts = Admin.filter("{\"must_not\":{\"term\":{\"approval_status\":\"deleted\"}}}", true, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","asc").map{|x| x["_source"]}
-        @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
-        @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-        @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
-        @conflicts.reverse!
-      else
-        proper = Conflict.where(account_id: current_account.id)
-        other =  Conflict.where(id: current_account.conflict_accounts.map(&:conflict_id))
-        @conflicts = proper.or(other).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-        #pp @conflicts.class
-      end
+    if current_account.editor?
+      @conflicts = Admin.filter("{\"must_not\":{\"term\":{\"approval_status\":\"deleted\"}}}", true, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","asc").map{|x| x["_source"]}
+      @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
+      @categories = Category.all.map {|c| [c.id,c.name]}.to_h
+      @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
+      @conflicts.reverse!
+    else
+      proper = Conflict.where(account_id: current_account.id)
+      other =  Conflict.where(id: current_account.conflict_accounts.map(&:conflict_id))
+      @conflicts = proper.or(other).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+      #pp @conflicts.class
     end
     render 'conflicts/index'
   end
 
   get :approved do
-    if current_account
-      if ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
-        @conflicts = Admin.filter("{}", true, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),true,"conflict","saved_at","asc").map{|x| x["_source"]}
-        @accounts = Admin.filter("{}", true, "id,name".split(","),false,"account").map{|x| [x["_source"]["id"], x["_source"]["name"]]}.to_h
-        @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-        @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
-        @conflicts.reverse!
-      else
-        @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      end
+    if current_account.editor?
+      @conflicts = Admin.filter("{}", true, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),true,"conflict","saved_at","asc").map{|x| x["_source"]}
+      @accounts = Admin.filter("{}", true, "id,name".split(","),false,"account").map{|x| [x["_source"]["id"], x["_source"]["name"]]}.to_h
+      @categories = Category.all.map {|c| [c.id,c.name]}.to_h
+      @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
+      @conflicts.reverse!
+    else
+      @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
     end
     render 'conflicts/index'
   end
 
   get :modified do
-    if current_account
-      if ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
-        @conflicts = Conflict.where(approval_status: 'modified').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      else
-        @conflicts = Conflict.where(:approval_status => 'modified', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      end
+    if current_account.editor?
+      @conflicts = Conflict.where(approval_status: 'modified').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+    else
+      @conflicts = Conflict.where(:approval_status => 'modified', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
     end
     render 'conflicts/index'
   end
 
   get :queued do
-    if current_account
-      if ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
-        @conflicts = Conflict.where(approval_status: 'queued').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      else
-        @conflicts = Conflict.where(:approval_status => 'queued', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      end
+    if current_account.editor?
+      @conflicts = Conflict.where(approval_status: 'queued').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+    else
+      @conflicts = Conflict.where(:approval_status => 'queued', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
     end
     render 'conflicts/index'
   end
 
   get :draft do
-    if current_account
-      if ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
-        @conflicts = Conflict.where(approval_status: 'draft').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      else
-        @conflicts = Conflict.where(:approval_status => 'draft', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      end
+    if current_account.editor?
+      @conflicts = Conflict.where(approval_status: 'draft').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+    else
+      @conflicts = Conflict.where(:approval_status => 'draft', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
     end
     render 'conflicts/index'
   end
 
   get :deleted do
-    if current_account
-      if ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
-        @conflicts = Conflict.where(approval_status: 'deleted').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      else
-        @conflicts = Conflict.where(:approval_status => 'deleted', :account_id=> current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      end
+    if current_account.editor?
+      @conflicts = Conflict.where(approval_status: 'deleted').order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at,tags,collaborators'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
+    else
+      @conflicts = Conflict.where(:approval_status => 'deleted', :account_id=> current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
     end
     render 'conflicts/index'
   end
@@ -287,67 +273,56 @@ Admin.controllers :conflicts do
   end
 
   get :new  do
-    if current_account
-      @title = 'New Conflict'
-      @name = 'New Conflict'
-      @conflict = Conflict.new
-      render 'conflicts/new'
-    end
+    @title = 'New Conflict'
+    @name = 'New Conflict'
+    @conflict = Conflict.new
+    render 'conflicts/new'
   end
 
   get :edit, :with => :id do
-    if current_account
-      begin
-        @conflict = Conflict.find(params[:id])
-      rescue
-        pass
+    begin
+      @conflict = Conflict.find(params[:id])
+    rescue
+      pass
+    end
+    if current_account.contributor?(@conflict) and not params.has_key?("translate")
+      @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
+      @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
+      @saves = []
+      CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
+        @saves << row if row[2] == @conflict.id.to_s
       end
-      roles = current_account.roles.map(&:name)
-      if (["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or (roles.include?("locale-#{I18n.locale}") and roles.include?("editor"))) and not params.has_key?("translate")
-        @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
-        @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
-        @saves = []
-        CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
-          @saves << row if row[2] == @conflict.id.to_s
-        end
-        render 'conflicts/edit'
-      elsif roles.include?("locale-#{I18n.locale}") and roles.include?("translator") or params.has_key?("translate")
-        @translate_only = true
-        @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
-        @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
-        @saves = []
-        CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
-          @saves << row if row[2] == @conflict.id.to_s
-        end
-        render 'conflicts/edit'
+      render 'conflicts/edit'
+    elsif current_account.translator? or params.has_key?("translate")
+      @translate_only = true
+      @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
+      @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
+      @saves = []
+      CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
+        @saves << row if row[2] == @conflict.id.to_s
       end
-    else
-      redirect to '/sessions/login'
+      render 'conflicts/edit'
     end
   end
 
   get :conflict_account_revoke, :with => :id do
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       ca = ConflictAccount.find(params[:id])
       cid = ca.conflict_id
       ca.delete
       redirect to "/conflicts/edit/#{cid}#_meta"
-    else
-      redirect to '/sessions/login'
     end
   end
 
   get :conflict_account_create, :map => "/conflicts/conflict_account_create/:cid/:aid" do
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       ConflictAccount.create :conflict_id => params["cid"], :account_id => params["aid"]
       redirect to "/conflicts/edit/#{params["cid"]}#_meta"
-    else
-      redirect to '/sessions/login'
     end
   end
 
   post :ca_create do
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       if acc = Account.find_by_email(params["aid"])
         if ConflictAccount.where(:conflict_id => params["cid"], :account_id => acc.id).any?
           return "Error: contributor exists"
@@ -358,14 +333,12 @@ Admin.controllers :conflicts do
       else
         return "Error: account not found"
       end
-    else
-      redirect to '/sessions/login'
     end
   end
 
   post :msg_create do
     @conflict = Conflict.find(params["cid"])
-    if current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id))
+    if current_account.contributor?(@Conflict)
       msg = ConflictMessage.create :conflict_id => params["cid"], :account_id => params["aid"], :content => params["content"]
       Admin.notify_mod_msg msg
       return "ok"
@@ -375,7 +348,7 @@ Admin.controllers :conflicts do
   end
 
   post :msg_delete do
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       ConflictMessage.find(params["id"]).delete
       return "ok"
     else
@@ -404,8 +377,6 @@ Admin.controllers :conflicts do
   end
 
   post :create do
-    pass unless current_account
-    #params.each {|kk,vv| #puts; #puts kk; if vv.is_a? Hash then vv.each {|k,v| #puts "#{k.to_s}: #{v.to_s}"} else #puts vv end }
     updated = Admin.correctForm(params)
     @conflict = Conflict.create
     @conflict.update_attributes(updated[:conflict])
@@ -437,7 +408,7 @@ Admin.controllers :conflicts do
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     @conflict = Conflict.find(params[:id])
 
-    pass unless current_account and ( ["admin","editor"].include?(current_account.role) or @conflict.account_id == current_account.id or @conflict.conflict_accounts.map(&:account_id).include?(current_account.id) or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/))
+    pass unless current_account.contributor?(@conflict)
 
     updated = Admin.correctForm(params)
     #Admin.color_pp updated, "updated", "green", true
@@ -726,7 +697,7 @@ Admin.controllers :conflicts do
   end
 
   get :approve, :with => :id do
-    pass unless ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
+    pass unless current_account.editor?
     conflict = Conflict.find(params[:id])
     ct = conflict.local_data
     conflict.approval_status = 'approved'
@@ -741,7 +712,7 @@ Admin.controllers :conflicts do
   end
 
   get :disapprove, :with => :id do
-    pass unless ["admin","editor"].include? current_account.role or current_account.roles.map(&:name).sort.join(",").match(/editor.+locale-#{I18n.locale}/)
+    pass unless current_account.editor?
     conflict = Conflict.find(params[:id])
     ct = conflict.local_data
     conflict.approval_status = 'queued'
