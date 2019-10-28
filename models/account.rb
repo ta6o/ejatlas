@@ -48,6 +48,10 @@ class Account < ActiveRecord::Base
     $client.index index: $esindex, type: 'doc', id: "acc_#{self.id}", body:{:id=>self.id, :name=>self.name, :type=>"account"}
   end
 
+  def inspect
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.email.magenta}), #{self.role.titlecase.green} #{self.roles.map(&:name).join(', ').green})"
+  end
+
   private
     def encrypt_password
       self.crypted_password = ::BCrypt::Password.create(password)
@@ -61,11 +65,21 @@ end
 class Role < ActiveRecord::Base
   has_many :account_roles
   has_many :accounts, :through => :account_roles
+
+  def inspect
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} #{self.description.magenta}"
+  end
+
 end
 
 class AccountRole < ActiveRecord::Base
   belongs_to :account
   belongs_to :role
+
+  def inspect
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.account.name} <=> #{self.role.name}"
+  end
+
 end
 
 class ConflictAccount < ActiveRecord::Base
