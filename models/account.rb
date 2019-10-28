@@ -67,7 +67,7 @@ class Role < ActiveRecord::Base
   has_many :accounts, :through => :account_roles
 
   def inspect
-    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} #{self.description.magenta}"
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name ? self.name : "no name".red} #{self.description ? self.description.magenta : ""}"
   end
 
 end
