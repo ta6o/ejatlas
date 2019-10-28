@@ -35,7 +35,7 @@ Admin.controllers :accounts do
     if a = Account.find_by_email(params['email'])
       Admin.password_reset(a)
     end
-    render 'account/resetsent'
+    render 'accounts/resetsent'
   end
 
   get :approve, :with => :id do
