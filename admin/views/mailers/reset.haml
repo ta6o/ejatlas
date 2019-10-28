@@ -17,10 +17,7 @@
         = I18n.t("emails.general.dear_var", account_name: @account.name)
         %br/
         %br/
-        =I18n.t("emails.reset.you_requested_new_password_at")
-        \:
-        %br/
-        =I18n.l(DateTime.now, format: :long)
+        =I18n.t("emails.reset.you_requested_new_password_at", date: I18n.l(DateTime.now, format: :long))
         %br/
         %br/
         =I18n.t("emails.reset.you_can_set_new_password")
@@ -30,8 +27,7 @@
           =I18n.t("emails.reset.change_my_password")
         %br/
         %br/
-        =I18n.t("emails.reset.if_you_havent_made_such")
-        %a{:href=>'mailto:ejoltmap@gmail.com'} ejoltmap@gmail.com
+        =I18n.t("emails.reset.if_you_havent_made_such", ejoltmap_at_gmailcom: "<a href='mailto:ejoltmap@gmail.com'>ejoltmap@gmail.com</a>")
         %br/
         %br/
         =I18n.t("emails.general.best_wishes")
