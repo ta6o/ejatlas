@@ -77,7 +77,7 @@ class AccountRole < ActiveRecord::Base
   belongs_to :role
 
   def inspect
-    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.account ? self.account.name.green : "nil".red} <=> #{self.role ? self.role.name.yellow : "nil".red}"
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.account ? self.account.name.green : self.account_id.to_s.red} <=> #{self.role ? self.role.name.yellow : self.account_id.to_s.red}"
   end
 
 end
