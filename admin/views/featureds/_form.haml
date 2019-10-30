@@ -416,6 +416,7 @@
       data.splice[nin]
     }
     tags = $.makeArray($('ul#tagi li').map(function(){return $(this).attr('id').split('-')[1]})).join(',')
+    console.log(tags)
     bases = [];
     $.each( $('input.base'), function(i,b){
       bases.push($(b).val());
