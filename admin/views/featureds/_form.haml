@@ -427,7 +427,7 @@
     $('input.conflict').not('.changed').remove();
     data = $("form.form").serializeArray();
     data["_method"] = "put";
-    $.post($("form.form").attr("action"), data, function(data) {
+    $.post("/featureds/update/"+window.location.pathname.split("/")[3], data, function(data) {
       data = JSON.parse(data);
       console.log(data);
       if (data.status == "success") window.location.reload;
