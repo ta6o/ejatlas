@@ -427,6 +427,7 @@
     $('input.conflict').not('.changed').remove();
     data = $("form.form").serializeArray();
     data["_method"] = "put";
+    console.log(data)
     $.post("/featureds/update/"+window.location.pathname.split("/")[3], data, function(data) {
       console.log(data);
       data = JSON.parse(data);
