@@ -7,7 +7,7 @@ Admin.controllers :featureds do
 
   get :index do
     @featureds = []
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account and current_Account.editor?
       Featured.select("id, name, slug, description, image").find_in_batches do |batch|
         @featureds << batch
       end
@@ -53,7 +53,7 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
-    unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
+    unless current_account and @featured and (@featured.account_id == current_account.id or current_account.editor?
       redirect to "/featureds"
     end
     @featured.description = @featured.description.gsub("\n","<br />")
@@ -129,19 +129,22 @@ Admin.controllers :featureds do
       begin
         puts "featured tags...".cyan
         tags = params["tags"].split(/,\s*/).to_set.to_a.map{|t| Tag.find(t.to_i)}
+        puts tags.join(", ").cyan
         rem = @featured.tags - tags
+        puts rem.join(", ").red
         add = tags - @featured.tags
+        puts add.join(", ").green
         rem.each do |t|
           FTag.where(:tag_id=>t.id,:featured_id=>@featured.id).each {|f| f.destroy}
         end
         add.each do |t|
           @featured.tags << t
         end
-        begin
+=begin
           @featured.ping(Admin.filter(@featured.filter,false).map{|c| Conflict.find(c["_id"])})
         rescue
           @featured.ping(Admin.filter("{}",false))
-        end
+=end
       rescue => e
         @error = e
         redirect url(:featureds, :edit, :id => @featured.id)
