@@ -423,10 +423,10 @@
     });
     $('#baselayers').val(bases.join(','));
     $('#features').val(JSON.stringify(data));
+    $('#tags').remove();
     $('input.conflict').not('.changed').remove();
     data = $("form.form").serializeArray();
-    data["_method"] = "put";
-    data["tags"] = tags;
+    data.push({name:"tags",value:tags})
     console.log(data)
     $.post("/featureds/update/"+window.location.pathname.split("/")[3], data, function(data) {
       data = JSON.parse(data);
