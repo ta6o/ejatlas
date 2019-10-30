@@ -289,8 +289,13 @@
           %img{:src=>'/images/icta.png',:title=>'ICTA UAB',:style=>"max-height:40px; margin-top:-8px;"}
         %a.pull-left{:href=>'http://europa.eu/',:target=>"_blank"}
           %img{:src=>'/images/eu.jpg',:title=>'European Union'}
-        %a.pull-left{:href=>'https://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>"_blank"}
-          %img{:src=>'/images/cc.png',:title=>'CC Attribution NonCommercial ShareAlike'}
+        -if I18n.locale == :it
+          %a.pull-left{:href=>'http://cdca.it',:target=>"_blank"}
+            %img{:src=>'http://cdca.it/wp-content/uploads/2015/03/logo-cdca1.png',:title=>'Centro di Documentazione
+            sui Conflitti Ambientali'}
+        -else
+          %a.pull-left{:href=>'https://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>"_blank"}
+            %img{:src=>'/images/cc.png',:title=>'CC Attribution NonCommercial ShareAlike'}
         -#
           %a#thank_fb.pull-left.clearfix{:href=>'http://www.facebook.com/sharer.php?u=http://ejatlas.org/',:target=>'_blank'}
             #img.pull-left
