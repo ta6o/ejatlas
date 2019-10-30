@@ -155,10 +155,9 @@ Admin.controllers :featureds do
       rescue => e
         @featured.ping((Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
       end
-      redirect url(:featureds, :edit, :id => @featured.id)
-      {:status=>"success",:message=>@error}
+      return {:status=>"success",:message=>@error}
     else
-      {:status=>"error",:message=>"featured map not saved"}
+      return {:status=>"error",:message=>"featured map not saved"}
     end
   end
 
