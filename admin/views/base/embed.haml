@@ -172,11 +172,11 @@
           $('#map').css('background','#{@color}')
         });
     #top
-      %a{:href=>"https://ejatlas.org",:target=>"_blank"}
+      %a{:href=>"https://#{I18n.locale == :en ? "" : "#{I18n.locale}." }ejatlas.org",:target=>"_blank"}
         .navbar.navbar-fixed-top
           .navbar-inner
             -unless @filter
               .tagline
-              %p Environmental Justice Atlas
-            .ejatlas-logo#eja-logo
+                %p= t "v.menu.environmental_justice_atlas"
+              .ejatlas-logo#eja-logo
 
