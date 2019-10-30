@@ -406,6 +406,7 @@
   }
 
   $('form.form').on('submit',function(e){
+    e.preventDefault();
     data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
     $.each($.makeArray($('ul#conti li').map(function(){return $(this).attr('id').split('-')[1]})),function(i,v){
       data.push(v)
@@ -423,6 +424,7 @@
     $('#features').val(JSON.stringify(data));
     $('#tags').val(tags);
     $('input.conflict').not('.changed').remove();
+    $('form.form').submit();
   });
 
 -unless @featured.new_record?
