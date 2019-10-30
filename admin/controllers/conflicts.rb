@@ -338,7 +338,7 @@ Admin.controllers :conflicts do
 
   post :msg_create do
     @conflict = Conflict.find(params["cid"])
-    if current_account.contributor?(@Conflict)
+    if current_account.contributor?(@conflict)
       msg = ConflictMessage.create :conflict_id => params["cid"], :account_id => params["aid"], :content => params["content"]
       Admin.notify_mod_msg msg
       return "ok"
