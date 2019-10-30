@@ -131,7 +131,6 @@ Admin.controllers :accounts do
   end
 
   put :update, :with => :id do
-
     redirect to "/sessions/login" unless current_account
     @account = Account.find(params[:id])
     #puts @account.crypted_password

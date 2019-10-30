@@ -513,9 +513,9 @@ Admin.controller do
   end
 
   get :embed do
-    ca = Cached.first
-    @markercount = Conflict.where(approval_status: 'approved').count
-    @markerinfo = ca.conflicts_marker.gsub('\\"', '"').gsub('","',',').sub(/^\["/,'[').sub(/",\]$/,']').html_safe
+    ca = Cached.where(:locale=>I18n.locale).first
+    pass unless ca
+    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/embed", :layout => false
   end

@@ -30,6 +30,7 @@
     =stylesheet_link_tag 'main-full'
     =javascript_include_tag 'jQl'
     :javascript
+      var $locale = "#{I18n.locale}";
       var attributeHash = { 
         "category_id": "#{ t "v.filter.category"}",
         "types": "#{ t "v.filter.type"}",
@@ -76,6 +77,7 @@
       };
 
       var categoryHash = #{CGI.unescapeHTML($cathash.to_json).html_safe};
+
       function resetColumns() { }
       var $locale = "#{I18n.locale}";
 
@@ -83,7 +85,7 @@
       img.src = '#{$fileurl}/static/ikon.png';
       $dir = "#{$dir}";
       $flo = $dir == "ltr" ? "left" : "right";
-      var markerinfo = #{@markerinfo};
+      var markerinfo;
       var vectorinfo = [];
       var maptitle = "#{@maptitle}";
       var layers = "#{@baselayers}";
@@ -99,9 +101,21 @@
       function onLoad() {
         if (typeof initMap === 'function' ) {
           initMap();
-          showMarkers(markerinfo);
-          updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
-          mapFit();
+          $.ajax({
+            //url: "#{$fileurl}/markers/markers-#{I18n.locale}.json",
+            url: "/data/markers-#{I18n.locale}.json",
+            type: "GET",
+            dataType: 'json',
+            cache: true,
+            success: function (data, status, error) {
+              showMarkers(data);
+              updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+              mapFit();
+            },
+            error: function (data, status, error) {
+              console.log('error', data, status, error);
+            }
+          });
         } else {
           setTimeout(onLoad,10);
         }
