@@ -155,9 +155,9 @@ Admin.controllers :featureds do
       rescue => e
         @featured.ping((Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
       end
-      return {:status=>"success",:message=>@error}
+      return {:status=>"success",:message=>@error}.to_json
     else
-      return {:status=>"error",:message=>"featured map not saved"}
+      return {:status=>"error",:message=>"featured map not saved"}.to_json
     end
   end
 
