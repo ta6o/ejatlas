@@ -516,6 +516,7 @@ Admin.controller do
     ca = Cached.where(:locale=>I18n.locale).first
     pass unless ca
     @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
+    @baselayers = $baselayers
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/embed", :layout => false
   end
