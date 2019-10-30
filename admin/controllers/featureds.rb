@@ -129,11 +129,8 @@ Admin.controllers :featureds do
       begin
         puts "featured tags...".cyan
         tags = params["tags"].split(/,\s*/).to_set.to_a.map{|t| Tag.find(t.to_i)}
-        puts tags.join(", ").cyan
         rem = @featured.tags - tags
-        puts rem.join(", ").red
         add = tags - @featured.tags
-        puts add.join(", ").green
         rem.each do |t|
           FTag.where(:tag_id=>t.id,:featured_id=>@featured.id).each {|f| f.destroy}
         end
@@ -159,9 +156,9 @@ Admin.controllers :featureds do
         @featured.ping((Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
       end
       redirect url(:featureds, :edit, :id => @featured.id)
+      {:status=>"success",:message=>@error}
     else
-      puts "featured map not saved".red
-      redirect url(:featureds, :edit, :id => @featured.id)
+      {:status=>"error",:message=>"featured map not saved"}
     end
   end
 
