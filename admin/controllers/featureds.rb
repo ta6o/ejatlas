@@ -53,7 +53,7 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
-    unless current_account and @featured and (@featured.account_id == current_account.id or current_account.editor?
+    unless current_account and @featured and (@featured.account_id == current_account.id or current_account.editor?)
       redirect to "/featureds"
     end
     @featured.description = @featured.description.gsub("\n","<br />")
