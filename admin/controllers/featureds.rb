@@ -7,7 +7,7 @@ Admin.controllers :featureds do
 
   get :index do
     @featureds = []
-    if current_account and current_Account.editor?
+    if current_account and current_account.editor?
       Featured.select("id, name, slug, description, image").find_in_batches do |batch|
         @featureds << batch
       end
