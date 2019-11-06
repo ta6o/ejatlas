@@ -331,9 +331,11 @@ Admin.controllers :featureds do
 
     name = UnicodeUtils::titlecase(params['featured']['file'][:filename].split('.')[0].gsub(/[-_]/,' '))
 
+    filt = []
     csv.each do |row|
       next unless row[0]
       conflict = Conflict.find(row[0].to_i)
+      filt << {:id=>row[0].to_s}
       features = JSON.parse(conflict.features || "{}")
       features.reject! {|k| k.match(/^#{feat.id}:/)}
       row.each_with_index do |cell,index|
@@ -355,6 +357,7 @@ Admin.controllers :featureds do
     header.delete 'name'
     features = header - tags
     feat.features = features.to_json
+
 =begin
     filter = (feat.filter || "").split('/')
     tag = filter.index{|x| x =~ /^tag~/ }
@@ -367,6 +370,8 @@ Admin.controllers :featureds do
     end
     feat.filter = filter.join('/')
 =end
+    feat.update_attribute(:filter,{"should":{"term":filt}}.to_json)
+
     feat.filterping
     feat.save
     redirect to "/featureds/edit/#{feat.id}"
