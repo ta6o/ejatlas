@@ -572,7 +572,11 @@ class Admin < Padrino::Application
     result
   end
 
-  def self.divtime si, shorten=false, detail=true
+  def self.divtime si=nil, shorten=false, detail=true
+    if si.nil?
+      puts "% divtime( seconds, [shorten=false], [detail=true] )".red
+      return nil
+    end
     if si.to_i == 0
       "no time"
     else

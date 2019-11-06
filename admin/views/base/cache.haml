@@ -40,9 +40,9 @@
         %br/
         %p
           Last updated:
-          %ul
-            -@tkeys.each do |loc|
-              -if ca = Cached.where(:locale=>loc).first
+          %ul{:style=>"padding:0;"}
+            -Cached.order("updated_at desc").each do |ca|
+              -if @tkeys.include?(ca.locale)
                 %li{:style=>"list-style-type:none;"}= "#{@iso639[loc]}: #{ca.updated_at.to_s}"
 
   :javascript
