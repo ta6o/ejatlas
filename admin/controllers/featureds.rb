@@ -95,10 +95,10 @@ Admin.controllers :featureds do
       @featured.published = false
     end
     if @featured.update_attributes!(params[:featured])
-      puts "featured map saved".green
+      #puts "featured map saved".green
       flash[:notice] = 'Featured was successfully updated.'
       if params['conflict']
-        puts "featured conflicts...".cyan
+        #puts "featured conflicts...".cyan
         params["conflict"].each do |k,v|
           conflict = Conflict.find k.split(':')[-1]
           feats = JSON.parse(conflict.features || "{}")
@@ -108,7 +108,7 @@ Admin.controllers :featureds do
         end
       end
       if params.has_key? 'images_attributes' and params['images_attributes'].any?
-        puts "featured images...".cyan
+        #puts "featured images...".cyan
         images = {}
         params['images_attributes'].each {|i,v| images["n#{i}"] = @featured.images.order(:created_at)[i.to_i]}
         pp images
@@ -127,7 +127,7 @@ Admin.controllers :featureds do
         end
       end
       begin
-        puts "featured tags...".cyan
+        #puts "featured tags...".cyan
         tags = params["tags"].split(/,\s*/).to_set.to_a.map{|t| Tag.find(t.to_i)}
         rem = @featured.tags - tags
         add = tags - @featured.tags
