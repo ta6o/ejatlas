@@ -71,10 +71,13 @@ Admin.controllers :featureds do
 =end
     begin
       @followed = JSON.parse(@featured.conflicts_marker).map{|x| Conflict.find(JSON.parse(x))}
-    rescue
+      puts @followed
+    rescue => e
       @followed = nil
+      puts e.to_s.red
+      puts e.backtrace
+      puts "...".red
     end
-    puts @followed
     @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
     @imps = ['env_impacts','hlt_impacts','sec_impacts']
