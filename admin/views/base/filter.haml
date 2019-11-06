@@ -36,7 +36,7 @@
                 -elsif options['content'] == 'auto'
                   .body.auto
                     %h4= "#{t "v.filter.#{field.shorten_en}"}"
-                    %input.autocomplete{:id=>field,:type=>'text','data-source'=>model,"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-section"=>"field",:style=>'width:100%'}
+                    %input.fautocomplete{:id=>field,:type=>'text','data-source'=>model,"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-section"=>"field",:style=>'width:100%'}
                     %ul
                 -elsif options['content'] == 'flat'
                   .body.flat
@@ -275,7 +275,7 @@
 
         (function( $ ) {
           $.ui.autocomplete.prototype.options.autoSelect = true;
-          $( "body" ).on( "blur", ".autocomplete", function( event ) {
+          $( "body" ).on( "blur", ".fautocomplete", function( event ) {
             var autocomplete = $( this ).data()['uiAutocomplete'] || $( this ).data()['ui-autocomplete'];
             if ( !autocomplete.options.autoSelect || autocomplete.selectedItem ) { return; }
             var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
@@ -285,7 +285,7 @@
                 autocomplete.selectedItem = item;
                 return false;
               } else {
-                $('.autocomplete').val('');
+                $('.fautocomplete').val('');
                 return false
               }
             });
@@ -295,11 +295,11 @@
           });
 
         }( jQuery ));
-        $( ".autocomplete" ).autocomplete({
+        $( ".fautocomplete" ).autocomplete({
           minLength: 3,
           position: { my : "left top", at: "left bottom" },
           source: function( request, response ) {
-            $source = "/ac_json/"+$(".autocomplete:focus").attr("data-source");
+            $source = "/ac_json/"+$(".fautocomplete:focus").attr("data-source");
             $.ajax({
               type: "GET",
               url: $source+'?token='+request.term,
@@ -307,7 +307,7 @@
             })
           },
           select: function( event, ui ) {
-            $item = $('.autocomplete:focus');
+            $item = $('.fautocomplete:focus');
             $item.val( "" );
             $id = $item.attr('id');
             $ul = $item.nextAll('ul')

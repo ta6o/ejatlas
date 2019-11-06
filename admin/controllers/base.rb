@@ -817,7 +817,7 @@ Admin.controller do
   get :network do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    @filterform = JSON.parse(Cached.first.filterdata)
+    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
     @page_type = "network"
     @filter = render "base/filter", :layout => false
     render 'base/network', :layout => :application
@@ -826,7 +826,7 @@ Admin.controller do
   get :graph do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    @filterform = JSON.parse(Cached.first.filterdata)
+    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
     @page_type = "graph"
     @filter = render "base/filter", :layout => false
     render 'base/network', :layout => :application
