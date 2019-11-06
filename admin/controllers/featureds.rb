@@ -29,8 +29,8 @@ Admin.controllers :featureds do
     @featured = Featured.new
     @features = []
     @page_type = "feat"
-    @filterform = JSON.parse(Cached.last.filterdata)
-    @filterinfo = Cached.last.conflicts_json
+    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
+    @filterinfo = Cached.where(:locale=>I18n.locale).first.conflicts_json
     render 'featureds/new'
   end
 
@@ -69,7 +69,7 @@ Admin.controllers :featureds do
       puts "#{@featured.name} | #{e}"
       @followed = (Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug}
     end
-    @filterform = JSON.parse(Cached.last.filterdata)
+    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
     @imps = ['env_impacts','hlt_impacts','sec_impacts']
     render 'featureds/edit'
