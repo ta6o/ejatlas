@@ -74,6 +74,7 @@ Admin.controllers :featureds do
     rescue
       @followed = nil
     end
+    puts @followed
     @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
     @imps = ['env_impacts','hlt_impacts','sec_impacts']
