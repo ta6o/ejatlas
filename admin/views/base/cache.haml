@@ -43,7 +43,9 @@
           %ul{:style=>"padding:0;"}
             -Cached.order("updated_at desc").each do |ca|
               -if @tkeys.include?(ca.locale)
-                %li{:style=>"list-style-type:none;"}= "#{@iso639[loc]}: #{ca.updated_at.to_s}"
+                %li{:style=>"list-style-type:none;"}
+                  %b= "#{@iso639[loc]}:"
+                  = "#{Admin.divtime((Time.now - ca.updated_at), false, false)} ago"
 
   :javascript
     function deselect() { $('input[type=checkbox]').attr('checked',false); }
