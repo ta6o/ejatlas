@@ -44,7 +44,7 @@
             -Cached.order("updated_at desc").each do |ca|
               -if @tkeys.include?(ca.locale)
                 %li{:style=>"list-style-type:none;"}
-                  %b= "#{@iso639[loc]}:"
+                  %b= "#{@iso639[ca.locale]}:"
                   = "#{Admin.divtime((Time.now - ca.updated_at), false, false)} ago"
 
   :javascript
