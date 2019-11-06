@@ -32,7 +32,8 @@ Admin.controllers :accounts do
   end
 
   post :resetpassword do
-    if a = Account.find_by_email(params['email'])
+    @email = params['email']
+    if a = Account.find_by_email(@email)
       Admin.password_reset(a)
     end
     render 'accounts/resetsent'
