@@ -63,11 +63,16 @@ Admin.controllers :featureds do
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
-    begin
+=begin
       @followed = (Admin.filter(@featured.filter,false).map{|i| begin Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug}
     rescue => e
       puts "#{@featured.name} | #{e}"
       @followed = (Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug}
+=end
+    begin
+      @followed = JSON.parse(@featured.conflicts_marker).map{|x| Conflict.find(JSON.parse(x))}
+    rescue
+      @followed = nil
     end
     @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
@@ -111,7 +116,7 @@ Admin.controllers :featureds do
         #puts "featured images...".cyan
         images = {}
         params['images_attributes'].each {|i,v| images["n#{i}"] = @featured.images.order(:created_at)[i.to_i]}
-        pp images
+        #pp images
         params['images_attributes'].each do |i, v|
           img = images["n#{i}"]
           #puts v
