@@ -70,7 +70,7 @@ Admin.controllers :featureds do
       @followed = (Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug}
 =end
     begin
-      @followed = JSON.parse(@featured.conflicts_marker).map{|x| Conflict.find(JSON.parse(x))}
+      @followed = JSON.parse(@featured.conflicts_marker).map{|x| Conflict.find(JSON.parse(x)["i"])}
       puts @followed
     rescue => e
       @followed = nil
