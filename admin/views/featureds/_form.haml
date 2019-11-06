@@ -306,7 +306,7 @@
         %label.control-label{:for=>'featured_published'} Published?
         %input#featured_published{:type=>"checkbox",:name=>'featured[published]',:checked=> @featured.published }
 
--unless @featured.new_record? or @followed.nil?
+-if @followed and not @featured.new_record? 
   .row.whitebox
     .col-md-8.col-md-offset-2
       .group

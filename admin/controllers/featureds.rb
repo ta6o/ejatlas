@@ -148,7 +148,7 @@ Admin.controllers :featureds do
       end
       features = JSON.parse(@featured.features || '{}')
       begin
-        puts "featured filter...".cyan
+        #puts "featured filter...".cyan
         filter = "{}"
         filter = @featured.filter if @featured.filter.length > 0
         @featured.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})

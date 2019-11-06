@@ -161,7 +161,7 @@ class Featured < ActiveRecord::Base
           name
         }.join(', ')
       end
-      #json << c.json
+      json << c.json
       marker << cmarker.to_json
       link << c.as_button(data)
     end
