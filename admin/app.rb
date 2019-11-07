@@ -633,7 +633,8 @@ class Admin < Padrino::Application
   end
 
   before do
-    puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params.keys}" unless request.path_info == "/error"
+    #puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params.keys}" unless request.path_info == "/error"
+    puts "#{request.xhr? ? "XHR ".green : ""}#{request.request_method.to_s.cyan} #{request.url.blue} FROM #{request.ip.magenta}#{current_account ? "(#{current_account.email.yellow})" : ""} ON #{request.user_agent.split(/\s+/)[-1].red} AT #{Time.now.strftime("%Y%m%d%H%M%S")[2..-1].yellow} #{ params.keys.any? ? "WITH #{params.keys.to_s.green}" : ""}" unless request.path_info == "/error"
   end
 
   post :error do
