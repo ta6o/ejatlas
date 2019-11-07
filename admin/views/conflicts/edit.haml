@@ -7,7 +7,7 @@
           = t("f.conflict.translating")
         -else
           = t("f.conflict.editing")
-        = @conflict.name
+        %b= @conflict.name
         %small
           %a{:target=>'_blank',:href=>"/conflict/#{@conflict.slug}"}= t("v.menu.view")
     .inner

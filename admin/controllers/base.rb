@@ -725,7 +725,6 @@ Admin.controller do
   get "/ac_json/:model" do
     token = params[:token]
     model = params[:model]
-    p [token, model]
     model = "country" if model == "country_of_company"
     filter = {bool:{must:[{query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}},{match:{type: model}}]}}
     res = $client.search(index: $esindex, type: "doc", body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
