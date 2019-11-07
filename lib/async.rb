@@ -1154,6 +1154,7 @@ class AsyncTask
       filterdata["meta"] = {}
       filterdata["meta"]["collaborator"] =  {:content=>'auto',:name=>"account_id",:model=>'account'}
       filterdata["meta"]["tags"] = {:content=>'auto',:name=>"tags",:model=>'tag'}
+      filterdata["meta"]["id"] = {:content=>'flat',:name=>"id"}
       #filterdata["meta"]["created"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"created_at"}
       #filterdata["meta"]["modified"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"modified_at"}
 
