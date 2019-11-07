@@ -640,7 +640,7 @@ class Admin < Padrino::Application
     color = :blue
     color = :green if current_account
     color = :magenta if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
-    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)}#{request.xhr? ? "X".cyan : " "}#{request.request_method.to_s.cyan} #{request.url.colorize(color)} FROM #{current_account ? "#{current_account.email.green}-" : ""}#{request.ip.magenta} ON #{platform.cyan} BY #{agent.cyan} #{ (params.keys.any? and request.request_method != "GET") ? "WITH #{params.keys.to_s.green}" : ""}"
+    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{request.url.colorize(color)} FROM #{current_account ? "#{current_account.email.green}-" : ""}#{request.ip.magenta} ON #{platform.cyan} BY #{agent.cyan} #{ (params.keys.any? and request.request_method != "GET") ? "WITH #{params.keys.to_s.green}" : ""}"
   end
 
   post :error do
