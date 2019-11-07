@@ -636,11 +636,11 @@ class Admin < Padrino::Application
     #puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params.keys}" unless request.path_info == "/error"
     pass if request.path_info == "/error"
     platform = request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].split(/\s+/)[-1]
-    agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*;\s*/)[0]
+    agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*[;,]\s*/)[0]
     color = :blue
     color = :green if current_account
     color = :magenta if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
-    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X ".red : "  "}#{request.request_method.to_s.cyan} #{request.url.colorize(color)} FROM #{current_account ? "#{current_account.email.green}-" : ""}#{request.ip.magenta} ON #{platform.cyan} BY #{agent.cyan} #{ params.keys.any? and request.request_method != "GET" ? "WITH #{params.keys.to_s.green}" : ""}"
+    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)}#{request.xhr? ? "X".cyan : " "}#{request.request_method.to_s.cyan} #{request.url.colorize(color)} FROM #{current_account ? "#{current_account.email.green}-" : ""}#{request.ip.magenta} ON #{platform.cyan} BY #{agent.cyan} #{ (params.keys.any? and request.request_method != "GET") ? "WITH #{params.keys.to_s.green}" : ""}"
   end
 
   post :error do
