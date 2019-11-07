@@ -635,31 +635,18 @@ class Admin < Padrino::Application
   after do
     #puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params.keys}" unless request.path_info == "/error"
     pass if request.path_info == "/error"
-    platform = request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].split(/\s+/)[-1]
-    agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*[;,]\s*/)[0]
-    color = :blue
-    color = :green if current_account
-    color = :magenta if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
-    scolor = :green
-    if response.status >= 500
-      color = :red 
-      scolor = :red 
-    elsif response.status >= 400
-      color = :yellow 
-      scolor = :yellow 
-    end
-    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{response.status.to_s.colorize(scolor)} #{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} #{current_account ? "#{current_account.email.green}" : ""}@#{request.ip.cyan}(#{platform.cyan}/#{agent.cyan})#{ (params.keys.any? and request.request_method != "GET") ? " ?#{params.keys}" : ""}"
+    Admin.log_stdout(request,response.status)
   end
 
   not_found do
-    File.open("#{Dir.home}/ejatlas.logs/404.log","a") {|f| f << "#{Time.now.to_s},#{request.xhr? ? 'XHR' : ''},#{request.env["SERVER_PROTOCOL"]},#{request.port},#{request.url},#{request.ip},#{request.referer}\n"}
+    Admin.log_stdout(request,404)
     @name = "Page not found"
     render 'base/404'
   end
 
   error do
     @name = "Error"
-    puts "ERROR #{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
+    Admin.log_stdout(request,500)
     render 'base/404'
   end
 
@@ -767,6 +754,24 @@ class Admin < Padrino::Application
     print "\rReloading"
     I18n.backend.reload!
     print "\rDone."
+  end
+
+  def self.log_stdout request, status
+    platform = request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].split(/\s+/)[-1]
+    agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*[;,]\s*/)[0]
+    color = :blue
+    color = :green if current_account
+    color = :magenta if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
+    scolor = :green
+    scolor = color if request.xhr?
+    if status >= 500
+      color = :red 
+      scolor = :red 
+    elsif status >= 400
+      color = :yellow 
+      scolor = :yellow 
+    end
+    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{status.to_s.colorize(scolor)} #{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} #{current_account ? "#{current_account.email.green}" : ""}@#{request.ip.cyan}(#{platform.cyan}/#{agent.cyan})#{ (params.keys.any? and request.request_method != "GET") ? " ?#{params.keys}" : ""}"
   end
 
   I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
