@@ -634,10 +634,11 @@ class Admin < Padrino::Application
 
   before do
     #puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params.keys}" unless request.path_info == "/error"
+    pass if request.path_info == "/error"
     if current_account
-      puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].yellow} #{request.xhr? ? "XHR ".green : "    "}#{request.request_method.to_s.cyan} #{request.url.green} FROM #{current_account.email.green}(#{request.ip.magenta}) ON #{request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[0].strip.red} #{ params.keys.any? and request.request_method != "GET" ? "WITH #{params.keys.to_s.green}" : ""}" unless request.path_info == "/error"
+      puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].yellow} #{request.xhr? ? "XHR ".green : "    "}#{request.request_method.to_s.cyan} #{request.url.green} FROM #{current_account.email.green}(#{request.ip.magenta}) ON #{request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].strip.red} #{ params.keys.any? and request.request_method != "GET" ? "WITH #{params.keys.to_s.green}" : ""}"
     else
-      puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].yellow} #{request.xhr? ? "XHR ".green : "    "}#{request.request_method.to_s.cyan} #{request.url.blue} FROM #{request.ip.magenta} ON #{request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[0].strip.red} #{ params.keys.any? and request.request_method != "GET" ? "WITH #{params.keys.to_s.green}" : ""}" unless request.path_info == "/error"
+      puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].yellow} #{request.xhr? ? "XHR ".green : "    "}#{request.request_method.to_s.cyan} #{request.url.blue} FROM #{request.ip.magenta} ON #{request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].strip.red} #{ params.keys.any? and request.request_method != "GET" ? "WITH #{params.keys.to_s.green}" : ""}"
     end
   end
 
