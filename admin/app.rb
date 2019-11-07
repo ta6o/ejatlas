@@ -639,8 +639,8 @@ class Admin < Padrino::Application
     agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*;\s*/)[0]
     color = :blue
     color = :green if current_account
-    color = :red if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
-    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1]} #{request.xhr? ? "X ".red : "  "}#{request.request_method.to_s.cyan} #{request.url.colorize(color)} FROM #{current_account ? "#{current_account.email.green}-" : ""} #{request.ip.magenta} ON #{platform.red} BY #{agent.red} #{ params.keys.any? and request.request_method != "GET" ? "WITH #{params.keys.to_s.green}" : ""}"
+    color = :magenta if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
+    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X ".red : "  "}#{request.request_method.to_s.cyan} #{request.url.colorize(color)} FROM #{current_account ? "#{current_account.email.green}-" : ""}#{request.ip.magenta} ON #{platform.cyan} BY #{agent.cyan} #{ params.keys.any? and request.request_method != "GET" ? "WITH #{params.keys.to_s.green}" : ""}"
   end
 
   post :error do
