@@ -163,7 +163,7 @@ Admin.controllers :conflicts do
           impacts[root][v].push k.split('_')[-1].to_i
           params.delete k
         else
-          puts "#{k.to_s.red}: #{v.to_s.yellow}"
+          #puts "#{k.to_s.red}: #{v.to_s.yellow}"
         end
       end
     end

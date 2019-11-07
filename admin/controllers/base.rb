@@ -661,7 +661,7 @@ Admin.controller do
   end
 
   post :filter do
-    pp params["filter"]
+    #pp params["filter"]
     if params['page_type'] == "feat"
       (Admin.filter(params["filter"]).map{|i| begin Conflict.select('id, slug, name').find(i['_id'].to_i) rescue nil end }-[nil]).sort{|a,b| a.slug <=> b.slug}.to_json
     elsif params['page_type'] == "network" or params['page_type'] == "graph"
