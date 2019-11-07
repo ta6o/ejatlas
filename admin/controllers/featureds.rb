@@ -71,12 +71,11 @@ Admin.controllers :featureds do
 =end
     begin
       @followed = JSON.parse(@featured.conflicts_marker).map{|x| Conflict.find(JSON.parse(x)["i"])}
-      puts @followed
     rescue => e
       @followed = nil
-      puts e.to_s.red
-      puts e.backtrace
-      puts "...".red
+      #puts e.to_s.red
+      #puts e.backtrace
+      #puts "...".red
     end
     @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
@@ -146,11 +145,6 @@ Admin.controllers :featureds do
         add.each do |t|
           @featured.tags << t
         end
-=begin
-          @featured.ping(Admin.filter(@featured.filter,false).map{|c| Conflict.find(c["_id"])})
-        rescue
-          @featured.ping(Admin.filter("{}",false))
-=end
       rescue => e
         @error = e
         redirect url(:featureds, :edit, :id => @featured.id)
@@ -296,6 +290,8 @@ Admin.controllers :featureds do
     header = csv.shift
     tags = header.dup
 
+    puts "TAGS".green
+
     csv.each do |row|
       row.each_with_index do |cell,index|
         if cell != '1' and cell != nil
@@ -332,6 +328,7 @@ Admin.controllers :featureds do
     name = UnicodeUtils::titlecase(params['featured']['file'][:filename].split('.')[0].gsub(/[-_]/,' '))
 
     filt = []
+    puts "FILT".green
     csv.each do |row|
       next unless row[0]
       conflict = Conflict.find(row[0].to_i)
@@ -374,6 +371,7 @@ Admin.controllers :featureds do
 
     feat.filterping
     feat.save
+    puts "FIN".cyan
     redirect to "/featureds/edit/#{feat.id}"
   end
 
