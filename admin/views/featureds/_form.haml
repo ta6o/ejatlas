@@ -36,7 +36,7 @@
                 .hero-unit
                   %p Notice: if you've added tags to cases in the CSV file, please don't forget to update the conflicts cache.
                 .inner
-                  =form_for :featured, url(:featureds, :csv, :id => @featured.id), :class => :form, :enctype => 'multipart/form-data' do |f|
+                  =form_for :featured, url(:featureds, :csv, :id => @featured.id), :class => :csv, :enctype => 'multipart/form-data' do |f|
                     %input#file{:type=>'file',:name=>'featured[file]'}
                     %br/
                     .group.navform.wat-cf
