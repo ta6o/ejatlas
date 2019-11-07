@@ -640,9 +640,27 @@ class Admin < Padrino::Application
     color = :blue
     color = :green if current_account
     color = :magenta if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
-    color = :yellow if response.status >= 400
-    color = :red if response.status >= 500
-    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{response.status.to_s.colorize(color)} #{request.url.colorize(color)} FROM #{current_account ? "#{current_account.email.green}-" : ""}#{request.ip.cyan} ON #{platform.cyan} BY #{agent.cyan} #{ (params.keys.any? and request.request_method != "GET") ? "WITH #{params.keys.to_s.green}" : ""}"
+    scolor = :green
+    if response.status >= 500
+      color = :red 
+      scolor = :red 
+    elsif response.status >= 400
+      color = :yellow 
+      scolor = :yellow 
+    end
+    puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{response.status.to_s.colorize(scolor)} #{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} FROM #{current_account ? "#{current_account.email.colorize(color)} " : ""}#{request.ip.cyan} ON #{platform.cyan} BY #{agent.cyan} #{ (params.keys.any? and request.request_method != "GET") ? "WITH #{params.keys.to_s.green}" : ""}"
+  end
+
+  not_found do
+    File.open("#{Dir.home}/ejatlas.logs/404.log","a") {|f| f << "#{Time.now.to_s},#{request.xhr? ? 'XHR' : ''},#{request.env["SERVER_PROTOCOL"]},#{request.port},#{request.url},#{request.ip},#{request.referer}\n"}
+    @name = "Page not found"
+    render 'base/404'
+  end
+
+  error do
+    @name = "Error"
+    puts "ERROR #{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM  #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params}"
+    render 'base/404'
   end
 
   post :error do
