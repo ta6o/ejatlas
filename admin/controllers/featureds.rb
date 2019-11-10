@@ -102,6 +102,7 @@ Admin.controllers :featureds do
     unless params[:featured].has_key?('published')
       @featured.published = false
     end
+    Admin.color_pp(params)
     if @featured.update_attributes!(params[:featured])
       #puts "featured map saved".green
       flash[:notice] = 'Featured was successfully updated.'
