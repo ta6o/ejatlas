@@ -23,7 +23,9 @@
         if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
           setTimeout(onLoad,10);
         } else {
-          if (markerinfo.length === 0) {
+          console.log(markerinfo.length)
+          console.log(legend)
+          if (markerinfo.length === 0 && false) {
             legend = "";
           }
           initMap();
