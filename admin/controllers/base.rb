@@ -575,7 +575,7 @@ Admin.controller do
     @description = fil.description
     @id = fil.id
     @desc = fil.description
-    @markercount = JSON.parse(@markerinfo || "[]").count
+    @markercount = data.length
     @maptitle = fil.name
     @title = fil.name
     @fid = fil.uid

@@ -85,7 +85,7 @@
       img.src = '#{$fileurl}/static/ikon.png';
       $dir = "#{$dir}";
       $flo = $dir == "ltr" ? "left" : "right";
-      var markerinfo;
+      var markerinfo = #{@markerinfo || ""};
       var vectorinfo = [];
       var maptitle = "#{@maptitle}";
       var layers = "#{@baselayers}";
@@ -101,21 +101,27 @@
       function onLoad() {
         if (typeof initMap === 'function' ) {
           initMap();
-          $.ajax({
-            //url: "#{$fileurl}/markers/markers-#{I18n.locale}.json",
-            url: "/data/markers-#{I18n.locale}.json",
-            type: "GET",
-            dataType: 'json',
-            cache: true,
-            success: function (data, status, error) {
-              showMarkers(data);
-              updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
-              mapFit();
-            },
-            error: function (data, status, error) {
-              console.log('error', data, status, error);
-            }
-          });
+          if (markerinfo == "") {
+            $.ajax({
+              //url: "#{$fileurl}/markers/markers-#{I18n.locale}.json",
+              url: "/data/markers-#{I18n.locale}.json",
+              type: "GET",
+              dataType: 'json',
+              cache: true,
+              success: function (data, status, error) {
+                showMarkers(data);
+                updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+                mapFit();
+              },
+              error: function (data, status, error) {
+                console.log('error', data, status, error);
+              }
+            });
+          } else {
+            showMarkers(markerinfo);
+            updateInfo(1,"<h3>#{@maptitle}</h3><p>#{@markercount} cases reported</p>")
+            mapFit();
+          }
         } else {
           setTimeout(onLoad,10);
         }
