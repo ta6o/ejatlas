@@ -78,6 +78,8 @@
             #img.pull-left
 
     :javascript
+      $dir = "#{$dir}";
+      $flo = $dir == "ltr" ? "left" : "right";
       function resetColumns() { }
       blocks = document.getElementsByClassName('block');
       rightWidth = parseInt(getStyle('rightpane','width').replace(/px$/,''));
