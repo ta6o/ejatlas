@@ -126,7 +126,7 @@
         $full = true;
         jQl.loadjQ('/javascripts/main.js'); 
         $(document).ready(function(){
-          window.onerror = function(message, url, lineNumber) {  
+          /*window.onerror = function(message, url, lineNumber) {  
             $.ajax({
               type: 'POST',
               url: '/error',
@@ -142,7 +142,7 @@
               }
             });
             return true;
-          };  
+          };*/  
         });
     -if @color and @color.length > 1
       :javascript

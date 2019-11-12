@@ -634,7 +634,6 @@ class Admin < Padrino::Application
 
   after do
     #puts "#{request.xhr? ? "XHR " : ""}#{request.request_method} #{request.url} FROM #{request.ip}#{current_account ? "(#{current_account.email})" : ""} ON #{request.user_agent} AT #{Time.now} WITH #{params.keys}" unless request.path_info == "/error"
-    pass if request.path_info == "/error"
     Admin.log_stdout(request,response.status,current_account,params.keys)
   end
 
