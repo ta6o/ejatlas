@@ -525,7 +525,7 @@ Admin.controller do
     ca = Cached.select(:filterdata).first
     con = Featured.find_slug(params[:slug])
     pass unless con
-    @markerinfo = con.conflicts_marker
+    @markerinfo =  JSON.parse(con.conflicts_marker).map{|x| JSON.parse(x)}.to_json.html_safe
     @load = @markerinfo.length > 60000 ? nil : con.conflicts_link
     @name = con.name
     @description = con.description
