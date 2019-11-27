@@ -1235,8 +1235,8 @@ class AsyncTask
       begin
         feat = layer.get_feature i
       rescue Exception => e
-        puts "Error in feature: #{e}"
-        next
+        puts "Error in feature: #{e} at ##{i}".red
+        next 
       end
       if i == 0 and false
         feat.get_field_count.times do |field_index|
@@ -1246,9 +1246,15 @@ class AsyncTask
           puts "field name: #{field_name.to_s.yellow}"
         end
       end
-      next unless feat
+      unless feat
+        puts "No feature found at ##{i}".red
+        next 
+      end
       geom = feat.get_geometry_ref
-      next unless geom
+      unless geom
+        puts "No geometry found ##{i}".red
+        next 
+      end
       geom.flatten_to_2d
       begin
         id = feat.get_field("feature_id").to_i.to_s

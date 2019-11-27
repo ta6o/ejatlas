@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 
 gem 'rake'
 gem 'sinatra-flash'
-
 gem 'bcrypt'
 gem 'haml'
 gem 'activerecord'
@@ -23,11 +22,7 @@ gem 'rodf'
 gem "rmagick"
 gem 'google_drive'
 gem 'colorize'
-
+gem 'gdal'
+gem 'puma'
 gem 'padrino'
-
-if ENV["RACK_ENV"] == "production"
-  gem 'gdal'
-  gem 'puma'
-end
 
