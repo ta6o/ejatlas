@@ -612,12 +612,9 @@ Admin.controller do
 
   get :cache do
     redirect to "/sessions/login?return=cache" unless current_account
-    puts current_account.email
-    puts current_account.role
     redirect back unless ["admin","editor"].include? current_account.role
     Admin.fetch_translations(false) if $tstatus.nil?
     @tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort - ["master"]
-    puts @tkeys.join.yellow
     @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! @tkeys.include?(x)}
     render 'base/cache', :layout => :application
   end

@@ -14,7 +14,7 @@
         -@jobs.each do |j|
           -method_name = j.payload_object.method_name
           -arguments = j.payload_object.args
-          -run_by = arguments[0] and arguments[0].is_a?(Hash) and arguments[0].has_key? "run_by" ? arguments[0].delete("run_by") : "system"
+          -run_by = (arguments[0] and arguments[0].is_a?(Hash) and arguments[0].has_key? "run_by") ? arguments[0].delete("run_by") : "system"
           %tr
             %td
               %strong= {:backup_without_delay=>'Backup',:odsexport_without_delay=>'ODS Export',:csvexport_without_delay=>'CSV Export',:export_companies_without_delay=>'Companies Export',:setcache_without_delay=>'Cache update',:vectorupload_without_delay=>'Vector Processing',:parsedata_without_delay=>'CSV Parsing'}[method_name]

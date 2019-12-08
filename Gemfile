@@ -22,7 +22,9 @@ gem 'rodf'
 gem "rmagick"
 gem 'google_drive'
 gem 'colorize'
-gem 'gdal'
-gem 'puma'
 gem 'padrino'
 
+if ENV["RACK_ENV"] == "production"
+  gem 'gdal'
+  gem 'puma'
+end
