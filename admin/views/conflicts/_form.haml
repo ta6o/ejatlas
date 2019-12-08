@@ -207,7 +207,7 @@
             %select.basic_input#conflict_category_id{:name=>"conflict[category_id]"}
               %option
               -$categories.each do |c|
-                %option{:value=>c.id,:selected=>c.id==@conflict.category_id}=t("m.category_id.#{c.name.slug("_").split("_")[0..7].join("_")}")
+                %option{:title=>t("help.category.#{c.name.shorten_en}"),:value=>c.id,:selected=>c.id==@conflict.category_id}=t("m.category_id.#{c.name.slug("_").split("_")[0..7].join("_")}")
 
 
         .col-md-6
@@ -509,7 +509,7 @@
           %select.basic_input#conflict_status_id{:name=>"conflict[status_id]"}
             %option
             -$statuses.each do |c|
-              %option{:value=>c.id,:selected=>c.id==@conflict.status_id}=t("m.status_id.#{c.name.slug("_").split("_")[0..7].join("_")}")
+              %option{:title=>t("help.status_id.#{c.name.shorten_en}"),:value=>c.id,:selected=>c.id==@conflict.status_id}=t("m.status_id.#{c.name.slug("_").split("_")[0..7].join("_")}")
 
 
           .group
@@ -519,7 +519,7 @@
           %select.basic_input#conflict_reaction_id{:name=>"conflict[reaction_id]"}
             %option
             -$reactions.each do |c|
-              %option{:value=>c.id,:selected=>c.id==@conflict.reaction_id}=t("m.reaction_id.#{c.name.slug("_").split("_")[0..7].join("_")}")
+              %option{:title=>t("help.reaction_id.#{c.name.shorten_en}"),:value=>c.id,:selected=>c.id==@conflict.reaction_id}=t("m.reaction_id.#{c.name.slug("_").split("_")[0..7].join("_")}")
 
 
           -unless @conflict.new_record?
@@ -565,7 +565,7 @@
                     %tr
                   %td.third
                     %input{:type=>'checkbox',:name=>'mobilizing_group_'+p.id.to_s,:id=>'mobilizing_group_'+p.id.to_s,:class=>'mustcheck mobilizing_group_cb'}
-                    %label= t("m.mobilizing_groups.#{p.name.slug("_").split("_")[0..7].join("_")}")
+                    %label{:title=>t("help.mobilizing_groups.#{p.name.shorten_en}")}= t("m.mobilizing_groups.#{p.name.slug("_").split("_")[0..7].join("_")}")
             =f.text_area :other_mobilizing_groups, :class => 'text_area', :rows=>1, :id => :other_mobilizing_groups
             :javascript
               $('#mobilizing_group_21').change(function(){
@@ -592,7 +592,7 @@
                     %tr
                   %td.third
                     %input{:type=>'checkbox',:name=>'mobilizing_form_'+p.id.to_s,:id=>'mobilizing_form_'+p.id.to_s,:class=>'mustcheck mobilizing_form_cb'}
-                    %label= t("m.mobilizing_forms.#{p.name.slug("_").split("_")[0..7].join("_")}")
+                    %label{:title=>t("help.mobilizing_forms.#{p.name.shorten_en}")}= t("m.mobilizing_forms.#{p.name.slug("_").split("_")[0..7].join("_")}")
             =f.text_area :other_mobilizing_forms, :class => 'text_area', :rows=>1, :id => :other_mobilizing_forms
             :javascript
               $('#mobilizing_form_28').change(function(){
@@ -816,15 +816,15 @@
               %tbody
                 %tr
                   %td
-                    %label.inline.suc_lvl
+                    %label.inline.suc_lvl{:title=>t("help.success_level.ej_success")}
                       %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'0',:name=>'conflict[success_level]'}=" &nbsp;#{t("f.conflict.yes")}".html_safe
                 %tr
                   %td
-                    %label.inline.suc_lvl
+                    %label.inline.suc_lvl{:title=>t("help.success_level.ej_failure")}
                       %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'2',:name=>'conflict[success_level]'}=" &nbsp;#{t("f.conflict.no")}".html_safe
                 %tr
                   %td
-                    %label.inline.suc_lvl
+                    %label.inline.suc_lvl{:title=>t("help.success_level.not_sure")}
                       %input.local_disable.mustcheck.suclvl{:type=>'radio',:value=>'1',:name=>'conflict[success_level]'}=" &nbsp;#{t("f.conflict.not_sure")}".html_safe
             -if suclvl = @conflict.success_level
               :javascript
@@ -849,7 +849,7 @@
                     %tr
                   %td.half
                     %input{:type=>'checkbox',:name=>'conflict_event_'+p.id.to_s,:id=>'conflict_event_'+p.id.to_s,:class=>'mustcheck conflict_event_cb'}
-                    %label= t("m.conflict_events.#{p.name.slug("_").split("_")[0..7].join("_")}")
+                    %label{:title=>t("help.conflict_events.#{p.name.shorten_en}")}= t("m.conflict_events.#{p.name.slug("_").split("_")[0..7].join("_")}")
             ~f.text_area :other_outcomes, :class => 'text_area', :rows=>1, :id => 'other_outcomes'
             :javascript
               $('#conflict_event_26').change(function(){

@@ -958,4 +958,10 @@ Admin.controller do
     render 'base/sitemap', :layout => :application
   end
 
+=begin
+  get "/help/:scope/:unit" do
+    I18n.t("help.#{params[:scope]}.#{params[:unit]}")
+  end
+=end
+
 end
