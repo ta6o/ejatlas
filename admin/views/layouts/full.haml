@@ -96,9 +96,10 @@
                   %b.caret
                 %ul.dropdown-menu
                   -if @featureds and @featureds.any?
-                    -@featureds.each do |feat|
+                    -@featureds.reverse.each do |feat|
                       %li
                         %a{:href=>"/featured/#{feat.slug}"}= feat.name
+                    %li.divider
                     %li
                       %a{:href=>'/featured'}= t "v.menu.see_all_featured_maps"
                     %li.divider
