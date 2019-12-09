@@ -1370,7 +1370,6 @@
             -if current_account and current_account.editor?
               %label.checkbox.inline.apstat
                 -approvable = (@conflict.name.exists? and @conflict.description.exists? and @conflict.category_id.exists? and @conflict.country_id.exists? and ((@conflict.lat.exists? and @conflict.lon.exists?) or @conflict.general == true))
-                -puts approvable
                 %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]',:disabled=> !approvable }=" &nbsp;#{t("f.conflict.approved")}".html_safe
             -if apstat = @conflict.approval_status and current_account
               -apstat = 'modified' if apstat == 'approved' and not current_account.editor?

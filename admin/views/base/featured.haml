@@ -1,0 +1,52 @@
+:css
+  .feat {
+    height: 200px;
+    overflow-y: hidden;
+    margin-top:12px;
+  }
+  .image {
+    vertical-align: top;
+    margin: 0 12px 12px;
+    width: 80px;
+    float: left;
+  }
+  .image a .img {
+    width:80px;
+    height:60px;
+    background-size: cover !important;
+    background: url('/images/bg.png');
+  }
+  .exp {
+    vertical-align:top;
+    padding:0 0 0 12px;
+  }
+  .exp h4 {
+    margin:0px;
+    margin-bottom: 12px;
+    font-size:18px;
+  }
+  .exp p {
+    margin:0;
+    padding:0;
+    font-size:12px;
+    line-height:16px;
+  }
+
+%br/
+%h1= t "v.index.featured_maps"
+%br/
+.row 
+  .content
+    -@feats.each do |c|
+      .col-sm-12.col-md-4.col-lg-4
+        .clearfix.feat
+          .image
+            %a{:href=>"/featured/#{c.slug}"}
+              -if c.images.where(:prime=>true).any?
+                .img{:style=>"background:url('#{c.images.where(:prime=>true).first.file.thumb.url}');background-repeat:no-repeat;background-size:contain;"}
+              -else
+                .img{:style=>(c.images.any? ? "background:url('#{c.images.order("updated_at desc").first.file.thumb.url}');background-repeat:no-repeat;background-size:contain;" : "")}
+          .exp
+            %h4
+              %a{:href=>"/featured/#{c.slug}"}= c.name
+            %p=c.headline

@@ -473,15 +473,15 @@ class Admin < Padrino::Application
   end
 
   def self.filter_recent offset=0, query={}, size=6
-    puts query.to_json.green
+    #puts query.to_json.green
     if query.length > 0
       filter = Admin.elasticify( { bool: { must: [ { match: { approval_status: "approved" }}, {bool: query}]}} )
     else
       filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     end
-    Admin.color_pp(filter)
+    #Admin.color_pp(filter)
     result = $client.search(index: "#{$esindex}_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
-    pp result.map{|x|x["name"]}
+    #pp result.map{|x|x["name"]}
     result
   end
 

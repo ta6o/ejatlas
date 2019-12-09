@@ -660,7 +660,7 @@ Admin.controllers :conflicts do
         @conflict.commented = false;
 
         begin
-          if @conflict.save :validate=>false
+          if @conflict.save! :validate=>false
             flash[:notice] = 'Conflict was successfully saved.'
             #puts current_account.role.yellow
             if ['admin','editor'].include?(current_account.role)

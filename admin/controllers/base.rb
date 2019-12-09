@@ -158,7 +158,7 @@ Admin.controller do
     @filter = render "base/filter", :layout => false
     @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
     countries = ca.countries ? JSON.parse(ca.countries) : []
-    companies = ca.companies ? JSON.parse(ca.companies)[0..100] : []
+    companies = ca.companies ? JSON.parse(ca.companies) : []
     commodities = ca.commodities ? JSON.parse(ca.commodities) : []
     types = ca.types ? JSON.parse(ca.types) : []
     @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
@@ -252,6 +252,8 @@ Admin.controller do
     @markerinfo = ca.conflicts_marker
     @filterinfo = ca.conflicts_json
     info = eval("JSON.parse(ca.#{browseinfo[params[:model]]})")
+    puts params[:model].to_s.yellow
+    puts info.to_s.magenta
     @browseinfo = {params[:model] => info}
     @name = I18n.t("f.menu.#{browseinfo[params[:model]]}")
     @maptitle = "Browse #{@name}"
@@ -449,6 +451,11 @@ Admin.controller do
     @maptitle = "Environmental Conflicts of #{@name}"
     @baselayers = $baselayers
     render "base/front", :layout => @layout
+  end
+
+  get :featured do
+    @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("created_at desc")
+    render "base/featured", :layout => "application"
   end
 
   get :featured, :with => :slug do
@@ -752,7 +759,6 @@ Admin.controller do
   end
 
   get :more_recent do
-    p params
     result = []
     Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true)).each do |c|
       j = {"conflict"=>c}
