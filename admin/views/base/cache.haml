@@ -5,9 +5,9 @@
       .col-md-3.col-md-offset-3.clearfix
         %h2 Cache update
         %p Check the models you wish to update.
-        %input.index{:type=>'checkbox',:name=>'filter',:checked=>true} &nbsp;  Filter
-        %br/
         %input.index{:type=>'checkbox',:name=>'conflicts',:checked=>true} &nbsp;  Conflicts
+        %br/
+        %input{:type=>'checkbox',:name=>'categories',:checked=>true} &nbsp;  Categories (2nd level)
         %br/
         %input.index{:type=>'checkbox',:name=>'countries',:checked=>true} &nbsp;  Countries
         %br/
@@ -17,7 +17,7 @@
         %br/
         %input{:type=>'checkbox',:name=>'commodities',:checked=>true} &nbsp;  Commodities
         %br/
-        %input{:type=>'checkbox',:name=>'categories',:checked=>true} &nbsp;  Categories (2nd level)
+        %input.index{:type=>'checkbox',:name=>'filter',:checked=>true} &nbsp;  Filter
         %br/
         %input{:type=>'checkbox',:name=>'featureds',:checked=>true} &nbsp;  Featured Maps
         %br/

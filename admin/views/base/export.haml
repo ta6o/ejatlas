@@ -2,9 +2,12 @@
 .content
   %form{:method=>'POST',:action=>'/export'}
     .row
-      .col-md-6.col-md-offset-3.clearfix
+      .col-md-10.col-md-offset-2.clearfix
         %h2 Export cases
-        %p You can filter cases by approval status.
+    .row
+      .col-md-4.col-md-offset-2.clearfix
+        %label Approval status
+        %br/
         %input{:type=>'checkbox',:name=>'approved',:checked=>true} &nbsp; Approved
         %br/
         %input{:type=>'checkbox',:name=>'modified',:checked=>true} &nbsp; Modified
@@ -15,40 +18,43 @@
         %br/
         %input{:type=>'checkbox',:name=>'deleted',:checked=>false} &nbsp; Deleted
         %br/
-        .row
-          .col-md-4
-            %label Order
-            %select{:name=>'order'}
-              -{"id"=>"ID", "slug"=>"Slug", "created_at"=>"Date of creation", "updated_at"=>"Date of modification", "start_datestamp"=>"Start date", "end_datestamp"=>"End date", "approval_status"=>"Approval status", "contributor"=>"Contributor", "status_id"=>"Intensity of conflict", "reaction_id"=>"Reactionary stage", "project_status_id"=>"Project status", "success_level"=>"Success level", "accuracy_level"=>"Accuracy of location", "project_area"=>"Project area", "investment_sum"=>"Level of investment", "affected_people"=>"Affected population"}.each do |k,v|
-                %option{:value=>k}= v
-            %br/
-            %br/
-            %input{:type=>'radio',:name=>'ascdsc',:value=>'asc',:checked=>true} &nbsp; Ascending
-            %br/
-            %input{:type=>'radio',:name=>'ascdsc',:value=>'desc',:checked=>false} &nbsp; Descending
-            %br/
-            %label Limit
-            %input{:type=>'number',:name=>'limit',:style=>'width:40px !important'}
-            %br/
-            %br/
-            %label Filter
-            %input{:type=>'text',:name=>'filter',:style=>'width:40px !important',:maxlength=>6}
-            %br/
-            %br/
-            %label File type
-            %br/
-            %input{:type=>'radio',:name=>'filetype',:value=>'ods',:checked=>true} &nbsp; ODS
-            %br/
-            %input{:type=>'radio',:name=>'filetype',:value=>'csv',:checked=>false} &nbsp; CSV
-            %br/
+        %label Order by
+        %select{:name=>'order'}
+          -{"id"=>"ID", "slug"=>"Slug", "created_at"=>"Date of creation", "updated_at"=>"Date of modification", "start_datestamp"=>"Start date", "end_datestamp"=>"End date", "approval_status"=>"Approval status", "contributor"=>"Contributor", "status_id"=>"Intensity of conflict", "reaction_id"=>"Reactionary stage", "project_status_id"=>"Project status", "success_level"=>"Success level", "accuracy_level"=>"Accuracy of location", "project_area"=>"Project area", "investment_sum"=>"Level of investment", "affected_people"=>"Affected population"}.each do |k,v|
+            %option{:value=>k}= v
+        %input{:type=>'radio',:name=>'ascdsc',:value=>'asc',:checked=>true} &nbsp; Ascending
         %br/
-        %input.btn.btn-warning{:type=>'submit',:value=>'Export conflicts'}
+        %input{:type=>'radio',:name=>'ascdsc',:value=>'desc',:checked=>false} &nbsp; Descending
+      .col-md-4
+        %label Limit
+        %input{:type=>'number',:name=>'limit',:style=>'width:40px !important'}
+        %br/
+        %br/
+        -#
+          %label Filter
+          %input{:type=>'text',:name=>'filter',:style=>'width:40px !important',:maxlength=>6}
+          %br/
+          %br/
+
+        %input{:type=>'checkbox',:name=>'split',:checked=>true} &nbsp; Split values to columns
+        %br/
+        %br/
+        %label File type
+        %br/
+        %input{:type=>'radio',:name=>'filetype',:value=>'ods',:checked=>true} &nbsp; ODS
+        %br/
+        %input{:type=>'radio',:name=>'filetype',:value=>'csv',:checked=>false} &nbsp; CSV
+        %br/
+    .row
+      .col-md-4.col-md-offset-4.clearfix
+        %br/
+        %input.btn.btn-warning{:type=>'submit',:value=>'Export conflicts',:style=>"width:100%;"}
 
   %hr
   %form{:method=>'POST',:action=>'/export_companies'}
     .row
-      .col-md-6.col-md-offset-3.clearfix
+      .col-md-4.col-md-offset-4.clearfix
         %h2 Export companies
         %br/
-        %input.btn.btn-warning{:type=>'submit',:value=>'Export companies'}
+        %input.btn.btn-warning{:type=>'submit',:value=>'Export companies',:style=>"width:100%;"}
 

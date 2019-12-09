@@ -1,5 +1,13 @@
 -# coding: utf-8
 -content_for :include do
+  :css
+    a.sort { 
+      cursor: pointer; 
+      font-weight: bold;
+      display: block;
+      margin: -12px 0 8px 20px;
+      font-size: 12px;
+    }
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';
@@ -172,20 +180,23 @@
     .content{:style=>'display:none;'}
       -@browseinfo.each do |k,v|
         .horipane.browse
-          .title{:style=>'background:transparent'}= t "v.index.by_#{k.slug}"
+          .title{:style=>'background:transparent'}
+            = t "v.index.by_#{k.slug}"
           .content{:style=>'display:none;'}
             %div{:id=>"browse#{k}"}
-              %ul.columns
-                -v.each do |c|
-                  -j = JSON.parse c[0]
-                  -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
-                  -if k == "company"
-                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-                  -elsif k == "country"
-                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-                  -else
-                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-
+              %a.sort.count{:onclick=>"toggle_browse('#{k}','alpha')"}= "A > Z" #t("v.index.sort_alphabetically").downcase
+              %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= "9 > 1" #t("v.index.sort_by_frequency").downcase
+              -v.each_with_index do |vv,ii|
+                %ul.columns{:class=>ii==0 ? "count" : "alpha", :style=>ii==0 ? "" : "display:none;"}
+                  -vv.each do |c|
+                    -j = JSON.parse c[0]
+                    -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
+                    -if k == "company"
+                      %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                    -elsif k == "country"
+                      %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                    -else
+                      %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
 
   -#.horipane
@@ -253,6 +264,8 @@
 
 -content_for :body_end do
   :javascript
+    $page_query = "{}";
+    $query = $page_query;
     $(document).ready(function(){
       $('#help').on('click',function(){
         $('#welcome').modal('show');
@@ -337,6 +350,15 @@
         ask();
       }
     }
+    function toggle_browse(type,sort) {
+      $("#browse"+type+" a.sort").hide();
+      $("#browse"+type+" a.sort."+sort).show();
+      $("#browse"+type+" > ul.columns").slideUp(200,function(){
+        $("#browse"+type+" > ul.columns."+sort).slideDown(400);
+      });
+      resetColumns();
+    }
+
     function resetColumns() {
       columns = $('.browse .title.active').next('.content').find('.columns');
       if (columns.length > 0) {
@@ -348,14 +370,14 @@
     }
     function ask() {
       if(!scrolling) return
-      $.getJSON("/more_recent","offset="+$('.recent tr').length,function(data){
+      $.getJSON("/more_recent","offset="+$('.recent tr').length+"&filter="+$query,function(data){
         if (data.length < 6) {
           scrolling = false;
         }
         $.each(data,function(i,n) {
           n = n.conflict
           if ($('#recent_'+n.id).length == 0){
-            row = "<tr class='block conflict-button' data-id="+n.id+" data-width='360' id='recent_"+n.id+"'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><p><strong><a href='/conflict/"+n.slug+"'>"+n.name+"</a></strong></p><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+n.headline+"</p></td></tr>"
+            row = "<tr class='block conflict-button' data-id="+n.id+" data-width='360' id='recent_"+n.id+"'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><p><strong><a href='/conflict/"+n.slug+"'>"+n.name+"</a></strong></p><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+(typeof n.headline == "undefined" ? "" : n.headline)+"</p></td></tr>"
             $('tbody.recent').append(row);
           }
         });

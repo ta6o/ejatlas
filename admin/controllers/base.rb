@@ -280,6 +280,7 @@ Admin.controller do
     end
     @name = I18n.t("countries.#{con.name.shorten_en}")
     @description = con.description
+    @qt = "country_id"
     @id = con.id
     @desc = con.description
     @markercount = con.conflicts_count
@@ -316,6 +317,7 @@ Admin.controller do
     end
     @name = con.name
     @description = con.description
+    @qt = "companies"
     @id = con.id
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
@@ -344,6 +346,7 @@ Admin.controller do
     end
     @name = con.name
     @description = con.description
+    @qt = "supporters"
     @id = con.id
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
@@ -372,6 +375,7 @@ Admin.controller do
       end
     end
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
+    @qt = "products"
     @id = con.id
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
@@ -399,6 +403,7 @@ Admin.controller do
     end
     @name = I18n.t("m.types.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @description = con.description
+    @qt = "types"
     @id = con.id
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
@@ -747,8 +752,9 @@ Admin.controller do
   end
 
   get :more_recent do
+    p params
     result = []
-    Admin.filter_recent(params[:offset]).each do |c|
+    Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true)).each do |c|
       j = {"conflict"=>c}
       begin 
         j["conflict"]["image"] = Conflict.find(c["id"]).images.first.file.thumb.url
@@ -835,13 +841,11 @@ Admin.controller do
   end
 
   post :export do
-    pp params
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     if params.has_key?("filter") and params["filter"].length == 6 and flt = Filter.find_by_uid(params.delete("filter"))
       params["idset"] = Admin.filter(flt.query).map {|x| x["_id"]}
     end
-    puts params
     params.delete("filter")
     params["locale"] = I18n.locale
     params["run_by"] = current_account.name
@@ -893,26 +897,33 @@ Admin.controller do
     redirect to "/sessions/login?return=jobs" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     @jobs = Delayed::Job.all
+    @exports = []
     if ENV["RACK_ENV"] == "production"
-      @exports = []
       Dir.foreach("/mnt/data/exports").sort.reverse.each do |file|
         next if file.match(/^\./)
         @exports << [file, File.size("/mnt/data/exports/#{file}")]
       end
-    elsif File.directory? "/tmp/export"
-      @exports = Dir.foreach("/tmp/export").to_a - [".",".."]
+    elsif File.directory? "#{$filedir}/../exports"
+      Dir.foreach("#{$filedir}/../exports").sort.reverse.each do |file|
+        next if file.match(/^\./)
+        @exports << [file, File.size("#{$filedir}/../exports/#{file}")]
+      end
     end
     render 'base/jobs', :layout => :application
   end
 
   get :exports, :with => :fn do
-    pp params
-    redirect back unless ENV["RACK_ENV"] === "production"
     redirect to "/sessions/login?return=jobs" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    file = "/mnt/data/exports/#{params["fn"]}"
-    redirect back unless File.exists?(file)
-    return send_file( file )
+    if ENV["RACK_ENV"] == "production"
+      file = "/mnt/data/exports/#{params["fn"]}"
+      redirect back unless File.exists?(file)
+      return send_file( file )
+    else
+      file = "#{$filedir}/../exports/#{params["fn"]}"
+      redirect back unless File.exists?(file)
+      return send_file( file )
+    end
   end
 
   get :not_authorized do

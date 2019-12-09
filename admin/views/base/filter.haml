@@ -347,6 +347,7 @@
     };
 
     function clearFilter(){
+      $query = "{}";
       $('.root.dropbox *').not('icon').detach();
       if (typeof map != 'undefined') {
         $('.map_icon').show();
@@ -407,6 +408,7 @@
       })
     }
     function sendFilter(data,page_type) {
+      $query = data.data.split("&")[0].substr(7);
       $.ajax({
         type: "POST",
         url: "/filter",
@@ -443,6 +445,9 @@
             }
           } else {
             filterMarkers(data);
+            $('.recent tr').remove();
+            scrolling = true;
+            ask();
           }
         }
       })

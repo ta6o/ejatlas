@@ -356,6 +356,9 @@ function initMap () {
       $(this).next('.content').slideUp();
       $(this).removeClass('active');
     } else {
+      if($(this).closest(".horipane").hasClass('browse')){
+        $(this).closest(".horipane").find('.content').slideUp();
+      }
       $(this).next('.content').slideDown();
       $(this).addClass('active');
       if ($(this).next('.content').find('.columns').length > 0) resetColumns();
@@ -788,6 +791,13 @@ function getBack() {
 }
 
 function toggleLegend(id,vis) {
+  $('.recent tr').remove();
+  scrolling = true;
+  if ($page_query == "{}") {
+    $query = '{"must":{"term":{"category_id":"'+id+'"}}}';
+  } else {
+    $query = '{"must":[{"term":'+$page_query+'},{"term":{"category_id":"'+id+'"}}]}';
+  }
   ours = $('.legend .map-icon.i_'+id);
   mics = $('.leaflet-marker-icon.i_'+id);
   if (vis) {
@@ -797,10 +807,18 @@ function toggleLegend(id,vis) {
     ours.addClass('vis').removeClass('hid');
     mics.show();
   }
+  ask();
 }
 
 function setLegend(id) {
+  $('.recent tr').remove();
+  scrolling = true;
   if (parseInt(id) > 0) {
+    if ($page_query == "{}") {
+      $query = '{"must":{"term":{"category_id":"'+id+'"}}}';
+    } else {
+      $query = '{"must":[{"term":'+$page_query+'},{"term":{"category_id":"'+id+'"}}]}';
+    }
     ours = $('.legend .map-icon.i_'+id);
     mics = $('.leaflet-marker-icon.i_'+id);
     $('.legend .map-icon').addClass('hid').removeClass('vis');
@@ -808,11 +826,13 @@ function setLegend(id) {
     ours.addClass('vis').removeClass('hid');
     mics.show();
   } else {
+    $query = '{"should":{"term":'+$page_query+'}}';
     ours = $('.legend .map-icon');
     mics = $('.leaflet-marker-icon');
     ours.removeClass('hid').addClass('vis');
     mics.show();
   }
+  ask();
 }
 
 function choropleth(varname) {

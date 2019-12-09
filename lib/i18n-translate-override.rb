@@ -55,5 +55,17 @@ class String
     ["a","and","of","the"].each{|d| words.delete(d)} if words.length > 3
     words[0..4].join("_")
   end
+  def exists?
+    return false if self.nil?
+    return false if self == ""
+    true
+  end
+end
+
+class Integer
+  def exists?
+    return false if self.nil?
+    true
+  end
 end
 

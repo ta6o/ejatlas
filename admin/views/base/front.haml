@@ -18,6 +18,9 @@
           markerinfo.push(e)
         }
       })
+      onLoad();
+    })
+    function onLoad() {
       if (typeof initMap === 'function' ) {
         initMap();
         showMarkers(markerinfo);
@@ -26,7 +29,7 @@
       } else {
         setTimeout(onLoad,10);
       }
-    })
+    }
 
 .front
   %svg{:style=>'height:0'}
@@ -100,7 +103,7 @@
               %tr
                 %td.icon
                   .vis.map-icon.i_4
-                %td.desc.i_4= t("m.category_id.biomass_and_land_conflicts_forests_agriculture_fisheries_and_livestock_management").gsub(/\([^\)]+\)/,"").strip
+                %td.desc.i_4= t("m.category_id.biomass_and_land_conflicts_forests_agriculture_fisheries_and").gsub(/\([^\)]+\)/,"").strip
               %tr
                 %td.icon
                   .vis.map-icon.i_5
@@ -150,6 +153,47 @@
         -else
           .clearfix#disclaimer
             %h2{:style=>"margin-top:0"}= @maptitle
-            =@load.html_safe
+            %table
+              %tbody.recent
           -#.clearfix
             %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
+
+-content_for :body_end do
+  :javascript
+    scrolling = true;
+    $page_query = '{"#{@qt}":"#{@id}"}';
+    $query = '{"should":{"term":'+$page_query+'}}';
+    function fillWithCases() {
+      if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
+        $('body').css('cursor','wait');
+        ask();
+      }
+    }
+    function ask() {
+      if(!scrolling) return
+      $.getJSON("/more_recent","offset="+$('.recent tr').length+"&filter="+$query,function(data){
+        if (data.length < 6) {
+          scrolling = false;
+        }
+        $.each(data,function(i,n) {
+          n = n.conflict
+          if ($('#recent_'+n.id).length == 0){
+            row = "<tr class='block conflict-button' data-id="+n.id+" data-width='360' id='recent_"+n.id+"'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><p><strong><a href='/conflict/"+n.slug+"'>"+n.name+"</a></strong></p><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+(typeof n.headline == "undefined" ? "" : n.headline)+"</p></td></tr>"
+            $('tbody.recent').append(row);
+          }
+        });
+        dragEnd();
+        $('body').css('cursor','auto');
+        fillWithCases();
+      })
+    }
+    $(document).ready(function(){
+      fillWithCases();
+      $('#rightpane').scroll(function() {
+        if(!scrolling) return
+        if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
+          $('body').css('cursor','wait');
+          ask();
+        }
+      });
+    })

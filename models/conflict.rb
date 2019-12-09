@@ -524,7 +524,7 @@ class Conflict < ActiveRecord::Base
         when :link
           cnt = eval va[1]+'.'+va[2]
           if va[2] == "country"
-            ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+I18n.t("countries.#{cnt.name.slug('_')}",:locale=>loc)+'</a></td></tr>' unless cnt.nil? or cnt == ''
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+I18n.t("countries.#{cnt.name.shorten_en}",:locale=>loc)+'</a></td></tr>' unless cnt.nil? or cnt == ''
           else
             ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+cnt.name.to_s+'</a></td></tr>' unless cnt.nil? or cnt == ''
           end

@@ -95,19 +95,33 @@ class AsyncTask
       end
       mania.each do |many, val|
         va = [conf.id]
-        header << "#{many.to_s}" if index == 0
-        at = []
-        many.order(:id).each do |m|
-          if m.conflicts.include? conf
-            at << m.name
-            va << "1"
-          else
-            va << "0"
+        if params.has_key?("split")
+          many.order(:id).each do |m|
+            header << "#{many.to_s}: #{m.name}" if index == 0
+            if m.conflicts.include? conf
+              line << 1
+              va << "1"
+            else
+              line << 0
+              va << "0"
+            end
+            nfields += 1
           end
+        else
+          header << "#{many.to_s}" if index == 0
+          at = []
+          many.order(:id).each do |m|
+            if m.conflicts.include? conf
+              at << m.name
+              va << "1"
+            else
+              va << "0"
+            end
+          end
+          line << at.join(":::")
+          nfields += 1
         end
         val << va
-        line << at.join(":::")
-        nfields += 1
       end
       [Company,Supporter].each do |mod|
         rel = mod.to_s.downcase
@@ -139,25 +153,45 @@ class AsyncTask
       end
       imps.each do |imp,val|
         va = [conf.id]
-        header << imp.to_s if index == 0
-        at = []
-        imp.order(:id).each do |m|
-          if m.conflicts.include? conf
-            cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
-            if cm.visible
-              at << "#{m.name} (V)"
-              va << "V"
+        if params.has_key?("split")
+          imp.order(:id).each do |m|
+            header << "#{imp.to_s}: #{m.name}" if index == 0
+            if m.conflicts.include? conf
+              cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+              if cm.visible
+                line << "V"
+                va << "V"
+              else
+                line << "P"
+                va << "P"
+              end
             else
-              at << "#{m.name} (P)"
-              va << "P"
+              line << 0
+              va << ""
             end
-          else
-            va << ""
+            nfields += 1
           end
+        else
+          header << imp.to_s if index == 0
+          at = []
+          imp.order(:id).each do |m|
+            if m.conflicts.include? conf
+              cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+              if cm.visible
+                at << "#{m.name} (V)"
+                va << "V"
+              else
+                at << "#{m.name} (P)"
+                va << "P"
+              end
+            else
+              va << ""
+            end
+          end
+          line << at.join(":::")
+          nfields += 1
         end
         val << va
-        line << at.join(":::")
-        nfields += 1
       end
       ['references','legislations','weblinks','medialinks'].each do |rel|
         #puts 
@@ -426,19 +460,33 @@ class AsyncTask
       end
       mania.each do |many, val|
         va = [conf.id]
-        header << "#{many.to_s}" if index == 0
-        at = []
-        many.order(:id).each do |m|
-          if m.conflicts.include? conf
-            at << m.name
-            va << "1"
-          else
-            va << "0"
+        if params.has_key?("split")
+          many.order(:id).each do |m|
+            header << "#{many.to_s}: #{m.name}" if index == 0
+            if m.conflicts.include? conf
+              line << 1
+              va << "1"
+            else
+              line << 0
+              va << "0"
+            end
+            nfields += 1
           end
+        else
+          header << "#{many.to_s}" if index == 0
+          at = []
+          many.order(:id).each do |m|
+            if m.conflicts.include? conf
+              at << m.name
+              va << "1"
+            else
+              va << "0"
+            end
+          end
+          line << at.join(":::")
+          nfields += 1
         end
         val << va
-        line << at.join(":::")
-        nfields += 1
       end
       [Company,Supporter].each do |mod|
         rel = mod.to_s.downcase
@@ -470,25 +518,45 @@ class AsyncTask
       end
       imps.each do |imp,val|
         va = [conf.id]
-        header << imp.to_s if index == 0
-        at = []
-        imp.order(:id).each do |m|
-          if m.conflicts.include? conf
-            cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
-            if cm.visible
-              at << "#{m.name} (V)"
-              va << "V"
+        if params.has_key?("split")
+          imp.order(:id).each do |m|
+            header << "#{imp.to_s}: #{m.name}" if index == 0
+            if m.conflicts.include? conf
+              cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+              if cm.visible
+                line << "V"
+                va << "V"
+              else
+                line << "P"
+                va << "P"
+              end
             else
-              at << "#{m.name} (P)"
-              va << "P"
+              line << "0"
+              va << ""
             end
-          else
-            va << ""
+            nfields += 1
           end
+        else
+          header << imp.to_s if index == 0
+          at = []
+          imp.order(:id).each do |m|
+            if m.conflicts.include? conf
+              cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+              if cm.visible
+                at << "#{m.name} (V)"
+                va << "V"
+              else
+                at << "#{m.name} (P)"
+                va << "P"
+              end
+            else
+              va << ""
+            end
+          end
+          line << at.join(":::")
+          nfields += 1
         end
         val << va
-        line << at.join(":::")
-        nfields += 1
       end
       ['references','legislations','weblinks','medialinks'].each do |rel|
         #puts 
@@ -827,8 +895,10 @@ class AsyncTask
       timings[:countries] = Time.now - t1
       puts if cos.length > 0
       countries.sort_by! {|c| c[1]}
-      countries.reverse!
-      ca.countries = countries.to_json
+      cc = countries.reverse
+      countries.sort_by! {|c| c[0]}
+      cb = countries
+      ca.countries = [cc,cb].to_json
     end
 
     if params["companies"] == "on" or params["reindex"] == "on"
@@ -854,9 +924,12 @@ class AsyncTask
       print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:companies] = Time.now - t1
       puts if cos.length > 0
-      companies.sort_by! {|c| c[1]}
-      companies.reverse!
-      ca.companies = companies.to_json
+      companies.sort_by!{|c| c[1]}
+      companies = companies.reverse[0..99]
+      cc = companies
+      companies.sort_by!{|c| c[0]}
+      cb = companies
+      ca.companies = [cc,cb].to_json
     end
 
     if params["ifis"] == "on" or params["reindex"] == "on"
@@ -909,8 +982,10 @@ class AsyncTask
       timings[:commodities] = Time.now - t1
       puts if cos.length > 0
       commodities.sort_by! {|c| c[1]}
-      commodities.reverse!
-      ca.commodities = commodities.to_json
+      cc = commodities.reverse
+      commodities.sort_by! {|c| c[0]}
+      cb = commodities
+      ca.commodities = [cc,cb].to_json
     end
 
     if params["categories"] == "on"
@@ -939,8 +1014,10 @@ class AsyncTask
       timings[:categories] = Time.now - t1
       puts if total > 0
       types.sort_by! {|c| c[1]}
-      types.reverse!
-      ca.types = types.to_json
+      cc = types.reverse
+      types.sort_by! {|c| c[0]}
+      cb = types
+      ca.types = [cc,cb].to_json
     end
 
     if params["featureds"] == "on"
