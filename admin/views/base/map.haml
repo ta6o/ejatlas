@@ -155,8 +155,8 @@
             = t "v.index.by_#{k.slug}"
           .content{:style=>'display:none;'}
             %div{:id=>"browse#{k}"}
-              %a.sort.count{:onclick=>"toggle_browse('#{k}','alpha')"}= "A > Z" #t("v.index.sort_alphabetically").downcase
-              %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= "9 > 1" #t("v.index.sort_by_frequency").downcase
+              %a.sort.count{:onclick=>"toggle_browse('#{k}','alpha')"}= t("v.index.sort_alphabetically").downcase #"A > Z"
+              %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= t("v.index.sort_by_frequency").downcase #"9 > 1"
               -v.each_with_index do |vv,ii|
                 %ul.columns{:class=>ii==0 ? "count" : "alpha", :style=>ii==0 ? "" : "display:none;"}
                   -vv.each do |c|

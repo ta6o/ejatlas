@@ -2,6 +2,7 @@
 -content_for :include do
   =stylesheet_link_tag 'tablesorter/style'
   =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+#fixed{:style=>"position:fixed; top: 24px; right:24px; transition:250; z-index: 9999"}
 .row.wide
   .col-md-12
     .hero-unit
@@ -33,8 +34,22 @@
                   =""
               %td.last
                 =link_to pat('Edit'), url(:featureds, :edit, :id => featured.id), :method => :get
+                -if ["admin","editor"].include? current_account.role
+                  |
+                  =link_to pat('Delete'), url(:featureds, :delete, :id => featured.id), :method => :get
       :javascript
+        var asuccess = "<div class='alert alert-success alert-dismissable fade in' id='alert-success' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> #{t("f.conflict.conflict_saved_successfully")} &nbsp; &nbsp; </div>"
+        var alerror = "<div class='alert alert-danger alert-dismissable fade in' id='alert-error' role='alert'> <button aria-label='Close' class='close' data-dismiss='alert' type='button'> <span aria-hidden=''>x</span> </button> #{t("f.conflict.conflict_could_not_be_saved")} &nbsp; &nbsp;<br/><br/><b></b></div>"
         $(document).ready(function(){
+          lochash = window.location.hash.replace('#_','#').split("&");
+          console.log(lochash)
+          if (lochash[0] == "#success") {
+            $("#fixed").css("opacity",0);
+            $("#fixed").html(asuccess);
+            $("#fixed").css("opacity",1);
+            window.location.hash = window.location.hash.split("&")[0];
+          }
+
           $('#sortme').tablesorter({
             headers: { 
               3: { sorter: false } 

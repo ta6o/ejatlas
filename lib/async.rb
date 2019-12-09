@@ -924,11 +924,9 @@ class AsyncTask
       print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:companies] = Time.now - t1
       puts if cos.length > 0
-      companies.sort_by!{|c| c[1]}
-      companies = companies.reverse[0..99]
+      companies = companies.sort_by{|c|c[1]}.reverse[0..99]
       cc = companies
-      companies.sort_by!{|c| c[0]}
-      cb = companies
+      cb = companies.sort_by{|c|c[0]}
       ca.companies = [cc,cb].to_json
     end
 

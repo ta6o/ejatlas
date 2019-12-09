@@ -1,5 +1,13 @@
 -# coding: utf-8
 -content_for :body_end do
+  :css
+    a.sort { 
+      cursor: pointer; 
+      font-weight: bold;
+      display: block;
+      margin: 0 0 8px 0;
+      font-size: 12px;
+    }
   :javascript
     img = new Image(330,30);
     img.src = '#{$fileurl}/static/ikon.png';
@@ -102,55 +110,27 @@
                       .vis.map-icon{:class=>"#{attr[0]}_#{leg.id}"}
                         %td.desc{:class=>"#{attr[0]}_#{leg.id}"}= t("m.#{attr}.#{leg.name.slug("_").split("_")[0..7].join("_")}").gsub(/\([^\)]\)/,"").strip
 
-            -#
-              %tr
-                %td.icon
-                  .vis.map-icon.i_2
-                %td.desc.i_2= t("m.category_id.mineral_ores_and_building_materials_extraction").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_3
-                %td.desc.i_3= t("m.category_id.waste_management").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_4
-                %td.desc.i_4= t("m.category_id.biomass_and_land_conflicts_forests_agriculture_fisheries_and").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_5
-                %td.desc.i_5= t("m.category_id.fossil_fuels_and_climate_justice_energy").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_6
-                %td.desc.i_6= t("m.category_id.water_management").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_7
-                %td.desc.i_7= t("m.category_id.infrastructure_and_built_environment").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_8
-                %td.desc.i_8= t("m.category_id.tourism_recreation").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_9
-                %td.desc.i_9= t("m.category_id.biodiversity_conservation_conflicts").gsub(/\([^\)]+\)/,"").strip
-              %tr
-                %td.icon
-                  .vis.map-icon.i_10
-                %td.desc.i_10= t("m.category_id.industrial_and_utilities_conflicts").gsub(/\([^\)]+\)/,"").strip
-
-
   -if @browseinfo
-    -k = @browseinfo.keys.first
-    .horipane.browse
-      .title.active= t "v.index.by_#{k}"
-      .content
-        %div{:id=>"browse#{k}"}
-          %ul.columns
-            -@browseinfo[k][0].each do |c|
-              -j = JSON.parse c[0]
-              %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+    -@browseinfo.each do |k,v|
+      .horipane.browse
+        .title.active
+          = t "v.index.by_#{k.slug("_")}"
+        .content
+          %div{:id=>"browse#{k}"}
+            %a.sort.count{:onclick=>"toggle_browse('#{k}','alpha')"}= t("v.index.sort_alphabetically") # "A > Z"
+            %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= t("v.index.sort_by_frequency") #"9 > 1"
+            -v.each_with_index do |vv,ii|
+              %ul.columns{:class=>ii==0 ? "count" : "alpha", :style=>ii==0 ? "" : "display:none;"}
+                -vv.each do |c|
+                  -j = JSON.parse c[0]
+                  -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
+                  -if k == "company"
+                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                  -elsif k == "country"
+                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                  -else
+                    %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+
 
   -if @load and @load.length > 0
     .horipane
@@ -169,12 +149,15 @@
           -#.clearfix
             %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
 
+
+-content_for :body_end do
+  :javascript
+    $page_query = '{"#{@qt}":"#{@id}"}';
+    $query = '{"should":{"term":'+$page_query+'}}';
 -unless @browseinfo
   -content_for :body_end do
     :javascript
       scrolling = true;
-      $page_query = '{"#{@qt}":"#{@id}"}';
-      $query = '{"should":{"term":'+$page_query+'}}';
       function fillWithCases() {
         if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
           $('body').css('cursor','wait');
@@ -209,3 +192,15 @@
           }
         });
       })
+-else
+  :javascript
+    function toggle_browse(type,sort) {
+      $("#browse"+type+" a.sort").hide();
+      $("#browse"+type+" a.sort."+sort).show();
+      $("#browse"+type+" > ul.columns").slideUp(200,function(){
+        $("#browse"+type+" > ul.columns."+sort).slideDown(400);
+      });
+      resetColumns();
+    }
+    function ask() {}
+

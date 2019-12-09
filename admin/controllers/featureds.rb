@@ -164,6 +164,17 @@ Admin.controllers :featureds do
     end
   end
 
+  get :delete, :with => :id do
+    pass unless current_account.editor?
+    featured = Featured.find(params[:id])
+    if featured.delete
+      flash[:success] = 'Map is deleted successfully.'
+    else
+      flash[:error] = 'Unable to delete map!'
+    end
+    redirect url(:featureds, :index)
+  end
+
   get :export, :with => :id do
     featured = Featured.find(params['id'])
     redirect to '/featureds' unless featured

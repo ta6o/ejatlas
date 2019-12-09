@@ -87,16 +87,18 @@
                     %a{:href=>'/contact'}= t "v.menu.contact"
                   %li.divider
                   %li
-                    %a{:href => "http://acknowlej.org/"}= t "v.menu.acknowl_ej"
+                    %a{:href => "http://envjustice.org/",:target=>"_blank"}= t "v.menu.envjustice"
                   %li
-                    %a{:href => "http://ejolt.org/"}= t "v.menu.ejolt"
+                    %a{:href => "http://acknowlej.org/",:target=>"_blank"}= t "v.menu.acknowl_ej"
+                  %li
+                    %a{:href => "http://ejolt.org/",:target=>"_blank"}= t "v.menu.ejolt"
               %li.dropdown#maps
                 %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#maps'}
                   = t "v.menu.maps"
                   %b.caret
                 %ul.dropdown-menu
                   -if @featureds and @featureds.any?
-                    -@featureds.reverse.each do |feat|
+                    -@featureds.each do |feat|
                       %li
                         %a{:href=>"/featured/#{feat.slug}"}= feat.name
                     %li.divider
@@ -214,9 +216,11 @@
                     %a{:href=>'/contact'}= t "v.menu.contact"
                   %li.divider
                   %li
-                    %a{:href => "http://acknowlej.org/"}= t "v.menu.acknowl_ej"
+                    %a{:href => "http://envjustice.org/",:target=>"_blank"}= t "v.menu.envjustice"
                   %li
-                    %a{:href => "http://ejolt.org/"}= t "v.menu.ejolt"
+                    %a{:href => "http://acknowlej.org/",:target=>"_blank"}= t "v.menu.acknowl_ej"
+                  %li
+                    %a{:href => "http://ejolt.org/",:target=>"_blank"}= t "v.menu.ejolt"
               %li.dropdown#maps
                 %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#maps'}
                   = t "v.menu.maps"
