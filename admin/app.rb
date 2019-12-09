@@ -762,7 +762,11 @@ class Admin < Padrino::Application
 
   def self.log_stdout request, status, account, keys
     platform = request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].split(/\s+/)[-1]
-    agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*[;,]\s*/)[0]
+    begin
+      agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*[;,]\s*/)[0]
+    rescue
+      agent = request.user_agent
+    end
     color = :blue
     color = :green if account
     color = :magenta if agent.downcase.match(/bot\//) or agent.downcase.match(/^\+http/)
