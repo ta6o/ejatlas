@@ -7267,45 +7267,121 @@ ul.sidelink li.active {
   font-size: 9px;
   margin: -2px 0 0 1.5px;
 }
-.map_icon.cluster.i_1 b {
+.map_icon.cc.cluster.c_1 b {
   color: black;
 }
-.map_icon.i_ {
-  background: red;
+.map_icon.cc.c_ {
+  background: white;
 }
-.map_icon.i_0 {
-  background: transparent;
+.map_icon.cc.c_0 {
+  background: white;
 }
-.map_icon.i_7 {
+.map_icon.cc.c_7 {
   background: #999 url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;
 }
-.map_icon.i_3 {
+.map_icon.cc.c_3 {
   background: #77721c url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;
 }
-.map_icon.i_9 {
+.map_icon.cc.c_9 {
   background: #00c621 url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;
 }
-.map_icon.i_10 {
+.map_icon.cc.c_10 {
   background: #ed1c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;
 }
-.map_icon.i_5 {
+.map_icon.cc.c_5 {
   background: #111 url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;
 }
-.map_icon.i_6 {
+.map_icon.cc.c_6 {
   background: #00bdff url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
 }
-.map_icon.i_2 {
+.map_icon.cc.c_2 {
   background: #ff7f00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;
 }
-.map_icon.i_1 {
+.map_icon.cc.c_1 {
   background: #ffff00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;
-  border: 1px solid #000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
 }
-.map_icon.i_4 {
+.map_icon.cc.c_4 {
   background: #754c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;
 }
-.map_icon.i_8 {
+.map_icon.cc.c_8 {
   background: #c685d0 url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;
+}
+.map_icon.rr.cluster.r_1 b {
+  color: black;
+}
+.map_icon.rr.r_ {
+  background: white;
+}
+.map_icon.rr.r_0 {
+  background: white;
+}
+.map_icon.rr.r_1 {
+  background: #999999;
+}
+.map_icon.rr.r_2 {
+  background: #ffc40d;
+}
+.map_icon.rr.r_3 {
+  background: #46a546;
+}
+.map_icon.rr.r_4 {
+  background: #ee2c2c;
+}
+.map_icon.rr.r_5 {
+  background: #7a43b6;
+}
+.map_icon.ss.cluster.s_1 b {
+  color: black;
+}
+.map_icon.ss.s_ {
+  background: white;
+}
+.map_icon.ss.s_0 {
+  background: white;
+}
+.map_icon.ss.s_1 {
+  background: #999999;
+}
+.map_icon.ss.s_2 {
+  background: #049cdb;
+}
+.map_icon.ss.s_3 {
+  background: #ffc40d;
+}
+.map_icon.ss.s_4 {
+  background: #ff7f50;
+}
+.map_icon.ss.s_5 {
+  background: #ee2c2c;
+}
+.map_icon.pp.cluster.p_1 b {
+  color: black;
+}
+.map_icon.pp.p_ {
+  background: white;
+}
+.map_icon.pp.p_0 {
+  background: white;
+}
+.map_icon.pp.p_1 {
+  background: #999999;
+}
+.map_icon.pp.p_2 {
+  background: #049cdb;
+}
+.map_icon.pp.p_3 {
+  background: #ffc40d;
+}
+.map_icon.pp.p_4 {
+  background: #ff7f50;
+}
+.map_icon.pp.p_5 {
+  background: #ee2c2c;
+}
+.map_icon.pp.p_6 {
+  background: #46a546;
 }
 .map-icon {
   display: block;
@@ -7316,41 +7392,107 @@ ul.sidelink li.active {
   width: 32px !important;
   height: 32px !important;
 }
-.map-icon.i_ {
+.map-icon.c_ {
   background: red;
 }
-.map-icon.i_0 {
+.map-icon.c_0 {
   background: transparent;
 }
-.map-icon.i_7 {
+.map-icon.c_7 {
   background: #999 url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;
 }
-.map-icon.i_3 {
+.map-icon.c_3 {
   background: #77721c url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;
 }
-.map-icon.i_9 {
+.map-icon.c_9 {
   background: #00c621 url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;
 }
-.map-icon.i_10 {
+.map-icon.c_10 {
   background: #ed1c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;
 }
-.map-icon.i_5 {
+.map-icon.c_5 {
   background: #111 url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;
 }
-.map-icon.i_6 {
+.map-icon.c_6 {
   background: #00bdff url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;
 }
-.map-icon.i_2 {
+.map-icon.c_2 {
   background: #ff7f00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;
 }
-.map-icon.i_1 {
+.map-icon.c_1 {
   background: #ffff00 url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;
 }
-.map-icon.i_4 {
+.map-icon.c_4 {
   background: #754c24 url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;
 }
-.map-icon.i_8 {
+.map-icon.c_8 {
   background: #c685d0 url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;
+}
+.map-icon.r_ {
+  background: transparent;
+}
+.map-icon.r_0 {
+  background: transparent;
+}
+.map-icon.r_1 {
+  background: #999999;
+}
+.map-icon.r_2 {
+  background: #ffc40d;
+}
+.map-icon.r_3 {
+  background: #46a546;
+}
+.map-icon.r_4 {
+  background: #ee2c2c;
+}
+.map-icon.r_5 {
+  background: #7a43b6;
+}
+.map-icon.s_ {
+  background: transparent;
+}
+.map-icon.s_0 {
+  background: transparent;
+}
+.map-icon.s_1 {
+  background: #999999;
+}
+.map-icon.s_2 {
+  background: #049cdb;
+}
+.map-icon.s_3 {
+  background: #ffc40d;
+}
+.map-icon.s_4 {
+  background: #ff7f50;
+}
+.map-icon.s_5 {
+  background: #ee2c2c;
+}
+.map-icon.p_ {
+  background: transparent;
+}
+.map-icon.p_0 {
+  background: transparent;
+}
+.map-icon.p_1 {
+  background: #999999;
+}
+.map-icon.p_2 {
+  background: #049cdb;
+}
+.map-icon.p_3 {
+  background: #ffc40d;
+}
+.map-icon.p_4 {
+  background: #ff7f50;
+}
+.map-icon.p_5 {
+  background: #ee2c2c;
+}
+.map-icon.p_6 {
+  background: #46a546;
 }
 .btn-twitter {
   background: #4099ff;

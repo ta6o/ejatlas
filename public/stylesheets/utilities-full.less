@@ -80,6 +80,25 @@ p {
 @pink:                  #c3325f;
 @purple:                #7a43b6;
 
+@r_1: @gray-light;
+@r_2: @yellow;
+@r_3: @green;
+@r_4: @red;
+@r_5: @purple;
+
+@s_1: @gray-light;
+@s_2: @blue;
+@s_3: @yellow;
+@s_4: @orange;
+@s_5: @red;
+
+@p_1: @gray-light;
+@p_2: @blue;
+@p_3: @yellow;
+@p_4: @orange;
+@p_5: @red;
+@p_6: @green;
+
 .border-radius(@radius) {
   -webkit-border-radius: @radius;
      -moz-border-radius: @radius;
@@ -499,21 +518,57 @@ ul.sidelink {
       margin: -2px 0 0 1.5px;
     }
   }
-  &.cluster.i_1 b {
+
+  &.cc.cluster.c_1 b {
     color: black
   }
-  &.i_ {background:red}
-  &.i_0 {background:transparent}
-  &.i_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
-  &.i_3 {background:@waste url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;}
-  &.i_9 {background:@biodiv url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;}
-  &.i_10 {background:@indus url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;}
-  &.i_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
-  &.i_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center; border:1px solid rgba(0,0,0,0.6) !important;}
-  &.i_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
-  &.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center; border:1px solid rgba(0,0,0,0.6) !important;}
-  &.i_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
-  &.i_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
+  &.cc.c_ {background:white}
+  &.cc.c_0 {background:white}
+  &.cc.c_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
+  &.cc.c_3 {background:@waste url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;}
+  &.cc.c_9 {background:@biodiv url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;}
+  &.cc.c_10 {background:@indus url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;}
+  &.cc.c_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
+  &.cc.c_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center; border:1px solid rgba(0,0,0,0.6) !important;}
+  &.cc.c_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
+  &.cc.c_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center; border:1px solid rgba(0,0,0,0.6) !important;}
+  &.cc.c_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
+  &.cc.c_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
+
+  &.rr.cluster.r_1 b {
+    color: black
+  }
+  &.rr.r_ {background:white}
+  &.rr.r_0 {background:white}
+  &.rr.r_1 {background:@r_1;}
+  &.rr.r_2 {background:@r_2;}
+  &.rr.r_3 {background:@r_3;}
+  &.rr.r_4 {background:@r_4;}
+  &.rr.r_5 {background:@r_5;}
+
+  &.ss.cluster.s_1 b {
+    color: black
+  }
+  &.ss.s_ {background:white}
+  &.ss.s_0 {background:white}
+  &.ss.s_1 {background:@s_1;}
+  &.ss.s_2 {background:@s_2;}
+  &.ss.s_3 {background:@s_3;}
+  &.ss.s_4 {background:@s_4;}
+  &.ss.s_5 {background:@s_5;}
+
+  &.pp.cluster.p_1 b {
+    color: black
+  }
+  &.pp.p_ {background:white}
+  &.pp.p_0 {background:white}
+  &.pp.p_1 {background:@p_1;}
+  &.pp.p_2 {background:@p_2;}
+  &.pp.p_3 {background:@p_3;}
+  &.pp.p_4 {background:@p_4;}
+  &.pp.p_5 {background:@p_5;}
+  &.pp.p_6 {background:@p_6;}
+
 }
 
 .map-icon {
@@ -524,18 +579,43 @@ ul.sidelink {
   border-radius: 16px;
   width: 32px !important;
   height: 32px !important;
-  &.i_ {background:red}
-  &.i_0 {background:transparent}
-  &.i_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
-  &.i_3 {background:@waste url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;}
-  &.i_9 {background:@biodiv url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;}
-  &.i_10 {background:@indus url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;}
-  &.i_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
-  &.i_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;}
-  &.i_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
-  &.i_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;}
-  &.i_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
-  &.i_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
+  &.c_ {background:red}
+  &.c_0 {background:transparent}
+  &.c_7 {background:@urban url('https://file.ejatlas.org/static/ikon.png') no-repeat 0px center;}
+  &.c_3 {background:@waste url('https://file.ejatlas.org/static/ikon.png') no-repeat -30px center;}
+  &.c_9 {background:@biodiv url('https://file.ejatlas.org/static/ikon.png') no-repeat -60px center;}
+  &.c_10 {background:@indus url('https://file.ejatlas.org/static/ikon.png') no-repeat -90px center;}
+  &.c_5 {background:@grayDarker url('https://file.ejatlas.org/static/ikon.png') no-repeat -120px center;}
+  &.c_6 {background:@hydro url('https://file.ejatlas.org/static/ikon.png') no-repeat -150px center;}
+  &.c_2 {background:@mining url('https://file.ejatlas.org/static/ikon.png') no-repeat -180px center;}
+  &.c_1 {background:@nuke url('https://file.ejatlas.org/static/ikon.png') no-repeat -210px center;}
+  &.c_4 {background:@earth url('https://file.ejatlas.org/static/ikon.png') no-repeat -240px center;}
+  &.c_8 {background:@tour url('https://file.ejatlas.org/static/ikon.png') no-repeat -270px center;}
+
+  &.r_ {background:transparent}
+  &.r_0 {background:transparent}
+  &.r_1 {background:@r_1;}
+  &.r_2 {background:@r_2;}
+  &.r_3 {background:@r_3;}
+  &.r_4 {background:@r_4;}
+  &.r_5 {background:@r_5;}
+
+  &.s_ {background:transparent}
+  &.s_0 {background:transparent}
+  &.s_1 {background:@s_1;}
+  &.s_2 {background:@s_2;}
+  &.s_3 {background:@s_3;}
+  &.s_4 {background:@s_4;}
+  &.s_5 {background:@s_5;}
+
+  &.p_ {background:transparent}
+  &.p_0 {background:transparent}
+  &.p_1 {background:@p_1;}
+  &.p_2 {background:@p_2;}
+  &.p_3 {background:@p_3;}
+  &.p_4 {background:@p_4;}
+  &.p_5 {background:@p_5;}
+  &.p_6 {background:@p_6;}
 }
 
 .btn-twitter {

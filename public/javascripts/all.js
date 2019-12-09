@@ -17568,6 +17568,7 @@ t.data("ui-menu-submenu-carat")&&t.remove()}),this.element.find(".ui-menu-divide
 var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap, shownMarkers;
 
 var $msize = "mic";
+var $leg = "category_id";
 var jsons = {};
 var checkingTile = false;
 var all = 0;
@@ -17676,9 +17677,31 @@ function initMap () {
     });
   }
 
+  $('#legendpane select.leg').on('change',function(e){
+    $leg = $("#legendpane select.leg option:selected").val();
+    $("#legendpane table").hide();
+    $("#legendpane table."+$leg).show();
+    $(".map_icon").removeClass("cc rr ss pp");
+    $(".map_icon").addClass($leg.substr(0,1)+''+$leg.substr(0,1));
+    if ($page_query == "{}") {
+      $query = '{}';
+    } else {
+      $query = '{"should":{"term":'+$page_query+'}}';
+    }
+    ours = $('.legend .map-icon');
+    mics = $('.leaflet-marker-icon');
+    ours.removeClass('hid').addClass('vis');
+    mics.show();
+    $('.recent tr').remove();
+    scrolling = true;
+    ask();
+  })
+
   $(document).on('click','.legend .map-icon, .legend .desc',function(e){
     //console.log(e)
-    id = $(e.target).attr('class').match(/i_\d+/)[0].replace('i_','');
+    l = $leg.substr(0,1);
+    regexp = new RegExp(l+"_\\d+");
+    id = $(e.target).attr('class').match(regexp)[0].replace(l+'_','');
     vis = $(this).closest('tr').find('.map-icon').hasClass('vis');
     part = $('.legend .map-icon.vis').length < $('.legend .map-icon').length
     if (e.shiftKey) {
@@ -18025,8 +18048,9 @@ function showMarkers(markers) {
       return 0
     }
     if (markers.length == 1){
+      classname = 'map_icon cc c_'+mark.c+' r_'+mark.r+' s_'+mark.s+' p_'+mark.p+' id_'+mark.i+' loc_'+mark.l;
       var marker = L.marker([mark.a, mark.o],{
-          icon: L.divIcon({ className: 'map_icon s_1 i_'+mark.c+' id_'+mark.i+' loc_'+mark.l }),
+          icon: L.divIcon({ className: classname }),
         riseOnHover: true,
       }).addTo(markerLayer);
       markerc[mark.i] = marker;
@@ -18067,8 +18091,10 @@ function showMarkers(markers) {
     popcontent += '</div>';
 
     pare = cluster ? markerClusters[mark.c] : markerLayer;
+    classname = 'map_icon cc c_'+mark.c+' r_'+mark.r+' s_'+mark.s+' p_'+mark.p+' id_'+mark.i+''+cclass;
+    console.log(classname)
     var marker = L.marker([mark.a, mark.o],{
-      icon: L.divIcon({ className: 'map_icon i_'+mark.c+' id_'+mark.i+''+cclass, }),
+      icon: L.divIcon({ className: classname }),
       riseOnHover: true,
     }).addTo(pare);
     
@@ -18241,7 +18267,6 @@ function markerFit(ids){
 
 function mapFit(){
   markerBounds = markerLayer.getBounds();
-  console.log(markerBounds);
   //console.log(markerBounds)
   if (markerBounds.getSouthWest() == undefined) {
     map.setView([16,26],2);
@@ -18360,9 +18385,9 @@ function toggleLegend(id,vis) {
   $('.recent tr').remove();
   scrolling = true;
   if ($page_query == "{}") {
-    $query = '{"must":{"term":{"category_id":"'+id+'"}}}';
+    $query = '{"must":{"term":{"'+$leg+'":"'+id+'"}}}';
   } else {
-    $query = '{"must":[{"term":'+$page_query+'},{"term":{"category_id":"'+id+'"}}]}';
+    $query = '{"must":[{"term":'+$page_query+'},{"term":{"'+$leg+'":"'+id+'"}}]}';
   }
   ours = $('.legend .map-icon.i_'+id);
   mics = $('.leaflet-marker-icon.i_'+id);
@@ -18379,14 +18404,15 @@ function toggleLegend(id,vis) {
 function setLegend(id) {
   $('.recent tr').remove();
   scrolling = true;
+  l = $leg.substr(0,1);
   if (parseInt(id) > 0) {
     if ($page_query == "{}") {
-      $query = '{"must":{"term":{"category_id":"'+id+'"}}}';
+      $query = '{"must":{"term":{"'+$leg+'":"'+id+'"}}}';
     } else {
-      $query = '{"must":[{"term":'+$page_query+'},{"term":{"category_id":"'+id+'"}}]}';
+      $query = '{"must":[{"term":'+$page_query+'},{"term":{"'+$leg+'":"'+id+'"}}]}';
     }
-    ours = $('.legend .map-icon.i_'+id);
-    mics = $('.leaflet-marker-icon.i_'+id);
+    ours = $('.legend .map-icon.'+l+'_'+id);
+    mics = $('.leaflet-marker-icon.'+l+'_'+id);
     $('.legend .map-icon').addClass('hid').removeClass('vis');
     $('.leaflet-marker-icon').hide();
     ours.addClass('vis').removeClass('hid');

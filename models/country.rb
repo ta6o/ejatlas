@@ -114,12 +114,12 @@ class Country < ActiveRecord::Base
     self.supporters_marker = marker.to_json
     self.supporters_json = json.to_json
     self.supporters_link = link.join
-    self.save
   end
 
   private
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
+    ping
   end
 end
 

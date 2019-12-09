@@ -187,12 +187,15 @@ class Conflict < ActiveRecord::Base
 =end
 
   def as_marker
-    clr = self.category ? self.category.id : 0
+    clr = self.category ? self.category_id : 0
+    rea = self.reaction ? self.reaction_id : 0
+    sta = self.status ? self.status_id : 0
+    pst = self.project_status ? self.project_status_id : 0
     lat = 0; 
     lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 90
     lon = 0; 
     lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 180
-    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr,:l=>self.conflict_texts.map(&:locale).join("-")}
+    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr,:r=>rea,:s=>sta,:p=>pst,:l=>self.conflict_texts.map(&:locale).join("-")}
   end
 
   def accurate_marker
