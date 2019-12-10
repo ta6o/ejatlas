@@ -22,7 +22,7 @@
   :javascript
     $(document).ready(function(){
       $.each(#{@markerinfo.html_safe}, function(i,e){
-        if (e.l.match(/#{I18n.locale}/)) {
+        if (e.l.match(/#{I18n.default_locale}/)) {
           markerinfo.push(e)
         }
       })
@@ -157,17 +157,14 @@
       }
       function ask() {
         if(!scrolling) return
-        console.log($('.recent tr').length);
         $.getJSON("/more_recent","offset="+$('.recent tr').length+"&filter="+$query,function(data){
           if (data.length < 6) {
             scrolling = false;
           }
           $.each(data,function(i,n) {
-            console.log(n)
             n = n.conflict
             if ($('#recent_'+n.id).length == 0){
               row = "<tr class='block conflict-button' data-id="+n.id+" data-width='360' id='recent_"+n.id+"'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><p><strong><a href='/conflict/"+n.slug+"'>"+n.name+"</a></strong></p><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+(typeof n.headline == "undefined" ? "" : n.headline)+"</p></td></tr>"
-              console.log(row)
               $('tbody.recent').append(row);
             }
           });

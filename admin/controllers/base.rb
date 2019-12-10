@@ -274,6 +274,7 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     @markerinfo = con.conflicts_marker
+    pp @markerinfo
     contents = File.read('admin/views/base/filter.haml')
     @filterinfo = con.conflicts_json
     @name = I18n.t("countries.#{con.name.shorten_en}")
@@ -390,7 +391,6 @@ Admin.controller do
     ##last_modified con.updated_at
     @markerinfo = con.companies_marker
     @filterinfo = con.companies_json
-    @load = con.companies_link
     @name = "Companies from #{con.name}"
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @markercount = @load.split("</p><p").length
@@ -407,7 +407,6 @@ Admin.controller do
     ca = Cached.where(:locale=>I18n.default_locale).first
     ##last_modified con.updated_at
     @markerinfo = con.supporters_marker
-    @load = con.supporters_link
     @name = "Financial Institutions from #{con.name}"
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @id = con.id
