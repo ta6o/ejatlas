@@ -115,11 +115,11 @@ class Admin < Padrino::Application
       I18n.locale = :en
       $dir = "ltr"
       q = CGI::parse request.query_string
-      if request.referrer and request.referrer.match(/translate=/)
+      if request.referrer and request.referrer.match(/translate=/) and not request.xhr?
         q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
         redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}" unless request.query_string.match(/^translate=/)
       end
-      if request.query_string.match(/^translate=/)
+      if request.query_string.match(/^translate=/) and not request.xhr?
         I18n.locale = request.query_string.match(/^translate=\w+/)[0].sub(/^translate=/,"")
       end
     else

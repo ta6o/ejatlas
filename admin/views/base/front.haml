@@ -132,22 +132,21 @@
                     %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
 
-  -if @load and @load.length > 0
-    .horipane
-      .title.active Cases
-      .content
-        -if @feature
-          .clearfix#disclaimer
-            =(@load || "").html_safe
-          -#.clearfix
-            %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
-        -else
-          .clearfix#disclaimer
-            %h2{:style=>"margin-top:0"}= @maptitle
-            %table
-              %tbody.recent
-          -#.clearfix
-            %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
+  .horipane
+    .title.active Cases
+    .content
+      -if @feature
+        .clearfix#disclaimer
+          =(@load || "").html_safe
+        -#.clearfix
+          %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
+      -else
+        .clearfix#disclaimer
+          %h2{:style=>"margin-top:0"}= @maptitle
+          %table
+            %tbody.recent
+        -#.clearfix
+          %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
 
 
 -content_for :body_end do
@@ -166,14 +165,17 @@
       }
       function ask() {
         if(!scrolling) return
+        console.log($('.recent tr').length);
         $.getJSON("/more_recent","offset="+$('.recent tr').length+"&filter="+$query,function(data){
           if (data.length < 6) {
             scrolling = false;
           }
           $.each(data,function(i,n) {
+            console.log(n)
             n = n.conflict
             if ($('#recent_'+n.id).length == 0){
               row = "<tr class='block conflict-button' data-id="+n.id+" data-width='360' id='recent_"+n.id+"'><td class='image'><a href='/conflict/"+n.slug+"'><div class='img' style='background:url("+n.image+")'></div></a></td><td class='exp'><p><strong><a href='/conflict/"+n.slug+"'>"+n.name+"</a></strong></p><p atyle='margin:0;padding:0;font-size:12px;line-height:16px;'>"+(typeof n.headline == "undefined" ? "" : n.headline)+"</p></td></tr>"
+              console.log(row)
               $('tbody.recent').append(row);
             }
           });
@@ -188,7 +190,7 @@
           if(!scrolling) return
           if ( $('#rightpane').scrollTop() + window.innerHeight >= $('#rightpane')[0].scrollHeight) { 
             $('body').css('cursor','wait');
-            ask();
+            fillWithCases();
           }
         });
       })

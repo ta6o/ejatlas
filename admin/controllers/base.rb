@@ -150,13 +150,13 @@ Admin.controller do
   end
 
   get :index do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     pass unless ca
     #last_modified ca.updated_at
     @filterform = {}
     @filterform = JSON.parse(ca.filterdata) if ca
     @filter = render "base/filter", :layout => false
-    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
+    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.default_locale).count
     countries = ca.countries ? JSON.parse(ca.countries) : []
     companies = ca.companies ? JSON.parse(ca.companies) : []
     commodities = ca.commodities ? JSON.parse(ca.commodities) : []
@@ -248,7 +248,7 @@ Admin.controller do
   get "/:model" do
     browseinfo = {"country"=>"countries","company"=>"companies","commodity"=>"commodities","type"=>"types"}
     pass unless browseinfo.has_key?(params[:model])
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     @markercount = JSON.parse(ca.conflicts_marker).length
@@ -267,7 +267,7 @@ Admin.controller do
   end
 
   get :country, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     con = Country.find_slug(params[:slug])
     con = Region.find_slug(params[:slug]) unless con
     pass unless con
@@ -305,7 +305,7 @@ Admin.controller do
   end
 
   get :company, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     con = Company.find_slug(params[:slug])
     pass unless con
     @filterform = JSON.parse(ca.filterdata)
@@ -313,13 +313,6 @@ Admin.controller do
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
-    @load = con.conflicts_link
-    if I18n.locale != :en or I18n.locale != "en"
-      @load = ""
-      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
-        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
-      end
-    end
     @name = con.name
     @description = con.description
     @qt = "companies"
@@ -334,7 +327,7 @@ Admin.controller do
   end
 
   get :institution, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     con = Supporter.find_slug(params[:slug])
     pass unless con
     @filterform = JSON.parse(ca.filterdata)
@@ -362,7 +355,7 @@ Admin.controller do
   end
 
   get :commodity, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Product.find_slug(params[:slug])
@@ -390,7 +383,7 @@ Admin.controller do
   end
 
   get :type, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Type.find_slug(params[:slug])
@@ -421,7 +414,7 @@ Admin.controller do
   get 'country-of-company', :with => :slug do
     con = Country.find_slug(params[:slug])
     pass unless con
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     ##last_modified con.updated_at
@@ -441,7 +434,7 @@ Admin.controller do
   get 'country-of-institution', :with => :slug do
     con = Country.find_slug(params[:slug])
     pass unless con
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.where(:locale=>I18n.default_locale).first
     ##last_modified con.updated_at
     @markerinfo = con.supporters_marker
     @load = con.supporters_link
