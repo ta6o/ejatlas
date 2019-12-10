@@ -393,6 +393,7 @@ Admin.controller do
     @filterinfo = con.companies_json
     @name = "Companies from #{con.name}"
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
+    @load = con.companies_link
     @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
@@ -410,6 +411,7 @@ Admin.controller do
     @name = "Financial Institutions from #{con.name}"
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @id = con.id
+    @load = con.companies_link
     @markercount = @load.split("</p><p").length
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
