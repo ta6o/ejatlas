@@ -151,8 +151,22 @@
                       %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
                         %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
                       %a{:href=>'#',:onclick=>'$("#signout").submit()'}= t "v.menu.logout"
-            .tagline
-              %p= t "v.menu.environmental_justice_atlas"
+            .tagline{:style=>"height:28px;"}
+              -if current_account and ["admin","editor"].include?(current_account.role)
+                %ul
+                  %li.dropdown#locales
+                    %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#locales'}
+                      %p{:style=>"margin: 0 !important;"}= t "v.menu.environmental_justice_atlas"
+                      %b.caret{:style=>"position: relative; top: -20px; left: -16px; border-top: 8px solid white;"}
+                    %ul.dropdown-menu{:style=>"margin: -9px -8px; background: #024357;"}
+                      -($tkeys-["master"]).each do |l|
+                        -trt = I18n.with_locale(l) {|x| I18n.t "v.menu.environmental_justice_atlas"}
+                        -next if l == I18n.locale.to_s
+                        -next if (trt == I18n.t("v.menu.environmental_justice_atlas") and l != "en")
+                        %li
+                          %a{:href=>"#{request.url.split(/\?/)[0]}?translate=#{l}"}= "#{trt} (#{l.upcase})"
+              -else
+                %p= t "v.menu.environmental_justice_atlas"
             .ejatlas-logo#eja-logo
 
         %header
