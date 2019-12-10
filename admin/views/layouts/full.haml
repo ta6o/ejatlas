@@ -65,7 +65,7 @@
       -if $dir == "ltr"
         .navbar.navbar-fixed-top{:role=>'navigation'}
           .navbar-inner
-            %ul.nav.nav-pills{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>t("v.help.site_menu")}
+            %ul.nav.nav-pills{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>t("v.help.site_menu"),:style=>"z-index:10;"}
               %li.first
                 %a &nbsp;
               %li.home
@@ -167,7 +167,7 @@
                           %a{:href=>"#{request.url.split(/\?/)[0]}?translate=#{l}"}= "#{trt} (#{l.upcase})"
               -else
                 %p= t "v.menu.environmental_justice_atlas"
-            .ejatlas-logo#eja-logo
+            .ejatlas-logo#eja-logo{:style=>"z-index:11;"}
 
         %header
           =yield_content :outer

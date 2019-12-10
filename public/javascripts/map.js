@@ -617,7 +617,7 @@ function onResize() {
     map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
     px = Math.max(Math.min(Math.max(parseInt($('#resize').css($flo)),500),window.innerWidth - 480),500);
-    console.log(px)
+    //console.log(px)
     $("#map").css('width',px+'px');
     $("#rightpane").css('width',(window.innerWidth-px)+'px');
     $("#resize").css($flo,px+'px');
@@ -999,7 +999,7 @@ function showVector(v) {
     return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
-  console.log(vect)
+  //console.log(vect)
   if(vect.length == 0) {
     console.log('fail - no vect');
     return 0

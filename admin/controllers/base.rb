@@ -4,7 +4,7 @@ Admin.controller do
   before do
     @layout = :full
     begin
-      @featureds = Featured.where(:id=>JSON.parse(Cached.where(:locale=>I18n.locale).first.featureds||"[]")).select("name, slug")
+      @featureds = Featured.where(:id=>JSON.parse(Cached.where(:locale=>I18n.locale).first.featureds||"[]")).order("created_at desc").select("name, slug").limit(6)
     rescue
       @featureds = []
     end

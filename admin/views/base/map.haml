@@ -45,7 +45,7 @@
             %strong= t("v.help.please_click_markers_on_map")
           .clearfix
             %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
-              %input{:type=>'checkbox',:checked=>true}= " &nbsp; #{t("v.help.do_not_show_this_information")}".html_safe
+              %input{:type=>'checkbox'}= " &nbsp; #{t("v.help.do_not_show_this_information")}".html_safe
 
 .front
   -if @defs
@@ -126,7 +126,7 @@
       #legendpane
         .pull-right
           %select.leg
-            -{"Type of conflict"=>"category_id","Reaction stage"=>"reaction_id","Intensity"=>"status_id","Project status"=>"project_status_id"}.each do |name,attr|
+            -{t("v.filter.category")=>"category_id",t("v.filter.reaction_stage")=>"reaction_id",t("v.filter.intensity")=>"status_id",t("v.filter.project_status")=>"project_status_id"}.each do |name,attr|
               %option{:value=>attr}= name
         .legend.noselect.pull-left
           -{Category=>"category_id",Reaction=>"reaction_id",Status=>"status_id",ProjectStatus=>"project_status_id"}.each do |model,attr|
@@ -241,6 +241,9 @@
       $('#help').on('click',function(){
         $('#welcome').modal('show');
       })
+      if(Object.keys(localStorage).indexOf("hideHelp")==-1) {
+        localStorage['hideHelp'] = true;
+      }
       $('#welcome input').on('change',function(){
         localStorage['hideHelp'] = $(this).prop('checked')
       })
