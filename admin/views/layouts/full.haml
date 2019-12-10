@@ -159,7 +159,7 @@
                       %p{:style=>"margin: 0 !important;"}= t "v.menu.environmental_justice_atlas"
                       %b.caret{:style=>"position: relative; top: -20px; left: -16px; border-top: 8px solid white;"}
                     %ul.dropdown-menu{:style=>"margin: -9px -8px; background: #024357;padding-top:28px;"}
-                      -($tkeys-["master"]).each do |l|
+                      -($tkeys-["master"]).sort.each do |l|
                         -trt = I18n.with_locale(l) {|x| I18n.t "v.menu.environmental_justice_atlas"}
                         -next if l == I18n.locale.to_s
                         -next if (trt == I18n.t("v.menu.environmental_justice_atlas") and l != "en")
