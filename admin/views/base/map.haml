@@ -128,6 +128,8 @@
           %select.leg
             -{t("v.filter.category")=>"category_id",t("v.filter.reaction_stage")=>"reaction_id",t("v.filter.intensity")=>"status_id",t("v.filter.project_status")=>"project_status_id"}.each do |name,attr|
               %option{:value=>attr}= name
+          %br/
+          %a.pull-right{:onclick=>"setLegend(0);"}=t("v.index.see_all")
         .legend.noselect.pull-left
           -{Category=>"category_id",Reaction=>"reaction_id",Status=>"status_id",ProjectStatus=>"project_status_id"}.each do |model,attr|
             %table{:class=>attr,:style=>(attr == "category_id" ? "" : "display:none;")}
