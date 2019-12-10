@@ -276,13 +276,6 @@ Admin.controller do
     @markerinfo = con.conflicts_marker
     contents = File.read('admin/views/base/filter.haml')
     @filterinfo = con.conflicts_json
-    @load = con.conflicts_link
-    if I18n.locale != :en or I18n.locale != "en"
-      @load = ""
-      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
-        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
-      end
-    end
     @name = I18n.t("countries.#{con.name.shorten_en}")
     @description = con.description
     @qt = "country_id"
@@ -335,13 +328,6 @@ Admin.controller do
     ##last_modified con.updated_at
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
-    @load = con.conflicts_link
-    if I18n.locale != :en or I18n.locale != "en"
-      @load = ""
-      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
-        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
-      end
-    end
     @name = con.name
     @description = con.description
     @qt = "supporters"
@@ -362,16 +348,7 @@ Admin.controller do
     pass unless con
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
-    @load = con.conflicts_link
     @markercount = con.conflicts.where(approval_status: 'approved').count
-    if I18n.locale != :en or I18n.locale != "en"
-      @load = ""
-      @markercount = 0
-      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
-        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
-        @markercount += 1
-      end
-    end
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @qt = "products"
     @id = con.id
@@ -392,13 +369,6 @@ Admin.controller do
     @markerinfo = con.conflicts_marker
     #puts @markerinfo
     @filterinfo = con.conflicts_json
-    @load = con.conflicts_link
-    if I18n.locale != :en or I18n.locale != "en"
-      @load = ""
-      con.local_conflicts(I18n.locale).sort_by{|x|x.name.slug}.each do |c|
-        @load += "<p class='conflict-button' data-id='#{c.conflict_id}'><a href='/conflict/#{c.slug}'>#{c.name}</a></p>"
-      end
-    end
     @name = I18n.t("m.types.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @description = con.description
     @qt = "types"

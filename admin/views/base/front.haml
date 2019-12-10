@@ -135,18 +135,10 @@
   .horipane
     .title.active Cases
     .content
-      -if @feature
-        .clearfix#disclaimer
-          =(@load || "").html_safe
-        -#.clearfix
-          %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
-      -else
-        .clearfix#disclaimer
-          %h2{:style=>"margin-top:0"}= @maptitle
-          %table
-            %tbody.recent
-        -#.clearfix
-          %h2{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}#name
+      .clearfix#disclaimer
+        %h2{:style=>"margin-top:0"}= @maptitle
+        %table
+          %tbody.recent
 
 
 -content_for :body_end do
