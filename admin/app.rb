@@ -713,7 +713,6 @@ class Admin < Padrino::Application
     keys = []
     $tstatus = {}
     `rm #{Dir.pwd}/lib/locales/* &> /dev/null` unless Dir.empty?("#{Dir.pwd}/lib/locales/")
-
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./
       next unless file.match /\.csv$/
