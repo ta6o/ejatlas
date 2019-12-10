@@ -712,7 +712,7 @@ class Admin < Padrino::Application
     locs = []
     keys = []
     $tstatus = {}
-    `rm #{Dir.pwd}/lib/locales/* &> /dev/null`
+    `rm #{Dir.pwd}/lib/locales/* &> /dev/null` unless Dir.empty?("#{Dir.pwd}/lib/locales/")
 
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./
