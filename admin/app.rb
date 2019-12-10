@@ -717,6 +717,7 @@ class Admin < Padrino::Application
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./
       next unless file.match /\.csv$/
+      next if file.match(/^auto/)
       file = file.strip
       CSV.read("#{Dir.pwd}/lib/sheets/#{file}").each_with_index do |row,ind|
         domain = "models,views,forms".split(",").include?(file.sub(/\.csv$/,"").slug) ? file[0].slug : file.sub(/\.csv$/,"").slug("_")
