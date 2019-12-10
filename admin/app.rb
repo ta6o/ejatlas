@@ -52,6 +52,7 @@ class Admin < Padrino::Application
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
+  $session = nil
 
   $baselayers = "Esri.WorldPhysical,Esri.WorldImagery,Esri.WorldTopoMap"
   $alllayers = [ "OpenStreetMap.Mapnik", "OpenStreetMap.BlackAndWhite", "OpenStreetMap.DE", "OpenStreetMap.HOT", "Thunderforest.OpenCycleMap", "Thunderforest.Transport", "Thunderforest.Landscape", "Thunderforest.Outdoors", "OpenMapSurfer.Roads", "OpenMapSurfer.Grayscale", "Hydda.Full", "Hydda.Base", "MapQuestOpen.OSM", "MapQuestOpen.Aerial", "Stamen.Toner", "Stamen.TonerBackground", "Stamen.TonerLite", "Stamen.Terrain", "Stamen.TerrainBackground", "Stamen.Watercolor", "Esri.WorldStreetMap", "Esri.DeLorme", "Esri.WorldTopoMap", "Esri.WorldImagery", "Esri.WorldTerrain", "Esri.WorldShadedRelief", "Esri.WorldPhysical", "Esri.OceanBasemap", "Esri.NatGeoWorldMap", "Esri.WorldGrayCanvas", "HERE.normalDay", "HERE.normalDayCustom", "HERE.normalDayGrey", "HERE.normalDayMobile", "HERE.normalDayGreyMobile", "HERE.normalDayTransit", "HERE.normalDayTransitMobile", "HERE.normalNight", "HERE.normalNightMobile", "HERE.normalNightGrey", "HERE.normalNightGreyMobile", "HERE.carnavDayGrey", "HERE.hybridDay", "HERE.hybridDayMobile", "HERE.pedestrianDay", "HERE.pedestrianNight", "HERE.satelliteDay", "HERE.terrainDay", "HERE.terrainDayMobile", "Acetate.basemap", "Acetate.terrain", "Acetate.all", "Acetate.hillshading", "FreeMapSK", "MtbMap", "OpenMapSurfer.AdminBounds", "Hydda.RoadsAndLabels", "Stamen.TonerHybrid", "Stamen.TonerLines", "Stamen.TonerLabels", "OpenWeatherMap.Clouds", "OpenWeatherMap.CloudsClassic", "OpenWeatherMap.Precipitation", "OpenWeatherMap.PrecipitationClassic", "OpenWeatherMap.Rain", "OpenWeatherMap.RainClassic", "OpenWeatherMap.Pressure", "OpenWeatherMap.PressureContour", "OpenWeatherMap.Wind", "OpenWeatherMap.Temperature", "OpenWeatherMap.Snow", "Acetate.foreground", "Acetate.roads", "Acetate.labels"];
@@ -790,6 +791,57 @@ class Admin < Padrino::Application
       scolor = :yellow 
     end
     puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{status.to_s.colorize(scolor)} #{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} #{account ? "#{account.email.green}" : ""}@#{request.ip.cyan} (#{platform.cyan}/#{agent.cyan})#{ (keys.any? and request.request_method != "GET") ? " [#{keys.map{|x| x.to_s.cyan}.join(",")}]" : ""}"
+  end
+
+  def self.tx_conflict ct, locale, verbose=false
+    unless cn = ConflictText.where(:conflict_id=>ct.conflict_id, :locale=>locale).first
+      cn = ConflictText.new(:conflict_id=>ct.conflict_id, :locale=>locale, :approval_status=>"auto_tx", :slug=>ct.slug)
+    end
+    if cn.approval_status != "auto_tx"
+      puts "translation already found"
+      return cn
+    end
+    unless $session
+      puts "authenticating".red if verbose
+      require "google_drive"
+      api_id = "***REMOVED***.apps.googleusercontent.com"
+      api_key = "***REMOVED***"
+      $session = GoogleDrive.saved_session("./stored_token.json", nil, api_id, api_key)
+    end
+    puts "connecting".yellow if verbose
+    ws = $session.spreadsheet_by_key("***REMOVED***").worksheet_by_title("auto_tx")
+    fields = ["name", "headline", "site", "province", "project_area", "project_length", "other_types", "description", "other_products", "project_details", "investment_string", "affected_people", "other_supporters", "related_conflict_string", "other_mobilizing_groups", "other_mobilizing_forms", "other_env_impacts", "other_hlt_impacts", "other_sec_impacts", "other_outcomes", "suggested_alternatives", "success_reason", "other_comments", "ejos", "govt_actors", "translator"]
+    fields.each_with_index do |x,i| 
+      y = ct.attributes[x]
+      if y
+        ws[i+1,2] = y.gsub(/\n/," ")
+      else
+        ws[i+1,2] = ""
+      end
+      ws[i+1,3] = "=GOOGLETRANSLATE(B#{i+1}, \"#{ct.locale}\",\"#{locale}\")"
+    end
+    puts "updating".green if verbose
+    ws.save
+    puts "waiting".cyan if verbose
+    b1 = nil
+    while b1.nil?
+      ws.reload
+      b1 = ws[1,2]
+      sleep 0.1
+    end
+    puts "loading".blue if verbose
+    attrs = {}
+    fields.each_with_index do |x,i| 
+      val = ws[i+1,3]
+      attrs[x] = val unless val == "#VALUE!"
+    end
+    pp attrs.symbolize_keys if verbose and false
+    puts "saving".red if verbose
+    cn.attributes = attrs
+    cn.save!(:validate=>false)
+    puts "pinging".yellow if verbose
+    cn.conflict.ping
+    cn
   end
 
   I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)

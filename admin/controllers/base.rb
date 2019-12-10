@@ -173,6 +173,9 @@ Admin.controller do
 
   get :conflict, :with => :slug do
     c = Conflict.find_slug(params[:slug].downcase)
+    if I18n.locale != I18n.default_locale and ConflictText.where(:conflict_id=>c.id, :locale=>I18n.locale).empty?
+      Admin.tx_conflict c.conflict_texts.order(:created_at).first, I18n.locale, true
+    end
     #last_modified c.updated_at
     pass unless c
     if c.approval_status != "approved"

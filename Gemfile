@@ -19,12 +19,13 @@ gem 'graphcommons'
 gem 'sanitize'
 gem 'roo'
 gem 'rodf'
-gem "rmagick"
+gem 'rmagick'
 gem 'google_drive'
 gem 'colorize'
 gem 'padrino'
+#gem 'google-cloud-translate'
 
-if ENV["RACK_ENV"] == "production"
+if ENV['RACK_ENV'] == 'production'
   gem 'gdal'
   gem 'puma'
 end
