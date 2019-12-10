@@ -285,7 +285,7 @@ Admin.controllers :conflicts do
     rescue
       pass
     end
-    if current_account.contributor?(@conflict) and not params.has_key?("translate")
+    if current_account.contributor?(@conflict) and not params.has_key?("translator")
       @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
       @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
       @saves = []
@@ -293,7 +293,7 @@ Admin.controllers :conflicts do
         @saves << row if row[2] == @conflict.id.to_s
       end
       render 'conflicts/edit'
-    elsif current_account.translator? or params.has_key?("translate")
+    elsif current_account.translator? or params.has_key?("translator")
       @translate_only = true
       @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
       @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
