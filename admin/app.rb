@@ -110,19 +110,21 @@ class Admin < Padrino::Application
 
   before do
     if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0])
+      I18n.default_locale = :en
       I18n.locale = :en
       $dir = "ltr"
+      q = CGI::parse request.query_string
+      if request.referrer and request.referrer.match(/translate=/)
+        q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
+        redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}" unless request.query_string.match(/^translate=/)
+      end
+      if request.query_string.match(/^translate=/)
+        I18n.locale = request.query_string.match(/^translate=\w+/)[0].sub(/^translate=/,"")
+      end
     else
+      I18n.default_locale = locale
       I18n.locale = locale
       $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
-    end
-    q = CGI::parse request.query_string
-    if request.referrer and request.referrer.match(/translate=/)
-      q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
-      redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}" unless request.query_string.match(/^translate=/)
-    end
-    if request.query_string.match(/^translate=/)
-      I18n.locale = request.query_string.match(/^translate=\w+/)[0].sub(/^translate=/,"")
     end
   end
 
@@ -488,7 +490,7 @@ class Admin < Padrino::Application
       filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     end
     #Admin.color_pp(filter)
-    result = $client.search(index: "#{$esindex}_#{I18n.locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+    result = $client.search(index: "#{$esindex}_#{I18n.default_locale}", type: "conflict", body: {sort:{modified_at:{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
     #pp result.map{|x|x["name"]}
     result
   end
@@ -502,7 +504,7 @@ class Admin < Padrino::Application
         filter = Admin.elasticify( { bool: { filter: { bool: JSON.parse( filter ) }}} )
       end
       #puts JSON.pretty_generate(filter).yellow
-      result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+      result = $client.search(index:"#{$esindex}_#{I18n.default_locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: JSON.parse( filter ) }}} )
       filter = Admin.cleanup(filter)
