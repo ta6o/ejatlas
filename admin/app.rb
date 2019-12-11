@@ -774,10 +774,11 @@ class Admin < Padrino::Application
   end
 
   def self.log_stdout request, status, account, keys
-    platform = request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].split(/\s+/)[-1]
     begin
+      platform = request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].split(/\s+/)[-1]
       agent = request.user_agent.scan(/\([^\)]+\)/)[-1][1..-2].sub(/compatible;\s+/,"").split(/\s*[;,]\s*/)[0]
     rescue
+      platform = request.user_agent
       agent = request.user_agent
     end
     color = :blue
