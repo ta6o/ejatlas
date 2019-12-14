@@ -548,6 +548,17 @@ ActiveRecord::Schema.define(version: 0) do
     t.text "conflicts_link"
   end
 
+  create_table "geo_layer", id: :serial, force: :cascade do |t|
+    t.string "name", limit: 255
+    t.string "url", limit: 255
+  end
+
+  create_table "geo_layer_attachable", id: :serial, force: :cascade do |t|
+    t.integer "geo_layer_id"
+    t.string  "attachable_type", limit: 255
+    t.integer "attachable_id"
+  end
+
   create_table "vector_data", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255
     t.string "url", limit: 255

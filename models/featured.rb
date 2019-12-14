@@ -5,6 +5,10 @@ class Featured < ActiveRecord::Base
   has_many :tags, :through => :f_tags
 
   has_many :images, class_name: "Image", as: :attachable, dependent: :destroy
+
+  has_many :geo_layer_attachables, :as => :attachable
+  has_many :geo_layers, :through => :geo_layer_attachables
+
   accepts_nested_attributes_for :images, allow_destroy: true
 
   belongs_to :account

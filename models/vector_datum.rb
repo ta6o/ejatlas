@@ -1,3 +1,35 @@
+class GeoLayer < ActiveRecord::Base
+  has_many :geo_layer_attachables
+  has_many :featureds, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Featured"
+  has_many :conflicts, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Conflict"
+
+  def self.check_layers
+    require "rest_client"
+    local = GeoLayer.all.map(&:name)
+    JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"].each do |l|
+      if local.include?(l["name"])
+        local.delete l["name"]
+      else
+        GeoLayer.create :name=>l["name"], :url=>l["href"]
+      end
+    end
+    local.each do |l|
+      if la = GeoLayer.find_by_name(l)
+        la.destroy
+      end
+    end
+  end
+
+  def inspect
+    self.featureds.any? ? "#{self.name.cyan} in #{self.featureds.map{|a| "#{a.name.yellow} (#{a.class.to_s.green})"}.join(", ")}" : self.name
+  end
+end
+
+class GeoLayerAttachable < ActiveRecord::Base
+  belongs_to :attachable, polymorphic: true
+  belongs_to :geo_layer
+end
+
 class VectorDatum < ActiveRecord::Base
   belongs_to :attachable, polymorphic: true
   belongs_to :vector_style

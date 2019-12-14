@@ -70,6 +70,9 @@ class Conflict < ActiveRecord::Base
   has_many :related_to, :through => :relations_to,   :source => :from 
   has_many :related_from, :through => :relations_from, :source => :to 
 
+  has_many :geo_layer_attachables, :as=>:attachable
+  has_many :geo_layers, :through => :geo_layer_attachables
+
   before_save :set_slug
   after_destroy :delete_index
 
