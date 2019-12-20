@@ -17623,6 +17623,7 @@ function initMap () {
 
   markerLayer = L.featureGroup();
   featureLayer = L.featureGroup({interactive:true});
+  geoLayer = L.featureGroup({interactive:true});
   initLayers = [];
 
   maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
@@ -17633,6 +17634,7 @@ function initMap () {
   }
   initLayers.push(markerLayer)
   initLayers.push(featureLayer)
+  initLayers.push(geoLayer)
   map = L.map('map',{
     scrollWheelZoom: $('#map').css('position') == "fixed",
     worldCopyJump: true,
@@ -17650,6 +17652,24 @@ function initMap () {
 
   $.each(vectorinfo,function(i,v){
     loadJS(v["vector_datum"]["url"],true)
+  });
+
+  $.each(layerinfo,function(i,f){
+    n = f[0];
+    s = f[1];
+    overlayMaps[s] = L.tileLayer.wms('https://geo.ejatlas.org/geoserver/gwc/service/wms', { 
+      layers: "geonode:"+s, 
+      format: 'application/x-protobuf;type=mapbox-vector', 
+      transparent: true 
+    }).addTo(geoLayer);
+    if ($('#legendpane .vectorlegend').length == 0) {
+      $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
+    }
+    html = "<tr><td class='input'><input type='checkbox' id='checkbox_"+s+"' checked='checked'>"
+    html += "</input></td><td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect </style></td>"
+    html += "<td style='font-weight:bold'>"+n+"</td></tr>";
+    ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
+    $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
   });
 
   if (Object.keys(baselayers).length > 1){ 
@@ -18092,7 +18112,6 @@ function showMarkers(markers) {
 
     pare = cluster ? markerClusters[mark.c] : markerLayer;
     classname = 'map_icon cc c_'+mark.c+' r_'+mark.r+' s_'+mark.s+' p_'+mark.p+' id_'+mark.i+''+cclass;
-    console.log(classname)
     var marker = L.marker([mark.a, mark.o],{
       icon: L.divIcon({ className: classname }),
       riseOnHover: true,
@@ -18184,7 +18203,7 @@ function onResize() {
     map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
     px = Math.max(Math.min(Math.max(parseInt($('#resize').css($flo)),500),window.innerWidth - 480),500);
-    console.log(px)
+    //console.log(px)
     $("#map").css('width',px+'px');
     $("#rightpane").css('width',(window.innerWidth-px)+'px');
     $("#resize").css($flo,px+'px');
@@ -18566,7 +18585,7 @@ function showVector(v) {
     return 0
   }
   vect = $.grep(vectorinfo,function(i,n){return i.vector_datum.name == pn});
-  console.log(vect)
+  //console.log(vect)
   if(vect.length == 0) {
     console.log('fail - no vect');
     return 0

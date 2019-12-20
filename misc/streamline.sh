@@ -10,7 +10,7 @@ cat jquery.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
 cat jquery.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
   tooltip.js popover.js \
   leaflet.js leaflet-providers.js leaflet-loading.js leaflet.markercluster.js\
-  oms.js noui.js ascii.js jquery-ui.min.js devhelper.js xml2json.js > all-dev.js
+  oms.js noui.js ascii.js jquery-ui.min.js devhelper.js xml2json.js VectorTileLayer.min.js > all-dev.js
 
 cat jquery.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
   tooltip.js popover.js \

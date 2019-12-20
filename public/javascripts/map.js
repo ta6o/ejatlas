@@ -57,6 +57,7 @@ function initMap () {
 
   markerLayer = L.featureGroup();
   featureLayer = L.featureGroup({interactive:true});
+  geoLayer = L.featureGroup({interactive:true});
   initLayers = [];
 
   maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
@@ -67,6 +68,7 @@ function initMap () {
   }
   initLayers.push(markerLayer)
   initLayers.push(featureLayer)
+  initLayers.push(geoLayer)
   map = L.map('map',{
     scrollWheelZoom: $('#map').css('position') == "fixed",
     worldCopyJump: true,
@@ -84,6 +86,24 @@ function initMap () {
 
   $.each(vectorinfo,function(i,v){
     loadJS(v["vector_datum"]["url"],true)
+  });
+
+  $.each(layerinfo,function(i,f){
+    n = f[0];
+    s = f[1];
+    overlayMaps[s] = L.tileLayer.wms('https://geo.ejatlas.org/geoserver/gwc/service/wms', { 
+      layers: "geonode:"+s, 
+      format: 'application/x-protobuf;type=mapbox-vector', 
+      transparent: true 
+    }).addTo(geoLayer);
+    if ($('#legendpane .vectorlegend').length == 0) {
+      $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
+    }
+    html = "<tr><td class='input'><input type='checkbox' id='checkbox_"+s+"' checked='checked'>"
+    html += "</input></td><td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect </style></td>"
+    html += "<td style='font-weight:bold'>"+n+"</td></tr>";
+    ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
+    $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
   });
 
   if (Object.keys(baselayers).length > 1){ 

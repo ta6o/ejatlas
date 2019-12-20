@@ -454,6 +454,7 @@ Admin.controller do
     end
     @defs = @defs.to_set.to_a
     @vectors = CGI.unescapeHTML(con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link, rank, clickable, geometry_type').order(:rank).to_json).html_safe
+    @layers = con.geo_layers.map{|x| [x.name,x.slug]}.to_json.html_safe
     @images = []
     @images = con.images.order("updated_at desc") if con.images.any?
     @ogimage = @images.first.file.url if @images.any?

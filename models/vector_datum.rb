@@ -5,23 +5,25 @@ class GeoLayer < ActiveRecord::Base
 
   def self.check_layers
     require "rest_client"
-    local = GeoLayer.all.map(&:name)
+    local = GeoLayer.all.map(&:slug)
     JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"].each do |l|
+      data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{l["name"]}.json", params={}).body)["featureType"]
+      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}"}
       if local.include?(l["name"])
         local.delete l["name"]
       else
-        GeoLayer.create :name=>l["name"], :url=>l["href"]
+        GeoLayer.create attrs
       end
     end
     local.each do |l|
-      if la = GeoLayer.find_by_name(l)
+      if la = GeoLayer.find_by_slug(l)
         la.destroy
       end
     end
   end
 
   def inspect
-    self.featureds.any? ? "#{self.name.cyan} in #{self.featureds.map{|a| "#{a.name.yellow} (#{a.class.to_s.green})"}.join(", ")}" : self.name
+    self.featureds.any? ? "#{self.name.cyan} in #{self.featureds.map{|a| "#{a.name.yellow} (#{a.class.to_s.green})"}.join(", ")}" : self.name.cyan
   end
 end
 

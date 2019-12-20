@@ -550,7 +550,10 @@ ActiveRecord::Schema.define(version: 0) do
 
   create_table "geo_layer", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255
+    t.string "slug", limit: 255
+    t.text   "description"
     t.string "url", limit: 255
+    t.string "bbox", limit: 255
   end
 
   create_table "geo_layer_attachable", id: :serial, force: :cascade do |t|
