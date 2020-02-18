@@ -17767,5 +17767,1901 @@ loadMapJS('/javascripts/map.js');
 
 })(jQuery);
 
-!function(a,b){typeof exports==='object'&&typeof module!=='undefined'?module.exports=b(require('leaflet')):typeof define==='function'&&define.amd?define(['leaflet'],b):(a=a||self, a.VectorTileLayer=b(a.L))}(this,(function(c){'use strict';var d=e;function e(a,b){this.x=a;this.y=b}e.prototype={clone:function(){return new e(this.x,this.y)},add:function(a){return this.clone()._add(a)},sub:function(a){return this.clone()._sub(a)},multByPoint:function(a){return this.clone()._multByPoint(a)},divByPoint:function(a){return this.clone()._divByPoint(a)},mult:function(a){return this.clone()._mult(a)},div:function(a){return this.clone()._div(a)},rotate:function(a){return this.clone()._rotate(a)},rotateAround:function(a,b){return this.clone()._rotateAround(a,b)},matMult:function(a){return this.clone()._matMult(a)},unit:function(){return this.clone()._unit()},perp:function(){return this.clone()._perp()},round:function(){return this.clone()._round()},mag:function(){return Math.sqrt(this.x*this.x+this.y*this.y)},equals:function(a){return this.x===a.x&&this.y===a.y},dist:function(a){return Math.sqrt(this.distSqr(a))},distSqr:function(a){var b=a.x-this.x,c=a.y-this.y;return b*b+c*c},angle:function(){return Math.atan2(this.y,this.x)},angleTo:function(a){return Math.atan2(this.y-a.y,this.x-a.x)},angleWith:function(a){return this.angleWithSep(a.x,a.y)},angleWithSep:function(a,b){return Math.atan2(this.x*b-this.y*a,this.x*a+this.y*b)},_matMult:function(a){var b=a[0]*this.x+a[1]*this.y,c=a[2]*this.x+a[3]*this.y;this.x=b;this.y=c;return this},_add:function(a){this.x+=a.x;this.y+=a.y;return this},_sub:function(a){this.x-=a.x;this.y-=a.y;return this},_mult:function(a){this.x*=a;this.y*=a;return this},_div:function(a){this.x/=a;this.y/=a;return this},_multByPoint:function(a){this.x*=a.x;this.y*=a.y;return this},_divByPoint:function(a){this.x/=a.x;this.y/=a.y;return this},_unit:function(){this._div(this.mag());return this},_perp:function(){var a=this.y;this.y=this.x;this.x=-a;return this},_rotate:function(a){var b=Math.cos(a),c=Math.sin(a),d=b*this.x-c*this.y,e=c*this.x+b*this.y;this.x=d;this.y=e;return this},_rotateAround:function(a,b){var c=Math.cos(a),d=Math.sin(a),e=b.x+c*(this.x-b.x)-d*(this.y-b.y),f=b.y+d*(this.x-b.x)+c*(this.y-b.y);this.x=e;this.y=f;return this},_round:function(){this.x=Math.round(this.x);this.y=Math.round(this.y);return this}};e.convert=function(a){if(a instanceof e){return a}if(Array.isArray(a)){return new e(a[0],a[1])}return a};var f=g;function g(a,b,c,d,e){this.properties={};this.extent=c;this.type=0;this._pbf=a;this._geometry=-1;this._keys=d;this._values=e;a.readFields(h,this,b)}function h(a,b,c){a==1?(b.id=c.readVarint()):a==2?j(c,b):a==3?(b.type=c.readVarint()):a==4&&(b._geometry=c.pos)}function j(a,b){var c=a.readVarint()+a.pos;while(a.pos<c){var d=b._keys[a.readVarint()],e=b._values[a.readVarint()];b.properties[d]=e}}g.types=['Unknown','Point','LineString','Polygon'];g.prototype.loadGeometry=function(){var a=this._pbf;a.pos=this._geometry;var b=a.readVarint()+a.pos,c=1,e=0,f=0,g=0,h=[],i;while(a.pos<b){if(e<=0){var j=a.readVarint();c=j&0x7;e=j>>3}e--;if(c===1||c===2)f+=a.readSVarint(),g+=a.readSVarint(),c===1&&(i&&h.push(i),i=[]),i.push(new d(f,g));else if(c===7)i&&i.push(i[0].clone());else{throw new Error('unknown command '+c)}}i&&h.push(i);return h};g.prototype.bbox=function(){var a=this._pbf;a.pos=this._geometry;var b=a.readVarint()+a.pos,c=1,d=0,e=0,f=0,g=Infinity,h=-Infinity,i=Infinity,j=-Infinity;while(a.pos<b){if(d<=0){var k=a.readVarint();c=k&0x7;d=k>>3}d--;if(c===1||c===2)e+=a.readSVarint(),f+=a.readSVarint(),e<g&&(g=e),e>h&&(h=e),f<i&&(i=f),f>j&&(j=f);else if(c!==7){throw new Error('unknown command '+c)}}return[g,i,h,j]};g.prototype.toGeoJSON=function(a,b,c){var d=this.extent*Math.pow(2,c),e=this.extent*a,f=this.extent*b,h=this.loadGeometry(),i=g.types[this.type],j,k;function l(a){for(var b=0;b<a.length;b++){var c=a[b],g=180-(c.y+f)*360/d;a[b]=[(c.x+e)*360/d-180,360/Math.PI*Math.atan(Math.exp(g*Math.PI/180))-90]}}switch(this.type){case 1:var m=[];for(j=0;j<h.length;j++)m[j]=h[j][0];h=m;l(h);break;case 2:for(j=0;j<h.length;j++)l(h[j]);break;case 3:h=n(h);for(j=0;j<h.length;j++){for(k=0;k<h[j].length;k++)l(h[j][k])};break};h.length===1?(h=h[0]):(i='Multi'+i);var o={type:"Feature",geometry:{type:i,coordinates:h},properties:this.properties};'id' in this&&(o.id=this.id);return o};function n(a){var b=a.length;if(b<=1){return[a]}var c=[],d,e;for(var f=0;f<b;f++){var g=o(a[f]);if(g===0){continue}e===undefined&&(e=g<0);e===g<0?(d&&c.push(d),d=[a[f]]):d.push(a[f])}d&&c.push(d);return c}function o(a){var b=0;for(var c=0,d=a.length,e=d-1,f,g;c<d;e=c++)f=a[c],g=a[e],b+=(g.x-f.x)*(f.y+g.y);return b}var q=r;function r(a,b){this.version=1;this.name=null;this.extent=4096;this.length=0;this._pbf=a;this._keys=[];this._values=[];this._features=[];a.readFields(t,this,b);this.length=this._features.length}function t(a,b,c){a===15?(b.version=c.readVarint()):a===1?(b.name=c.readString()):a===5?(b.extent=c.readVarint()):a===2?b._features.push(c.pos):a===3?b._keys.push(c.readString()):a===4&&b._values.push(u(c))}function u(a){var b=null,c=a.readVarint()+a.pos;while(a.pos<c){var d=a.readVarint()>>3;b=d===1?a.readString():d===2?a.readFloat():d===3?a.readDouble():d===4?a.readVarint64():d===5?a.readVarint():d===6?a.readSVarint():d===7?a.readBoolean():null}return b}r.prototype.feature=function(a){if(a<0||a>=this._features.length){throw new Error('feature index out of bounds')}this._pbf.pos=this._features[a];var b=this._pbf.readVarint()+this._pbf.pos;return new f(this._pbf,b,this.extent,this._keys,this._values)};var v=w;function w(a,b){this.layers=a.readFields(A,{},b)}function A(a,b,c){if(a===3){var d=new q(c,c.readVarint()+c.pos);d.length&&(b[d.name]=d)}}var B=v,C=f;function D(a,b,d,e,f){var g=new c.Layer(f),h=c.SVG.create("path"),i=C.types[a.type];f=c.extend({},f);g.feature=a;g.layerName=b;g.properties=a.properties;g.addTo=function b(a){g._map=a;g.addInteractiveTarget(h)};g.removeFrom=function a(){g.removeInteractiveTarget(h);delete g._map};g.setStyle=function b(a){var d=h;a=c.extend({},"Polygon"===i?c.Polygon.prototype.options:c.Path.prototype.options,a);a.stroke?(d.setAttribute("stroke",a.color),d.setAttribute("stroke-opacity",a.opacity),d.setAttribute("stroke-width",a.weight),d.setAttribute("stroke-linecap",a.lineCap),d.setAttribute("stroke-linejoin",a.lineJoin),a.dashArray?d.setAttribute("stroke-dasharray",a.dashArray):d.removeAttribute("stroke-dasharray"),a.dashOffset?d.setAttribute("stroke-dashoffset",a.dashOffset):d.removeAttribute("stroke-dashoffset")):d.setAttribute("stroke","none");a.fill?(d.setAttribute("fill",a.fillColor||a.color),d.setAttribute("fill-opacity",a.fillOpacity),d.setAttribute("fill-rule",a.fillRule||"evenodd")):d.setAttribute("fill","none");a.interactive?(d.setAttribute("pointer-events","auto"),c.DomUtil.addClass(d,"leaflet-interactive")):(c.DomUtil.removeClass(d,"leaflet-interactive"),d.removeAttribute("pointer-events"));return d};switch(i){case "Point":break;case "LineString":;case "Polygon":h.setAttribute("d",c.SVG.pointsToPath(a.loadGeometry().map(function(a){return a.map(function(a){return c.point(a).scaleBy(e)})}),"Polygon"===i));f.className&&c.DomUtil.addClass(h,f.className);g.setStyle(f);d.appendChild(h);break};return g}var E=Object.freeze(D),F=Object.freeze(function d(a,b){var e={},f=b.getTileSize(),g=c.SVG.create("svg"),h=c.SVG.create("g"),i=[];g.setAttribute("viewBox",("0 0 "+f.x+" "+f.y));g.appendChild(h);function j(a,c,d){var e=b.getFeatureStyle(a,c);if(!e){return}var f=E(a,c,h,d,e);i.push(f);b.addFeatureLayer(f)}e.addVectorTile=function b(a){Object.keys(a.layers).forEach(function(b){var c=a.layers[b],d=f.divideBy(c.extent),e=0;while(e!==c.length)j(c.feature(e),b,d),e+=1});return e};e.eachFeatureLayer=function(a){return i.map(a)};e.domElement=function(){return g};e.coords=function(){return a};return e}),G;"function"===typeof window.fetch?(G=window.fetch):(G=function(a){var b=new XMLHttpRequest();b.open("GET",a);b.responseType="arraybuffer";return new Promise(function(a){b.onload=function(){return a({ok:200===b.status,status:b.status,statusText:b.statusText,arrayBuffer:function a(){return b.response}})};b.send()})});var H=Object.freeze(G),I=function(a,b,c,d,e){var f,g,h=e*8-d-1,i=(1<<h)-1,j=i>>1,k=-7,l=c?e-1:0,m=c?-1:1,n=a[b+l];l+=m;f=n&(1<<-k)-1;n>>=-k;k+=h;for(;k>0;f=f*256+a[b+l], l+=m, k-=8);g=f&(1<<-k)-1;f>>=-k;k+=d;for(;k>0;g=g*256+a[b+l], l+=m, k-=8);if(f===0)f=1-j;else if(f===i){return g?NaN:(n?-1:1)*Infinity}else g+=Math.pow(2,d),f-=j;return(n?-1:1)*g*Math.pow(2,f-d)},J=function(a,b,c,d,e,f){var g,h,i,j=f*8-e-1,k=(1<<j)-1,l=k>>1,m=e===23?Math.pow(2,-24)-Math.pow(2,-77):0,n=d?0:f-1,o=d?1:-1,p=b<0||b===0&&1/b<0?1:0;b=Math.abs(b);isNaN(b)||b===Infinity?(h=isNaN(b)?1:0,g=k):(g=Math.floor(Math.log(b)/Math.LN2),b*(i=Math.pow(2,-g))<1&&(g--,i*=2),g+l>=1?(b+=m/i):(b+=m*Math.pow(2,1-l)),b*i>=2&&(g++,i/=2),g+l>=k?(h=0,g=k):g+l>=1?(h=(b*i-1)*Math.pow(2,e),g+=l):(h=b*Math.pow(2,l-1)*Math.pow(2,e),g=0));for(;e>=8;a[c+n]=h&0xff, n+=o, h/=256, e-=8);g=g<<e|h;j+=e;for(;j>0;a[c+n]=g&0xff, n+=o, g/=256, j-=8);a[c+n-o]|=p*128},K={read:I,write:J},L=M;function M(a){this.buf=ArrayBuffer.isView&&ArrayBuffer.isView(a)?a:new Uint8Array(a||0);this.pos=0;this.type=0;this.length=this.buf.length}M.Varint=0;M.Fixed64=1;M.Bytes=2;M.Fixed32=5;var N=4294967296,O=1/N;M.prototype={destroy:function(){this.buf=null},readFields:function(a,b,c){c=c||this.length;while(this.pos<c){var d=this.readVarint(),e=d>>3,f=this.pos;this.type=d&0x7;a(e,b,this);this.pos===f&&this.skip(d)}return b},readMessage:function(a,b){return this.readFields(a,b,this.readVarint()+this.pos)},readFixed32:function(){var a=ad(this.buf,this.pos);this.pos+=4;return a},readSFixed32:function(){var a=af(this.buf,this.pos);this.pos+=4;return a},readFixed64:function(){var a=ad(this.buf,this.pos)+ad(this.buf,this.pos+4)*N;this.pos+=8;return a},readSFixed64:function(){var a=ad(this.buf,this.pos)+af(this.buf,this.pos+4)*N;this.pos+=8;return a},readFloat:function(){var a=K.read(this.buf,this.pos,!0,23,4);this.pos+=4;return a},readDouble:function(){var a=K.read(this.buf,this.pos,!0,52,8);this.pos+=8;return a},readVarint:function(a){var b=this.buf,c,d;d=b[this.pos++];c=d&0x7f;if(d<0x80){return c}d=b[this.pos++];c|=(d&0x7f)<<7;if(d<0x80){return c}d=b[this.pos++];c|=(d&0x7f)<<14;if(d<0x80){return c}d=b[this.pos++];c|=(d&0x7f)<<21;if(d<0x80){return c}d=b[this.pos];c|=(d&0x0f)<<28;return P(c,a,this)},readVarint64:function(){return this.readVarint(!0)},readSVarint:function(){var a=this.readVarint();return a%2===1?(a+1)/-2:a/2},readBoolean:function(){return Boolean(this.readVarint())},readString:function(){var a=this.readVarint()+this.pos,b=ag(this.buf,this.pos,a);this.pos=a;return b},readBytes:function(){var a=this.readVarint()+this.pos,b=this.buf.subarray(this.pos,a);this.pos=a;return b},readPackedVarint:function(a,b){var c=Q(this);a=a||[];while(this.pos<c)a.push(this.readVarint(b));return a},readPackedSVarint:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readSVarint());return a},readPackedBoolean:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readBoolean());return a},readPackedFloat:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readFloat());return a},readPackedDouble:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readDouble());return a},readPackedFixed32:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readFixed32());return a},readPackedSFixed32:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readSFixed32());return a},readPackedFixed64:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readFixed64());return a},readPackedSFixed64:function(a){var b=Q(this);a=a||[];while(this.pos<b)a.push(this.readSFixed64());return a},skip:function(a){var b=a&0x7;if(b===M.Varint){while(this.buf[this.pos++]>0x7f);}else if(b===M.Bytes)this.pos=this.readVarint()+this.pos;else if(b===M.Fixed32)this.pos+=4;else if(b===M.Fixed64)this.pos+=8;else{throw new Error('Unimplemented type: '+b)}},writeTag:function(a,b){this.writeVarint(a<<3|b)},realloc:function(a){var b=this.length||16;while(b<this.pos+a)b*=2;if(b!==this.length){var c=new Uint8Array(b);c.set(this.buf);this.buf=c;this.length=b}},finish:function(){this.length=this.pos;this.pos=0;return this.buf.subarray(0,this.length)},writeFixed32:function(a){this.realloc(4);ae(this.buf,a,this.pos);this.pos+=4},writeSFixed32:function(a){this.realloc(4);ae(this.buf,a,this.pos);this.pos+=4},writeFixed64:function(a){this.realloc(8);ae(this.buf,a&-1,this.pos);ae(this.buf,Math.floor(a*O),this.pos+4);this.pos+=8},writeSFixed64:function(a){this.realloc(8);ae(this.buf,a&-1,this.pos);ae(this.buf,Math.floor(a*O),this.pos+4);this.pos+=8},writeVarint:function(a){a=+a||0;if(a>0xfffffff||a<0){S(a,this);return}this.realloc(4);this.buf[this.pos++]=a&0x7f|(a>0x7f?0x80:0);if(a<=0x7f){return}this.buf[this.pos++]=(a>>>=7)&0x7f|(a>0x7f?0x80:0);if(a<=0x7f){return}this.buf[this.pos++]=(a>>>=7)&0x7f|(a>0x7f?0x80:0);if(a<=0x7f){return}this.buf[this.pos++]=a>>>7&0x7f},writeSVarint:function(a){this.writeVarint(a<0?-a*2-1:a*2)},writeBoolean:function(a){this.writeVarint(Boolean(a))},writeString:function(a){a=String(a);this.realloc(a.length*4);this.pos++;var b=this.pos;this.pos=ah(this.buf,a,this.pos);var c=this.pos-b;c>=0x80&&V(b,c,this);this.pos=b-1;this.writeVarint(c);this.pos+=c},writeFloat:function(a){this.realloc(4);K.write(this.buf,a,this.pos,!0,23,4);this.pos+=4},writeDouble:function(a){this.realloc(8);K.write(this.buf,a,this.pos,!0,52,8);this.pos+=8},writeBytes:function(a){var b=a.length;this.writeVarint(b);this.realloc(b);for(var c=0;c<b;c++)this.buf[this.pos++]=a[c]},writeRawMessage:function(a,b){this.pos++;var c=this.pos;a(b,this);var d=this.pos-c;d>=0x80&&V(c,d,this);this.pos=c-1;this.writeVarint(d);this.pos+=d},writeMessage:function(a,b,c){this.writeTag(a,M.Bytes);this.writeRawMessage(b,c)},writePackedVarint:function(a,b){this.writeMessage(a,W,b)},writePackedSVarint:function(a,b){this.writeMessage(a,X,b)},writePackedBoolean:function(a,b){this.writeMessage(a,_,b)},writePackedFloat:function(a,b){this.writeMessage(a,Y,b)},writePackedDouble:function(a,b){this.writeMessage(a,Z,b)},writePackedFixed32:function(a,b){this.writeMessage(a,$,b)},writePackedSFixed32:function(a,b){this.writeMessage(a,aa,b)},writePackedFixed64:function(a,b){this.writeMessage(a,ab,b)},writePackedSFixed64:function(a,b){this.writeMessage(a,ac,b)},writeBytesField:function(a,b){this.writeTag(a,M.Bytes);this.writeBytes(b)},writeFixed32Field:function(a,b){this.writeTag(a,M.Fixed32);this.writeFixed32(b)},writeSFixed32Field:function(a,b){this.writeTag(a,M.Fixed32);this.writeSFixed32(b)},writeFixed64Field:function(a,b){this.writeTag(a,M.Fixed64);this.writeFixed64(b)},writeSFixed64Field:function(a,b){this.writeTag(a,M.Fixed64);this.writeSFixed64(b)},writeVarintField:function(a,b){this.writeTag(a,M.Varint);this.writeVarint(b)},writeSVarintField:function(a,b){this.writeTag(a,M.Varint);this.writeSVarint(b)},writeStringField:function(a,b){this.writeTag(a,M.Bytes);this.writeString(b)},writeFloatField:function(a,b){this.writeTag(a,M.Fixed32);this.writeFloat(b)},writeDoubleField:function(a,b){this.writeTag(a,M.Fixed64);this.writeDouble(b)},writeBooleanField:function(a,b){this.writeVarintField(a,Boolean(b))}};function P(a,b,c){var d=c.buf,e,f;f=d[c.pos++];e=(f&0x70)>>4;if(f<0x80){return R(a,e,b)}f=d[c.pos++];e|=(f&0x7f)<<3;if(f<0x80){return R(a,e,b)}f=d[c.pos++];e|=(f&0x7f)<<10;if(f<0x80){return R(a,e,b)}f=d[c.pos++];e|=(f&0x7f)<<17;if(f<0x80){return R(a,e,b)}f=d[c.pos++];e|=(f&0x7f)<<24;if(f<0x80){return R(a,e,b)}f=d[c.pos++];e|=(f&0x01)<<31;if(f<0x80){return R(a,e,b)}throw new Error('Expected varint not more than 10 bytes')}function Q(a){return a.type===M.Bytes?a.readVarint()+a.pos:a.pos+1}function R(a,b,c){if(c){return b*0x100000000+(a>>>0)}return(b>>>0)*0x100000000+(a>>>0)}function S(a,b){var c,d;a>=0?(c=a%0x100000000|0,d=a/0x100000000|0):(c=~(-a%0x100000000),d=~(-a/0x100000000),c^0xffffffff?(c=c+1|0):(c=0,d=d+1|0));if(a>=0x10000000000000000||a<-18446744073709552000){throw new Error('Given varint doesn\'t fit into 10 bytes')}b.realloc(10);T(c,d,b);U(d,b)}function T(a,b,c){c.buf[c.pos++]=a&0x7f|0x80;a>>>=7;c.buf[c.pos++]=a&0x7f|0x80;a>>>=7;c.buf[c.pos++]=a&0x7f|0x80;a>>>=7;c.buf[c.pos++]=a&0x7f|0x80;a>>>=7;c.buf[c.pos]=a&0x7f}function U(a,b){var c=(a&0x07)<<4;b.buf[b.pos++]|=c|((a>>>=3)?0x80:0);if(!a){return}b.buf[b.pos++]=a&0x7f|((a>>>=7)?0x80:0);if(!a){return}b.buf[b.pos++]=a&0x7f|((a>>>=7)?0x80:0);if(!a){return}b.buf[b.pos++]=a&0x7f|((a>>>=7)?0x80:0);if(!a){return}b.buf[b.pos++]=a&0x7f|((a>>>=7)?0x80:0);if(!a){return}b.buf[b.pos++]=a&0x7f}function V(a,b,c){var d=b<=0x3fff?1:b<=0x1fffff?2:b<=0xfffffff?3:Math.ceil(Math.log(b)/(Math.LN2*7));c.realloc(d);for(var e=c.pos-1;e>=a;e--)c.buf[e+d]=c.buf[e]}function W(a,b){for(var c=0;c<a.length;c++)b.writeVarint(a[c])}function X(a,b){for(var c=0;c<a.length;c++)b.writeSVarint(a[c])}function Y(a,b){for(var c=0;c<a.length;c++)b.writeFloat(a[c])}function Z(a,b){for(var c=0;c<a.length;c++)b.writeDouble(a[c])}function _(a,b){for(var c=0;c<a.length;c++)b.writeBoolean(a[c])}function $(a,b){for(var c=0;c<a.length;c++)b.writeFixed32(a[c])}function aa(a,b){for(var c=0;c<a.length;c++)b.writeSFixed32(a[c])}function ab(a,b){for(var c=0;c<a.length;c++)b.writeFixed64(a[c])}function ac(a,b){for(var c=0;c<a.length;c++)b.writeSFixed64(a[c])}function ad(a,b){return(a[b]|a[b+1]<<8|a[b+2]<<16)+a[b+3]*0x1000000}function ae(a,b,c){a[c]=b;a[c+1]=b>>>8;a[c+2]=b>>>16;a[c+3]=b>>>24}function af(a,b){return(a[b]|a[b+1]<<8|a[b+2]<<16)+(a[b+3]<<24)}function ag(a,b,c){var d='',e=b;while(e<c){var f=a[e],g=null,h=f>0xEF?4:f>0xDF?3:f>0xBF?2:1;if(e+h>c){break}var i,j,k;h===1?(f<0x80&&(g=f)):h===2?(i=a[e+1],(i&0xC0)===0x80&&(g=(f&0x1F)<<0x6|i&0x3F,g<=0x7F&&(g=null))):h===3?(i=a[e+1],j=a[e+2],(i&0xC0)===0x80&&(j&0xC0)===0x80&&(g=(f&0xF)<<0xC|(i&0x3F)<<0x6|j&0x3F,(g<=0x7FF||g>=0xD800&&g<=0xDFFF)&&(g=null))):h===4&&(i=a[e+1],j=a[e+2],k=a[e+3],(i&0xC0)===0x80&&(j&0xC0)===0x80&&(k&0xC0)===0x80&&(g=(f&0xF)<<0x12|(i&0x3F)<<0xC|(j&0x3F)<<0x6|k&0x3F,(g<=0xFFFF||g>=0x110000)&&(g=null)));g===null?(g=0xFFFD,h=1):g>0xFFFF&&(g-=0x10000,d+=String.fromCharCode(g>>>10&0x3FF|0xD800),g=0xDC00|g&0x3FF);d+=String.fromCharCode(g);e+=h}return d}function ah(a,b,c){for(var d=0,e,f;d<b.length;d++){e=b.charCodeAt(d);if(e>0xD7FF&&e<0xE000){if(f){if(e<0xDC00){a[c++]=0xEF;a[c++]=0xBF;a[c++]=0xBD;f=e;continue}else e=f-0xD800<<10|e-0xDC00|0x10000,f=null}else{e>0xDBFF||d+1===b.length?(a[c++]=0xEF,a[c++]=0xBF,a[c++]=0xBD):(f=e);continue}}else f&&(a[c++]=0xEF,a[c++]=0xBF,a[c++]=0xBD,f=null);e<0x80?(a[c++]=e):(e<0x800?(a[c++]=e>>0x6|0xC0):(e<0x10000?(a[c++]=e>>0xC|0xE0):(a[c++]=e>>0x12|0xF0,a[c++]=e>>0xC&0x3F|0x80),a[c++]=e>>0x6&0x3F|0x80),a[c++]=e&0x3F|0x80)}return c}function ai(){var a=[],b=arguments.length;while(b--)a[b]=arguments[b];return new Error(a.join(": "))}function aj(a){return H(a).then(function(b){if(b.ok){return b.arrayBuffer()}if(404!==b.status){throw ai(a,b.status,b.statusText)}})}function ak(a){return a.x+"|"+a.y+"|"+a.z}var al={minZoom:0,maxZoom:18,maxDetailZoom:undefined,minDetailZoom:undefined,subdomains:"abc",zoomOffset:0,zoomReverse:!1},am=Object.freeze(function d(a,b){var e=new c.GridLayer(b),f=Object.getPrototypeOf(e),g={};function h(a,c,d){var e=b.getFeatureId,f=b.vectorTileLayerStyles,h=f[c];if(e){var i=e(a);g[i]&&(h=g[i])}"function"===typeof h&&(h=h(a.properties,d));if(Array.isArray(h)){if(!h.length){return}h=h[0]}return h}b=c.Util.extend({},al,b);"string"===typeof b.subdomains&&(b.subdomains=b.subdomains.split(""));b.vectorTileLayerStyles&&(b.style=h);var i={};e.on("tileunload",function(a){var b=ak(a.coords),c=i[b];if(!c){return}c.eachFeatureLayer(function(a){return e.removeFeatureLayer(a)});delete i[b]});var j,k;function l(){k=j.getZoom()}e.onAdd=function b(a){var c,d=[],g=arguments.length-1;while(g-->0)d[g]=arguments[g+1];j=a;j.on("zoomend",l);l();return(c=f.onAdd).call.apply(c,[e,a].concat(d))};e.onRemove=function a(){var b,c=[],d=arguments.length;while(d--)c[d]=arguments[d];j.off("zoomend",l);j=undefined;return(b=f.onRemove).call.apply(b,[e].concat(c))};e.createTile=function c(a,b){var d=ak(a),f=F(a,e);i[d]=f;aj(e.getTileUrl(a)).then(function(a){f.addVectorTile(new B(new L(a)));b(null,f)});return f.domElement()};function m(a){var c=Math.abs(a.x+a.y)%b.subdomains.length;return b.subdomains[c]}function n(a){var c=b.minDetailZoom,d=b.maxDetailZoom;if(undefined!==c&&a<c){return c}if(undefined!==d&&d<a){return d}return a}function o(a){var c=b.maxZoom,d=b.zoomReverse,e=b.zoomOffset;d&&(a=c-a);return n(a+e)}e.getTileUrl=function e(d){var f={s:m(d),x:d.x,y:d.y,z:o(d.z)};return c.Util.template(a,c.Util.extend(f,b))};function p(a){Object.keys(i).forEach(function(b){return i[b].eachFeatureLayer(a)})}e.setStyle=function c(a){b.style=a;p(function(a){var b=a.feature,c=a.layerName,d=e.getFeatureStyle(b,c);a.setStyle(d)});return e};e.setFeatureStyle=function d(a,c){g[a]=c;e.setStyle(b.style);return e};e.resetFeatureStyle=function c(a){delete g[a];e.setStyle(b.style);return e};e.getTileSize=function a(){var b=f.getTileSize.call(e),c=e._tileZoom;return b.divideBy(j.getZoomScale(n(c),c)).round()};e.getFeatureStyle=function d(a,c){var e=b.style;return"function"===typeof e?e(a,c,k):e};e.addFeatureLayer=function b(a){a.addTo(j);a.addEventParent(e);return e};e.removeFeatureLayer=function b(a){a.removeEventParent(e);a.removeFrom(j);return e};return e});return am}))
-//# sourceMappingURL=VectorTileLayer.umd.min.js.map
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('leaflet')) :
+    typeof define === 'function' && define.amd ? define(['leaflet'], factory) :
+    (global = global || self, global.VectorTileLayer = factory(global.L));
+}(this, (function (leaflet) { 'use strict';
+
+    var pointGeometry = Point;
+
+    /**
+     * A standalone point geometry with useful accessor, comparison, and
+     * modification methods.
+     *
+     * @class Point
+     * @param {Number} x the x-coordinate. this could be longitude or screen
+     * pixels, or any other sort of unit.
+     * @param {Number} y the y-coordinate. this could be latitude or screen
+     * pixels, or any other sort of unit.
+     * @example
+     * var point = new Point(-77, 38);
+     */
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    Point.prototype = {
+
+        /**
+         * Clone this point, returning a new point that can be modified
+         * without affecting the old one.
+         * @return {Point} the clone
+         */
+        clone: function() { return new Point(this.x, this.y); },
+
+        /**
+         * Add this point's x & y coordinates to another point,
+         * yielding a new point.
+         * @param {Point} p the other point
+         * @return {Point} output point
+         */
+        add:     function(p) { return this.clone()._add(p); },
+
+        /**
+         * Subtract this point's x & y coordinates to from point,
+         * yielding a new point.
+         * @param {Point} p the other point
+         * @return {Point} output point
+         */
+        sub:     function(p) { return this.clone()._sub(p); },
+
+        /**
+         * Multiply this point's x & y coordinates by point,
+         * yielding a new point.
+         * @param {Point} p the other point
+         * @return {Point} output point
+         */
+        multByPoint:    function(p) { return this.clone()._multByPoint(p); },
+
+        /**
+         * Divide this point's x & y coordinates by point,
+         * yielding a new point.
+         * @param {Point} p the other point
+         * @return {Point} output point
+         */
+        divByPoint:     function(p) { return this.clone()._divByPoint(p); },
+
+        /**
+         * Multiply this point's x & y coordinates by a factor,
+         * yielding a new point.
+         * @param {Point} k factor
+         * @return {Point} output point
+         */
+        mult:    function(k) { return this.clone()._mult(k); },
+
+        /**
+         * Divide this point's x & y coordinates by a factor,
+         * yielding a new point.
+         * @param {Point} k factor
+         * @return {Point} output point
+         */
+        div:     function(k) { return this.clone()._div(k); },
+
+        /**
+         * Rotate this point around the 0, 0 origin by an angle a,
+         * given in radians
+         * @param {Number} a angle to rotate around, in radians
+         * @return {Point} output point
+         */
+        rotate:  function(a) { return this.clone()._rotate(a); },
+
+        /**
+         * Rotate this point around p point by an angle a,
+         * given in radians
+         * @param {Number} a angle to rotate around, in radians
+         * @param {Point} p Point to rotate around
+         * @return {Point} output point
+         */
+        rotateAround:  function(a,p) { return this.clone()._rotateAround(a,p); },
+
+        /**
+         * Multiply this point by a 4x1 transformation matrix
+         * @param {Array<Number>} m transformation matrix
+         * @return {Point} output point
+         */
+        matMult: function(m) { return this.clone()._matMult(m); },
+
+        /**
+         * Calculate this point but as a unit vector from 0, 0, meaning
+         * that the distance from the resulting point to the 0, 0
+         * coordinate will be equal to 1 and the angle from the resulting
+         * point to the 0, 0 coordinate will be the same as before.
+         * @return {Point} unit vector point
+         */
+        unit:    function() { return this.clone()._unit(); },
+
+        /**
+         * Compute a perpendicular point, where the new y coordinate
+         * is the old x coordinate and the new x coordinate is the old y
+         * coordinate multiplied by -1
+         * @return {Point} perpendicular point
+         */
+        perp:    function() { return this.clone()._perp(); },
+
+        /**
+         * Return a version of this point with the x & y coordinates
+         * rounded to integers.
+         * @return {Point} rounded point
+         */
+        round:   function() { return this.clone()._round(); },
+
+        /**
+         * Return the magitude of this point: this is the Euclidean
+         * distance from the 0, 0 coordinate to this point's x and y
+         * coordinates.
+         * @return {Number} magnitude
+         */
+        mag: function() {
+            return Math.sqrt(this.x * this.x + this.y * this.y);
+        },
+
+        /**
+         * Judge whether this point is equal to another point, returning
+         * true or false.
+         * @param {Point} other the other point
+         * @return {boolean} whether the points are equal
+         */
+        equals: function(other) {
+            return this.x === other.x &&
+                   this.y === other.y;
+        },
+
+        /**
+         * Calculate the distance from this point to another point
+         * @param {Point} p the other point
+         * @return {Number} distance
+         */
+        dist: function(p) {
+            return Math.sqrt(this.distSqr(p));
+        },
+
+        /**
+         * Calculate the distance from this point to another point,
+         * without the square root step. Useful if you're comparing
+         * relative distances.
+         * @param {Point} p the other point
+         * @return {Number} distance
+         */
+        distSqr: function(p) {
+            var dx = p.x - this.x,
+                dy = p.y - this.y;
+            return dx * dx + dy * dy;
+        },
+
+        /**
+         * Get the angle from the 0, 0 coordinate to this point, in radians
+         * coordinates.
+         * @return {Number} angle
+         */
+        angle: function() {
+            return Math.atan2(this.y, this.x);
+        },
+
+        /**
+         * Get the angle from this point to another point, in radians
+         * @param {Point} b the other point
+         * @return {Number} angle
+         */
+        angleTo: function(b) {
+            return Math.atan2(this.y - b.y, this.x - b.x);
+        },
+
+        /**
+         * Get the angle between this point and another point, in radians
+         * @param {Point} b the other point
+         * @return {Number} angle
+         */
+        angleWith: function(b) {
+            return this.angleWithSep(b.x, b.y);
+        },
+
+        /*
+         * Find the angle of the two vectors, solving the formula for
+         * the cross product a x b = |a||b|sin(θ) for θ.
+         * @param {Number} x the x-coordinate
+         * @param {Number} y the y-coordinate
+         * @return {Number} the angle in radians
+         */
+        angleWithSep: function(x, y) {
+            return Math.atan2(
+                this.x * y - this.y * x,
+                this.x * x + this.y * y);
+        },
+
+        _matMult: function(m) {
+            var x = m[0] * this.x + m[1] * this.y,
+                y = m[2] * this.x + m[3] * this.y;
+            this.x = x;
+            this.y = y;
+            return this;
+        },
+
+        _add: function(p) {
+            this.x += p.x;
+            this.y += p.y;
+            return this;
+        },
+
+        _sub: function(p) {
+            this.x -= p.x;
+            this.y -= p.y;
+            return this;
+        },
+
+        _mult: function(k) {
+            this.x *= k;
+            this.y *= k;
+            return this;
+        },
+
+        _div: function(k) {
+            this.x /= k;
+            this.y /= k;
+            return this;
+        },
+
+        _multByPoint: function(p) {
+            this.x *= p.x;
+            this.y *= p.y;
+            return this;
+        },
+
+        _divByPoint: function(p) {
+            this.x /= p.x;
+            this.y /= p.y;
+            return this;
+        },
+
+        _unit: function() {
+            this._div(this.mag());
+            return this;
+        },
+
+        _perp: function() {
+            var y = this.y;
+            this.y = this.x;
+            this.x = -y;
+            return this;
+        },
+
+        _rotate: function(angle) {
+            var cos = Math.cos(angle),
+                sin = Math.sin(angle),
+                x = cos * this.x - sin * this.y,
+                y = sin * this.x + cos * this.y;
+            this.x = x;
+            this.y = y;
+            return this;
+        },
+
+        _rotateAround: function(angle, p) {
+            var cos = Math.cos(angle),
+                sin = Math.sin(angle),
+                x = p.x + cos * (this.x - p.x) - sin * (this.y - p.y),
+                y = p.y + sin * (this.x - p.x) + cos * (this.y - p.y);
+            this.x = x;
+            this.y = y;
+            return this;
+        },
+
+        _round: function() {
+            this.x = Math.round(this.x);
+            this.y = Math.round(this.y);
+            return this;
+        }
+    };
+
+    /**
+     * Construct a point from an array if necessary, otherwise if the input
+     * is already a Point, or an unknown type, return it unchanged
+     * @param {Array<Number>|Point|*} a any kind of input value
+     * @return {Point} constructed point, or passed-through value.
+     * @example
+     * // this
+     * var point = Point.convert([0, 1]);
+     * // is equivalent to
+     * var point = new Point(0, 1);
+     */
+    Point.convert = function (a) {
+        if (a instanceof Point) {
+            return a;
+        }
+        if (Array.isArray(a)) {
+            return new Point(a[0], a[1]);
+        }
+        return a;
+    };
+
+    var vectortilefeature = VectorTileFeature;
+
+    function VectorTileFeature(pbf, end, extent, keys, values) {
+        // Public
+        this.properties = {};
+        this.extent = extent;
+        this.type = 0;
+
+        // Private
+        this._pbf = pbf;
+        this._geometry = -1;
+        this._keys = keys;
+        this._values = values;
+
+        pbf.readFields(readFeature, this, end);
+    }
+
+    function readFeature(tag, feature, pbf) {
+        if (tag == 1) { feature.id = pbf.readVarint(); }
+        else if (tag == 2) { readTag(pbf, feature); }
+        else if (tag == 3) { feature.type = pbf.readVarint(); }
+        else if (tag == 4) { feature._geometry = pbf.pos; }
+    }
+
+    function readTag(pbf, feature) {
+        var end = pbf.readVarint() + pbf.pos;
+
+        while (pbf.pos < end) {
+            var key = feature._keys[pbf.readVarint()],
+                value = feature._values[pbf.readVarint()];
+            feature.properties[key] = value;
+        }
+    }
+
+    VectorTileFeature.types = ['Unknown', 'Point', 'LineString', 'Polygon'];
+
+    VectorTileFeature.prototype.loadGeometry = function() {
+        var pbf = this._pbf;
+        pbf.pos = this._geometry;
+
+        var end = pbf.readVarint() + pbf.pos,
+            cmd = 1,
+            length = 0,
+            x = 0,
+            y = 0,
+            lines = [],
+            line;
+
+        while (pbf.pos < end) {
+            if (length <= 0) {
+                var cmdLen = pbf.readVarint();
+                cmd = cmdLen & 0x7;
+                length = cmdLen >> 3;
+            }
+
+            length--;
+
+            if (cmd === 1 || cmd === 2) {
+                x += pbf.readSVarint();
+                y += pbf.readSVarint();
+
+                if (cmd === 1) { // moveTo
+                    if (line) { lines.push(line); }
+                    line = [];
+                }
+
+                line.push(new pointGeometry(x, y));
+
+            } else if (cmd === 7) {
+
+                // Workaround for https://github.com/mapbox/mapnik-vector-tile/issues/90
+                if (line) {
+                    line.push(line[0].clone()); // closePolygon
+                }
+
+            } else {
+                throw new Error('unknown command ' + cmd);
+            }
+        }
+
+        if (line) { lines.push(line); }
+
+        return lines;
+    };
+
+    VectorTileFeature.prototype.bbox = function() {
+        var pbf = this._pbf;
+        pbf.pos = this._geometry;
+
+        var end = pbf.readVarint() + pbf.pos,
+            cmd = 1,
+            length = 0,
+            x = 0,
+            y = 0,
+            x1 = Infinity,
+            x2 = -Infinity,
+            y1 = Infinity,
+            y2 = -Infinity;
+
+        while (pbf.pos < end) {
+            if (length <= 0) {
+                var cmdLen = pbf.readVarint();
+                cmd = cmdLen & 0x7;
+                length = cmdLen >> 3;
+            }
+
+            length--;
+
+            if (cmd === 1 || cmd === 2) {
+                x += pbf.readSVarint();
+                y += pbf.readSVarint();
+                if (x < x1) { x1 = x; }
+                if (x > x2) { x2 = x; }
+                if (y < y1) { y1 = y; }
+                if (y > y2) { y2 = y; }
+
+            } else if (cmd !== 7) {
+                throw new Error('unknown command ' + cmd);
+            }
+        }
+
+        return [x1, y1, x2, y2];
+    };
+
+    VectorTileFeature.prototype.toGeoJSON = function(x, y, z) {
+        var size = this.extent * Math.pow(2, z),
+            x0 = this.extent * x,
+            y0 = this.extent * y,
+            coords = this.loadGeometry(),
+            type = VectorTileFeature.types[this.type],
+            i, j;
+
+        function project(line) {
+            for (var j = 0; j < line.length; j++) {
+                var p = line[j], y2 = 180 - (p.y + y0) * 360 / size;
+                line[j] = [
+                    (p.x + x0) * 360 / size - 180,
+                    360 / Math.PI * Math.atan(Math.exp(y2 * Math.PI / 180)) - 90
+                ];
+            }
+        }
+
+        switch (this.type) {
+        case 1:
+            var points = [];
+            for (i = 0; i < coords.length; i++) {
+                points[i] = coords[i][0];
+            }
+            coords = points;
+            project(coords);
+            break;
+
+        case 2:
+            for (i = 0; i < coords.length; i++) {
+                project(coords[i]);
+            }
+            break;
+
+        case 3:
+            coords = classifyRings(coords);
+            for (i = 0; i < coords.length; i++) {
+                for (j = 0; j < coords[i].length; j++) {
+                    project(coords[i][j]);
+                }
+            }
+            break;
+        }
+
+        if (coords.length === 1) {
+            coords = coords[0];
+        } else {
+            type = 'Multi' + type;
+        }
+
+        var result = {
+            type: "Feature",
+            geometry: {
+                type: type,
+                coordinates: coords
+            },
+            properties: this.properties
+        };
+
+        if ('id' in this) {
+            result.id = this.id;
+        }
+
+        return result;
+    };
+
+    // classifies an array of rings into polygons with outer rings and holes
+
+    function classifyRings(rings) {
+        var len = rings.length;
+
+        if (len <= 1) { return [rings]; }
+
+        var polygons = [],
+            polygon,
+            ccw;
+
+        for (var i = 0; i < len; i++) {
+            var area = signedArea(rings[i]);
+            if (area === 0) { continue; }
+
+            if (ccw === undefined) { ccw = area < 0; }
+
+            if (ccw === area < 0) {
+                if (polygon) { polygons.push(polygon); }
+                polygon = [rings[i]];
+
+            } else {
+                polygon.push(rings[i]);
+            }
+        }
+        if (polygon) { polygons.push(polygon); }
+
+        return polygons;
+    }
+
+    function signedArea(ring) {
+        var sum = 0;
+        for (var i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
+            p1 = ring[i];
+            p2 = ring[j];
+            sum += (p2.x - p1.x) * (p1.y + p2.y);
+        }
+        return sum;
+    }
+
+    var vectortilelayer = VectorTileLayer;
+
+    function VectorTileLayer(pbf, end) {
+        // Public
+        this.version = 1;
+        this.name = null;
+        this.extent = 4096;
+        this.length = 0;
+
+        // Private
+        this._pbf = pbf;
+        this._keys = [];
+        this._values = [];
+        this._features = [];
+
+        pbf.readFields(readLayer, this, end);
+
+        this.length = this._features.length;
+    }
+
+    function readLayer(tag, layer, pbf) {
+        if (tag === 15) { layer.version = pbf.readVarint(); }
+        else if (tag === 1) { layer.name = pbf.readString(); }
+        else if (tag === 5) { layer.extent = pbf.readVarint(); }
+        else if (tag === 2) { layer._features.push(pbf.pos); }
+        else if (tag === 3) { layer._keys.push(pbf.readString()); }
+        else if (tag === 4) { layer._values.push(readValueMessage(pbf)); }
+    }
+
+    function readValueMessage(pbf) {
+        var value = null,
+            end = pbf.readVarint() + pbf.pos;
+
+        while (pbf.pos < end) {
+            var tag = pbf.readVarint() >> 3;
+
+            value = tag === 1 ? pbf.readString() :
+                tag === 2 ? pbf.readFloat() :
+                tag === 3 ? pbf.readDouble() :
+                tag === 4 ? pbf.readVarint64() :
+                tag === 5 ? pbf.readVarint() :
+                tag === 6 ? pbf.readSVarint() :
+                tag === 7 ? pbf.readBoolean() : null;
+        }
+
+        return value;
+    }
+
+    // return feature `i` from this layer as a `VectorTileFeature`
+    VectorTileLayer.prototype.feature = function(i) {
+        if (i < 0 || i >= this._features.length) { throw new Error('feature index out of bounds'); }
+
+        this._pbf.pos = this._features[i];
+
+        var end = this._pbf.readVarint() + this._pbf.pos;
+        return new vectortilefeature(this._pbf, end, this.extent, this._keys, this._values);
+    };
+
+    var vectortile = VectorTile;
+
+    function VectorTile(pbf, end) {
+        this.layers = pbf.readFields(readTile, {}, end);
+    }
+
+    function readTile(tag, layers, pbf) {
+        if (tag === 3) {
+            var layer = new vectortilelayer(pbf, pbf.readVarint() + pbf.pos);
+            if (layer.length) { layers[layer.name] = layer; }
+        }
+    }
+
+    var VectorTile$1 = vectortile;
+    var VectorTileFeature$1 = vectortilefeature;
+
+    /*
+     * Copyright 2017, Joachim Kuebart <joachim.kuebart@gmail.com>
+     *
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions are met:
+     *
+     *   1. Redistributions of source code must retain the above copyright
+     *      notice, this list of conditions and the following disclaimer.
+     *
+     *   2. Redistributions in binary form must reproduce the above copyright
+     *      notice, this list of conditions and the following disclaimer in the
+     *      documentation and/or other materials provided with the
+     *      distribution.
+     *
+     *   3. Neither the name of the copyright holder nor the names of its
+     *      contributors may be used to endorse or promote products derived
+     *      from this software without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     * POSSIBILITY OF SUCH DAMAGE.
+     */
+
+    function featureLayer(feature, layerName, rootGroup, pxPerExtent, options) {
+        var self = new leaflet.Layer(options);
+        var m_path = leaflet.SVG.create("path");
+        var m_type = VectorTileFeature$1.types[feature.type];
+
+        options = leaflet.extend({}, options);
+
+        self.feature = feature;
+        self.layerName = layerName;
+
+        // Compatibility with Leaflet.VectorGrid
+        self.properties = feature.properties;
+
+        /*
+         * FeatureLayers only serve as event targets and are never actually
+         * "added" to the map, so we override the base class's addTo.
+         */
+        self.addTo = function addTo(map) {
+            // Required by addInteractiveTarget.
+            self._map = map;
+            self.addInteractiveTarget(m_path);
+        };
+
+        self.removeFrom = function removeFrom() {
+            self.removeInteractiveTarget(m_path);
+            delete self._map;
+        };
+
+        self.setStyle = function setStyle(options) {
+            var path = m_path;
+
+            options = leaflet.extend(
+                {},
+                "Polygon" === m_type
+                ? leaflet.Polygon.prototype.options
+                : leaflet.Path.prototype.options,
+                options
+            );
+
+            if (options.stroke) {
+                path.setAttribute("stroke", options.color);
+                path.setAttribute("stroke-opacity", options.opacity);
+                path.setAttribute("stroke-width", options.weight);
+                path.setAttribute("stroke-linecap", options.lineCap);
+                path.setAttribute("stroke-linejoin", options.lineJoin);
+
+                if (options.dashArray) {
+                    path.setAttribute("stroke-dasharray", options.dashArray);
+                } else {
+                    path.removeAttribute("stroke-dasharray");
+                }
+
+                if (options.dashOffset) {
+                    path.setAttribute("stroke-dashoffset", options.dashOffset);
+                } else {
+                    path.removeAttribute("stroke-dashoffset");
+                }
+            } else {
+                path.setAttribute("stroke", "none");
+            }
+
+            if (options.fill) {
+                path.setAttribute("fill", options.fillColor || options.color);
+                path.setAttribute("fill-opacity", options.fillOpacity);
+                path.setAttribute("fill-rule", options.fillRule || "evenodd");
+            } else {
+                path.setAttribute("fill", "none");
+            }
+
+            if (options.interactive) {
+                /*
+                 * Leaflet's "interactive" class only applies to
+                 * renderers that are immediate descendants of a
+                 * pane.
+                 */
+                path.setAttribute("pointer-events", "auto");
+                leaflet.DomUtil.addClass(path, "leaflet-interactive");
+            } else {
+                leaflet.DomUtil.removeClass(path, "leaflet-interactive");
+                path.removeAttribute("pointer-events");
+            }
+
+            return path;
+        };
+
+        switch (m_type) {
+        case "Point":
+            break;
+        case "LineString":
+        case "Polygon":
+            m_path.setAttribute(
+                "d",
+                leaflet.SVG.pointsToPath(
+                    feature.loadGeometry().map(
+                        function (ring) { return ring.map(function (p) { return leaflet.point(p).scaleBy(pxPerExtent); }); }
+                    ),
+                    "Polygon" === m_type
+                )
+            );
+
+            if (options.className) {
+                leaflet.DomUtil.addClass(m_path, options.className);
+            }
+            self.setStyle(options);
+
+            rootGroup.appendChild(m_path);
+            break;
+        }
+
+        return self;
+    }
+
+    var featureLayer$1 = Object.freeze(featureLayer);
+
+    /*
+     * Copyright 2017, Joachim Kuebart <joachim.kuebart@gmail.com>
+     *
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions are met:
+     *
+     *   1. Redistributions of source code must retain the above copyright
+     *      notice, this list of conditions and the following disclaimer.
+     *
+     *   2. Redistributions in binary form must reproduce the above copyright
+     *      notice, this list of conditions and the following disclaimer in the
+     *      documentation and/or other materials provided with the
+     *      distribution.
+     *
+     *   3. Neither the name of the copyright holder nor the names of its
+     *      contributors may be used to endorse or promote products derived
+     *      from this software without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     * POSSIBILITY OF SUCH DAMAGE.
+     */
+
+    var featureTile = Object.freeze(function featureTile(coords, layer) {
+        var self = {};
+        var m_tileSize = layer.getTileSize();
+        var m_svg = leaflet.SVG.create("svg");
+        var m_rootGroup = leaflet.SVG.create("g");
+        var m_layers = [];
+
+        m_svg.setAttribute("viewBox", ("0 0 " + (m_tileSize.x) + " " + (m_tileSize.y)));
+        m_svg.appendChild(m_rootGroup);
+
+        function addFeature(feature, layerName, pxPerExtent) {
+            var featureStyle = layer.getFeatureStyle(feature, layerName);
+            if (!featureStyle) {
+                return;
+            }
+
+            var ftrLyr = featureLayer$1(
+                feature,
+                layerName,
+                m_rootGroup,
+                pxPerExtent,
+                featureStyle
+            );
+            m_layers.push(ftrLyr);
+            layer.addFeatureLayer(ftrLyr);
+        }
+
+        self.addVectorTile = function addVectorTile(vectorTile) {
+            Object.keys(vectorTile.layers).forEach(function (layerName) {
+                var tileLayer = vectorTile.layers[layerName];
+                var pxPerExtent = m_tileSize.divideBy(tileLayer.extent);
+
+                var i = 0;
+                while (i !== tileLayer.length) {
+                    addFeature(tileLayer.feature(i), layerName, pxPerExtent);
+                    i += 1;
+                }
+            });
+
+            return self;
+        };
+
+        self.eachFeatureLayer = function (func) { return m_layers.map(func); };
+        self.domElement = function () { return m_svg; };
+        self.coords = function () { return coords; };
+
+        return self;
+    });
+
+    /*
+     * Copyright 2017, Joachim Kuebart <joachim.kuebart@gmail.com>
+     *
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions are met:
+     *
+     *   1. Redistributions of source code must retain the above copyright
+     *      notice, this list of conditions and the following disclaimer.
+     *
+     *   2. Redistributions in binary form must reproduce the above copyright
+     *      notice, this list of conditions and the following disclaimer in the
+     *      documentation and/or other materials provided with the
+     *      distribution.
+     *
+     *   3. Neither the name of the copyright holder nor the names of its
+     *      contributors may be used to endorse or promote products derived
+     *      from this software without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     * POSSIBILITY OF SUCH DAMAGE.
+     */
+
+    /*jslint browser*/
+
+    /*property
+        arrayBuffer, fetch, freeze, ok, onload, open, response, responseType, send,
+        status, statusText
+    */
+
+    var fetch;
+    if ("function" === typeof window.fetch) {
+        fetch = window.fetch;
+    } else {
+        fetch = function (url) {
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("GET", url);
+            xhr.responseType = "arraybuffer";
+
+            return new Promise(function (resolve) {
+                xhr.onload = function () { return resolve({
+                    ok: 200 === xhr.status,
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    arrayBuffer: function arrayBuffer() {
+                        return xhr.response;
+                    }
+                }); };
+                xhr.send();
+            });
+        };
+    }
+
+    var fetch$1 = Object.freeze(fetch);
+
+    var read = function (buffer, offset, isLE, mLen, nBytes) {
+      var e, m;
+      var eLen = (nBytes * 8) - mLen - 1;
+      var eMax = (1 << eLen) - 1;
+      var eBias = eMax >> 1;
+      var nBits = -7;
+      var i = isLE ? (nBytes - 1) : 0;
+      var d = isLE ? -1 : 1;
+      var s = buffer[offset + i];
+
+      i += d;
+
+      e = s & ((1 << (-nBits)) - 1);
+      s >>= (-nBits);
+      nBits += eLen;
+      for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+      m = e & ((1 << (-nBits)) - 1);
+      e >>= (-nBits);
+      nBits += mLen;
+      for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+      if (e === 0) {
+        e = 1 - eBias;
+      } else if (e === eMax) {
+        return m ? NaN : ((s ? -1 : 1) * Infinity)
+      } else {
+        m = m + Math.pow(2, mLen);
+        e = e - eBias;
+      }
+      return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+    };
+
+    var write = function (buffer, value, offset, isLE, mLen, nBytes) {
+      var e, m, c;
+      var eLen = (nBytes * 8) - mLen - 1;
+      var eMax = (1 << eLen) - 1;
+      var eBias = eMax >> 1;
+      var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0);
+      var i = isLE ? 0 : (nBytes - 1);
+      var d = isLE ? 1 : -1;
+      var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+
+      value = Math.abs(value);
+
+      if (isNaN(value) || value === Infinity) {
+        m = isNaN(value) ? 1 : 0;
+        e = eMax;
+      } else {
+        e = Math.floor(Math.log(value) / Math.LN2);
+        if (value * (c = Math.pow(2, -e)) < 1) {
+          e--;
+          c *= 2;
+        }
+        if (e + eBias >= 1) {
+          value += rt / c;
+        } else {
+          value += rt * Math.pow(2, 1 - eBias);
+        }
+        if (value * c >= 2) {
+          e++;
+          c /= 2;
+        }
+
+        if (e + eBias >= eMax) {
+          m = 0;
+          e = eMax;
+        } else if (e + eBias >= 1) {
+          m = ((value * c) - 1) * Math.pow(2, mLen);
+          e = e + eBias;
+        } else {
+          m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+          e = 0;
+        }
+      }
+
+      for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+      e = (e << mLen) | m;
+      eLen += mLen;
+      for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+      buffer[offset + i - d] |= s * 128;
+    };
+
+    var ieee754 = {
+    	read: read,
+    	write: write
+    };
+
+    var pbf = Pbf;
+
+
+
+    function Pbf(buf) {
+        this.buf = ArrayBuffer.isView && ArrayBuffer.isView(buf) ? buf : new Uint8Array(buf || 0);
+        this.pos = 0;
+        this.type = 0;
+        this.length = this.buf.length;
+    }
+
+    Pbf.Varint  = 0; // varint: int32, int64, uint32, uint64, sint32, sint64, bool, enum
+    Pbf.Fixed64 = 1; // 64-bit: double, fixed64, sfixed64
+    Pbf.Bytes   = 2; // length-delimited: string, bytes, embedded messages, packed repeated fields
+    Pbf.Fixed32 = 5; // 32-bit: float, fixed32, sfixed32
+
+    var SHIFT_LEFT_32 = (1 << 16) * (1 << 16),
+        SHIFT_RIGHT_32 = 1 / SHIFT_LEFT_32;
+
+    Pbf.prototype = {
+
+        destroy: function() {
+            this.buf = null;
+        },
+
+        // === READING =================================================================
+
+        readFields: function(readField, result, end) {
+            end = end || this.length;
+
+            while (this.pos < end) {
+                var val = this.readVarint(),
+                    tag = val >> 3,
+                    startPos = this.pos;
+
+                this.type = val & 0x7;
+                readField(tag, result, this);
+
+                if (this.pos === startPos) { this.skip(val); }
+            }
+            return result;
+        },
+
+        readMessage: function(readField, result) {
+            return this.readFields(readField, result, this.readVarint() + this.pos);
+        },
+
+        readFixed32: function() {
+            var val = readUInt32(this.buf, this.pos);
+            this.pos += 4;
+            return val;
+        },
+
+        readSFixed32: function() {
+            var val = readInt32(this.buf, this.pos);
+            this.pos += 4;
+            return val;
+        },
+
+        // 64-bit int handling is based on github.com/dpw/node-buffer-more-ints (MIT-licensed)
+
+        readFixed64: function() {
+            var val = readUInt32(this.buf, this.pos) + readUInt32(this.buf, this.pos + 4) * SHIFT_LEFT_32;
+            this.pos += 8;
+            return val;
+        },
+
+        readSFixed64: function() {
+            var val = readUInt32(this.buf, this.pos) + readInt32(this.buf, this.pos + 4) * SHIFT_LEFT_32;
+            this.pos += 8;
+            return val;
+        },
+
+        readFloat: function() {
+            var val = ieee754.read(this.buf, this.pos, true, 23, 4);
+            this.pos += 4;
+            return val;
+        },
+
+        readDouble: function() {
+            var val = ieee754.read(this.buf, this.pos, true, 52, 8);
+            this.pos += 8;
+            return val;
+        },
+
+        readVarint: function(isSigned) {
+            var buf = this.buf,
+                val, b;
+
+            b = buf[this.pos++]; val  =  b & 0x7f;        if (b < 0x80) { return val; }
+            b = buf[this.pos++]; val |= (b & 0x7f) << 7;  if (b < 0x80) { return val; }
+            b = buf[this.pos++]; val |= (b & 0x7f) << 14; if (b < 0x80) { return val; }
+            b = buf[this.pos++]; val |= (b & 0x7f) << 21; if (b < 0x80) { return val; }
+            b = buf[this.pos];   val |= (b & 0x0f) << 28;
+
+            return readVarintRemainder(val, isSigned, this);
+        },
+
+        readVarint64: function() { // for compatibility with v2.0.1
+            return this.readVarint(true);
+        },
+
+        readSVarint: function() {
+            var num = this.readVarint();
+            return num % 2 === 1 ? (num + 1) / -2 : num / 2; // zigzag encoding
+        },
+
+        readBoolean: function() {
+            return Boolean(this.readVarint());
+        },
+
+        readString: function() {
+            var end = this.readVarint() + this.pos,
+                str = readUtf8(this.buf, this.pos, end);
+            this.pos = end;
+            return str;
+        },
+
+        readBytes: function() {
+            var end = this.readVarint() + this.pos,
+                buffer = this.buf.subarray(this.pos, end);
+            this.pos = end;
+            return buffer;
+        },
+
+        // verbose for performance reasons; doesn't affect gzipped size
+
+        readPackedVarint: function(arr, isSigned) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readVarint(isSigned)); }
+            return arr;
+        },
+        readPackedSVarint: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readSVarint()); }
+            return arr;
+        },
+        readPackedBoolean: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readBoolean()); }
+            return arr;
+        },
+        readPackedFloat: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readFloat()); }
+            return arr;
+        },
+        readPackedDouble: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readDouble()); }
+            return arr;
+        },
+        readPackedFixed32: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readFixed32()); }
+            return arr;
+        },
+        readPackedSFixed32: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readSFixed32()); }
+            return arr;
+        },
+        readPackedFixed64: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readFixed64()); }
+            return arr;
+        },
+        readPackedSFixed64: function(arr) {
+            var end = readPackedEnd(this);
+            arr = arr || [];
+            while (this.pos < end) { arr.push(this.readSFixed64()); }
+            return arr;
+        },
+
+        skip: function(val) {
+            var type = val & 0x7;
+            if (type === Pbf.Varint) { while (this.buf[this.pos++] > 0x7f) {} }
+            else if (type === Pbf.Bytes) { this.pos = this.readVarint() + this.pos; }
+            else if (type === Pbf.Fixed32) { this.pos += 4; }
+            else if (type === Pbf.Fixed64) { this.pos += 8; }
+            else { throw new Error('Unimplemented type: ' + type); }
+        },
+
+        // === WRITING =================================================================
+
+        writeTag: function(tag, type) {
+            this.writeVarint((tag << 3) | type);
+        },
+
+        realloc: function(min) {
+            var length = this.length || 16;
+
+            while (length < this.pos + min) { length *= 2; }
+
+            if (length !== this.length) {
+                var buf = new Uint8Array(length);
+                buf.set(this.buf);
+                this.buf = buf;
+                this.length = length;
+            }
+        },
+
+        finish: function() {
+            this.length = this.pos;
+            this.pos = 0;
+            return this.buf.subarray(0, this.length);
+        },
+
+        writeFixed32: function(val) {
+            this.realloc(4);
+            writeInt32(this.buf, val, this.pos);
+            this.pos += 4;
+        },
+
+        writeSFixed32: function(val) {
+            this.realloc(4);
+            writeInt32(this.buf, val, this.pos);
+            this.pos += 4;
+        },
+
+        writeFixed64: function(val) {
+            this.realloc(8);
+            writeInt32(this.buf, val & -1, this.pos);
+            writeInt32(this.buf, Math.floor(val * SHIFT_RIGHT_32), this.pos + 4);
+            this.pos += 8;
+        },
+
+        writeSFixed64: function(val) {
+            this.realloc(8);
+            writeInt32(this.buf, val & -1, this.pos);
+            writeInt32(this.buf, Math.floor(val * SHIFT_RIGHT_32), this.pos + 4);
+            this.pos += 8;
+        },
+
+        writeVarint: function(val) {
+            val = +val || 0;
+
+            if (val > 0xfffffff || val < 0) {
+                writeBigVarint(val, this);
+                return;
+            }
+
+            this.realloc(4);
+
+            this.buf[this.pos++] =           val & 0x7f  | (val > 0x7f ? 0x80 : 0); if (val <= 0x7f) { return; }
+            this.buf[this.pos++] = ((val >>>= 7) & 0x7f) | (val > 0x7f ? 0x80 : 0); if (val <= 0x7f) { return; }
+            this.buf[this.pos++] = ((val >>>= 7) & 0x7f) | (val > 0x7f ? 0x80 : 0); if (val <= 0x7f) { return; }
+            this.buf[this.pos++] =   (val >>> 7) & 0x7f;
+        },
+
+        writeSVarint: function(val) {
+            this.writeVarint(val < 0 ? -val * 2 - 1 : val * 2);
+        },
+
+        writeBoolean: function(val) {
+            this.writeVarint(Boolean(val));
+        },
+
+        writeString: function(str) {
+            str = String(str);
+            this.realloc(str.length * 4);
+
+            this.pos++; // reserve 1 byte for short string length
+
+            var startPos = this.pos;
+            // write the string directly to the buffer and see how much was written
+            this.pos = writeUtf8(this.buf, str, this.pos);
+            var len = this.pos - startPos;
+
+            if (len >= 0x80) { makeRoomForExtraLength(startPos, len, this); }
+
+            // finally, write the message length in the reserved place and restore the position
+            this.pos = startPos - 1;
+            this.writeVarint(len);
+            this.pos += len;
+        },
+
+        writeFloat: function(val) {
+            this.realloc(4);
+            ieee754.write(this.buf, val, this.pos, true, 23, 4);
+            this.pos += 4;
+        },
+
+        writeDouble: function(val) {
+            this.realloc(8);
+            ieee754.write(this.buf, val, this.pos, true, 52, 8);
+            this.pos += 8;
+        },
+
+        writeBytes: function(buffer) {
+            var len = buffer.length;
+            this.writeVarint(len);
+            this.realloc(len);
+            for (var i = 0; i < len; i++) { this.buf[this.pos++] = buffer[i]; }
+        },
+
+        writeRawMessage: function(fn, obj) {
+            this.pos++; // reserve 1 byte for short message length
+
+            // write the message directly to the buffer and see how much was written
+            var startPos = this.pos;
+            fn(obj, this);
+            var len = this.pos - startPos;
+
+            if (len >= 0x80) { makeRoomForExtraLength(startPos, len, this); }
+
+            // finally, write the message length in the reserved place and restore the position
+            this.pos = startPos - 1;
+            this.writeVarint(len);
+            this.pos += len;
+        },
+
+        writeMessage: function(tag, fn, obj) {
+            this.writeTag(tag, Pbf.Bytes);
+            this.writeRawMessage(fn, obj);
+        },
+
+        writePackedVarint:   function(tag, arr) { this.writeMessage(tag, writePackedVarint, arr);   },
+        writePackedSVarint:  function(tag, arr) { this.writeMessage(tag, writePackedSVarint, arr);  },
+        writePackedBoolean:  function(tag, arr) { this.writeMessage(tag, writePackedBoolean, arr);  },
+        writePackedFloat:    function(tag, arr) { this.writeMessage(tag, writePackedFloat, arr);    },
+        writePackedDouble:   function(tag, arr) { this.writeMessage(tag, writePackedDouble, arr);   },
+        writePackedFixed32:  function(tag, arr) { this.writeMessage(tag, writePackedFixed32, arr);  },
+        writePackedSFixed32: function(tag, arr) { this.writeMessage(tag, writePackedSFixed32, arr); },
+        writePackedFixed64:  function(tag, arr) { this.writeMessage(tag, writePackedFixed64, arr);  },
+        writePackedSFixed64: function(tag, arr) { this.writeMessage(tag, writePackedSFixed64, arr); },
+
+        writeBytesField: function(tag, buffer) {
+            this.writeTag(tag, Pbf.Bytes);
+            this.writeBytes(buffer);
+        },
+        writeFixed32Field: function(tag, val) {
+            this.writeTag(tag, Pbf.Fixed32);
+            this.writeFixed32(val);
+        },
+        writeSFixed32Field: function(tag, val) {
+            this.writeTag(tag, Pbf.Fixed32);
+            this.writeSFixed32(val);
+        },
+        writeFixed64Field: function(tag, val) {
+            this.writeTag(tag, Pbf.Fixed64);
+            this.writeFixed64(val);
+        },
+        writeSFixed64Field: function(tag, val) {
+            this.writeTag(tag, Pbf.Fixed64);
+            this.writeSFixed64(val);
+        },
+        writeVarintField: function(tag, val) {
+            this.writeTag(tag, Pbf.Varint);
+            this.writeVarint(val);
+        },
+        writeSVarintField: function(tag, val) {
+            this.writeTag(tag, Pbf.Varint);
+            this.writeSVarint(val);
+        },
+        writeStringField: function(tag, str) {
+            this.writeTag(tag, Pbf.Bytes);
+            this.writeString(str);
+        },
+        writeFloatField: function(tag, val) {
+            this.writeTag(tag, Pbf.Fixed32);
+            this.writeFloat(val);
+        },
+        writeDoubleField: function(tag, val) {
+            this.writeTag(tag, Pbf.Fixed64);
+            this.writeDouble(val);
+        },
+        writeBooleanField: function(tag, val) {
+            this.writeVarintField(tag, Boolean(val));
+        }
+    };
+
+    function readVarintRemainder(l, s, p) {
+        var buf = p.buf,
+            h, b;
+
+        b = buf[p.pos++]; h  = (b & 0x70) >> 4;  if (b < 0x80) { return toNum(l, h, s); }
+        b = buf[p.pos++]; h |= (b & 0x7f) << 3;  if (b < 0x80) { return toNum(l, h, s); }
+        b = buf[p.pos++]; h |= (b & 0x7f) << 10; if (b < 0x80) { return toNum(l, h, s); }
+        b = buf[p.pos++]; h |= (b & 0x7f) << 17; if (b < 0x80) { return toNum(l, h, s); }
+        b = buf[p.pos++]; h |= (b & 0x7f) << 24; if (b < 0x80) { return toNum(l, h, s); }
+        b = buf[p.pos++]; h |= (b & 0x01) << 31; if (b < 0x80) { return toNum(l, h, s); }
+
+        throw new Error('Expected varint not more than 10 bytes');
+    }
+
+    function readPackedEnd(pbf) {
+        return pbf.type === Pbf.Bytes ?
+            pbf.readVarint() + pbf.pos : pbf.pos + 1;
+    }
+
+    function toNum(low, high, isSigned) {
+        if (isSigned) {
+            return high * 0x100000000 + (low >>> 0);
+        }
+
+        return ((high >>> 0) * 0x100000000) + (low >>> 0);
+    }
+
+    function writeBigVarint(val, pbf) {
+        var low, high;
+
+        if (val >= 0) {
+            low  = (val % 0x100000000) | 0;
+            high = (val / 0x100000000) | 0;
+        } else {
+            low  = ~(-val % 0x100000000);
+            high = ~(-val / 0x100000000);
+
+            if (low ^ 0xffffffff) {
+                low = (low + 1) | 0;
+            } else {
+                low = 0;
+                high = (high + 1) | 0;
+            }
+        }
+
+        if (val >= 0x10000000000000000 || val < -0x10000000000000000) {
+            throw new Error('Given varint doesn\'t fit into 10 bytes');
+        }
+
+        pbf.realloc(10);
+
+        writeBigVarintLow(low, high, pbf);
+        writeBigVarintHigh(high, pbf);
+    }
+
+    function writeBigVarintLow(low, high, pbf) {
+        pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+        pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+        pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+        pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+        pbf.buf[pbf.pos]   = low & 0x7f;
+    }
+
+    function writeBigVarintHigh(high, pbf) {
+        var lsb = (high & 0x07) << 4;
+
+        pbf.buf[pbf.pos++] |= lsb         | ((high >>>= 3) ? 0x80 : 0); if (!high) { return; }
+        pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) { return; }
+        pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) { return; }
+        pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) { return; }
+        pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) { return; }
+        pbf.buf[pbf.pos++]  = high & 0x7f;
+    }
+
+    function makeRoomForExtraLength(startPos, len, pbf) {
+        var extraLen =
+            len <= 0x3fff ? 1 :
+            len <= 0x1fffff ? 2 :
+            len <= 0xfffffff ? 3 : Math.ceil(Math.log(len) / (Math.LN2 * 7));
+
+        // if 1 byte isn't enough for encoding message length, shift the data to the right
+        pbf.realloc(extraLen);
+        for (var i = pbf.pos - 1; i >= startPos; i--) { pbf.buf[i + extraLen] = pbf.buf[i]; }
+    }
+
+    function writePackedVarint(arr, pbf)   { for (var i = 0; i < arr.length; i++) { pbf.writeVarint(arr[i]); }   }
+    function writePackedSVarint(arr, pbf)  { for (var i = 0; i < arr.length; i++) { pbf.writeSVarint(arr[i]); }  }
+    function writePackedFloat(arr, pbf)    { for (var i = 0; i < arr.length; i++) { pbf.writeFloat(arr[i]); }    }
+    function writePackedDouble(arr, pbf)   { for (var i = 0; i < arr.length; i++) { pbf.writeDouble(arr[i]); }   }
+    function writePackedBoolean(arr, pbf)  { for (var i = 0; i < arr.length; i++) { pbf.writeBoolean(arr[i]); }  }
+    function writePackedFixed32(arr, pbf)  { for (var i = 0; i < arr.length; i++) { pbf.writeFixed32(arr[i]); }  }
+    function writePackedSFixed32(arr, pbf) { for (var i = 0; i < arr.length; i++) { pbf.writeSFixed32(arr[i]); } }
+    function writePackedFixed64(arr, pbf)  { for (var i = 0; i < arr.length; i++) { pbf.writeFixed64(arr[i]); }  }
+    function writePackedSFixed64(arr, pbf) { for (var i = 0; i < arr.length; i++) { pbf.writeSFixed64(arr[i]); } }
+
+    // Buffer code below from https://github.com/feross/buffer, MIT-licensed
+
+    function readUInt32(buf, pos) {
+        return ((buf[pos]) |
+            (buf[pos + 1] << 8) |
+            (buf[pos + 2] << 16)) +
+            (buf[pos + 3] * 0x1000000);
+    }
+
+    function writeInt32(buf, val, pos) {
+        buf[pos] = val;
+        buf[pos + 1] = (val >>> 8);
+        buf[pos + 2] = (val >>> 16);
+        buf[pos + 3] = (val >>> 24);
+    }
+
+    function readInt32(buf, pos) {
+        return ((buf[pos]) |
+            (buf[pos + 1] << 8) |
+            (buf[pos + 2] << 16)) +
+            (buf[pos + 3] << 24);
+    }
+
+    function readUtf8(buf, pos, end) {
+        var str = '';
+        var i = pos;
+
+        while (i < end) {
+            var b0 = buf[i];
+            var c = null; // codepoint
+            var bytesPerSequence =
+                b0 > 0xEF ? 4 :
+                b0 > 0xDF ? 3 :
+                b0 > 0xBF ? 2 : 1;
+
+            if (i + bytesPerSequence > end) { break; }
+
+            var b1, b2, b3;
+
+            if (bytesPerSequence === 1) {
+                if (b0 < 0x80) {
+                    c = b0;
+                }
+            } else if (bytesPerSequence === 2) {
+                b1 = buf[i + 1];
+                if ((b1 & 0xC0) === 0x80) {
+                    c = (b0 & 0x1F) << 0x6 | (b1 & 0x3F);
+                    if (c <= 0x7F) {
+                        c = null;
+                    }
+                }
+            } else if (bytesPerSequence === 3) {
+                b1 = buf[i + 1];
+                b2 = buf[i + 2];
+                if ((b1 & 0xC0) === 0x80 && (b2 & 0xC0) === 0x80) {
+                    c = (b0 & 0xF) << 0xC | (b1 & 0x3F) << 0x6 | (b2 & 0x3F);
+                    if (c <= 0x7FF || (c >= 0xD800 && c <= 0xDFFF)) {
+                        c = null;
+                    }
+                }
+            } else if (bytesPerSequence === 4) {
+                b1 = buf[i + 1];
+                b2 = buf[i + 2];
+                b3 = buf[i + 3];
+                if ((b1 & 0xC0) === 0x80 && (b2 & 0xC0) === 0x80 && (b3 & 0xC0) === 0x80) {
+                    c = (b0 & 0xF) << 0x12 | (b1 & 0x3F) << 0xC | (b2 & 0x3F) << 0x6 | (b3 & 0x3F);
+                    if (c <= 0xFFFF || c >= 0x110000) {
+                        c = null;
+                    }
+                }
+            }
+
+            if (c === null) {
+                c = 0xFFFD;
+                bytesPerSequence = 1;
+
+            } else if (c > 0xFFFF) {
+                c -= 0x10000;
+                str += String.fromCharCode(c >>> 10 & 0x3FF | 0xD800);
+                c = 0xDC00 | c & 0x3FF;
+            }
+
+            str += String.fromCharCode(c);
+            i += bytesPerSequence;
+        }
+
+        return str;
+    }
+
+    function writeUtf8(buf, str, pos) {
+        for (var i = 0, c, lead; i < str.length; i++) {
+            c = str.charCodeAt(i); // code point
+
+            if (c > 0xD7FF && c < 0xE000) {
+                if (lead) {
+                    if (c < 0xDC00) {
+                        buf[pos++] = 0xEF;
+                        buf[pos++] = 0xBF;
+                        buf[pos++] = 0xBD;
+                        lead = c;
+                        continue;
+                    } else {
+                        c = lead - 0xD800 << 10 | c - 0xDC00 | 0x10000;
+                        lead = null;
+                    }
+                } else {
+                    if (c > 0xDBFF || (i + 1 === str.length)) {
+                        buf[pos++] = 0xEF;
+                        buf[pos++] = 0xBF;
+                        buf[pos++] = 0xBD;
+                    } else {
+                        lead = c;
+                    }
+                    continue;
+                }
+            } else if (lead) {
+                buf[pos++] = 0xEF;
+                buf[pos++] = 0xBF;
+                buf[pos++] = 0xBD;
+                lead = null;
+            }
+
+            if (c < 0x80) {
+                buf[pos++] = c;
+            } else {
+                if (c < 0x800) {
+                    buf[pos++] = c >> 0x6 | 0xC0;
+                } else {
+                    if (c < 0x10000) {
+                        buf[pos++] = c >> 0xC | 0xE0;
+                    } else {
+                        buf[pos++] = c >> 0x12 | 0xF0;
+                        buf[pos++] = c >> 0xC & 0x3F | 0x80;
+                    }
+                    buf[pos++] = c >> 0x6 & 0x3F | 0x80;
+                }
+                buf[pos++] = c & 0x3F | 0x80;
+            }
+        }
+        return pos;
+    }
+
+    /*
+     * Copyright 2017, Joachim Kuebart <joachim.kuebart@gmail.com>
+     *
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions are met:
+     *
+     *   1. Redistributions of source code must retain the above copyright
+     *      notice, this list of conditions and the following disclaimer.
+     *
+     *   2. Redistributions in binary form must reproduce the above copyright
+     *      notice, this list of conditions and the following disclaimer in the
+     *      documentation and/or other materials provided with the
+     *      distribution.
+     *
+     *   3. Neither the name of the copyright holder nor the names of its
+     *      contributors may be used to endorse or promote products derived
+     *      from this software without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     * POSSIBILITY OF SUCH DAMAGE.
+     */
+
+    function err() {
+        var args = [], len = arguments.length;
+        while ( len-- ) args[ len ] = arguments[ len ];
+
+        return new Error(args.join(": "));
+    }
+
+    function load(url) {
+        return fetch$1(url).then(function (response) {
+            if (response.ok) {
+                return response.arrayBuffer();
+            }
+            if (404 !== response.status) {
+                throw err(url, response.status, response.statusText);
+            }
+        });
+    }
+
+    function tileId(coords) {
+        return ((coords.x) + "|" + (coords.y) + "|" + (coords.z));
+    }
+
+    var defaultOptions = {
+        minZoom: 0,
+        maxZoom: 18,
+        maxDetailZoom: undefined,
+        minDetailZoom: undefined,
+        subdomains: "abc",
+        zoomOffset: 0,
+        zoomReverse: false
+    };
+
+    var VectorTileLayer$1 = Object.freeze(function vectorTileLayer(url, options) {
+        var self = new leaflet.GridLayer(options);
+        var m_super = Object.getPrototypeOf(self);
+        var m_featureStyle = {};
+
+        function legacyStyle(feature, layerName, zoom) {
+            var getFeatureId = options.getFeatureId;
+            var vectorTileLayerStyles = options.vectorTileLayerStyles;
+
+            var layerStyle = vectorTileLayerStyles[layerName];
+            if (getFeatureId) {
+                var fId = getFeatureId(feature);
+                if (m_featureStyle[fId]) {
+                    layerStyle = m_featureStyle[fId];
+                }
+            }
+
+            if ("function" === typeof layerStyle) {
+                layerStyle = layerStyle(feature.properties, zoom);
+            }
+
+            if (Array.isArray(layerStyle)) {
+                if (!layerStyle.length) {
+                    return;
+                }
+                layerStyle = layerStyle[0];
+            }
+
+            return layerStyle;
+        }
+
+        options = leaflet.Util.extend({}, defaultOptions, options);
+
+        if ("string" === typeof options.subdomains) {
+            options.subdomains = options.subdomains.split("");
+        }
+
+        // Compatibility with Leaflet.VectorGrid
+        if (options.vectorTileLayerStyles) {
+            options.style = legacyStyle;
+        }
+
+        var m_featureTiles = {};
+        self.on("tileunload", function (evt) {
+            var id = tileId(evt.coords);
+            var tile = m_featureTiles[id];
+
+            if (!tile) {
+                return;
+            }
+            tile.eachFeatureLayer(
+                function (featureLayer) { return self.removeFeatureLayer(featureLayer); }
+            );
+            delete m_featureTiles[id];
+        });
+
+        var m_map;
+        var m_zoom;
+        function updateZoom() {
+            m_zoom = m_map.getZoom();
+        }
+
+        self.onAdd = function onAdd(map) {
+            var ref;
+
+            var rest = [], len = arguments.length - 1;
+            while ( len-- > 0 ) rest[ len ] = arguments[ len + 1 ];
+            m_map = map;
+            m_map.on("zoomend", updateZoom);
+            updateZoom();
+            return (ref = m_super.onAdd).call.apply(ref, [ self, map ].concat( rest ));
+        };
+
+        self.onRemove = function onRemove() {
+            var ref;
+
+            var args = [], len = arguments.length;
+            while ( len-- ) args[ len ] = arguments[ len ];
+            m_map.off("zoomend", updateZoom);
+            m_map = undefined;
+            return (ref = m_super.onRemove).call.apply(ref, [ self ].concat( args ));
+        };
+
+        self.createTile = function createTile(coords, done) {
+            var id = tileId(coords);
+            var tile = featureTile(coords, self);
+
+            m_featureTiles[id] = tile;
+            load(self.getTileUrl(coords)).then(function (buffer) {
+                tile.addVectorTile(new VectorTile$1(new pbf(buffer)));
+                done(null, tile);
+            });
+
+            return tile.domElement();
+        };
+
+        function getSubdomain(tilePoint) {
+            var index =
+                    Math.abs(tilePoint.x + tilePoint.y) % options.subdomains.length;
+            return options.subdomains[index];
+        }
+
+        function clampZoom(zoom) {
+            var minDetailZoom = options.minDetailZoom;
+            var maxDetailZoom = options.maxDetailZoom;
+
+            if (undefined !== minDetailZoom && zoom < minDetailZoom) {
+                return minDetailZoom;
+            }
+
+            if (undefined !== maxDetailZoom && maxDetailZoom < zoom) {
+                return maxDetailZoom;
+            }
+
+            return zoom;
+        }
+
+        function getZoomForUrl(zoom) {
+            var maxZoom = options.maxZoom;
+            var zoomReverse = options.zoomReverse;
+            var zoomOffset = options.zoomOffset;
+
+            if (zoomReverse) {
+                zoom = maxZoom - zoom;
+            }
+
+            return clampZoom(zoom + zoomOffset);
+        }
+
+        self.getTileUrl = function getTileUrl(coords) {
+            var data = {
+                s: getSubdomain(coords),
+                x: coords.x,
+                y: coords.y,
+                z: getZoomForUrl(coords.z)
+            };
+            return leaflet.Util.template(
+                url,
+                leaflet.Util.extend(data, options)
+            );
+        };
+
+        function eachFeatureLayer(func) {
+            Object.keys(m_featureTiles).forEach(
+                function (tileId) { return m_featureTiles[tileId].eachFeatureLayer(func); }
+            );
+        }
+
+        self.setStyle = function setStyle(style) {
+            options.style = style;
+
+            eachFeatureLayer(function (featureLayer) {
+                var feature = featureLayer.feature;
+                var layerName = featureLayer.layerName;
+                var featureStyle = self.getFeatureStyle(feature, layerName);
+
+                featureLayer.setStyle(featureStyle);
+            });
+
+            return self;
+        };
+
+        // Compatibilty with Leaflet.VectorGrid
+        self.setFeatureStyle = function setFeatureStyle(id, style) {
+            m_featureStyle[id] = style;
+            self.setStyle(options.style);
+
+            return self;
+        };
+
+        // Compatibilty with Leaflet.VectorGrid
+        self.resetFeatureStyle = function resetFeatureStyle(id) {
+            delete m_featureStyle[id];
+            self.setStyle(options.style);
+
+            return self;
+        };
+
+        self.getTileSize = function getTileSize() {
+            var tileSize = m_super.getTileSize.call(self);
+            var zoom = self._tileZoom;
+
+            return tileSize.divideBy(
+                m_map.getZoomScale(clampZoom(zoom), zoom)
+            ).round();
+        };
+
+        self.getFeatureStyle = function getFeatureStyle(feature, layerName) {
+            var style = options.style;
+
+            return (
+                "function" === typeof style
+                ? style(feature, layerName, m_zoom)
+                : style
+            );
+        };
+
+        self.addFeatureLayer = function addFeatureLayer(featureLayer) {
+            featureLayer.addTo(m_map);
+            featureLayer.addEventParent(self);
+
+            return self;
+        };
+
+        self.removeFeatureLayer = function removeFeatureLayer(featureLayer) {
+            featureLayer.removeEventParent(self);
+            featureLayer.removeFrom(m_map);
+
+            return self;
+        };
+
+        return self;
+    });
+
+    return VectorTileLayer$1;
+
+})));
+//# sourceMappingURL=VectorTileLayer.umd.js.map

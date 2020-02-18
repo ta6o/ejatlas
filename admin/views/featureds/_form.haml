@@ -405,39 +405,72 @@
     }
   }
 
-  $('form.form').on('submit',function(e){
-    e.preventDefault();
-    nicEditors.findEditor('featured_description').saveContent();
-    data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
-    $.each($.makeArray($('ul#conti li').map(function(){return $(this).attr('id').split('-')[1]})),function(i,v){
-      data.push(v)
-    });
-    nin = data.indexOf('');
-    if (nin >= 0) {
-      data.splice[nin]
-    }
-    tags = $.makeArray($('ul#tagi li').map(function(){return $(this).attr('id').split('-')[1]})).join(',')
-    console.log(tags)
-    bases = [];
-    $.each( $('input.base'), function(i,b){
-      bases.push($(b).val());
-    });
-    $('#baselayers').val(bases.join(','));
-    $('#features').val(JSON.stringify(data));
-    $('#tags').remove();
-    $('input.conflict').not('.changed').remove();
-    data = $("form.form").serializeArray();
-    data.push({name:"tags",value:tags})
-    console.log(data)
-    $.post("/featureds/update/"+window.location.pathname.split("/")[3], data, function(data) {
-      data = JSON.parse(data);
-      if (data["status"] == "success") { window.location.reload(); }
-    })
-    //$('form.form').submit();
-  });
-
--unless @featured.new_record?
+-if @featured.new_record?
   :javascript
+    $('form.form').on('submit',function(e){
+      e.preventDefault();
+      nicEditors.findEditor('featured_description').saveContent();
+      data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
+      $.each($.makeArray($('ul#conti li').map(function(){return $(this).attr('id').split('-')[1]})),function(i,v){
+        data.push(v)
+      });
+      nin = data.indexOf('');
+      if (nin >= 0) {
+        data.splice[nin]
+      }
+      tags = $.makeArray($('ul#tagi li').map(function(){return $(this).attr('id').split('-')[1]})).join(',')
+      console.log(tags)
+      bases = [];
+      $.each( $('input.base'), function(i,b){
+        bases.push($(b).val());
+      });
+      $('#baselayers').val(bases.join(','));
+      $('#features').val(JSON.stringify(data));
+      $('#tags').remove();
+      $('input.conflict').not('.changed').remove();
+      data = $("form.form").serializeArray();
+      data.push({name:"tags",value:tags})
+      console.log(data)
+      $.post("/featureds/update/"+window.location.pathname.split("/")[3], data, function(data) {
+        data = JSON.parse(data);
+        if (data["status"] == "success") { window.location.reload(); }
+      })
+      //$('form.form').submit();
+    });
+
+-else
+  :javascript
+    $('form.form').on('submit',function(e){
+      e.preventDefault();
+      nicEditors.findEditor('featured_description').saveContent();
+      data = $('textarea[name=data]').val().replace(/\n/,' ').split(/,\ ?/);
+      $.each($.makeArray($('ul#conti li').map(function(){return $(this).attr('id').split('-')[1]})),function(i,v){
+        data.push(v)
+      });
+      nin = data.indexOf('');
+      if (nin >= 0) {
+        data.splice[nin]
+      }
+      tags = $.makeArray($('ul#tagi li').map(function(){return $(this).attr('id').split('-')[1]})).join(',')
+      console.log(tags)
+      bases = [];
+      $.each( $('input.base'), function(i,b){
+        bases.push($(b).val());
+      });
+      $('#baselayers').val(bases.join(','));
+      $('#features').val(JSON.stringify(data));
+      $('#tags').remove();
+      $('input.conflict').not('.changed').remove();
+      data = $("form.form").serializeArray();
+      data.push({name:"tags",value:tags})
+      console.log(data)
+      $.post("/featureds/create", data, function(data) {
+        data = JSON.parse(data);
+        if (data["status"] == "success") { window.location.reload(); }
+      })
+      //$('form.form').submit();
+    });
+
     $(document).ready(function(){
       //initFeatured(#{@featured.filter.split('/')});
     });
