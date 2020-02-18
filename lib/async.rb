@@ -1306,6 +1306,7 @@ class AsyncTask
     feats = []
     total = layer.get_feature_count
     puts "#{total} features found"
+    feature_id_order = 0
     total.times do |i| 
       begin
         feat = layer.get_feature i
@@ -1318,7 +1319,13 @@ class AsyncTask
           defn_ref = feat.get_defn_ref
           field_defn = defn_ref.get_field_defn(field_index)
           field_name = field_defn.get_name
-          puts "field name: #{field_name.to_s.yellow}"
+          if field_name == "feature_id"
+            feature_id_order = field_index
+            puts "field name: #{'"'.green}#{field_name.to_s.red}#{'"'.green}"
+          else
+            puts "field name: #{'"'.green}#{field_name.to_s.yellow}#{'"'.green}"
+          end
+          puts "field type: #{field_defn.get_type.to_s.cyan}"
         end
       end
       unless feat
@@ -1332,8 +1339,10 @@ class AsyncTask
       end
       geom.flatten_to_2d
       begin
-        id = feat.get_field("feature_id").to_i.to_s
-      rescue
+        id = feat.get_field_as_integer("feature_id").to_i.to_s
+      rescue => e
+        pp feat
+        puts e.to_s.red
         id = nil
       end
       if precision > 0
@@ -1350,6 +1359,7 @@ class AsyncTask
         end
         pts["coordinates"] = ngeom
       end
+      #puts "id: #{id.to_s.green}, #{params['stat_json'][id]}"
       if params['stat_json'] and id
         cat = params['stat_json'][id].delete("category") if params['stat_json'].has_key? id
         hash = {'type'=>'Feature', 'properties'=>{'id'=>id,'pn'=>vd.name,'data'=>params['stat_json'][id]},'geometry'=>pts}

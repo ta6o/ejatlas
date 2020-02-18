@@ -168,18 +168,19 @@
             %span=t.name
             %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
 
-    .group#geo_order
-      %label{:style=>"margin-top:0px;width: 100%;"} 
-        Order GeoNode layers
-      %ul#geolayers.sortable
-        -@featured.geo_layers.each do |vector|
-          -id = vector.id
-          %li.ui-state-default.clearfix
-            %span.pull-left= vector.name
-            %input.pull-left{:type=>"hidden",:name=>"geo_layers[#{id}][name]",:value=>vector.name}
-            &nbsp;
-            %a{:style=>"color:#0380a5;", :target=>"_blank", :href=>"https://geo.ejatlas.org/layers/#{vector.url}"} edit
-            -#%input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
+    -if @featured.geo_layers.any?
+      .group#geo_order
+        %label{:style=>"margin-top:0px;width: 100%;"} 
+          Order GeoNode layers
+        %ul#geolayers.sortable
+          -@featured.geo_layers.each do |vector|
+            -id = vector.id
+            %li.ui-state-default.clearfix
+              %span.pull-left= vector.name
+              %input.pull-left{:type=>"hidden",:name=>"geo_layers[#{id}][name]",:value=>vector.name}
+              &nbsp;
+              %a{:style=>"color:#0380a5;", :target=>"_blank", :href=>"https://geo.ejatlas.org/layers/#{vector.url}"} edit
+              -#%input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
 
     .group#vector_order
       %label{:style=>"margin-top:0px;width: 100%;"} 
