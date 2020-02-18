@@ -36,18 +36,16 @@ Admin.controllers :featureds do
 
   post :create do
     @featured = Featured.new(params[:featured])
+    if @featured.slug.nil? or @featured.slug == ""
+      @featured.slug = @featured.name.slug
+    end
     params[:featured][:color].gsub! /#/, ''
-    if @featured.save
+    if @featured.save!
       flash[:notice] = 'Featured was successfully created.'
-      begin
-        @featured.ping(Admin.filter(@featured.filter,false))
-      rescue => e
-        @error = e
-        redirect url(:featureds, :edit, :id => @featured.id)
-      end
-      redirect url(:featureds, :edit, :id => @featured.id)
+      @featured.ping(Admin.filter(@featured.filter,false))
+      return {:status=>"success",:id=>@featured.id}.to_json
     else
-      render 'featureds/new'
+      return {:status=>"error",:message=>"featured map not saved"}.to_json
     end
   end
 

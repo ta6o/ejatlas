@@ -63,7 +63,14 @@ class Featured < ActiveRecord::Base
         Tag.find_slug(t)
       end
     end
-    conflicts.each do |c|
+    conflicts.each do |cindex|
+      if cindex.is_a? Hash
+        c = Conflict.find(cindex["_id"])
+      elsif cindex.is_a? Conflict
+        c = cindex
+      else
+        next
+      end
       next unless c
       cmarker = c.as_marker
       JSON.parse(c.features||"{}").each do |k,v|

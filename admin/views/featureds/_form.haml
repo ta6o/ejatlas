@@ -431,9 +431,10 @@
       data = $("form.form").serializeArray();
       data.push({name:"tags",value:tags})
       console.log(data)
-      $.post("/featureds/update/"+window.location.pathname.split("/")[3], data, function(data) {
+      $.post("/featureds/create", data, function(data) {
+        console.log(data)
         data = JSON.parse(data);
-        if (data["status"] == "success") { window.location.reload(); }
+        if (data["status"] == "success") { window.location = "/featureds/edit/"+data["id"]; }
       })
       //$('form.form').submit();
     });
@@ -464,7 +465,7 @@
       data = $("form.form").serializeArray();
       data.push({name:"tags",value:tags})
       console.log(data)
-      $.post("/featureds/create", data, function(data) {
+      $.post("/featureds/update/"+window.location.pathname.split("/")[3], data, function(data) {
         data = JSON.parse(data);
         if (data["status"] == "success") { window.location.reload(); }
       })
