@@ -1052,7 +1052,7 @@ class AsyncTask
       print "#{Admin.divtime((Time.now-t0).to_i)}s".yellow if total > 0
       timings[:featured_maps] = Time.now - t1
       puts if total > 0
-      ca.featureds = featureds.to_json
+      ca.featureds = featureds.flatten.uniq.to_json
       if false
         Featured.all.each_with_index do |featured, index|
           print "\r  #{index+1} / #{Featured.count}      "
