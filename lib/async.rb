@@ -1037,9 +1037,8 @@ class AsyncTask
           id = id.to_i
           unless fids.include? id
             f.delete k
-          else
-            featureds << id if Featured.find(id).published == true
           end
+          featureds << id if Featured.find(id).published == true
         end
         c.set_local_text "features", f.to_json, locale
         c.save
