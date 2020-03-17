@@ -7,10 +7,11 @@ var jsons = {};
 var checkingTile = false;
 var all = 0;
 var loadQueue = 0;
+var wmsLayers = [ ];
 var overlayMaps = { };
 var choropleths = { };
 var baselayers = { };
-var dmns = [];
+var dmns = [ ];
 var info = $("#infopane");
 var legendpane = $("#legendpane > .legend");
 var rtlegend = legendpane.html();
@@ -38,6 +39,33 @@ Array.prototype.distinct = function(){
       u[this[i]] = 1;
    }
    return a;
+}
+function Identify (e) {
+  if (wmsLayers.length == 0) return
+  var sw = map.options.crs.project(map.getBounds().getSouthWest());
+  var ne = map.options.crs.project(map.getBounds().getNorthEast());
+  var BBOX = sw.x + "," + sw.y + "," + ne.x + "," + ne.y;
+  var WIDTH = map.getSize().x;
+  var HEIGHT = map.getSize().y;
+  var X = Math.trunc(map.layerPointToContainerPoint(e.layerPoint).x);
+  var Y = Math.trunc(map.layerPointToContainerPoint(e.layerPoint).y);
+  var s = overlayMaps[wmsLayers[wmsLayers.length - 1]].options.layers.replace(/^geonode:/,"")
+  var URL = 'https://geo.ejatlas.org/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=geonode:'+s+'&QUERY_LAYERS=geonode:'+s+'&BBOX='+BBOX+'&FEATURE_COUNT=1&HEIGHT='+HEIGHT+'&WIDTH='+WIDTH+'&INFO_FORMAT=application%2Fjson&TILED=false&CRS=EPSG%3A3857&I='+X+'&J='+Y;
+  $.ajax({
+    url: URL,
+    dataType: "json",
+    type: "GET",
+    success: function(data) {
+      if(data.features.length !== 0) {
+        var returnedFeature = data.features[0];
+        console.log(returnedFeature.properties);
+        var popup = new L.Popup({ maxWidth: 300 });
+        popup.setContent("<b>" + returnedFeature.properties.NAME + "</b><br />" + returnedFeature.properties.ADDRESS);
+        popup.setLatLng(e.latlng);
+        map.openPopup(popup);
+      }
+    }
+  });
 }
 
 function initMap () {
@@ -91,11 +119,19 @@ function initMap () {
   $.each(layerinfo,function(i,f){
     n = f[0];
     s = f[1];
-    overlayMaps[s] = L.tileLayer.wms('https://geo.ejatlas.org/geoserver/gwc/service/wms', { 
+
+    overlayMaps[n] = L.tileLayer.wms('https://geo.ejatlas.org/geoserver/gwc/service/wms', { 
       layers: "geonode:"+s, 
-      format: 'application/x-protobuf;type=mapbox-vector', 
-      transparent: true 
-    }).addTo(geoLayer);
+      //format: 'application/x-protobuf;type=mapbox-vector', 
+      format: 'image/png', 
+      transparent: true
+    })
+
+    if (true) { // add shown by default info
+      overlayMaps[n].addTo(geoLayer);
+      wmsLayers.push(n)
+    }
+
     if ($('#legendpane .vectorlegend').length == 0) {
       $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
     }
@@ -171,6 +207,7 @@ function initMap () {
   $(document).on('click','.vectorlegend .overlays tr',function(e){
     box = $(this).find('input');
     title = $(this).find('td:last')
+    console.log(title)
     name = title.text();
     hit = e.target == box[0];
     chk = box.prop('checked');
@@ -178,10 +215,16 @@ function initMap () {
       box.prop('checked',false);
       map.removeLayer(overlayMaps[name]);
       title.css('font-weight','normal');
+      if (Object.keys(overlayMaps[name]).indexOf("_wmsVersion") >= 0) {
+        wmsLayers.splice(wmsLayers.indexOf(name),1);
+      }
     } else if ((chk && hit) || (!chk && !hit)){
       box.prop('checked',true);
       map.addLayer(overlayMaps[name]);
       title.css('font-weight','bold');
+      if (Object.keys(overlayMaps[name]).indexOf("_wmsVersion") >= 0) {
+        wmsLayers.push(name);
+      }
     }
   });
 
@@ -225,6 +268,8 @@ function initMap () {
     choro_last = box.attr('id');
     $('body').css('cursor','auto !important');
   });
+
+  map.on({click: Identify});
 
   //var zoomControl = L.control.zoom({position:'topright'});
   map.removeControl(map.attributionControl)

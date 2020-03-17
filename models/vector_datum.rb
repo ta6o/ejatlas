@@ -11,6 +11,7 @@ class GeoLayer < ActiveRecord::Base
       attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}"}
       if local.include?(l["name"])
         local.delete l["name"]
+        GeoLayer.find_by_slug(l["name"]).update_attributes(attrs)
       else
         GeoLayer.create attrs
       end
@@ -23,7 +24,11 @@ class GeoLayer < ActiveRecord::Base
   end
 
   def inspect
-    self.featureds.any? ? "#{self.name.cyan} in #{self.featureds.map{|a| "#{a.name.yellow} (#{a.class.to_s.green})"}.join(", ")}" : self.name.cyan
+    if self.geo_layer_attachables.any? 
+      "#{self.name.cyan} in #{self.geo_layer_attachables.sort.map{|a| "#{a.attachable.name.yellow} (#{a.attachable_type.green})"}.join(", ")}"
+    else
+      self.name.cyan
+    end
   end
 end
 

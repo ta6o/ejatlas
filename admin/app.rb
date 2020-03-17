@@ -8,6 +8,7 @@ class Admin < Padrino::Application
   register Padrino::Mailer
   register Padrino::Helpers
   register Padrino::Admin::AccessControl
+  #register Sinatra::CrossOrigin
 
   ActiveSupport::Deprecation.silenced = true
 
@@ -108,6 +109,16 @@ class Admin < Padrino::Application
   $client = Elasticsearch::Client.new log:false
 
   Delayed::Worker.destroy_failed_jobs = false
+
+  use Rack::Cors do
+    allow do
+      origins 'https://geo.ejatlas.org'
+      resource '*', 
+        :headers => :any, 
+        :methods => [:get, :post, :options],
+        :expose  => ['Content-Type']
+    end
+  end
 
   before do
     if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0])
