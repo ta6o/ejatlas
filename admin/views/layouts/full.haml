@@ -300,9 +300,9 @@
 
     %footer
       .clearfix
-        %a.large.pull-left{:href=>'http://acknowlej.org/'}
+        %a.large.pull-left{:href=>'http://acknowlej.org/',:target=>"_blank"}
           .ack-logo
-        %a.large.pull-left{:href=>'http://www.ejolt.org/'}
+        %a.large.pull-left{:href=>'http://www.ejolt.org/',:target=>"_blank"}
           .ejolt-logo
         -#%a.pull-left{:href=>'http://cordis.europa.eu/fp7/home_en.html',:target=>"_blank"}
           %img{:src=>'/images/fp7_white.gif',:title=>'Seventh Network Programme'}
@@ -461,8 +461,7 @@
         conflict = false;
         $full = true;
         //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/Leaflet.VectorGrid.bundled.js','/javascripts/leaflet-tilelayer-wms-headers.js','/javascripts/VectorTileLayer.min.js','/javascripts/map.js'); 
-        jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
-        console.log("tilesla")
+        jQl.loadjQ('/javascripts/main-dev.js','/javascripts/VectorTileLayer.min.js','/javascripts/map.js'); 
     -else
       :javascript
         conflict = false;

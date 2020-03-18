@@ -1,12 +1,14 @@
 class GeoLayer < ActiveRecord::Base
-  has_many :geo_layer_attachables
+  has_many :geo_layer_attachables, :dependent => :destroy
   has_many :featureds, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Featured"
   has_many :conflicts, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Conflict"
 
   def self.check_layers
     require "rest_client"
     local = GeoLayer.all.map(&:slug)
-    JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"].each do |l|
+    layers = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"]
+    layers |= []
+    layers.each do |l|
       data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{l["name"]}.json", params={}).body)["featureType"]
       attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}"}
       if local.include?(l["name"])
