@@ -630,9 +630,7 @@ function showMarkers(markers) {
         type: "get",
         url: "/info/"+this.id,
         success: function(data){
-          console.log(m.getPopup())
           m.getPopup().setContent(data+m.content).openOn(map);
-          console.log(m.getPopup())
         }
       })
     });
