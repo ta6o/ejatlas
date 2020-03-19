@@ -4088,6 +4088,12 @@ function initMap () {
       transparent: true
     })
 
+    /*
+    overlayMaps[n] = VectorTileLayer('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:'+s+'@EPSG%3A900913@pbf/{z}/{x}/{y}.pbf', { 
+      format: 'application/x-protobuf;type=mapbox-vector', 
+    })
+    */
+
     if (true) { // add shown by default info
       overlayMaps[n].addTo(geoLayer);
       wmsLayers.push(n)
@@ -4168,7 +4174,6 @@ function initMap () {
   $(document).on('click','.vectorlegend .overlays tr',function(e){
     box = $(this).find('input');
     title = $(this).find('td:last')
-    console.log(title)
     name = title.text();
     hit = e.target == box[0];
     chk = box.prop('checked');
@@ -4586,7 +4591,9 @@ function showMarkers(markers) {
         type: "get",
         url: "/info/"+this.id,
         success: function(data){
+          console.log(m.getPopup())
           m.getPopup().setContent(data+m.content).openOn(map);
+          console.log(m.getPopup())
         }
       })
     });
