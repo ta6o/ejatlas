@@ -38,32 +38,32 @@ parse_sld_to_rules_tag(SPECIFIC_FILE_PATH); //Parse only one file
 var RESULT_PATH = '/tmp/'; //Add path you want result files written to
 
 var VALID_SYMBOLIZERS = [
-  'LineSymbolizer',
-  'TextSymbolizer',
-  'PolygonSymbolizer',
-  'PointSymbolizer'
+  'se:LineSymbolizer',
+  'se:TextSymbolizer',
+  'se:PolygonSymbolizer',
+  'se:PointSymbolizer'
 ];
 
 var VALID_ATTR_TAGS = [
-  'Stroke',
-  'Fill',
-  'Label',
-  'Font',
-  'Halo',
-  'Mark',
-  'Size',
-  'Geometry',
-  'Graphic'
+  'se:Stroke',
+  'se:Fill',
+  'se:Label',
+  'se:Font',
+  'se:Halo',
+  'se:Mark',
+  'se:Size',
+  'se:Geometry',
+  'se:Graphic'
 ];
 //attribute-tags that must be handeled different than the rest
-var DIFF_ATTR_TAG = ['Label', 'Halo', 'Mark', 'Geometry', 'Graphic'];
+var DIFF_ATTR_TAG = ['se:Label', 'se:Halo', 'se:Mark', 'se:Geometry', 'se:Graphic'];
 
 //mapping from sld symbolizer til mapbox GL type-attribute
 var CONV_TYPE = {
-  'LineSymbolizer': 'line',
-  'PolygonSymbolizer': 'fill',
-  'TextSymbolizer': 'symbol',
-  'PointSymbolizer': 'symbol'
+  'se:LineSymbolizer': 'line',
+  'se:PolygonSymbolizer': 'fill',
+  'se:TextSymbolizer': 'symbol',
+  'se:PointSymbolizer': 'symbol'
 };
 
 //attributes that must be handeled different than the rest,
@@ -220,13 +220,12 @@ function writeEndOfJSON() {
 var parseFile = function (data, file) {
   writeStartOfJSON();
   parser.parseString(data, function (err, result) {
-    var FeatureTypeStyle = result.StyledLayerDescriptor.NamedLayer[0].UserStyle[0]['FeatureTypeStyle'];
-    console.log(FeatureTypeStyle)
+    var FeatureTypeStyle = result.StyledLayerDescriptor.NamedLayer[0].UserStyle[0]['se:FeatureTypeStyle'];
     var rulesArr = [];
     var k;
     var rules = [];
     for (k = 0; k < FeatureTypeStyle.length; k++) { //some files had more than one FeatureTypeStyle
-      var rulesVer = (FeatureTypeStyle[k]['Rule']);
+      var rulesVer = (FeatureTypeStyle[k]['se:Rule']);
       var rule;
       for (rule = 0; rule < rulesVer.length; rule++) {
         //pushes all rules-tag in different FeatureTypeStyle-tags to one array
@@ -251,19 +250,19 @@ var parseFile = function (data, file) {
         }
       }
       name = ""
-      if (Object.keys(rule).indexOf("Name") >= 0 ){
-        name = rule['Name'][0];
+      if (Object.keys(rule).indexOf("se:Name") >= 0 ){
+        name = rule['se:Name'][0];
       }
       if (Object.keys(filter).length > 0 && (typeof name == "undefined" || name.length == 0)) {
         name = Object.values(filter)[0][0];
       }
-      if (Object.keys(rule).indexOf('MaxScaleDenominator') >= 0) {
-        maxzoom = scale_to_zoom(rule['MaxScaleDenominator'][0]);
+      if (Object.keys(rule).indexOf('se:MaxScaleDenominator') >= 0) {
+        maxzoom = scale_to_zoom(rule['se:MaxScaleDenominator'][0]);
       } else {
         maxzoom = "";
       }
-      if (Object.keys(rule).indexOf('MinScaleDenominator') >= 0) {
-        minzoom = scale_to_zoom(rule['MinScaleDenominator'][0]);
+      if (Object.keys(rule).indexOf('se:MinScaleDenominator') >= 0) {
+        minzoom = scale_to_zoom(rule['se:MinScaleDenominator'][0]);
       } else {
         minzoom = "";
       }
@@ -333,7 +332,7 @@ function getSymbolizersObj(symbTag, type, file) {
 
       //if values are not in the regular place
       if (DIFF_ATTR_TAG.indexOf(tagName) > -1 ||
-          ((tagName === 'Fill') && symbTag[0]["Fill"][0]["CssParameter"] !== undefined)) {
+          ((tagName === 'se:Fill') && symbTag[0]["se:Fill"][0]["se:SvgParameter"] !== undefined)) {
         var obj = getObjFromDiffAttr(tagName, type, symbTag, file);
         for (var key in obj) {
           cssObj[key] = obj[key];
@@ -356,9 +355,9 @@ function getSymbolizersObj(symbTag, type, file) {
 function getCssParameters(symbTag, validAttrTag, type, outerTag) {
   var cssArr = [];
   if (outerTag === undefined) {
-    var allCssArray = symbTag[0][validAttrTag][0]['CssParameter'];
+    var allCssArray = symbTag[0][validAttrTag][0]['se:SvgParameter'];
   } else {
-    var allCssArray = symbTag[0][outerTag][0][validAttrTag][0]['CssParameter'];
+    var allCssArray = symbTag[0][outerTag][0][validAttrTag][0]['se:SvgParameter'];
   }
 
   var nrOfCssTags = Object.keys(allCssArray).length;
@@ -375,15 +374,15 @@ function getCssParameters(symbTag, validAttrTag, type, outerTag) {
 //a different method the get the css-value
 function getObjFromDiffAttr(tagName, type, symbTag, file) {
   var obj = {};
-  if (tagName === 'Label') {
+  if (tagName === 'se:Label') {
     obj = getLabelObj(tagName, type, symbTag, obj);
-  } else if (tagName === 'Fill') { //some fill-attributes are defined differently than the rest
-    obj['fill-color'] = symbTag[0][tagName][0]["CssParameter"][0]["_"];
-  } else if (tagName === 'Halo') {
+  } else if (tagName === 'se:Fill') { //some fill-attributes are defined differently than the rest
+    obj['fill-color'] = symbTag[0][tagName][0]["se:SvgParameter"][0]["_"];
+  } else if (tagName === 'se:Halo') {
     obj = getHaloObj(tagName, type, symbTag, obj);
-  } else if (tagName === 'Geometry') {
+  } else if (tagName === 'se:Geometry') {
     obj = getGeometryObj(symbTag, obj);
-  } else if (tagName === 'Graphic') {
+  } else if (tagName === 'se:Graphic') {
     obj = getGraphicObj(file, symbTag, type, obj);
   }
   return obj;
@@ -400,12 +399,12 @@ function getHaloObj(tagName, type, symbTag, obj) {
   for (j = 0; j < Object.keys(symbTag[0].Halo[0]).length; j++) {
     var innerTagName = (Object.keys(symbTag[0].Halo[0]))[j];
 
-    if (innerTagName === 'Radius') {
-      var value = symbTag[0].Halo[0]['Radius'][0]['ogc:Literal'][0];
+    if (innerTagName === 'se:Radius') {
+      var value = symbTag[0].Halo[0]['se:Radius'][0]['ogc:Literal'][0];
       obj['text-halo-width'] = parseInt(value, 10);
-    } else if (innerTagName === 'Fill') {
+    } else if (innerTagName === 'se:Fill') {
       //array with key-value pair to add in obj
-      var cssArray = getCssParameters(symbTag, innerTagName, type, 'Halo');
+      var cssArray = getCssParameters(symbTag, innerTagName, type, 'se:Halo');
       var k;
       for (k = 0; k < cssArray.length; k++) {
         obj[cssArray[k][0]] = cssArray[k][1];
@@ -428,7 +427,7 @@ function getGeometryObj(symbTag, obj) {
 function getGraphicObj(file, symbTag, type, obj) {
   var fillColor;
   try {
-    fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['CssParameter'][0]['ogc:Function'][0]['ogc:Literal'][1];
+    fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['se:SvgParameter'][0]['ogc:Function'][0]['ogc:Literal'][1];
     var color = '#' + fillColor;
     var regInteger = /^\d+$/;
     if (!regInteger.test(fillColor)) {

@@ -11,8 +11,18 @@ class GeoLayer < ActiveRecord::Base
     layers.each do |l|
       data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{l["name"]}.json", params={}).body)["featureType"]
       puts data["title"].cyan
-      style = Nokogiri::XML(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{l["name"]}.sld", params={}).body)
-      p style
+      style = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{l["name"]}.sld", params={}).body
+      File.open("/tmp/#{l['name']}.sld","w") {|f| f << style}
+      `node #{Dir.pwd}/misc/sld2json/sld2json#{style.match(/se:/) ? "_se" : ""}.js /tmp/#{l['name']}.sld`
+      style = File.read("/tmp/#{l['name']}.json")
+      style.gsub!(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\)/) do |args|
+        hex = "#"
+        args.scan(/\d+/).to_a.each do |x|
+          hex += x.to_i.to_s(16).rjust(2,"0").upcase
+        end
+        hex
+      end
+      p JSON.parse(style)
       attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}"}
       if local.include?(l["name"])
         local.delete l["name"]
