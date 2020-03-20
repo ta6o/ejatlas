@@ -207,7 +207,7 @@ function errorCallback(e) {
 
 function writeStartOfJSON() {
   // var top = '{ "version": 7, "name": "' + styleSpecName + '", "sources": { "' + sourceName + '": { "type": "vector", "url": "' + sourceUrl + '" } }, "glyphs": "mapbox://fontstack/{fontstack}/{range}.pbf", "sprite": "https://www.mapbox.com/mapbox-gl-styles/sprites/sprite", "layers": [ { "id": "background", "type": "background", "paint": { "background-color": "rgb(237, 234, 235)" } }';
-  var top = '{ "layers": [ { "id": "background", "type": "background", "paint": { "background-color": "rgb(237, 234, 235)" } }';
+  var top = '{ "layers": [ ';
   fs.writeFile(RESULT_PATH + targetname, top + '\n', err => errorCallback);
   fs.writeFile(RESULT_PATH + './errorFiles.txt', 'Files that could not be converted:' + '\n', err => errorCallback);
 }
@@ -270,10 +270,12 @@ var parseFile = function (data, file) {
       //Checks if the tag is valid, and if it is: saves the object and type-name
       var i;
       var ruleArray = Object.keys(rule);
+      first = "";
       for (i = 0; i < ruleArray.length; i++) {
         if ((VALID_SYMBOLIZERS.indexOf(ruleArray[i])) > -1) {
           //Sends object, symbolizer and filename
-          writeJSON(rule[ruleArray[i]], ruleArray[i], name, minzoom, maxzoom, filter, file);
+          writeJSON(rule[ruleArray[i]], ruleArray[i], name, minzoom, maxzoom, filter, file, first);
+          first = ",";
         }
       }
     }
@@ -283,7 +285,7 @@ var parseFile = function (data, file) {
 
 //called for each symbolizer
 //this runs the rest of the methods through make_JSON and so on, and writes the objects to file
-function writeJSON(symbTag, type, name, minzoom, maxzoom, filter, file) {
+function writeJSON(symbTag, type, name, minzoom, maxzoom, filter, file, first) {
   var errorFiles = [];
   var convType = convertType(type);
   try {
@@ -291,7 +293,7 @@ function writeJSON(symbTag, type, name, minzoom, maxzoom, filter, file) {
     var styleObj = make_JSON(name, convType, cssObj, minzoom, maxzoom);
     if (Object.keys(filter).length >= 0) { styleObj['filter'] = filter; }
     print = JSON.stringify(styleObj,null,4);
-    fs.appendFile(RESULT_PATH + targetname, ',\n' + print, err => errorCallback);
+    fs.appendFile(RESULT_PATH + targetname, first + '\n' + print, err => errorCallback);
   } catch (err) {
     console.log("err")
     console.log(err)
