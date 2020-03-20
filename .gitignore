@@ -25,4 +25,6 @@ lib/sheets/*
 lib/locales/*
 stored_token.json
 misc/saves.csv
+misc/sld2json/node_modules/
+misc/sld2json/package-lock.json
 
