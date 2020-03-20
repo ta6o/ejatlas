@@ -41,6 +41,10 @@ Array.prototype.distinct = function(){
    return a;
 }
 
+function geoEach(f,l) {
+  console.log(f,l)
+}
+
 function Identify(e) {
   console.log(e)
   if (wmsLayers.length == 0) return
@@ -87,15 +91,15 @@ function geoLayers() {
     overlayMaps[n] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
       rendererFactory: L.svg.tile,
       interactive: true,
+      onClick: Identify,
       getFeatureId: function(f) {
-        console.log(f.properties);
         return f.properties.osm_id;
       },
       s: s
     })
 
     if (true) { // add shown by default info
-      overlayMaps[n].addTo(geoLayer).on('click',Identify).on("mouseenter",function(e){console.log(e)})
+      overlayMaps[n].addTo(geoLayer);
       wmsLayers.push(n)
     }
 
