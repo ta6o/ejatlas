@@ -454,7 +454,7 @@ Admin.controller do
     end
     @defs = @defs.to_set.to_a
     @vectors = CGI.unescapeHTML(con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link, rank, clickable, geometry_type').order(:rank).to_json).html_safe
-    @layers = con.geo_layers.map{|x| [x.name,x.slug]}.to_json.html_safe
+    @layers = con.geo_layers.map{|x| [x.name,x.slug]}.reverse.to_json.html_safe
     @images = []
     @images = con.images.order("updated_at desc") if con.images.any?
     @ogimage = @images.first.file.url if @images.any?
@@ -713,6 +713,10 @@ Admin.controller do
 
   get "/ac_coc/:country" do
     return 
+  end
+
+  get "/layer_style/:slug" do
+    GeoLayer.find_by_slug(params[:slug]).style
   end
 
   get "/info/:id" do

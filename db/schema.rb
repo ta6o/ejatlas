@@ -554,12 +554,14 @@ ActiveRecord::Schema.define(version: 0) do
     t.text   "description"
     t.string "url", limit: 255
     t.string "bbox", limit: 255
+    t.text   "style"
   end
 
   create_table "geo_layer_attachable", id: :serial, force: :cascade do |t|
     t.integer "geo_layer_id"
     t.string  "attachable_type", limit: 255
     t.integer "attachable_id"
+    t.integer "shown"
   end
 
   create_table "vector_data", id: :serial, force: :cascade do |t|

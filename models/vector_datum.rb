@@ -13,7 +13,7 @@ class GeoLayer < ActiveRecord::Base
       puts data["title"].cyan
       style = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{l["name"]}.sld", params={}).body
       File.open("/tmp/#{l['name']}.sld","w") {|f| f << style}
-      `node #{Dir.pwd}/misc/sld2json/sld2json#{style.match(/se:/) ? "_se" : ""}.js /tmp/#{l['name']}.sld`
+      `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json#{style.match(/<se:/) ? "_se" : ""}.js /tmp/#{l['name']}.sld`
       style = File.read("/tmp/#{l['name']}.json")
       style.gsub!(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\)/) do |args|
         hex = "#"
@@ -22,8 +22,55 @@ class GeoLayer < ActiveRecord::Base
         end
         hex
       end
-      p JSON.parse(style)
-      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}"}
+      sld = JSON.parse(style)
+      first = []
+      last = []
+      sld["layers"].each do |layer|
+        script = ""
+        condition = []
+        condition << "zoom >= #{layer['minzoom']}" if layer.has_key? "minzoom"
+        condition << "zoom <  #{layer['maxzoom']}" if layer.has_key? "maxzoom"
+        if layer.has_key? "filter"
+          layer["filter"].each do |key,val|
+            filter = []
+            val.each do |v|
+              filter << "String(properties[\"#{key}\"]) === \"#{v}\""
+            end
+            condition << "(#{filter.join(' || ')})"
+          end
+        end
+        script += "\n  if(#{condition.join(" && ")}) {" if condition.any?
+        script += "\n    return ({"
+        layer["paint"].each do |key,val|
+          if    key == "fill-color"
+            script += "\n      fill: true,"
+            script += "\n      fillColor: \"#{val}\","
+          elsif key == "fill-opacity"
+            script += "\n      fillOpacity: #{val},"
+          elsif key == "line-color"
+            script += "\n      stroke: true,"
+            script += "\n      strokeColor: \"#{val}\","
+          elsif key == "line-width"
+            script += "\n      weight: #{val},"
+          elsif key == "line-opacity"
+            script += "\n      strokeOpacity: #{val},"
+          elsif key == "line-join"
+            script += "\n      lineJoin: \"#{val.sub(/^#/,'')}\","
+          end
+        end
+        script += "\n    })"
+        script += "\n  }" if condition.any?
+        if condition.any?
+          first << script
+        else
+          last << script
+        end
+      end
+      style = "function(properties, zoom, geometryDimension) {"
+      first.each {|x| style += x}
+      last.each {|x| style += x}
+      style += "\n}"
+      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:style=>style}
       if local.include?(l["name"])
         local.delete l["name"]
         GeoLayer.find_by_slug(l["name"]).update_attributes(attrs)

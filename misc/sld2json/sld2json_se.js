@@ -235,6 +235,7 @@ var parseFile = function (data, file) {
     var j;
     var maxzoom;
     var minzoom;
+    var first = "";
     for (j = 0; j < rules.length; j++) {
       rule = rules[j];
       filter = {}
@@ -269,7 +270,6 @@ var parseFile = function (data, file) {
       //Checks if the tag is valid, and if it is: saves the object and type-name
       var i;
       var ruleArray = Object.keys(rule);
-      var first = "";
       for (i = 0; i < ruleArray.length; i++) {
         if ((VALID_SYMBOLIZERS.indexOf(ruleArray[i])) > -1) {
           //Sends object, symbolizer and filename
@@ -285,13 +285,12 @@ var parseFile = function (data, file) {
 //called for each symbolizer
 //this runs the rest of the methods through make_JSON and so on, and writes the objects to file
 function writeJSON(symbTag, type, name, minzoom, maxzoom, filter, file, first) {
-  console.log(first)
   var errorFiles = [];
   var convType = convertType(type);
   try {
     var cssObj = getSymbolizersObj(symbTag, type, file);
     var styleObj = make_JSON(name, convType, cssObj, minzoom, maxzoom);
-    if (Object.keys(filter).length >= 0) { styleObj['filter'] = filter; }
+    if (Object.keys(filter).length > 0) { styleObj['filter'] = filter; }
     print = JSON.stringify(styleObj,null,4);
     fs.appendFile(RESULT_PATH + targetname, first + '\n' + print, err => errorCallback);
   } catch (err) {
@@ -308,10 +307,8 @@ function make_JSON(name, type, cssObj, minzoom, maxzoom) {
   var paint = getPaintAndLayoutAttr(cssObj);
 
   //Removing default-values, they are redundant
-  if (Object.keys(paint).indexOf('fill-opacity') > -1) {
-    if (paint['fill-opacity'] === 1) {
-      delete paint['fill-opacity'];
-    }
+  if (Object.keys(paint).indexOf('fill-opacity') == -1) {
+    paint['fill-opacity'] = 1;
   }
 
   var styleObj = {

@@ -75,47 +75,44 @@ function Identify(e) {
 }
 
 function geoLayers() {
+
   $.each(layerinfo,function(i,f){
-    n = f[0];
-    s = f[1];
 
-    /*
-    overlayMaps[n] = L.tileLayer.wms('https://geo.ejatlas.org/geoserver/gwc/service/wms', { 
-      layers: "geonode:"+s, 
-      //format: 'application/x-protobuf;type=mapbox-vector', 
-      format: 'image/png', 
-      transparent: true
+    $.get("/layer_style/"+f[1],function(styl){
+      var styls = {}
+      n = f[0];
+      s = f[1];
+      eval("styls[s] = "+styl);
+
+      overlayMaps[n] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
+        rendererFactory: L.svg.tile,
+        //interactive: true,
+        onClick: Identify,
+        vectorTileLayerStyles: styls,
+        getFeatureId: function(f) {
+          return f.properties.osm_id;
+        },
+        s: s
+      })
+
+      if (true) { // add shown by default info
+        overlayMaps[n].addTo(geoLayer);
+        wmsLayers.push(n)
+      }
+
+      if ($('#legendpane .vectorlegend').length == 0) {
+        $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
+      }
+      html = "<tr><td class='input'><input type='checkbox' id='checkbox_"+s+"' checked='checked'>"
+      html += "</input></td><td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect </style></td>"
+      html += "<td style='font-weight:bold'>"+n+"</td></tr>";
+      ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
+      $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
     })
-    */
-
-    overlayMaps[n] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
-      rendererFactory: L.svg.tile,
-      interactive: true,
-      onClick: Identify,
-      getFeatureId: function(f) {
-        return f.properties.osm_id;
-      },
-      s: s
-    })
-
-    if (true) { // add shown by default info
-      overlayMaps[n].addTo(geoLayer);
-      wmsLayers.push(n)
-    }
-
-    if ($('#legendpane .vectorlegend').length == 0) {
-      $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
-    }
-    html = "<tr><td class='input'><input type='checkbox' id='checkbox_"+s+"' checked='checked'>"
-    html += "</input></td><td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect </style></td>"
-    html += "<td style='font-weight:bold'>"+n+"</td></tr>";
-    ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
-    $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
   });
-
 }
 
-function initMap () {
+function initMap() {
   console.log("map init")
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
@@ -519,6 +516,7 @@ function initMap () {
     $(this).css('text-indent',0);
   })
   
+  map.on({click:Identify})
   window.onresize = onResize; 
 
   updateInfo(1,disclaimer);
