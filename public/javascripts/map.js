@@ -87,7 +87,7 @@ function geoLayers() {
       overlayMaps[n] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
         rendererFactory: L.svg.tile,
         //interactive: true,
-        onClick: Identify,
+        //onclick: Identify,
         vectorTileLayerStyles: styls,
         getFeatureId: function(f) {
           return f.properties.osm_id;
@@ -96,7 +96,7 @@ function geoLayers() {
       })
 
       if (true) { // add shown by default info
-        overlayMaps[n].addTo(geoLayer);
+        overlayMaps[n].addTo(geoLayer).on({click:Identify});
         wmsLayers.push(n)
       }
 
@@ -110,6 +110,8 @@ function geoLayers() {
       $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
     })
   });
+  
+  //map.on({click:Identify})
 }
 
 function initMap() {
@@ -515,8 +517,6 @@ function initMap() {
     $attrSlide = false;
     $(this).css('text-indent',0);
   })
-  
-  map.on({click:Identify})
   window.onresize = onResize; 
 
   updateInfo(1,disclaimer);

@@ -9,68 +9,93 @@ class GeoLayer < ActiveRecord::Base
     layers = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"]
     layers |= []
     layers.each do |l|
-      data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{l["name"]}.json", params={}).body)["featureType"]
-      puts data["title"].cyan
-      style = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{l["name"]}.sld", params={}).body
-      File.open("/tmp/#{l['name']}.sld","w") {|f| f << style}
-      `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json#{style.match(/<se:/) ? "_se" : ""}.js /tmp/#{l['name']}.sld`
-      style = File.read("/tmp/#{l['name']}.json")
-      style.gsub!(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\)/) do |args|
-        hex = "#"
-        args.scan(/\d+/).to_a.each do |x|
-          hex += x.to_i.to_s(16).rjust(2,"0").upcase
+      begin
+        data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{l["name"]}.json", params={}).body)["featureType"]
+        type = "vector"
+      rescue
+        begin
+          data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/coveragestores/tmax_07/coverages/#{l["name"]}.json", params={}).body)["coverage"]
+          type = "raster"
+        rescue => e
+          puts e.to_s.red
         end
-        hex
       end
-      sld = JSON.parse(style)
-      first = []
-      last = []
-      sld["layers"].each do |layer|
-        script = ""
-        condition = []
-        condition << "zoom >= #{layer['minzoom']}" if layer.has_key? "minzoom"
-        condition << "zoom <  #{layer['maxzoom']}" if layer.has_key? "maxzoom"
-        if layer.has_key? "filter"
-          layer["filter"].each do |key,val|
-            filter = []
-            val.each do |v|
-              filter << "String(properties[\"#{key}\"]) === \"#{v}\""
+      puts "#{data["title"].cyan} (#{data["name"]})"
+      style = ""
+      attributes = []
+      omitted = []
+      if type == "vector"
+        sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{l["name"]}.sld", params={}).body
+        File.open("/tmp/#{l['name']}.sld","w") {|f| f << sld}
+        `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json#{sld.match(/<se:/) ? "_se" : ""}.js /tmp/#{l['name']}.sld`
+        sld = File.read("/tmp/#{l['name']}.json")
+        sld.gsub!(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\)/) do |args|
+          hex = "#"
+          args.scan(/\d+/).to_a.each do |x|
+            hex += x.to_i.to_s(16).rjust(2,"0").upcase
+          end
+          hex
+        end
+        sld = JSON.parse(sld)
+        first = []
+        last = []
+        sld["layers"].each do |layer|
+          script = ""
+          condition = []
+          condition << "zoom >= #{layer['minzoom']}" if layer.has_key? "minzoom"
+          condition << "zoom <  #{layer['maxzoom']}" if layer.has_key? "maxzoom"
+          if layer.has_key? "filter"
+            layer["filter"].each do |key,val|
+              filter = []
+              val.each do |v|
+                filter << "String(properties[\"#{key}\"]) === \"#{v}\""
+              end
+              condition << "(#{filter.join(' || ')})"
             end
-            condition << "(#{filter.join(' || ')})"
+          end
+          script += "\n  if(#{condition.join(" && ")}) {" if condition.any?
+          script += "\n    return ({"
+          layer["paint"].each do |key,val|
+            if    key == "fill-color"
+              script += "\n      fill: true,"
+              script += "\n      fillColor: \"#{val}\","
+            elsif key == "fill-opacity"
+              script += "\n      fillOpacity: #{val},"
+            elsif key == "line-color"
+              script += "\n      stroke: true,"
+              script += "\n      color: \"#{val}\","
+            elsif key == "line-width"
+              script += "\n      weight: #{val},"
+            elsif key == "line-opacity"
+              script += "\n      opacity: #{val},"
+            elsif key == "line-join"
+              script += "\n      lineJoin: \"#{val.sub(/^#/,'')}\","
+            end
+          end
+          unless layer["paint"].has_key?("line-color")
+            script += "\n      stroke: false,"
+          end
+          script += "\n    })"
+          script += "\n  }" if condition.any?
+          if condition.any?
+            first << script
+          else
+            last << script
           end
         end
-        script += "\n  if(#{condition.join(" && ")}) {" if condition.any?
-        script += "\n    return ({"
-        layer["paint"].each do |key,val|
-          if    key == "fill-color"
-            script += "\n      fill: true,"
-            script += "\n      fillColor: \"#{val}\","
-          elsif key == "fill-opacity"
-            script += "\n      fillOpacity: #{val},"
-          elsif key == "line-color"
-            script += "\n      stroke: true,"
-            script += "\n      strokeColor: \"#{val}\","
-          elsif key == "line-width"
-            script += "\n      weight: #{val},"
-          elsif key == "line-opacity"
-            script += "\n      strokeOpacity: #{val},"
-          elsif key == "line-join"
-            script += "\n      lineJoin: \"#{val.sub(/^#/,'')}\","
+        style = "function(properties, zoom, geometryDimension) {"
+        first.each {|x| style += x}
+        last.each {|x| style += x}
+        style += "\n}"
+
+        attributes = data["attributes"]["attribute"].map{|a| a["name"]}
+        attributes.each do |a|
+          if a.match(/^\w+_id$/) or a === "id"
+            omitted << a 
           end
-        end
-        script += "\n    })"
-        script += "\n  }" if condition.any?
-        if condition.any?
-          first << script
-        else
-          last << script
         end
       end
-      style = "function(properties, zoom, geometryDimension) {"
-      first.each {|x| style += x}
-      last.each {|x| style += x}
-      style += "\n}"
-      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:style=>style}
+      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:style=>style,:layer_type=>type,:attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:srs=>data["srs"]}
       if local.include?(l["name"])
         local.delete l["name"]
         GeoLayer.find_by_slug(l["name"]).update_attributes(attrs)
