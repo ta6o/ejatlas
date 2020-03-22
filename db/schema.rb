@@ -555,6 +555,9 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "url", limit: 255
     t.string "bbox", limit: 255
     t.text   "style"
+    t.text   "attributes_available"
+    t.string "layer_type", :limit: 6
+    t.string "srs", :limit: 32
   end
 
   create_table "geo_layer_attachable", id: :serial, force: :cascade do |t|
@@ -562,6 +565,8 @@ ActiveRecord::Schema.define(version: 0) do
     t.string  "attachable_type", limit: 255
     t.integer "attachable_id"
     t.integer "shown"
+    t.boolean "clickable"
+    t.integer "rank"
   end
 
   create_table "vector_data", id: :serial, force: :cascade do |t|

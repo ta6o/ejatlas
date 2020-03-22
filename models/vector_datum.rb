@@ -98,7 +98,7 @@ class GeoLayer < ActiveRecord::Base
       attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:style=>style,:layer_type=>type,:attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:srs=>data["srs"]}
       if local.include?(l["name"])
         local.delete l["name"]
-        GeoLayer.find_by_slug(l["name"]).update_attributes(attrs)
+        GeoLayer.find_by_slug(l["name"]).update_attributes(attrs.except("description","attributes_omitted"))
       else
         GeoLayer.create attrs
       end
@@ -108,6 +108,10 @@ class GeoLayer < ActiveRecord::Base
         la.destroy
       end
     end
+  end
+
+  def info
+    {:name=>self.name, :style=>self.style, :type=>self.layer_type, :omit=>self.attributes_omitted}
   end
 
   def inspect
