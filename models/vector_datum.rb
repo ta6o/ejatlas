@@ -24,6 +24,7 @@ class GeoLayer < ActiveRecord::Base
       style = ""
       attributes = []
       omitted = []
+      idcol = nil
       if type == "vector"
         sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{l["name"]}.sld", params={}).body
         File.open("/tmp/#{l['name']}.sld","w") {|f| f << sld}
@@ -56,25 +57,30 @@ class GeoLayer < ActiveRecord::Base
           script += "\n  if(#{condition.join(" && ")}) {" if condition.any?
           script += "\n    return ({"
           layer["paint"].each do |key,val|
-            if    key == "fill-color"
-              script += "\n      fill: true,"
-              script += "\n      fillColor: \"#{val}\","
-            elsif key == "fill-opacity"
-              script += "\n      fillOpacity: #{val},"
-            elsif key == "line-color"
+            if    key == "line-color"
               script += "\n      stroke: true,"
               script += "\n      color: \"#{val}\","
             elsif key == "line-width"
               script += "\n      weight: #{val},"
             elsif key == "line-opacity"
               script += "\n      opacity: #{val},"
+            elsif key == "line-cap"
+              script += "\n      lineCap: \"#{val.sub(/^#/,'')}\","
             elsif key == "line-join"
               script += "\n      lineJoin: \"#{val.sub(/^#/,'')}\","
+            elsif key == "line-dasharray"
+              script += "\n      dashArray: #{val},"
+            elsif key == "line-dashoffset"
+              script += "\n      dashOffset: #{val},"
+            elsif key == "fill-color"
+              script += "\n      fill: true,"
+              script += "\n      fillColor: \"#{val}\","
+            elsif key == "fill-opacity"
+              script += "\n      fillOpacity: #{val},"
             end
           end
-          unless layer["paint"].has_key?("line-color")
-            script += "\n      stroke: false,"
-          end
+          script += "\n      stroke: false," unless layer["paint"].has_key?("line-color")
+          script += "\n      fill: false,"   unless layer["paint"].has_key?("fill-color")
           script += "\n    })"
           script += "\n  }" if condition.any?
           if condition.any?
@@ -88,17 +94,29 @@ class GeoLayer < ActiveRecord::Base
         last.each {|x| style += x}
         style += "\n}"
 
+        icon = style.gsub(/,\n/,";").gsub(/\s*/,"").match(/return\({([^}]+)}\)/)
+        if icon
+          icon = icon[1]
+          {"stroke:false;"=>"","fill:false;"=>"","stroke:true;"=>"","fill:true;"=>"",";color"=>";stroke","weight"=>"stroke-width","strokeOpacity"=>"stroke-opacity","fillColor"=>"fill","fillOpacity"=>"fill-opacity","\""=>""}.each do |k,v|
+            icon = icon.gsub(k,v)
+          end
+          icon = "{\n    #{icon}\n}"
+        else
+          icon = nil
+        end
+
         attributes = data["attributes"]["attribute"].map{|a| a["name"]}
         attributes.each do |a|
-          if a.match(/^\w+_id$/) or a === "id"
+          if a.match(/^\w+_id$/) or a === "id" or a.match(/^\w+_ID$/) or a === "ID"
             omitted << a 
           end
         end
+        idcol = attributes.include?("feature_id") ? "feature_id" : omitted[0]
       end
-      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:style=>style,:layer_type=>type,:attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:srs=>data["srs"]}
+      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:style=>style,:layer_type=>type,:attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:srs=>data["srs"],:icon=>icon,:id_column => idcol}
       if local.include?(l["name"])
         local.delete l["name"]
-        GeoLayer.find_by_slug(l["name"]).update_attributes(attrs.except("description","attributes_omitted"))
+        GeoLayer.find_by_slug(l["name"]).update_attributes(attrs.except("description","attributes_omitted","id_column"))
       else
         GeoLayer.create attrs
       end
@@ -111,7 +129,7 @@ class GeoLayer < ActiveRecord::Base
   end
 
   def info
-    {:name=>self.name, :style=>self.style, :type=>self.layer_type, :omit=>self.attributes_omitted}
+    {:id=>self.id,:name=>self.name, :style=>self.style, :type=>self.layer_type, :omit=>self.attributes_omitted,:icon=>self.icon,:id_column=>self.id_column}
   end
 
   def inspect

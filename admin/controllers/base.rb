@@ -454,7 +454,16 @@ Admin.controller do
     end
     @defs = @defs.to_set.to_a
     @vectors = CGI.unescapeHTML(con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link, rank, clickable, geometry_type').order(:rank).to_json).html_safe
-    @layers = con.geo_layers.map{|x| [x.slug,x.info]}.reverse.to_h.to_json.html_safe
+    @layers = con.geo_layers.map{|x| [x.slug,x.info]}.reverse.to_h
+    @layers.each do |n,l|
+      att = GeoLayerAttachable.where(:attachable_type=>"Featured",:attachable_id=>con.id,:geo_layer_id=>l[:id]).first
+      if att
+        l["shown"] = att.shown || 0
+        l["clickable"] = att.clickable || false
+        l["rank"] = att.rank || 0
+      end
+    end
+    @layers = @layers.to_json.html_safe
     @images = []
     @images = con.images.order("updated_at desc") if con.images.any?
     @ogimage = @images.first.file.url if @images.any?

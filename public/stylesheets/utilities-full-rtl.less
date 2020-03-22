@@ -140,10 +140,10 @@ small {
 }
 
 .maplink {
-  padding: 36px 48px 12px;
-  margin: -36px -36px -8px;
+  padding: 8px 20px;
+  margin: -18px -20px 0px;
   background: @brand-dark;
-  text-align: center;
+  //text-align: center;
   color: white !important;
   a {
     color: white !important;
@@ -151,13 +151,17 @@ small {
   }
   &.darkred {
     background: @brand-darkred;
-    margin: -32px -32px 8px;
-    padding: 4px 32px 0px;
-    text-align: right;
+    //margin: -32px -32px 8px;
+    //padding: 4px 32px 0px;
+    text-align: left;
     p {
       padding-bottom:6px;
     }
   }
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  display: none;
 }
 
 a.genlink {

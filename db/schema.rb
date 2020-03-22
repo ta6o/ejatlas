@@ -556,14 +556,18 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "bbox", limit: 255
     t.text   "style"
     t.text   "attributes_available"
+    t.text   "attributes_omitted"
     t.string "layer_type", :limit: 6
     t.string "srs", :limit: 32
+    t.string "icon", limit: 255
+    t.string "id_column", limit: 255
   end
 
   create_table "geo_layer_attachable", id: :serial, force: :cascade do |t|
     t.integer "geo_layer_id"
     t.string  "attachable_type", limit: 255
     t.integer "attachable_id"
+    t.text    "attributes_omitted"
     t.integer "shown"
     t.boolean "clickable"
     t.integer "rank"

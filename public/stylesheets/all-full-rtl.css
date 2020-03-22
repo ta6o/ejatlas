@@ -6886,10 +6886,9 @@ small {
   display: none;
 }
 .maplink {
-  padding: 36px 48px 12px;
-  margin: -36px -36px -8px;
+  padding: 8px 20px;
+  margin: -18px -20px 0px;
   background: #024357;
-  text-align: center;
   color: white !important;
 }
 .maplink a {
@@ -6898,12 +6897,13 @@ small {
 }
 .maplink.darkred {
   background: #6d1a18;
-  margin: -32px -32px 8px;
-  padding: 4px 32px 0px;
-  text-align: right;
+  text-align: left;
 }
 .maplink.darkred p {
   padding-bottom: 6px;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  display: none;
 }
 a.genlink {
   cursor: pointer;
