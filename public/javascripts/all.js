@@ -4047,68 +4047,73 @@ function identify(e) {
 
 function geoLayers() {
 
-  $.each(layerinfo,function(s,f){
-    var styls = {}
-    name = f["name"];
-    styl = f["style"]
-    eval("styls[s] = "+styl);
+  $.each(layerranks,function(i,s){
+    f = layerinfo[s]
+    if (f.type == "vector") {
+      var styls = {}
+      name = f["name"];
+      styl = f["style"]
+      eval("styls[s] = "+styl);
 
-    overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
-      interactive: f["clickable"],
-      vectorTileLayerStyles: styls,
-      getFeatureId: function(fi) {
-        idcol = f['id_column'];
-        return fi.properties[idcol];
-      },
-      s: s
-    }).on( {
-        click:identify,
-        mouseover: function(e) {
-          layer = overlayMaps[name];
+      overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
+        interactive: f["clickable"],
+        vectorTileLayerStyles: styls,
+        getFeatureId: function(fi) {
           idcol = f['id_column'];
-          layer.clearHighlight();
-          layer.highlight = e.layer.properties[idcol];
-          console.log(layer.highlight)
-          layer.setFeatureStyle(layer.highlight, {
-            color: "#000000",
-            fill: "#000000",
-            fillOpacity: 1,
-            weight: 4,
-          })
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront(layer.highlight);
-          }
+          return fi.properties[idcol];
+        },
+        s: s
+      }).on( {
+          click:identify,
+          mouseover: function(e) {
+            return
+            layer = overlayMaps[name];
+            idcol = f['id_column'];
+            layer.clearHighlight();
+            layer.highlight = e.layer.properties[idcol];
+            console.log(layer.highlight)
+            layer.setFeatureStyle(layer.highlight, {
+              color: "#000000",
+              fill: "#000000",
+              fillOpacity: 1,
+              weight: 4,
+            })
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              layer.bringToFront(layer.highlight);
+            }
 
-          L.DomEvent.stop(e);
-        }, 
-        mouseout:function(e){ overlayMaps[name].clearHighlight(); }
+            L.DomEvent.stop(e);
+          }, 
+          mouseout:function(e){ overlayMaps[name].clearHighlight(); }
+        }
+      );
+
+      overlayMaps[name].highlight = null;
+      overlayMaps[name].clearHighlight = function() {
+        layer = overlayMaps[name];
+        if (layer.highlight) { layer.resetFeatureStyle(layer.highlight); }
+        layer.highlight = null;
+      };
+
+      checked = "";
+      bold = "";
+      if (f["shown"] == 1) {
+        overlayMaps[name].addTo(geoLayer);
+        wmsLayers.push(name);
+        checked = " checked='checked'"
+        bold = " style='font-weight:bold'"
       }
-    );
 
-    overlayMaps[name].highlight = null;
-		overlayMaps[name].clearHighlight = function() {
-      layer = overlayMaps[name];
-			if (layer.highlight) { layer.resetFeatureStyle(layer.highlight); }
-			layer.highlight = null;
-		};
-
-    checked = "";
-    bold = "";
-    if (f["shown"] == 1) {
-      overlayMaps[name].addTo(geoLayer);
-      wmsLayers.push(name)
-      checked = " checked='checked'"
-      bold = " style='font-weight:bold'"
+      if ($('#legendpane .vectorlegend').length == 0) {
+        $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
+      }
+      html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
+      html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+      html += "<td"+bold+">"+name+"</td></tr>";
+      ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
+      console.log(ranks)
+      $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
     }
-
-    if ($('#legendpane .vectorlegend').length == 0) {
-      $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
-    }
-    html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
-    html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
-    html += "<td"+bold+">"+name+"</td></tr>";
-    ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
-    $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
   })
 }
 
