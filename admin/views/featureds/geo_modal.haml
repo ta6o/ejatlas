@@ -1,0 +1,60 @@
+.modal-dialog
+  :css
+    table { width: 100%; }
+    table tr td, table tr th { padding: 4px 12px; }
+  .modal-content
+    %form{:action=>"/featureds/geo_modal/#{@featured.id}",:method=>"post"}
+      .modal-header
+        %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true,:style=>"font-size:32px;"} &times;
+        %h4= "Select layers for featured <b>#{@featured.name}</b>".html_safe
+        %a{:onclick=>"update_geoserver()",:href=>"#"} Update from GeoServer
+      .modal-body
+        %table
+          %thead
+            %tr
+              %th ADD?
+              %th Name
+              %th Type
+              %th Description
+          %tbody
+            -GeoLayer.order(:id).each do |layer|
+              %tr
+                %td
+                  %input{:type=>"checkbox",:name=>"layer_#{layer.id}",:checked=>@featured.geo_layers.map(&:id).include?(layer.id)}
+                %td= layer.name
+                %td= layer.layer_type
+                %td= layer.description
+      .modal-footer
+        %button.btn#submit Submit
+  :css
+    #loading {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      right: 0;
+      background: rgba(255,255,255,0.75);
+      z-index: 99999;
+    }
+
+    .loading {
+      width: 32px;
+      height: 32px;
+      position: absolute;
+      top:8px;
+      right:-8px;
+    }
+
+  :javascript
+    function update_geoserver(){
+      $("body").prepend("<div id='loading'><div class='loading'></div></div>")
+      $("#loading .loading").show();
+      $.post("/featureds/update_geoserver",{},function(data){
+        if (data == "ack") {
+          window.location.reload();
+        } else {
+          $("#loading").remove();
+          alert("Error occured while updating layers, please try again.")
+        }
+      })
+    }

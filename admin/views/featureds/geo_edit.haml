@@ -1,0 +1,39 @@
+.modal-dialog
+  .modal-content
+    %form{:action=>"/featureds/geo_edit/#{@featured.id}/#{@layer.id}",:method=>"post"}
+      .modal-header
+        %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true,:style=>"font-size:32px;"} &times;
+        %h4= "Edit layer <b>#{@layer.name}</b>".html_safe
+        %a{:target=>"_blank", :href=>"https://geo.ejatlas.org/layers/#{@layer.url}"} Edit on GeoNode
+      .modal-body
+
+        .row
+          .col-sm-6
+
+            .group
+              %label{:for=>:name} Name
+              %input{:type=>:text,:name=>:name,:value=>@layer.name}
+
+            .group
+              %label{:for=>:description} Description
+              %textarea.text_area{:name=>:description, :rows=>3}= @layer.description
+
+          .col-sm-6
+            -available = JSON.parse(@layer.attributes_available)
+            -omitted = JSON.parse(@layer.attributes_omitted)
+
+            .group
+              %label{:for=>:id_column} ID Column
+              %select{:name=>:id_column}
+                -available.each do |attr|
+                  %option{:value=>attr,:selected=>@layer.id_column == attr}= attr
+
+            .group
+              %label{:for=>:id_column} Omitted attributes
+
+              -available.each do |attr|
+                %br/
+                %input{:type=>"checkbox",:name=>"attributes_omitted[]",:value=>attr,:checked=>omitted.include?(attr)}= attr
+
+      .modal-footer
+        %button.btn#submit{} Submit

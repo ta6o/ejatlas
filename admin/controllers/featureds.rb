@@ -61,12 +61,6 @@ Admin.controllers :featureds do
     (JSON.parse(@featured.features) & $attrhash.values).each do |val|
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
-=begin
-      @followed = (Admin.filter(@featured.filter,false).map{|i| begin Conflict.select('id, slug, name, approval_status, features').find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug}
-    rescue => e
-      puts "#{@featured.name} | #{e}"
-      @followed = (Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug}
-=end
     begin
       @followed = JSON.parse(@featured.conflicts_marker).map{|x| Conflict.find(JSON.parse(x)["i"])}
     rescue => e
@@ -82,20 +76,43 @@ Admin.controllers :featureds do
   end
 
   put :update, :with => :id do
+    @featured = Featured.find(params[:id])
+    redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
+    pp params
     rank = 0
     (params.delete("vectors") || []).each do |id, data|
       vector = VectorDatum.find(id)
       next unless vector.status == "published"
       rank += 1
       vector.update_attribute(:rank, rank)
+      if data.has_key?("shown") and data["shown"] == "on"
+        vector.update_attribute(:shown, 1)
+      else
+        vector.update_attribute(:shown, 0)
+      end
       if data.has_key?("clickable") and data["clickable"] == "on"
         vector.update_attribute(:clickable, true)
       else
         vector.update_attribute(:clickable, false)
       end
     end
-    @featured = Featured.find(params[:id])
-    redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
+    rank = 0
+    (params.delete("geo_layers") || []).each do |id, data|
+      vector = GeoLayer.find(id)
+      attach = GeoLayerAttachable.where(:attachable_type=>"Featured",:attachable_id=>@featured.id,:geo_layer_id=>vector.id).first
+      rank += 1
+      attach.update_attribute(:rank, rank)
+      if data.has_key?("shown") and data["shown"] == "on"
+        attach.update_attribute(:shown, 1)
+      else
+        attach.update_attribute(:shown, 0)
+      end
+      if data.has_key?("clickable") and data["clickable"] == "on"
+        attach.update_attribute(:clickable, true)
+      else
+        attach.update_attribute(:clickable, false)
+      end
+    end
     params[:featured][:color].gsub! /#/, ''
     unless params[:featured].has_key?('published')
       @featured.published = false
@@ -160,6 +177,50 @@ Admin.controllers :featureds do
     else
       return {:status=>"error",:message=>"featured map not saved"}.to_json
     end
+  end
+
+  post :update_geoserver do
+    begin
+      GeoLayer.check_layers
+      return "ack"
+    rescue
+      return "nack"
+    end
+  end
+
+  get :geo_edit, :with => [:fid,:lid] do
+    pass unless current_account.editor?
+    @featured = Featured.find(params[:fid])
+    @layer = GeoLayer.find(params[:lid])
+    render 'featureds/geo_edit', :layout=>false
+  end
+
+  post :geo_edit, :with => [:fid,:lid] do
+    pass unless current_account.editor?
+    feat = Featured.find(params.delete(:fid))
+    layer = GeoLayer.find(params.delete(:lid))
+    params["attributes_omitted"] = params["attributes_omitted"].to_json
+    return redirect to "/featureds/edit/#{feat.id}"
+  end
+
+  get :geo_modal, :with => :id do
+    pass unless current_account.editor?
+    @featured = Featured.find(params[:id])
+    render 'featureds/geo_modal', :layout=>false
+  end
+
+  post :geo_modal, :with => :id do
+    pass unless current_account.editor?
+    feat = Featured.find(params.delete(:id))
+    oids = feat.geo_layers.map(&:id)
+    nids = params.keys.map{|k| k.match(/(\d+)/)[1].to_i}
+    (nids - oids).each do |add|
+      GeoLayerAttachable.create(:attachable_type=>"Featured",:attachable_id=>feat.id,:geo_layer_id=>add)
+    end
+    (oids - nids).each do |rm|
+      GeoLayerAttachable.where(:attachable_type=>"Featured",:attachable_id=>feat.id,:geo_layer_id=>rm).first.destroy
+    end
+    return redirect to "/featureds/edit/#{feat.id}"
   end
 
   get :delete, :with => :id do

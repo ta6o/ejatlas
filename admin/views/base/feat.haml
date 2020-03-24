@@ -9,6 +9,7 @@
     img.src = '#{$fileurl}/static/ikon.png';
     var markerinfo = eval("["+#{@markerinfo.html_safe}.join(',')+"]");
     var vectorinfo = [];
+    var layerranks = [];
     var layerinfo = [];
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";
@@ -20,6 +21,7 @@
   -if @layers
     :javascript
       layerinfo = #{@layers};
+      layerranks = #{@ranks};
   -if @view == [0,0,1]
     :javascript
       $(document).ready(onLoad);

@@ -42,6 +42,8 @@
                     .group.navform.wat-cf
                       =f.submit pat(:upload), :class => 'btn btn-warning', :style=>'width:180px;font-weight:bold'
 
+  #geo-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+  #geo-edit.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
   #viewport-modal.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
     .modal-dialog
       .modal-content
@@ -168,35 +170,73 @@
             %span=t.name
             %a.remove.small.pull-right{:style=>'cursor:pointer'} Remove
 
-    -if @featured.geo_layers.any?
-      .group#geo_order
+    .group#geo_order
+      %label{:style=>"margin-top:0px;width: 100%;"} 
+        Order GeoNode layers
+        &nbsp;
+        %a{'data-toggle'=>'modal','data-target'=>'#geo-modal',:href=>"/featureds/geo_modal/#{@featured.id}"} Manage
+        %span{:style=>"font-weight:normal;text-align:right;float:right"}
+          S
+          &nbsp;
+          C 
+          &nbsp;
+          &nbsp;
+      %ul#geolayers.sortable
+        -@featured.geo_layer_attachables.order(:rank).each do |vector|
+          -id = vector.geo_layer.id
+          %li.ui-state-default.clearfix
+            %input{:type=>"hidden",:name=>"geo_layers[#{id}][name]",:value=>vector.geo_layer.name}
+            -#%small.pull-left
+              = vector.rank
+              &nbsp;
+            %span.pull-left= vector.geo_layer.name
+            .pull-right
+              &nbsp;
+            %input.pull-right{:type=>"checkbox",:name=>"geo_layers[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
+            .pull-right
+              &nbsp;
+            %input.pull-right{:type=>"checkbox",:name=>"geo_layers[#{id}][shown]",:checked=>(vector.shown == 1 ? true : false)}
+            .pull-right
+              &nbsp;
+              &nbsp;
+            %a.pull-right.geo-edit{:href=>"#",:style=>"color:#0380a5;","data-url"=>"/featureds/geo_edit/#{@featured.id}/#{id}"} edit
+            .pull-right
+              &nbsp;
+
+    -if @featured.vector_data.any?
+      .group#vector_order
         %label{:style=>"margin-top:0px;width: 100%;"} 
-          Order GeoNode layers
-        %ul#geolayers.sortable
-          -@featured.geo_layers.each do |vector|
+          Order vector layers
+        %ul#sortable.sortable
+          -@featured.vector_data.order(:rank).each do |vector|
             -id = vector.id
             %li.ui-state-default.clearfix
+              -#%small.pull-left
+                = vector.rank
+                &nbsp;
               %span.pull-left= vector.name
-              %input.pull-left{:type=>"hidden",:name=>"geo_layers[#{id}][name]",:value=>vector.name}
+              %input.pull-left{:type=>"hidden",:name=>"vectors[#{id}][name]",:value=>vector.name}
               &nbsp;
-              %a{:style=>"color:#0380a5;", :target=>"_blank", :href=>"https://geo.ejatlas.org/layers/#{vector.url}"} edit
-              -#%input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
+              %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
+              .pull-right
+                &nbsp;
+              %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][shown]",:checked=>(vector.shown == 1 ? true : false)}
+              .pull-right
+                &nbsp;
+              .pull-right
+                &nbsp;
+              %a.pull-right{:style=>"color:#0380a5;", :target=>"_blank", :href=>"/vectors/edit/#{vector.id}"} edit
+              .pull-right
+                &nbsp;
 
-    .group#vector_order
-      %label{:style=>"margin-top:0px;width: 100%;"} 
-        Order vector layers
-        %small.pull-right{:style=>"font-weight:normal;"} clickable?
-      %ul#sortable.sortable
-        -@featured.vector_data.order(:rank).each do |vector|
-          -id = vector.id
-          %li.ui-state-default.clearfix
-            %span.pull-left= vector.name
-            %input.pull-left{:type=>"hidden",:name=>"vectors[#{id}][name]",:value=>vector.name}
-            &nbsp;
-            %a{:style=>"color:#0380a5;", :target=>"_blank", :href=>"/vectors/edit/#{vector.id}"} edit
-            %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
-      :javascript
-        $("ul.sortable").sortable();
+    :javascript
+      $("ul.sortable").sortable();
+      $(".geo-edit").on("click", function (e) { 
+        $.get($(this).data("url"),function(html){
+          $("#geo-edit").html(html)
+          $("#geo-edit").modal("show")
+        })
+      });
 
   .col-md-4
     .group
