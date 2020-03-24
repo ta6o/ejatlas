@@ -200,6 +200,7 @@ Admin.controllers :featureds do
     feat = Featured.find(params.delete(:fid))
     layer = GeoLayer.find(params.delete(:lid))
     params["attributes_omitted"] = params["attributes_omitted"].to_json
+    layer.update_attributes!(params)
     return redirect to "/featureds/edit/#{feat.id}"
   end
 
