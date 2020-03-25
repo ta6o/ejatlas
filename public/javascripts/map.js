@@ -96,6 +96,7 @@ function geoLayers() {
 
       overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
         interactive: f["clickable"],
+        transparent: true,
         vectorTileLayerStyles: styls,
         getFeatureId: function(fi) {
           idcol = f['id_column'];

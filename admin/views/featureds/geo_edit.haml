@@ -18,6 +18,11 @@
               %label{:for=>:description} Description
               %textarea.text_area{:name=>:description, :rows=>3}= @layer.description
 
+            .group
+              %a{:onclick=>"update_style()",:href=>"#"} Update layer style
+              %br/
+              %a{:onclick=>"update_attrs()",:href=>"#"} Update layer attributes
+
           .col-sm-6
             -available = JSON.parse(@layer.attributes_available)
             -omitted = JSON.parse(@layer.attributes_omitted)
@@ -37,3 +42,29 @@
 
       .modal-footer
         %button.btn#submit{} Submit
+
+  :javascript
+    function update_attrs(){
+      $("body").prepend("<div id='loading'><div class='loading'></div></div>")
+      $("#loading .loading").show();
+      $.post("/featureds/update_attrs",{id:#{@layer.id}},function(data){
+        if (data == "ack") {
+          window.location.reload();
+        } else {
+          $("#loading").remove();
+          alert(data)
+        }
+      })
+    }
+    function update_style(){
+      $("body").prepend("<div id='loading'><div class='loading'></div></div>")
+      $("#loading .loading").show();
+      $.post("/featureds/update_style",{id:#{@layer.id}},function(data){
+        if (data == "ack") {
+          window.location.reload();
+        } else {
+          $("#loading").remove();
+          alert(data)
+        }
+      })
+    }

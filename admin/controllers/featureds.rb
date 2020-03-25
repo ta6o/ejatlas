@@ -179,13 +179,27 @@ Admin.controllers :featureds do
     end
   end
 
-  post :update_geoserver do
+  post :update_attrs do
     begin
-      GeoLayer.check_layers
+      GeoLayer.find(params["id"]).update_attrs
       return "ack"
-    rescue
-      return "nack"
+    rescue => e
+      return "Could not update layer attributes: #{e}"
     end
+  end
+
+  post :update_style do
+    e = GeoLayer.find(params["id"]).update_attrs
+    if e == true
+      return "ack"
+    else
+      return e.to_s
+    end
+  end
+
+  post :update_geoserver do
+    GeoLayer.check_layers
+    return "ack"
   end
 
   get :geo_edit, :with => [:fid,:lid] do

@@ -21,15 +21,53 @@ class GeoLayer < ActiveRecord::Base
         end
       end
       puts "#{data["title"].cyan} (#{data["name"]})"
-      style = ""
+      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:layer_type=>type,:srs=>data["srs"]}
+      if local.include?(l["name"])
+        local.delete l["name"]
+        gl = GeoLayer.find_by_slug(l["name"]).update_attributes(attrs)
+      else
+        gl = GeoLayer.create attrs
+        gl.update_attrs true
+        gl.update_style
+      end
+    end
+    local.each do |l|
+      if la = GeoLayer.find_by_slug(l)
+        la.destroy
+      end
+    end
+  end
+
+  def update_attrs creating=false
+    if self.layer_type == "vector"
+      data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
       attributes = []
       omitted = []
       idcol = nil
-      if type == "vector"
-        sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{l["name"]}.sld", params={}).body
-        File.open("/tmp/#{l['name']}.sld","w") {|f| f << sld}
-        `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json#{sld.match(/<se:/) ? "_se" : ""}.js /tmp/#{l['name']}.sld`
-        sld = File.read("/tmp/#{l['name']}.json")
+      attributes = data["attributes"]["attribute"].map{|a| a["name"]}
+      attributes.each do |a|
+        if a.match(/^\w+_id$/) or a === "id" or a.match(/^\w+_ID$/) or a === "ID"
+          omitted << a 
+        end
+      end
+      idcol = attributes.include?("feature_id") ? "feature_id" : omitted[0]
+      if creating
+        self.update_attributes :attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:id_column => idcol
+      else
+        self.update_attributes :attributes_available=>attributes.to_json
+      end
+    end
+  end
+
+  def update_style
+    style = ""
+    begin
+      if self.layer_type == "vector"
+        data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
+        sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{self.slug}.sld", params={}).body
+        File.open("/tmp/#{self.slug}.sld","w") {|f| f << sld}
+        `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json#{sld.match(/<se:/) ? "_se" : ""}.js /tmp/#{self.slug}.sld`
+        sld = File.read("/tmp/#{self.slug}.json")
         sld.gsub!(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\)/) do |args|
           hex = "#"
           args.scan(/\d+/).to_a.each do |x|
@@ -104,27 +142,11 @@ class GeoLayer < ActiveRecord::Base
         else
           icon = nil
         end
-
-        attributes = data["attributes"]["attribute"].map{|a| a["name"]}
-        attributes.each do |a|
-          if a.match(/^\w+_id$/) or a === "id" or a.match(/^\w+_ID$/) or a === "ID"
-            omitted << a 
-          end
-        end
-        idcol = attributes.include?("feature_id") ? "feature_id" : omitted[0]
       end
-      attrs = {:name=>data["title"], :slug=>l["name"], :url=>"#{data["namespace"]["name"]}:#{l["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:style=>style,:layer_type=>type,:attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:srs=>data["srs"],:icon=>icon,:id_column => idcol}
-      if local.include?(l["name"])
-        local.delete l["name"]
-        GeoLayer.find_by_slug(l["name"]).update_attributes(attrs.except("description","attributes_omitted","id_column"))
-      else
-        GeoLayer.create attrs
-      end
-    end
-    local.each do |l|
-      if la = GeoLayer.find_by_slug(l)
-        la.destroy
-      end
+      self.update_attributes :style => style, :icon=>icon
+      return true
+    rescue => e
+      return e
     end
   end
 
