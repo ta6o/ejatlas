@@ -34,7 +34,7 @@ class ImageUploader < CarrierWave::Uploader::Base
     at = self.model.attachable 
     return "" unless at
     return "" unless self.file
-    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}" if at.methods.include?(:old_slug)) and at.old_slug
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
     return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" if at.has_attribute?('slug')
     begin
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" unless at.slug.nil?
@@ -46,7 +46,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   def thumb_url
     at = self.model.attachable 
     return "" unless at
-    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}" if at.methods.include?(:old_slug)) and at.old_slug
+    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
     return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" if at.has_attribute?('slug')
     begin
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" unless at.slug.nil?
