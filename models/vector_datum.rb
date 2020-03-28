@@ -184,7 +184,7 @@ class VectorDatum < ActiveRecord::Base
   end
 
   def map
-    self.attachable ? "<a href='/#{self.attachable_type.downcase}/#{self.attachable.old_slug}' target='_blank'>#{self.attachable.name}</a> <small>(#{self.attachable_type})</small>" : ""
+    self.attachable ? "<a href='/#{self.attachable_type.downcase}/#{self.attachable.old_slug(true)}' target='_blank'>#{self.attachable.name}</a> <small>(#{self.attachable_type})</small>" : ""
   end
 
   private

@@ -18,7 +18,7 @@ module I18n
       end
       if result.is_a?(MissingTranslation)
         puts "TX not found: #{key} in #{locale}." if $debug
-        handle_exception(handling, result, locale, key, options) 
+        #handle_exception(handling, result, locale, key, options) 
       elsif result.is_a? String
         result.sub(/^-$/,"")
       else

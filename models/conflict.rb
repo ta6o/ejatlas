@@ -1,4 +1,5 @@
-#coding: utf-8
+# coding: utf-8
+
 class Conflict < ActiveRecord::Base
 
   #validates_presence_of :name, :province, :category, :description
@@ -110,11 +111,12 @@ class Conflict < ActiveRecord::Base
     Conflict.where(:slug=>slug.downcase).first
   end
 
-  def old_slug
+  def old_slug new=false
     if self.old_slugs.any?
       return self.old_slugs[0].name
     end
-    return self.slug
+    return self.slug if new
+    nil
   end
 
   def native_locale?

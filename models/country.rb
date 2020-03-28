@@ -45,11 +45,12 @@ class Country < ActiveRecord::Base
     Country.where(:slug=>slug.downcase).first
   end
 
-  def old_slug
+  def old_slug new=false
     if self.old_slugs.any?
       return self.old_slugs[0].name
     end
-    return self.slug
+    return self.slug if new
+    nil
   end
 
   def query_capital

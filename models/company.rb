@@ -27,11 +27,12 @@ class Company < ActiveRecord::Base
     return @json.to_json
   end
 
-  def old_slug
+  def old_slug new=false
     if self.old_slugs.any?
       return self.old_slugs[0].name
     end
-    return self.slug
+    return self.slug if new
+    nil
   end
 
   def ping

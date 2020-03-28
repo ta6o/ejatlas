@@ -1384,7 +1384,7 @@ class AsyncTask
     puts "target file created at #{target}"
 
     pat = GeoData.new
-    pat.folder = "#{vd.attachable_type.downcase}/#{vd.attachable.old_slug}"
+    pat.folder = "#{vd.attachable_type.downcase}/#{vd.attachable.old_slug(true)}"
     pat.file = File.open(target,"r:UTF-8")
     begin
       if pat.save
