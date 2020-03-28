@@ -71,7 +71,7 @@
           %h2= @name
           #infopane
 
-  -if @description and @description.length > 0 or @maptitle.length > 0 and @feature
+  -if (@description and @description.length > 0) or (@maptitle and @maptitle.length > 0) and @feature
     .horipane.description
       .title.active Description
       .content
