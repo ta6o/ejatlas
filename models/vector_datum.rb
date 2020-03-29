@@ -64,9 +64,9 @@ class GeoLayer < ActiveRecord::Base
     begin
       if self.layer_type == "vector"
         data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
-        sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{self.slug}.sld", params={}).body
+        sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{self.slug}.sld", params={}).body.gsub(/<\w+:/,"<").gsub(/<\/\w+:/,"</").gsub("<CssParameter","<SvgParameter").gsub("</CssParameter","</SvgParameter")
         File.open("/tmp/#{self.slug}.sld","w") {|f| f << sld}
-        `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json#{sld.match(/<se:/) ? "_se" : ""}.js /tmp/#{self.slug}.sld`
+        `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json.js /tmp/#{self.slug}.sld`
         sld = File.read("/tmp/#{self.slug}.json")
         sld.gsub!(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\)/) do |args|
           hex = "#"

@@ -221,7 +221,6 @@ var parseFile = function (data, file) {
   writeStartOfJSON();
   parser.parseString(data, function (err, result) {
     var FeatureTypeStyle = result.StyledLayerDescriptor.NamedLayer[0].UserStyle[0]['FeatureTypeStyle'];
-    console.log(FeatureTypeStyle)
     var rulesArr = [];
     var k;
     var rules = [];
@@ -240,15 +239,15 @@ var parseFile = function (data, file) {
     for (j = 0; j < rules.length; j++) {
       rule = rules[j];
       filter = {}
-      if (typeof rule["ogc:Filter"] != "undefined" ) {
-        if (Object.keys(rule["ogc:Filter"][0]).indexOf("ogc:PropertyIsEqualTo") >= 0) {
-          fils = rule["ogc:Filter"][0]["ogc:PropertyIsEqualTo"]
-        } else if (Object.keys(Object.values(rule["ogc:Filter"][0])[1][0]).indexOf("ogc:PropertyIsEqualTo") >= 0){
-          fils = Object.values(rule["ogc:Filter"][0])[1][0]["ogc:PropertyIsEqualTo"];
+      if (typeof rule["Filter"] != "undefined" ) {
+        if (Object.keys(rule["Filter"][0]).indexOf("PropertyIsEqualTo") >= 0) {
+          fils = rule["Filter"][0]["PropertyIsEqualTo"]
+        } else if (Object.keys(Object.values(rule["Filter"][0])[1][0]).indexOf("PropertyIsEqualTo") >= 0){
+          fils = Object.values(rule["Filter"][0])[1][0]["PropertyIsEqualTo"];
         }
         for (var fi=0; fi<fils.length; fi++){
-          if (Object.keys(filter).indexOf(fils[fi]['ogc:PropertyName'][0]) == -1 ) { filter[fils[fi]['ogc:PropertyName']] = []; }
-          filter[fils[fi]['ogc:PropertyName'][0]].push(fils[fi]['ogc:Literal'][0])
+          if (Object.keys(filter).indexOf(fils[fi]['PropertyName'][0]) == -1 ) { filter[fils[fi]['PropertyName']] = []; }
+          filter[fils[fi]['PropertyName'][0]].push(fils[fi]['Literal'][0])
         }
       }
       name = ""
@@ -312,7 +311,6 @@ function make_JSON(name, type, cssObj, minzoom, maxzoom) {
     paint['fill-opacity'] = 1;
   }
 
-
   var styleObj = {
     'type': type,
     'source-layer': name,
@@ -334,7 +332,7 @@ function getSymbolizersObj(symbTag, type, file) {
 
       //if values are not in the regular place
       if (DIFF_ATTR_TAG.indexOf(tagName) > -1 ||
-          ((tagName === 'Fill') && symbTag[0]["Fill"][0]["CssParameter"] !== undefined)) {
+          ((tagName === 'Fill') && symbTag[0]["Fill"][0]["SvgParameter"] !== undefined)) {
         var obj = getObjFromDiffAttr(tagName, type, symbTag, file);
         for (var key in obj) {
           cssObj[key] = obj[key];
@@ -357,9 +355,9 @@ function getSymbolizersObj(symbTag, type, file) {
 function getCssParameters(symbTag, validAttrTag, type, outerTag) {
   var cssArr = [];
   if (outerTag === undefined) {
-    var allCssArray = symbTag[0][validAttrTag][0]['CssParameter'];
+    var allCssArray = symbTag[0][validAttrTag][0]['SvgParameter'];
   } else {
-    var allCssArray = symbTag[0][outerTag][0][validAttrTag][0]['CssParameter'];
+    var allCssArray = symbTag[0][outerTag][0][validAttrTag][0]['SvgParameter'];
   }
 
   var nrOfCssTags = Object.keys(allCssArray).length;
@@ -379,7 +377,7 @@ function getObjFromDiffAttr(tagName, type, symbTag, file) {
   if (tagName === 'Label') {
     obj = getLabelObj(tagName, type, symbTag, obj);
   } else if (tagName === 'Fill') { //some fill-attributes are defined differently than the rest
-    obj['fill-color'] = symbTag[0][tagName][0]["CssParameter"][0]["_"];
+    obj['fill-color'] = symbTag[0][tagName][0]["SvgParameter"][0]["_"];
   } else if (tagName === 'Halo') {
     obj = getHaloObj(tagName, type, symbTag, obj);
   } else if (tagName === 'Geometry') {
@@ -392,7 +390,7 @@ function getObjFromDiffAttr(tagName, type, symbTag, file) {
 
 function getLabelObj(tagName, type, symbTag, obj) {
   var convertedTagName = convertCssName(tagName, tagName, type);
-  obj[convertedTagName] = '{' + symbTag[0].Label[0]['ogc:PropertyName'][0] + '}';
+  obj[convertedTagName] = '{' + symbTag[0].Label[0]['PropertyName'][0] + '}';
   return obj;
 }
 
@@ -402,7 +400,7 @@ function getHaloObj(tagName, type, symbTag, obj) {
     var innerTagName = (Object.keys(symbTag[0].Halo[0]))[j];
 
     if (innerTagName === 'Radius') {
-      var value = symbTag[0].Halo[0]['Radius'][0]['ogc:Literal'][0];
+      var value = symbTag[0].Halo[0]['Radius'][0]['Literal'][0];
       obj['text-halo-width'] = parseInt(value, 10);
     } else if (innerTagName === 'Fill') {
       //array with key-value pair to add in obj
@@ -419,17 +417,17 @@ function getHaloObj(tagName, type, symbTag, obj) {
 }
 
 function getGeometryObj(symbTag, obj) {
-  if (symbTag[0].Geometry[0]['ogc:Function'][0].$.name === 'vertices') {
+  if (symbTag[0].Geometry[0]['Function'][0].$.name === 'vertices') {
     obj['icon-image'] = PUNKT;
   } else {
-    console.log('Cannot convert attribute value: ' + symbTag[0].Geometry[0]['ogc:Function'][0].$.name + ', for tag Geometry');
+    console.log('Cannot convert attribute value: ' + symbTag[0].Geometry[0]['Function'][0].$.name + ', for tag Geometry');
   }
   return obj;
 }
 function getGraphicObj(file, symbTag, type, obj) {
   var fillColor;
   try {
-    fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['CssParameter'][0]['ogc:Function'][0]['ogc:Literal'][1];
+    fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['Function'][0]['Literal'][1];
     var color = '#' + fillColor;
     var regInteger = /^\d+$/;
     if (!regInteger.test(fillColor)) {
@@ -484,7 +482,7 @@ function convert_css_parameter(cssTag, ValidAttrTag, type, outerTag) {
       && !(regDouble.test(cssTag['_']))
       && !regLetters.test(cssColorValue)
       && !regNumbers.test(cssColorValue) ) {//Check if different type of attribute
-      cssValue = (cssTag['ogc:Function'][0]['ogc:Literal'][1]);
+      cssValue = (cssTag['Function'][0]['Literal'][1]);
     } else {
       cssValue = cssTag['_'];
     }
