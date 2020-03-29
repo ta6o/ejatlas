@@ -121,7 +121,7 @@ class Admin < Padrino::Application
   end
 
   before do
-    if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0])
+    if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0].downcase)
       I18n.default_locale = :en
       I18n.locale = :en
       $dir = "ltr"
