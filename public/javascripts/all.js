@@ -4165,11 +4165,18 @@ function initMap() {
   $.each(vectorinfo,function(i,v){
     loadJS(v["vector_datum"]["url"],true)
   });
+  
+  function waitForVectorGrid(){
+    if (typeof L.vectorGrid == "undefined") {
+      window.setTimeout(waitForVectorGrid,10);
+    } else {
+      geoLayers();
+    }
+  }
 
   if (Object.keys(layerinfo).length > 0 ) {
     loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.min.js')
-    //loadJS('/javascripts/Leaflet.VectorGrid.min.js')
-    window.setTimeout(geoLayers,1000)
+    window.setTimeout(waitForVectorGrid,10)
   }
   if (Object.keys(baselayers).length > 1){ 
     //lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
