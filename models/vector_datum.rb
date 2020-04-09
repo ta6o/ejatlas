@@ -9,17 +9,9 @@ class GeoLayer < ActiveRecord::Base
     layers = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"]
     layers |= []
     layers.each do |l|
-      begin
-        data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{l["name"].sub(/geonode:/,"")}.json", params={}).body)["featureType"]
-        type = "vector"
-      rescue
-        begin
-          data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/coveragestores/tmax_07/coverages/#{l["name"].sub(/geonode:/,"")}.json", params={}).body)["coverage"]
-          type = "raster"
-        rescue => e
-          puts e.to_s.red
-        end
-      end
+      pata = JSON.parse(RestClient.get(l["href"], params={}).body)["layer"]
+      type = pata["type"].downcase
+      data = JSON.parse(RestClient.get(pata["resource"]["href"], params={}).body)[{"vector"=>"featureType","raster"=>"coverage"}[type]]
       puts "#{data["title"].cyan} (#{data["name"]})"
       attrs = {:name=>data["title"], :slug=>data["name"], :url=>"#{data["namespace"]["name"]}:#{data["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:layer_type=>type,:srs=>data["srs"]}
       if local.include?(data["name"])

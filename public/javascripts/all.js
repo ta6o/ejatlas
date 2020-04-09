@@ -4049,7 +4049,34 @@ function geoLayers() {
 
   $.each(layerranks,function(i,s){
     f = layerinfo[s]
-    if (f.type == "vector") {
+    if (f.type == "raster") {
+      var styls = {}
+      name = f["name"];
+      overlayMaps[name] = L.tileLayer.wms("https://geo.ejatlas.org/geoserver/geonode/wms", {
+          layers: f['name'],
+          format: 'image/png',
+          transparent: true,
+      })
+      checked = "";
+      bold = "";
+      if (f["shown"] == 1) {
+        console.log(f)
+        console.log(overlayMaps[name])
+        overlayMaps[name].addTo(geoLayer);
+        wmsLayers.push(name);
+        checked = " checked='checked'"
+        bold = " style='font-weight:bold'"
+      }
+      if ($('#legendpane .vectorlegend').length == 0) {
+        $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
+      }
+      html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
+      html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+      html += "<td"+bold+">"+name+"</td></tr>";
+      ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
+      console.log(ranks)
+      $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
+    } else if (f.type == "vector") {
       var styls = {}
       name = f["name"];
       styl = f["style"]
