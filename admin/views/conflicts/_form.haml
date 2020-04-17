@@ -1347,7 +1347,7 @@
             .group
               %label= "#{t("f.conflict.conflict_id")}  <font style='font-weight:normal'>#{@conflict.id}</font>".html_safe
               %br/
-              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| $iso639[x.locale]}.join(", ")}</font>".html_safe
+              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| "#{$iso639[x.locale]}<small>(#{x.id})</small>" }.join(", ")}</font>".html_safe
 
           .group
             %label{:for=>"conflict_headline"}= t("f.conflict.headline_text")
@@ -1380,10 +1380,84 @@
               -apstat = 'draft'
             :javascript
               $('input.apstat[value=#{apstat}]').prop('checked',true);
+
             -if current_account and current_account.editor? and @conflict.approval_status === "deleted"
               %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
                 %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
                 %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
+
+            -if current_account and current_account.editor?
+              %br/
+              .group
+                %label{:for=>"conflict_modified_at"}= t("f.conflict.suggest_for_language")
+                .row
+                  .col-md-8.col-sm-12
+                    %select.locale_suggestions
+                      %option{:disabled=>true,:selected=>true,:value=>""}= t("f.conflict.select_language")
+                      -los = @conflict.conflict_locale_suggestions.map(&:locale)
+                      -cos = @conflict.conflict_texts.map(&:locale)
+                      -@iso639.each do |k,v|
+                        %option{:value=>k,:disabled=>((los.include?(k.to_s) or cos.include?(k.to_s)) ? true : false)}= v
+                  .col-md-4.col-sm-12
+                    %button#suggest{:disabled=>true}= t("f.conflict.suggest")
+                -if @conflict.conflict_locale_suggestions.any?
+                  %p
+                    %b=t("f.conflict.suggested_languages")
+                  %ul#suggested
+                    -@conflict.conflict_locale_suggestions.each do |cls|
+                      %li{"data-id"=>cls.id,"data-locale"=>cls.locale}
+                        %a{:href=>"#{$siteurl.split("://").join("://#{cls.locale}.")}/conflicts/edit/#{@conflict.id}?translator"}= "#{@iso639[cls.locale]} <small>(#{cls.account.name})</small>".html_safe
+                        %span= "#{Admin.divtime(Time.now - cls.created_at, true, false)} ago"
+                        -if cls.account == current_account
+                          &nbsp;
+                          %a.rm_cls{"data-id"=>cls.id,:style=>"color:#c00;font-weight:bold;cursor:pointer"} 
+                            %small REMOVE
+                :javascript
+                  $(".locale_suggestions").on("change",function(e){
+                    if (! $("select.locale_suggestions option:selected").prop("disabled")) {
+                      $("#suggest").prop("disabled",false)
+                    }
+                  })
+                  $("ul#suggested").on("click","a.rm_cls",function(e){
+                    id = $(this).closest("li").data("id");
+                    li = $(this).closest("li")
+                    lo = li.data("locale")
+                    $.post("/conflicts/remove_suggested_language",{id:id},function(data){
+                      data = JSON.parse(data)
+                      $("select.locale_suggestions option[value="+lo+"]").prop("disabled",false);
+                      if (data.status == "success") {
+                        li.remove();
+                      } else {
+                        console.log(data.message)
+                      }
+                    })
+                  })
+                  $("#suggest").on("click",function(e){
+                    e.preventDefault();
+                    $.post(
+                      "/conflicts/suggest_language",
+                      {
+                        id:#{(@conflict.conflict_locale_suggestions.grep(ConflictLocaleSuggestion) {|x| x.locale == "tr" ? x.id : nil} - [nil]).first},
+                        locale:$("select.locale_suggestions option:selected").val()
+                      },
+                    function(data){
+                      data = JSON.parse(data)
+                      if (data.status == "error" ) {
+                        alert(data.message);
+                      } else {
+                        iso639 = #{@iso639.to_json.html_safe};
+                        siteurl = #{$siteurl.split("://").to_json.html_safe};
+                        locale = $("select.locale_suggestions option:selected").val();
+                        $("ul#suggested").append("<li data-id="+data.id+" data-locale='"+locale+"'><a href='"+siteurl.join("://"+locale+".")+"/conflicts/edit/#{@conflict.id}?translator'>"+iso639[locale]+" <small>(#{current_account.name})</small></a> <span>Just now</span> <a class='rm_cls' style='color:#c00;font-weight:bold;cursor:pointer'> <small> REMOVE</small></a></li>")
+                        $("select.locale_suggestions option[value="+locale+"]").prop("disabled",true);
+                        $("#suggest").prop("disabled",true)
+                      }
+                    })
+                  })
+
+
+                %br/
+
 
             .group
               %label{:for=>"conflict_modified_at"}= t("f.conflict.last_update_this_case")

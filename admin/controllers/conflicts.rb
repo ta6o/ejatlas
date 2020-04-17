@@ -3,6 +3,7 @@ Admin.controllers :conflicts do
 
   before do
     @name = "Conflicts"
+    @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! $tkeys.include?(x)}
   end
 
   require "unicode_utils/titlecase"
@@ -919,6 +920,33 @@ Admin.controllers :conflicts do
       return "ack"
     rescue => e
       return e.to_s
+    end
+  end
+
+  post :suggest_language do
+    pp params
+    if params["locale"] == ""
+      return {:status=>"error","message"=>"Please select a language!"}.to_json
+    end
+    cts = ConflictText.find(params["id"]).conflict.conflict_texts
+    if cts.where(:locale=>params["locale"]).any?
+      return {:status=>"error","message"=>"Conflict is already translated to that language!"}.to_json
+    elsif ConflictLocaleSuggestion.where(:conflict_text_id=>params["id"],:locale=>params["locale"],:account_id=>current_account.id).any?
+      return {:status=>"error","message"=>"Suggestion already present!"}.to_json
+    else
+      cls = ConflictLocaleSuggestion.create(:conflict_text_id=>params["id"],:locale=>params["locale"],:account_id=>current_account.id)
+      return {:status=>"success",:id=>cls.id}.to_json
+    end
+  end
+
+  post :remove_suggested_language do
+    pp params
+    cls = ConflictLocaleSuggestion.find(params["id"])
+    begin
+      cls.destroy!
+      return {:status=>"success"}.to_json
+    rescue => e
+      return {:status=>"error",:message=>e.to_s}.to_json
     end
   end
 
