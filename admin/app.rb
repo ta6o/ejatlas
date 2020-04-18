@@ -57,7 +57,24 @@ class Admin < Padrino::Application
 
   $baselayers = "Esri.WorldPhysical,Esri.WorldImagery,Esri.WorldTopoMap"
   $alllayers = [ "OpenStreetMap.Mapnik", "OpenStreetMap.BlackAndWhite", "OpenStreetMap.DE", "OpenStreetMap.HOT", "Thunderforest.OpenCycleMap", "Thunderforest.Transport", "Thunderforest.Landscape", "Thunderforest.Outdoors", "OpenMapSurfer.Roads", "OpenMapSurfer.Grayscale", "Hydda.Full", "Hydda.Base", "MapQuestOpen.OSM", "MapQuestOpen.Aerial", "Stamen.Toner", "Stamen.TonerBackground", "Stamen.TonerLite", "Stamen.Terrain", "Stamen.TerrainBackground", "Stamen.Watercolor", "Esri.WorldStreetMap", "Esri.DeLorme", "Esri.WorldTopoMap", "Esri.WorldImagery", "Esri.WorldTerrain", "Esri.WorldShadedRelief", "Esri.WorldPhysical", "Esri.OceanBasemap", "Esri.NatGeoWorldMap", "Esri.WorldGrayCanvas", "HERE.normalDay", "HERE.normalDayCustom", "HERE.normalDayGrey", "HERE.normalDayMobile", "HERE.normalDayGreyMobile", "HERE.normalDayTransit", "HERE.normalDayTransitMobile", "HERE.normalNight", "HERE.normalNightMobile", "HERE.normalNightGrey", "HERE.normalNightGreyMobile", "HERE.carnavDayGrey", "HERE.hybridDay", "HERE.hybridDayMobile", "HERE.pedestrianDay", "HERE.pedestrianNight", "HERE.satelliteDay", "HERE.terrainDay", "HERE.terrainDayMobile", "Acetate.basemap", "Acetate.terrain", "Acetate.all", "Acetate.hillshading", "FreeMapSK", "MtbMap", "OpenMapSurfer.AdminBounds", "Hydda.RoadsAndLabels", "Stamen.TonerHybrid", "Stamen.TonerLines", "Stamen.TonerLabels", "OpenWeatherMap.Clouds", "OpenWeatherMap.CloudsClassic", "OpenWeatherMap.Precipitation", "OpenWeatherMap.PrecipitationClassic", "OpenWeatherMap.Rain", "OpenWeatherMap.RainClassic", "OpenWeatherMap.Pressure", "OpenWeatherMap.PressureContour", "OpenWeatherMap.Wind", "OpenWeatherMap.Temperature", "OpenWeatherMap.Snow", "Acetate.foreground", "Acetate.roads", "Acetate.labels"];
+
   $relatives = {"category_id" => "Categories", "types" => "Subcategories", "population_type" => "Population Type", "country_id" => "Country", "companies"=>"Companies","supporters"=>"IFI's","products"=>"Commodities", "mobilizing_groups" => "Mobilizing Groups", "mobilizing_forms" => "Mobilizing Forms", "env_impacts"=>"Environmental Impacts", "hlt_impacts"=>"Health Impacts", "sec_impacts"=>"Socioeconomical Impacts", "conflict_events" => "Outcomes"}
+
+  $moderated_locales = []
+  def self.check_locales 
+    $moderated_locales = ["en"]
+    Role.find_by_name("editor").account_roles.each do |ar| 
+      if ar.account 
+        ar.account.account_roles.each do |ro| 
+          if ro.role.name.match(/^locale-/)
+            loc = ro.role.name.sub(/^locale-/,"")
+            $moderated_locales << loc unless $moderated_locales.include?(loc)
+          end
+        end
+      end
+    end
+  end
+  self.check_locales
 
   def self.setOrder lgt, arr
     arr = arr.to_a
@@ -203,7 +220,7 @@ class Admin < Padrino::Application
   end
 
   def self.send_mail user, subject, message
-    if ENV['RACK_ENV'] == "development" #and false
+    if ENV['RACK_ENV'] == "development" and false
       puts "SENDGRID omitting mail =>".yellow
       puts subject
       return
@@ -308,6 +325,21 @@ class Admin < Padrino::Application
       #Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
       Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? I18n.t("emails.notify_collaborator.var_approved_on_ejatlas", conflict_name: @conflict.name) : I18n.t("emails.notify_collaborator.moderation_update_for_var", conflict_name: @conflict.name)), html)
     end
+  end
+
+  def self.language_suggested(cls,account)
+    @account = account
+    return unless @account
+    @suggesting_account = cls.account
+    @cls = cls
+    @conflict = cls.conflict_text.conflict
+    @language = $iso639[cls.locale]
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/language_suggested.haml").render(self)
+    Admin.send_mail(@account, I18n.t("emails.conflict_locale_suggestion.moderation_request_for_var_on", conflict_name: @conflict.name, language:@language), html)
+  end
+
+  def self.local_url locale=I18n.locale
+    $siteurl.split("://").join("://#{ locale.to_s == 'en' ? "" : locale.to_s+"." }")
   end
 
   def self.export_markers locale=:en

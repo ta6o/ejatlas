@@ -76,7 +76,6 @@
         %strong= t "v.index.#{@maptitle.shorten_en}"
       %p
         %strong= t "v.index.var_cases_reported", num_cases: @markercount
-      -#if current_account and (current_account.role === "admin" or current_account.role === "editor")
       %p
         %form#search
           .form-group{:style=>"font-size:18px;",:title=>"Search through Title, Description, Project Details, Alternatives"}

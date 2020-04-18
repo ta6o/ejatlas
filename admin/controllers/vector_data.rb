@@ -1,14 +1,14 @@
 Admin.controllers :vectors do
 
   before do
-    redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account or ["admin","editor"].include?(current_account.role)
+    redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account.gis?
     @name = "Vectors"
   end
 
   get :index do
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       @vectors = VectorDatum.select("id, name, description, url, attachable_type, attachable_id, vector_style_id")
-    elsif current_account
+    elsif current_account.gis?
       @vectors = current_account.vector_data.select("id, name, description, url, attachable_type, attachable_id, vector_style_id")
     end
     @defs = VectorStyle.where("defs is not null").select("defs").map {|s| JSON.parse(s.defs)}
@@ -24,7 +24,7 @@ Admin.controllers :vectors do
 
   get :new do
     @vector = VectorDatum.new
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
       @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
       @styles = VectorStyle.all.order :name
@@ -51,15 +51,16 @@ Admin.controllers :vectors do
 
   get :edit, :with => :id do
     @vector = VectorDatum.find(params[:id])
-    pass unless @vector.account == current_account or ["admin","editor"].include?(current_account.role)
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       @countries = Country.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
       @featureds = Featured.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
       @styles = VectorStyle.all.order :name
-    else
+    elsif @vector.account == current_account
       @countries = []
       @featureds = current_account.featureds.order(:slug).select('id,name').map{|c| "<option value=#{c.id}>#{c.name}</option>"}.join().html_safe
       @styles = VectorStyle.all.order :name
+    else
+      pass
     end
     render 'vector_data/edit'
   end

@@ -69,3 +69,12 @@ class Integer
   end
 end
 
+class NilClass
+  def editor?
+    return false
+  end
+  def gis?
+    return false
+  end
+end
+

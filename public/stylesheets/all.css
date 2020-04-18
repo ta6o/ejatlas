@@ -5198,6 +5198,24 @@ ul.autoc li a {
 .pull-left {
   float: left !important;
 }
+.dropdown-menu {
+  margin-top: -1px;
+}
+.local_only {
+  display: none;
+}
+.textarea.local_only {
+  background-color: #ebebe4;
+  border: 1px solid #c0c0c0;
+  padding: 2px 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  color: -internal-light-dark-color(#545454, #aaaaaa);
+  background-color: -internal-light-dark-color(#ebebe4, #2d2d2d);
+  margin-bottom: 6px;
+  width: 100%;
+  min-height: 24px;
+}
 .hide {
   display: none !important;
 }

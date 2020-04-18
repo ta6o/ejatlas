@@ -46,7 +46,7 @@
           %li
             %a{:href=>"/print/#{@slug}",:target=>"_blank",:title=>"Full page"}
               %span.glyphicon.glyphicon-print
-          -if current_account and ['admin','editor'].include? current_account.role
+          -if current_account.editor?
             %li
               %a{:href=>"/conflicts/edit/#{@id}",:target=>"_blank",:title=>"Edit"}
                 %span.glyphicon.glyphicon-edit
@@ -163,7 +163,7 @@
       %em= @headline
     %br/
 
-  #conflict_summary=@summary.html_safe
+  #conflict_summary=(@summary||"").html_safe
 
   -if @related.any?
     .horipane

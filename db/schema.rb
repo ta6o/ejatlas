@@ -227,7 +227,9 @@ ActiveRecord::Schema.define(version: 0) do
     t.text     "ejos"
     t.text     "govt_actors"
     t.text     "features"
+    t.text     "notes"
     t.string   "headline"
+    t.string   "contributor"
     t.string   "translator"
     t.string   "approval_status", limit: 8
     t.datetime "created_at"

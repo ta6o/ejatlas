@@ -44,9 +44,13 @@ class Account < ActiveRecord::Base
     ["admin","editor"].include? self.role or self.roles.map(&:name).sort.join(",").match(/editor.+locale-#{locale}/)
   end
 
+  def gis?
+    self.editor? or self.roles.map(&:name).sort.join(",").match(/gis/)
+  end
+
   def contributor? conflict, locale=I18n.locale
     return false unless conflict
-    ["admin","editor"].include?(self.role) or conflict.account_id == self.id or conflict.conflict_accounts.map(&:account_id).include?(self.id) or self.roles.map(&:name).sort.join(",").match(/editor.+locale-#{locale}/)
+    conflict.account_id == self.id or conflict.conflict_accounts.map(&:account_id).include?(self.id) or self.editor?
   end
 
   def translator? locale=I18n.locale
@@ -90,7 +94,7 @@ class AccountRole < ActiveRecord::Base
   belongs_to :role
 
   def inspect
-    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.account ? self.account.name.green : self.account_id.to_s.red} <=> #{self.role ? self.role.name.yellow : self.account_id.to_s.red}"
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.account ? self.account.email.green : self.account_id.to_s.red} <=> #{self.role ? self.role.name.yellow : self.role_id.to_s.red}"
   end
 
 end

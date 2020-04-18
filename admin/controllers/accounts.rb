@@ -135,7 +135,7 @@ Admin.controllers :accounts do
     redirect to "/sessions/login" unless current_account
     @account = Account.find(params[:id])
     #puts @account.crypted_password
-    p params
+    #p params
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     #puts params[:account]
     #params[:account].delete 'role' unless ["admin"].include?(current_account.role)
@@ -146,7 +146,7 @@ Admin.controllers :accounts do
       if @account.update_attributes(params[:account])
         #puts @account.crypted_password
         roles.each do |name,val|
-          p [name,val]
+          #p [name,val]
           if val == "off" and role = @account.roles.where(:name=>name).first
             AccountRole.where(:account_id=>@account.id, :role_id => role.id).first.delete
             p " removed"
@@ -175,6 +175,9 @@ Admin.controllers :accounts do
         end
         #return redirect url(:accounts, :index) if ["admin",'editor'].include? current_account.role
         #return redirect url(:conflicts, :index)
+        if current_account.editor?
+          Admin.check_locales
+        end
         return redirect url(:accounts, :edit, @account.id)
       else
         render 'accounts/edit'

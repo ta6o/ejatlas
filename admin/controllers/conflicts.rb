@@ -286,7 +286,7 @@ Admin.controllers :conflicts do
     rescue
       pass
     end
-    if current_account.contributor?(@conflict) and not params.has_key?("translator")
+    if current_account.contributor?(@conflict)
       @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
       @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
       @saves = []
@@ -294,7 +294,16 @@ Admin.controllers :conflicts do
         @saves << row if row[2] == @conflict.id.to_s
       end
       render 'conflicts/edit'
-    elsif current_account.translator? or params.has_key?("translator")
+    end
+  end
+
+  get :translate, :with => :id do
+    begin
+      @conflict = Conflict.find(params[:id])
+    rescue
+      pass
+    end
+    if current_account.contributor?(@conflict) or current_account.translator?
       @translate_only = true
       @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
       @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
@@ -425,9 +434,17 @@ Admin.controllers :conflicts do
     end
 
     if params.has_key?("translate_only")
-      if @conflict.update_attributes(updated["conflict"])
+      puts "translating".red
+      pp updated["refs"]
+      unless ct = @conflict.local_data
+        ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale, :slug=>@conflict.slug)
+      end
+      updated["conflict"].each do |k,v|
+        ct.update_attribute k, v
+      end
+      if true
         File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
-          file << "TRN,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
+          file << "TRX,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},#{oldstat}\n"
         end
         multies = {
           'reference'=>{:attr=>@conflict.references,:class=>Reference},
@@ -468,6 +485,8 @@ Admin.controllers :conflicts do
             end
             ref.save
           end
+          flash[:notice] = 'Conflict was successfully saved.'
+          return {:status=>:success}.to_json
         end
       else
         return {:status=>"error",:errors=>["Conflict could not be saved."]}.to_json 
@@ -935,6 +954,14 @@ Admin.controllers :conflicts do
       return {:status=>"error","message"=>"Suggestion already present!"}.to_json
     else
       cls = ConflictLocaleSuggestion.create(:conflict_text_id=>params["id"],:locale=>params["locale"],:account_id=>current_account.id)
+      erole = Role.find_by_name("editor").id
+      Role.find_by_name("locale-#{params['locale']}").account_roles.each do |role|
+        p role
+        if AccountRole.where(:role_id=>erole,:account_id=>role.account_id).any?
+          p role.account
+          Admin.language_suggested(cls, role.account)
+        end
+      end
       return {:status=>"success",:id=>cls.id}.to_json
     end
   end

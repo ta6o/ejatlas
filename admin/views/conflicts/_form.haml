@@ -58,14 +58,15 @@
           %span.required.large *
           %p.description= t("f.conflict.eg_company_or_community_name")
           .required=f.error_message_on :name
+          %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.name}
           =f.text_field :name, :class => 'text_field basic_input'
 
-        -if current_account and current_account.editor?
+        -if current_account.editor?
           .group
             %label{:for=>"conflict_slug"}= t("f.conflict.name_visible_on_address_bar")
             %span.required.large *
             .required=f.error_message_on :slug
-            =f.text_field :slug, :class => 'text_field basic_input'
+            =f.text_field :slug, :class => 'text_field basic_input local_disable'
         -else
           .group
             -slug = @conflict.slug
@@ -105,11 +106,13 @@
           %label{:for=>"conflict_site"}= t("f.conflict.location_of_conflict")
           %p.description= t("f.conflict.municipality_or_city_town")
           .required=f.error_message_on :site
+          %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.site}
           =f.text_field :site, :class => 'text_field'
 
         .group.local_fade
           %label{:for=>"conflict_province"}= t("f.conflict.state_or_province")
           .required=f.error_message_on :province
+          %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.province}
           =f.text_field :province, :class => 'text_field'
 
           .col-md-4
@@ -132,6 +135,7 @@
               %label{:for=>"conflict_project_area"}= t("f.conflict.project_area")
               %p.description= t("f.conflict.in_hectares_in_this_format")
               .required=f.error_message_on :project_area
+              %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.project_area}
               =f.text_field :project_area, :class => 'text_field'
 
 
@@ -227,6 +231,7 @@
             %br/
             %label{:for=>"conflict_other_types"}= t("f.conflict.other_types_conflict")
             %p.description= t("f.conflict.please_insert_other_types_conflict")
+            %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.other_types}
             ~f.text_area :other_types, :class => 'text_area', :rows=>1, :id => 'other_types'
         :javascript
           $(document).ready(function(){
@@ -301,6 +306,7 @@
             .required=f.error_message_on :description
             %p.description= t("f.conflict.please_describe_project_point_conflict")
             -#~f.text_area :description, :class => 'text_area basic_input', :rows => 17
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.description.html_safe
             %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
 
         .col-md-8
@@ -384,6 +390,7 @@
             %label{:for=>"conflict_project_retails"}= t("f.conflict.project_details")
             .required=f.error_message_on :project_details
             %p.description=t("f.conflict.please_insert_specific_details_on")
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.project_details.html_safe
             ~f.text_area :project_details, :class => :text_area, :rows=>17
 
         .col-md-4
@@ -391,6 +398,7 @@
             %label{:for=>"conflict_investment_string"}=t("f.conflict.level_of_investment")
             .required=f.error_message_on :investment_string
             %p.description=t("f.conflict.please_enter_in_usd_in")
+            %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.investment_string}
             =f.text_field :investment_string, :class => :text_field
 
         .col-md-4
@@ -398,6 +406,7 @@
             %label{:for=>"conflict_affected_people"}=t("f.conflict.affected_population")
             %p.description=t("f.conflict.it_may_also_be_range")
             .required=f.error_message_on :affected_people
+            %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.affected_people}
             =f.text_field :affected_people, :class => :text_field, :maxlength => 255
           %br/
           %br/
@@ -433,6 +442,7 @@
             %label{:for=>"conflict_govt_actors"}= t("f.conflict.relevant_government_actors")
             .required=f.error_message_on :government_actor_id
             %br/
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.govt_actors.html_safe
             %textarea#conflict_govt_actors.text-area{:rows=>4,:name=>'conflict[govt_actors]'}=@conflict.govt_actors
 
         .col-md-5
@@ -475,6 +485,7 @@
             %label{:for=>"conflict_ejos"}= t("f.conflict.environmental_justice_organizations_other_supporters")
             .required=f.error_message_on :justice_party_id
             %br/
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.ejos.html_safe
             %textarea#conflict_ejos.text-area{:rows=>4,:name=>'conflict[ejos]'}=@conflict.ejos
 
       .row
@@ -533,10 +544,11 @@
               %ul.autoc
                 -@conflict.related.each do |rel|
                   %li{:id=>"related_#{rel.id}"}
-                    %span= rel.name
-                    %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
-                    &nbsp;
                     %input{:type=>"hidden",:name=>"related_add_#{rel.id}"}
+                    %span= rel.name
+                    -unless @translate_only
+                      %a{:style=>'cursor:pointer',:onclick=>"remove_li('related',#{rel.id})"} Remove
+                      &nbsp;
 
 
         .col-md-3
@@ -669,6 +681,7 @@
             .col-md-9
               %label{:for=>"conflict_other_env_impacts"}= t("m.env_impacts.other_environmental_impacts")
               .required=f.error_message_on :other_env_impacts
+              .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_env_impacts.html_safe
               ~f.text_area :other_env_impacts, :class => :text_area
           %hr/
 
@@ -708,6 +721,7 @@
             .col-md-9
               %label{:for=>"conflict_other_hlt_impacts"}= t("m.hlt_impacts.other_health_impacts")
               .required=f.error_message_on :other_hlt_impacts
+              .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_hlt_impacts.html_safe
               ~f.text_area :other_hlt_impacts, :class => :text_area
           %hr/
 
@@ -747,6 +761,7 @@
             .col-md-9
               %label{:for=>"conflict_other_sec_impacts"}= t("m.sec_impacts.other_socio_economic_impacts")
               .required=f.error_message_on :other_sec_impacts
+              .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_sec_impacts.html_safe
               ~f.text_area :other_sec_impacts, :class => :text_area
           %br/
 
@@ -804,6 +819,7 @@
           .group
             %label{:for=>"conflict_suggested_alternatives"}= t("f.conflict.development_of_alternatives")
             %p.description=t("f.conflict.please_specify_what_are_proposals")
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.suggested_alternatives.html_safe
             ~f.text_area :suggested_alternatives, :class => :text_area, :rows=>9
             %br/
             %br/
@@ -834,6 +850,7 @@
           .group
             %label{:for=>"conflict_success_reason"}= t("f.conflict.briefly_explain")
             .required=f.error_message_on :success_reason
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.success_reason.html_safe
             ~f.text_area :success_reason, :class => :text_area, :rows=>6
 
 
@@ -850,6 +867,7 @@
                   %td.half
                     %input{:type=>'checkbox',:name=>'conflict_event_'+p.id.to_s,:id=>'conflict_event_'+p.id.to_s,:class=>'mustcheck conflict_event_cb'}
                     %label{:title=>t("help.conflict_events.#{p.name.shorten_en}")}= t("m.conflict_events.#{p.name.slug("_").split("_")[0..7].join("_")}")
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_outcomes.html_safe
             ~f.text_area :other_outcomes, :class => 'text_area', :rows=>1, :id => 'other_outcomes'
             :javascript
               $('#conflict_event_26').change(function(){
@@ -1354,6 +1372,7 @@
             .required=f.error_message_on :headline
             %p.description 
               =t("f.conflict.mainly_for_landing_page_appearance")
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.headline.html_safe
             ~f.text_area :headline, :class => :text_area, :rows=>4, :maxlength=>255
 
           .group
@@ -1367,7 +1386,7 @@
               %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'queued',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.submit_for_moderation")}".html_safe
             %label.checkbox.inline.apstat
               %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'modified',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.modified")}".html_safe
-            -if current_account and current_account.editor?
+            -if current_account.editor?
               %label.checkbox.inline.apstat
                 -begin
                   -approvable = (@conflict.name.exists? and @conflict.description.exists? and @conflict.category_id.exists? and @conflict.country_id.exists? and ((@conflict.lat.exists? and @conflict.lon.exists?) or @conflict.general == true))
@@ -1381,32 +1400,60 @@
             :javascript
               $('input.apstat[value=#{apstat}]').prop('checked',true);
 
-            -if current_account and current_account.editor? and @conflict.approval_status === "deleted"
+            -if current_account.editor? and @conflict.approval_status === "deleted"
               %form{:action=>"/conflicts/destroy/#{@conflict.id}",:method=>'post'}
                 %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
                 %button.btn.btn-danger{:style=>'margin-left:32px;',:type=>'submit'} DELETE
 
-            -if current_account and current_account.editor?
+            -if current_account.editor?
               %br/
               .group
-                %label{:for=>"conflict_modified_at"}= t("f.conflict.suggest_for_language")
-                .row
-                  .col-md-8.col-sm-12
-                    %select.locale_suggestions
-                      %option{:disabled=>true,:selected=>true,:value=>""}= t("f.conflict.select_language")
-                      -los = @conflict.conflict_locale_suggestions.map(&:locale)
-                      -cos = @conflict.conflict_texts.map(&:locale)
-                      -@iso639.each do |k,v|
-                        %option{:value=>k,:disabled=>((los.include?(k.to_s) or cos.include?(k.to_s)) ? true : false)}= v
-                  .col-md-4.col-sm-12
-                    %button#suggest{:disabled=>true}= t("f.conflict.suggest")
+                -if @conflict.local_data
+                  -puts I18n.locale
+                  -puts t("f.conflict.suggest_for_language")
+                  %label= t("f.conflict.suggest_for_language")
+                  .row
+                    .col-md-8.col-sm-12
+                      %select.locale_suggestions
+                        %option{:disabled=>true,:selected=>true,:value=>""}= t("f.conflict.select_language")
+                        -los = @conflict.conflict_locale_suggestions.map(&:locale)
+                        -cos = @conflict.conflict_texts.map(&:locale)
+                        -@iso639.each do |k,v|
+                          -if $moderated_locales.include?(k)
+                            %option{:value=>k,:disabled=>((los.include?(k.to_s) or cos.include?(k.to_s)) ? true : false)}= t("countries.language.#{k}")
+                    .col-md-4.col-sm-12
+                      %button#suggest{:disabled=>true}= t("f.conflict.suggest")
+                  :javascript
+                    $("#suggest").on("click",function(e){
+                      e.preventDefault();
+                      $.post(
+                        "/conflicts/suggest_language",
+                        {
+                          id: #{@conflict.local_data.id},
+                          locale:$("select.locale_suggestions option:selected").val()
+                        },
+                      function(data){
+                        data = JSON.parse(data)
+                        if (data.status == "error" ) {
+                          alert(data.message);
+                        } else {
+                          iso639 = #{@iso639.to_json.html_safe};
+                          siteurl = #{$siteurl.split("://").to_json.html_safe};
+                          locale = $("select.locale_suggestions option:selected").val();
+                          $("ul#suggested").append("<li data-id="+data.id+" data-locale='"+locale+"'><a href='"+siteurl.join("://"+locale+".")+"/conflicts/translate/#{@conflict.id}'>"+iso639[locale]+" <small>(#{current_account.name})</small></a> <span>Just now</span> <a class='rm_cls' style='color:#c00;font-weight:bold;cursor:pointer'> <small> REMOVE</small></a></li>")
+                          $("select.locale_suggestions option[value="+locale+"]").prop("disabled",true);
+                          $("#suggest").prop("disabled",true)
+                        }
+                      })
+                    })
+
                 -if @conflict.conflict_locale_suggestions.any?
                   %p
                     %b=t("f.conflict.suggested_languages")
                   %ul#suggested
                     -@conflict.conflict_locale_suggestions.each do |cls|
                       %li{"data-id"=>cls.id,"data-locale"=>cls.locale}
-                        %a{:href=>"#{$siteurl.split("://").join("://#{cls.locale}.")}/conflicts/edit/#{@conflict.id}?translator"}= "#{@iso639[cls.locale]} <small>(#{cls.account.name})</small>".html_safe
+                        %a{:href=>"#{$siteurl.split("://").join("://#{cls.locale}.")}/conflicts/translate/#{@conflict.id}"}= "#{@iso639[cls.locale]} <small>(#{cls.account.name})</small>".html_safe
                         %span= "#{Admin.divtime(Time.now - cls.created_at, true, false)} ago"
                         -if cls.account == current_account
                           &nbsp;
@@ -1432,28 +1479,6 @@
                       }
                     })
                   })
-                  $("#suggest").on("click",function(e){
-                    e.preventDefault();
-                    $.post(
-                      "/conflicts/suggest_language",
-                      {
-                        id:#{(@conflict.conflict_locale_suggestions.grep(ConflictLocaleSuggestion) {|x| x.locale == "tr" ? x.id : nil} - [nil]).first},
-                        locale:$("select.locale_suggestions option:selected").val()
-                      },
-                    function(data){
-                      data = JSON.parse(data)
-                      if (data.status == "error" ) {
-                        alert(data.message);
-                      } else {
-                        iso639 = #{@iso639.to_json.html_safe};
-                        siteurl = #{$siteurl.split("://").to_json.html_safe};
-                        locale = $("select.locale_suggestions option:selected").val();
-                        $("ul#suggested").append("<li data-id="+data.id+" data-locale='"+locale+"'><a href='"+siteurl.join("://"+locale+".")+"/conflicts/edit/#{@conflict.id}?translator'>"+iso639[locale]+" <small>(#{current_account.name})</small></a> <span>Just now</span> <a class='rm_cls' style='color:#c00;font-weight:bold;cursor:pointer'> <small> REMOVE</small></a></li>")
-                        $("select.locale_suggestions option[value="+locale+"]").prop("disabled",true);
-                        $("#suggest").prop("disabled",true)
-                      }
-                    })
-                  })
 
 
                 %br/
@@ -1473,7 +1498,7 @@
               %div{:style=>"max-height:240px;overflow-y:auto"}
                 %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
                   %tdata
-                    -scols = {"NEW"=>"090","UPD"=>"333","ERR"=>"C00"}
+                    -scols = {"NEW"=>"090","UPD"=>"333","ERR"=>"C00","TRX"=>"009"}
                     -@saves.reverse.each do |save|
                       -scol = scols[save[0]]
                       -unless scol
@@ -1485,7 +1510,7 @@
               %br/
 
 
-          -if current_account and current_account.editor?
+          -if current_account.editor?
             .group
               %br/
               .clearfix
@@ -1542,7 +1567,7 @@
                               %small.black.pull-left You wrote 
                             %small.pull-left &nbsp;
                             %small{:class => pull }= msg.created_at.strftime "on %B %d, %Y - %H:%M"
-                          -if current_account and current_account.editor?
+                          -if current_account.editor?
                             %a.delete{:class=>pull,:id=>"del-#{msg.id}"} &nbsp;X&nbsp;
                           .well{:class => pull}
                             %p= msg.content
@@ -1590,13 +1615,14 @@
                   });
 
 
-          -if current_account and current_account.editor?
+          -if current_account.editor?
             .group
               %label{:for=>"conflict_notes"}= t("f.conflict.internal_notes")
               .required=f.error_message_on :notes
               %p.description=t("f.conflict.please_indicate_changes_you_have")
-              ~f.text_area :notes, :class => :text_area, :rows=>4
-              -if current_account and current_account.editor? and @conflict.account
+              .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.notes.html_safe
+              ~f.text_area :notes, :class => "text_area", :rows=>4
+              -if current_account.editor? and @conflict.account
                 %p
                   By
                   %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
@@ -1605,13 +1631,15 @@
             %label{:for=>"conflict_contributor"}= t("f.conflict.contributor")
             .required=f.error_message_on :contributor
             %p.description=t("f.conflict.fill_in_your_name_organization")
+            %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.contributor}
             =f.text_field :contributor, :class => 'text_field basic_input'
 
-          -if current_account and current_account.editor?
+          -if current_account.editor?
             .group
               %label{:for=>"conflict_translator"}= t("f.conflict.translator")
               .required=f.error_message_on :translator
               %p.description=t("f.conflict.fill_in_your_name_organization")
+              %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.translator}
               =f.text_field :translator, :class => 'text_field basic_input'
 
           .group
@@ -1622,13 +1650,13 @@
                 -@conflict.conflict_accounts.each do |ca|
                   %li
                     .pull-left= ca.account.email
-                    -if current_account and current_account.editor?
+                    -if current_account.editor?
                       .pull-left
                         &nbsp;
                         %a{:href=>"/conflicts/conflict_account_revoke/#{ca.id}"}= t("f.conflict.revoke")
                     %br/
 
-            -if current_account and current_account.editor?
+            -if current_account.editor?
               %br/
               %label= t("f.conflict.invite_users_to_collaborate")
               .clearfix
@@ -1667,7 +1695,7 @@
     :javascript
 
       tfields = [];
-      texts = "name, slug, site, province, project_area, project_length, other_types, description, other_products, project_details, investment_string, affected_people, other_supporters, related_conflict_string, other_mobilizing_groups, other_mobilizing_forms, other_env_impacts, other_hlt_impacts, other_sec_impacts, other_outcomes, suggested_alternatives, success_reason, other_comments, table, ejos, govt_actors, features, headline, notes, message, translate_only".split(/\s*,\s*/);
+      texts = "name, slug, site, province, project_area, project_length, other_types, description, other_products, project_details, investment_string, affected_people, other_supporters, related_conflict_string, other_mobilizing_groups, other_mobilizing_forms, other_env_impacts, other_hlt_impacts, other_sec_impacts, other_outcomes, suggested_alternatives, success_reason, other_comments, table, ejos, govt_actors, features, headline, notes, message, translate_only, contributor, translator".split(/\s*,\s*/);
       $.each (texts,function(i,e){
         c = $("#conflict_"+e);
         if(c.length == 0){
@@ -1683,6 +1711,8 @@
         }
       });
       $('.notr').hide();
+      $('.local_only').show();
+      $('.local_disable').prop("disabled",true);
       $('.notr').removeAttr("href");
       $('.notr').removeAttr("onclick");
 

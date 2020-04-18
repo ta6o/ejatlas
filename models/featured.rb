@@ -30,7 +30,7 @@ class Featured < ActiveRecord::Base
     return @json.to_json
   end
 
-  def old_slug
+  def old_slug new=false
     return self.slug
   end
 

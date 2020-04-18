@@ -59,7 +59,7 @@ Admin.controllers :ifis do
   end
 
   before do
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       @name = "IFI's"
     else
       redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"

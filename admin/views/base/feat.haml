@@ -66,7 +66,7 @@
 
   .summary_header
     .clearfix#share
-      -if current_account and ['admin','editor'].include? current_account.role
+      -if current_account.editor?
         .pull-right
           %a{:href=>"/featureds/edit/#{@id}",:target=>"_blank",:title=>"Edit"}
             %span.glyphicon.glyphicon-edit

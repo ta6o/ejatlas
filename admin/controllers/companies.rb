@@ -60,7 +60,7 @@ Admin.controllers :companies do
   end
 
   before do
-    if current_account and ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       @name = "Companies"
     else
       redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"

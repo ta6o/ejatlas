@@ -7,7 +7,7 @@ Admin.controllers :featureds do
 
   get :index do
     @featureds = []
-    if current_account and current_account.editor?
+    if current_account.editor?
       Featured.select("id, name, slug, description, image").find_in_batches do |batch|
         @featureds << batch
       end
@@ -77,7 +77,7 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
-    redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
+    redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or current_account.editor?)
     pp params
     rank = 0
     (params.delete("vectors") || []).each do |id, data|
@@ -252,7 +252,7 @@ Admin.controllers :featureds do
   get :export, :with => :id do
     featured = Featured.find(params['id'])
     redirect to '/featureds' unless featured
-    unless current_account and featured and (featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
+    unless current_account and featured and (featured.account_id == current_account.id or current_account.editor?)
       redirect to "/featureds"
     end
     begin
@@ -462,7 +462,7 @@ Admin.controllers :featureds do
 
   delete :destroy, :with => :id do
     featured = Featured.find(params[:id])
-    unless current_account and featured and (featured.account_id == current_account.id or ["admin","editor"].include?(current_account.role))
+    unless current_account and featured and (featured.account_id == current_account.id or current_account.editor?)
       redirect to "/featureds"
     end
     if featured.destroy

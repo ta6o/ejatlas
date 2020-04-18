@@ -127,6 +127,10 @@ class Conflict < ActiveRecord::Base
     self.conflict_texts.order(:created_at).first.locale
   end
 
+  def original_data locale=I18n.locale
+    self.conflict_texts.order(:created_at).first
+  end
+
   def local_data locale=I18n.locale
     self.conflict_texts.where(:locale=>locale).first
   end
@@ -944,6 +948,13 @@ class Conflict < ActiveRecord::Base
   end
   def translator= val, locale=I18n.locale
     self.set_local_text("translator",val,locale.to_s)
+  end
+
+  def notes locale=I18n.locale
+    self.get_local_text("notes",locale.to_s)
+  end
+  def notes= val, locale=I18n.locale
+    self.set_local_text("notes",val,locale.to_s)
   end
 
   def conflict_locale_suggestions

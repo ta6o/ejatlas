@@ -9,8 +9,8 @@
     %meta{:content => 'text/html;charset=UTF-8', 'http-equiv' => "content-type"}/
     %meta{:content => $title, :property => "og:title"}/
     %meta{:content => $pagedesc, :property => "og:description"}/
-    %meta{:content => $siteurl, :property => "og:url"}/
-    %meta{:content => $siteurl + '/images/direncevre_og.jpg', :property => "og:image"}/
+    %meta{:content => Admin.local_url(I18n.locale), :property => "og:url"}/
+    %meta{:content => Admin.local_url(I18n.locale) + '/images/direncevre_og.jpg', :property => "og:image"}/
     %meta{:content => $pagedesc, :name => "description"}/
     %meta{:content => $pageauthor, :name => "author"}/
     %meta{:content => $pagekeyws, :name => "keywords"}/
@@ -38,7 +38,7 @@
           .container
             .row
               .col-md-12{:style=>'position:relative'}
-                %ul.nav.nav-pills{:style=>"left:114px;"}
+                %ul.nav.nav-pills{:style=>"left:#{(current_account.editor? ? "40px" : "32px")};top:44px;z-index:10;"}
                   %li.first
                     %a &nbsp;
                   %li.home
@@ -189,23 +189,24 @@
                               .pull-left.small
                                 %a{:href=>"/sessions/login"}= t "v.menu.help"
 
-            .tagline{:style=>"height:28px;top: 20px;left: 220px;"}
-              -if current_account and ["admin","editor"].include?(current_account.role)
-                %ul
+            -if current_account and current_account.editor?
+              .tagline{:style=>"height:28px;top: 16px;left: 227px;padding-left: 40px;"}
+                %ul{:style=>"margin:0;padding:0"}
                   %li.dropdown#locales
                     %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#locales'}
-                      %p{:style=>"margin: 0 !important;"}= t "v.menu.environmental_justice_atlas"
+                      %p{:style=>"margin: 0 !important; line-height: 19px;"}= t "v.menu.environmental_justice_atlas"
                       %b.caret{:style=>"position: relative; top: -20px; left: -16px; border-top: 8px solid white;"}
-                    %ul.dropdown-menu{:style=>"margin: -9px -8px; background: #024357;padding-top:28px;"}
-                      -($tkeys-["master"]).sort.each do |l|
+                    %ul.dropdown-menu{:style=>"margin: -9px -8px; background: transparent;padding-top:21px;box-shadow:none;"}
+                      -($moderated_locales).sort.each do |l|
                         -trt = I18n.with_locale(l) {|x| I18n.t "v.menu.environmental_justice_atlas"}
                         -next if l == I18n.locale.to_s
                         -next if (trt == I18n.t("v.menu.environmental_justice_atlas") and l != "en")
-                        %li
-                          %a{:href=>"#{request.url.split(/\?/)[0]}?translate=#{l}"}= "#{trt} (#{l.upcase})"
-              -else
-                %p= t "v.menu.environmental_justice_atlas"
-            .ejatlas-logo{:style=>"left:175px;"}
+                        %li{:style=>"background:#024357"}
+                          %a{:href=>"#{Admin.local_url(l)}#{request.path}",:style=>"font-weight:bold;padding: 3px 9px"}= "#{trt} (#{l.upcase})"
+            -else
+              .tagline{:style=>"height:28px;top: 16px;left: 203px;padding-left: 20px;"}
+                %p{:style=>"line-height:21px;"}= t "v.menu.environmental_justice_atlas"
+            .ejatlas-logo{:style=>"left:175px;z-index:11;"}
 
 
       -if current_account and false
@@ -304,7 +305,7 @@
             return true;
           };  
 
-      -if request.path.match(/edit/) or (current_account and ["admin","editor"].include?(current_account.role))
+      -if request.path.match(/edit/) or current_account.editor?
         :javascript
           $full = false;
           $.getJSON("/data/autocomplete.json?#{rand(1000)}",function(data){

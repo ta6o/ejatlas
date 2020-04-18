@@ -179,7 +179,7 @@ Admin.controller do
     #last_modified c.updated_at
     pass unless c
     if c.approval_status != "approved"
-      if current_account and (["admin","editor"].include?(current_account.role) or c.account_id == current_account.id or c.conflict_accounts.map(&:account_id).include?(current_account.id))
+      if current_account.editor?
       else
         pass
       end
@@ -638,7 +638,7 @@ Admin.controller do
   get :editfilter, :with => :uid do
     pass unless current_account
     filter = Filter.find_by_uid(params["uid"])
-    if filter and filter.account == current_account or ["admin","editor"].include?(current_account.role)
+    if filter and filter.account == current_account or current_account.editor?
       @filter = filter
     else
       redirect to "/filters"
