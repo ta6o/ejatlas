@@ -315,6 +315,25 @@ Admin.controllers :conflicts do
     end
   end
 
+  get "/auto_translate/:id/?" do
+    begin
+      @cls = ConflictLocaleSuggestion.find(params[:id])
+    rescue
+      pass
+    end
+    puts @cls.conflict_text.name.red
+  end
+
+  get "/auto_translate/:id/:locale/?" do
+    begin
+      @conflict = Conflict.find(params[:id])
+      @locale = params[:locale]
+    rescue
+      pass
+    end
+    puts @conflict.original_data.name.yellow
+  end
+
   get :conflict_account_revoke, :with => :id do
     if current_account.editor?
       ca = ConflictAccount.find(params[:id])

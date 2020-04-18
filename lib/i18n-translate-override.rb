@@ -1,7 +1,7 @@
 module I18n
   module Base
     def translate(*args)
-      options  = args.last.is_a?(Hash) ? args.pop.dup : {}
+      options  = args.last.is_a?(Hash) ? args.pop.dup : {:default_locale=>:en}
       key      = args.shift
       backend  = config.backend
       locale   = options.delete(:locale) || config.locale

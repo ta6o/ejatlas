@@ -153,7 +153,7 @@ class Admin < Padrino::Application
         I18n.locale = request.query_string.match(/^translate=\w+/)[0].sub(/^translate=/,"")
       end
     else
-      I18n.default_locale = locale
+      I18n.default_locale = :en
       I18n.locale = locale
       $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
     end
@@ -839,7 +839,7 @@ class Admin < Padrino::Application
     puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{status.to_s.colorize(scolor)} #{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} #{account ? "#{account.email.green}" : ""}@#{request.ip.cyan} (#{platform.cyan}/#{agent.cyan})#{ (keys.any? and request.request_method != "GET") ? " [#{keys.map{|x| x.to_s.cyan}.join(",")}]" : ""}"
   end
 
-  def self.tx_conflict ct, locale, verbose=false
+  def self.tx_conflict ct, locale, all=false, verbose=false
     unless cn = ConflictText.where(:conflict_id=>ct.conflict_id, :locale=>locale).first
       cn = ConflictText.new(:conflict_id=>ct.conflict_id, :locale=>locale, :approval_status=>"auto_tx", :slug=>ct.slug)
     end

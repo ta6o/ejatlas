@@ -1069,6 +1069,7 @@
           .group
             %label{:for=>"conflict_other_comments"}= t("f.conflict.other_comments")
             .required=f.error_message_on :other_comments
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_comments.html_safe
             ~f.text_area :other_comments, :class => :text_area, :rows=>4
 
         .col-md-6
@@ -1365,7 +1366,7 @@
             .group
               %label= "#{t("f.conflict.conflict_id")}  <font style='font-weight:normal'>#{@conflict.id}</font>".html_safe
               %br/
-              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| "#{$iso639[x.locale]}<small>(#{x.id})</small>" }.join(", ")}</font>".html_safe
+              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| "<span title='#{x.id}'>#{$iso639[x.locale]}</span>" }.join(", ")}</font>".html_safe
 
           .group
             %label{:for=>"conflict_headline"}= t("f.conflict.headline_text")
@@ -1409,8 +1410,6 @@
               %br/
               .group
                 -if @conflict.local_data
-                  -puts I18n.locale
-                  -puts t("f.conflict.suggest_for_language")
                   %label= t("f.conflict.suggest_for_language")
                   .row
                     .col-md-8.col-sm-12
@@ -1498,7 +1497,7 @@
               %div{:style=>"max-height:240px;overflow-y:auto"}
                 %table{:style=>"width:calc( 100% - 36px );margin:0 18px;"}
                   %tdata
-                    -scols = {"NEW"=>"090","UPD"=>"333","ERR"=>"C00","TRX"=>"009"}
+                    -scols = {"NEW"=>"090","UPD"=>"333","ERR"=>"C00","TRX"=>"00F"}
                     -@saves.reverse.each do |save|
                       -scol = scols[save[0]]
                       -unless scol
@@ -1567,7 +1566,7 @@
                               %small.black.pull-left You wrote 
                             %small.pull-left &nbsp;
                             %small{:class => pull }= msg.created_at.strftime "on %B %d, %Y - %H:%M"
-                          -if current_account.editor?
+                          -if ["admin","editor"].include? current_account.role
                             %a.delete{:class=>pull,:id=>"del-#{msg.id}"} &nbsp;X&nbsp;
                           .well{:class => pull}
                             %p= msg.content
@@ -1686,6 +1685,16 @@
                     ); 
                   } 
                 });
+
+            -if current_account.editor? and @translate_only
+              %br/
+              %label= t("f.conflict.translate_automatically")
+              .row
+                .col-sm-3
+                  %a.btn.btn-success{:href=>"/conflicts/auto_translate/#{@conflict.id}/#{I18n.locale}"}= t("f.conflict.only_empty_fields")
+                .col-sm-3
+                  %a.btn.btn-warning{:href=>"/conflicts/auto_translate/#{@conflict.id}/#{I18n.locale}?all_fields"}= t("f.conflict.all_fields")
+
 
 
 

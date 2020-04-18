@@ -10,6 +10,9 @@
         %b= @conflict.name
         %small
           %a{:target=>'_blank',:href=>"/conflict/#{@conflict.slug}"}= t("v.menu.view")
+        -if not @translate_only and not @conflict.native_locale?
+          %small
+            %a{:href=>"/conflicts/translate/#{@conflict.id}"}= t("f.conflict.translate")
     .inner
       =form_for :conflict, url(:conflicts, :update, :id => @conflict.id), :method => :put, :class => :form, :id=>:conflict_form, :style => "margin:0 -15px" do |f|
         =partial "conflicts/form", :locals => { :f => f }
