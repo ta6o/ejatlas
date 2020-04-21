@@ -184,7 +184,7 @@
                 -$available_locales.each do |locale|
                   -next if locale == I18n.locale.to_s
                   %li
-                    %a{:href=>(locale == "en" ? "/?" : "/?translate=#{locale}")}= t("countries.language.#{locale}")
+                    %a{:href=>(locale == "en" ? "/?translate=en" : "/?translate=#{locale}")}= t("countries.language.#{locale}")
               :css
                 ul.languages {
                   position: fixed;
