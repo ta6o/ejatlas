@@ -17,6 +17,7 @@ class GeoLayer < ActiveRecord::Base
       if local.include?(data["name"])
         local.delete data["name"]
         gl = GeoLayer.find_by_slug(data["name"]).update_attributes(attrs)
+        gl.update_style
       else
         gl = GeoLayer.create attrs
         gl.update_attrs true
@@ -87,6 +88,7 @@ class GeoLayer < ActiveRecord::Base
           script += "\n  if(#{condition.join(" && ")}) {" if condition.any?
           script += "\n    return ({"
           layer["paint"].each do |key,val|
+            val = val.to_s.strip
             if    key == "line-color"
               script += "\n      stroke: true,"
               script += "\n      color: \"#{val}\","

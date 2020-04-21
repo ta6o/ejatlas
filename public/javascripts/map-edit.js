@@ -3,7 +3,7 @@ var bases = [ "OpenStreetMap.Mapnik", "OpenStreetMap.BlackAndWhite", "OpenStreet
 var blayers = { }
 
 function initMap (mltln,google) {
-  console.log(google)
+  //console.log(google)
 
   if (google) {
     blayers = {

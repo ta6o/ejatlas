@@ -844,8 +844,8 @@ class Admin < Padrino::Application
       cn = ConflictText.new(:conflict_id=>ct.conflict_id, :locale=>locale, :approval_status=>"auto_tx", :slug=>ct.slug)
     end
     if cn.approval_status != "auto_tx"
-      puts "translation already found"
-      return cn
+      puts "translation already found!".yellow
+      #return cn
     end
     unless $session
       puts "authenticating".red if verbose
@@ -860,7 +860,11 @@ class Admin < Padrino::Application
     fields.each_with_index do |x,i| 
       y = ct.attributes[x]
       if y
-        ws[i+1,2] = y.gsub(/\n/," ")
+        if x == "description"
+          ws[i+1,2] = y.gsub(/<br\/?>/,"$%&").gsub(/<\/(p|li)>/,"$%&$%&").strip_html.gsub(/&[^;]+;/,"")
+        else
+          ws[i+1,2] = y.gsub(/\n/," ")
+        end
       else
         ws[i+1,2] = ""
       end
@@ -879,7 +883,13 @@ class Admin < Padrino::Application
     attrs = {}
     fields.each_with_index do |x,i| 
       val = ws[i+1,3]
-      attrs[x] = val unless val == "#VALUE!"
+      if val != "#VALUE!" and (all or cn.attributes[x].nil? or cn.attributes[x] === "")
+        if x == "description"
+          attrs[x] = val.gsub("$%&","<br/>")
+        else
+          attrs[x] = val 
+        end
+      end
     end
     pp attrs.symbolize_keys if verbose and false
     puts "saving".red if verbose

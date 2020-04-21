@@ -950,11 +950,25 @@ class Conflict < ActiveRecord::Base
     self.set_local_text("translator",val,locale.to_s)
   end
 
+  def contributor locale=I18n.locale
+    self.get_local_text("contributor",locale.to_s)
+  end
+  def contributor= val, locale=I18n.locale
+    self.set_local_text("contributor",val,locale.to_s)
+  end
+
   def notes locale=I18n.locale
     self.get_local_text("notes",locale.to_s)
   end
   def notes= val, locale=I18n.locale
     self.set_local_text("notes",val,locale.to_s)
+  end
+
+  def approval_status locale=I18n.locale
+    self.get_local_text("approval_status",locale.to_s)
+  end
+  def approval_status= val, locale=I18n.locale
+    self.set_local_text("approval_status",val,locale.to_s)
   end
 
   def conflict_locale_suggestions
@@ -974,7 +988,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def inspect
-    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.approval_status.magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
+    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.approval_status.to_s.magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
   end
 
   private
@@ -991,11 +1005,13 @@ end
 
 class ConflictText < ActiveRecord::Base
   validates_each :conflict_id, :locale do |record, attr, value|
-    unless value
-      record.errors.add(attr, "#{attr} must be present!") 
-    end
-    if ConflictText.where(:conflict_id=>record.conflict_id,:locale=>record.locale).any?
-      record.errors.add(attr, "Already exists!") 
+    if record.new_record?
+      unless value
+        record.errors.add(attr, "#{attr} must be present!") 
+      end
+      if ConflictText.where(:conflict_id=>record.conflict_id,:locale=>record.locale).any?
+        record.errors.add(attr, "Already exists!") 
+      end
     end
   end
 

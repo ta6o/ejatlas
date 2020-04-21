@@ -317,21 +317,33 @@ Admin.controllers :conflicts do
 
   get "/auto_translate/:id/?" do
     begin
-      @cls = ConflictLocaleSuggestion.find(params[:id])
+      cls = ConflictLocaleSuggestion.find(params[:id])
+      ct = cls.conflict_text
+      lo = cls.locale
+      cn = Admin.tx_conflict(ct,lo,params.has_key?("all_fields"),true)
+      return redirect to "#{Admin.local_url(lo)}/conflicts/translate/#{ct.conflict_id}"
     rescue
       pass
     end
-    puts @cls.conflict_text.name.red
   end
 
-  get "/auto_translate/:id/:locale/?" do
+  get "/auto_translate/:id/:from_loc/:to_loc/?" do
     begin
-      @conflict = Conflict.find(params[:id])
-      @locale = params[:locale]
-    rescue
+      ct = Conflict.find(params[:id]).conflict_texts.where(:locale=>params[:from_loc]).first
+      lo = params[:to_loc]
+      cn = Admin.tx_conflict(ct,lo,params.has_key?("all_fields"),true)
+      return redirect to "#{Admin.local_url(lo)}/conflicts/translate/#{ct.conflict_id}"
+    rescue=>e
+      puts e.to_s.red
       pass
     end
-    puts @conflict.original_data.name.yellow
+  end
+
+  get :conflict_account_create, :map => "/conflicts/conflict_account_create/:cid/:aid" do
+    if current_account.editor?
+      ConflictAccount.create :conflict_id => params["cid"], :account_id => params["aid"]
+      redirect to "/conflicts/edit/#{params["cid"]}#_meta"
+    end
   end
 
   get :conflict_account_revoke, :with => :id do
@@ -340,13 +352,6 @@ Admin.controllers :conflicts do
       cid = ca.conflict_id
       ca.delete
       redirect to "/conflicts/edit/#{cid}#_meta"
-    end
-  end
-
-  get :conflict_account_create, :map => "/conflicts/conflict_account_create/:cid/:aid" do
-    if current_account.editor?
-      ConflictAccount.create :conflict_id => params["cid"], :account_id => params["aid"]
-      redirect to "/conflicts/edit/#{params["cid"]}#_meta"
     end
   end
 

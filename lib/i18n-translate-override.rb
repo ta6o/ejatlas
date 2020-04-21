@@ -30,6 +30,13 @@ module I18n
 end
 
 class String
+  def strip_html
+    self.split(/\<.*?\>/)
+     .map(&:strip)
+     .reject(&:empty?)
+     .join(' ')
+     .gsub(/\s,/,',')
+  end
   def slug fill="-"
     return self if self.nil?
     self.to_ascii
@@ -71,10 +78,13 @@ end
 
 class NilClass
   def editor?
-    return false
+    false
   end
   def gis?
-    return false
+    false
+  end
+  def html_safe
+    ""
   end
 end
 

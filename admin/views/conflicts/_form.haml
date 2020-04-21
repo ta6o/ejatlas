@@ -306,7 +306,7 @@
             .required=f.error_message_on :description
             %p.description= t("f.conflict.please_describe_project_point_conflict")
             -#~f.text_area :description, :class => 'text_area basic_input', :rows => 17
-            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.description.html_safe
+            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.description.strip_html.html_safe
             %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
 
         .col-md-8
@@ -344,15 +344,15 @@
               :javascript
                 bkLib.onDomLoaded(function() {
                   nicEditors.editors.push(
-                    new nicEditor({buttonList:['bold','italic','','link','unlink']}).panelInstance("conflict_description")
+                    new nicEditor({buttonList:['bold','italic','','link','unlink','','xhtml']}).panelInstance("conflict_description")
                   );
                   window.setTimeout(niceWidth,1000);
                 });
                 function niceWidth(){
                   ta_width = $(".tab-pane.active .row").width() / 3 - 15;
-                  console.log(ta_width)
+                  //console.log(ta_width)
                   $("ul#conflict-tabs li a").on('shown.bs.tab',function(e){
-                    console.log(ta_width)
+                    //console.log(ta_width)
                     item = $($(e.target).attr('href')).find(".group textarea#conflict_description").parent();
                     item.find("div").not(".nicEdit-buttonContain,.nicEdit-button,.nicEdit-button-undefined,.nicEdit-panel>div").css("width",ta_width);
                     item.find("div.nicEdit-main").css("width",ta_width-8).css("min-height",114);
@@ -1366,7 +1366,7 @@
             .group
               %label= "#{t("f.conflict.conflict_id")}  <font style='font-weight:normal'>#{@conflict.id}</font>".html_safe
               %br/
-              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| "<span title='#{x.id}'>#{$iso639[x.locale]}</span>" }.join(", ")}</font>".html_safe
+              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| "<span title='#{x.id}'>#{t("countries.language.#{x.locale}")}</span>" }.join(", ")}</font>".html_safe
 
           .group
             %label{:for=>"conflict_headline"}= t("f.conflict.headline_text")
@@ -1686,14 +1686,24 @@
                   } 
                 });
 
-            -if current_account.editor? and @translate_only
+            -if @translate_only and current_account.editor? or current_account.translator?
               %br/
               %label= t("f.conflict.translate_automatically")
-              .row
-                .col-sm-3
-                  %a.btn.btn-success{:href=>"/conflicts/auto_translate/#{@conflict.id}/#{I18n.locale}"}= t("f.conflict.only_empty_fields")
-                .col-sm-3
-                  %a.btn.btn-warning{:href=>"/conflicts/auto_translate/#{@conflict.id}/#{I18n.locale}?all_fields"}= t("f.conflict.all_fields")
+              %table.auto_tx
+                %tbody
+                  -@conflict.conflict_texts.order(:locale).each do |ct|
+                    -next if ct.locale == I18n.locale.to_s
+                    %tr
+                      %td=t("countries.language.#{ct.locale}")
+                      %td
+                        %a.btn.btn-success{:href=>"/conflicts/auto_translate/#{@conflict.id}/#{ct.locale}/#{I18n.locale}"}= t("f.conflict.only_empty_fields")
+                      -if current_account.editor?
+                        %td
+                          %a.btn.btn-warning{:href=>"/conflicts/auto_translate/#{@conflict.id}/#{ct.locale}/#{I18n.locale}?all_fields"}= t("f.conflict.all_fields")
+              :css
+                table.auto_tx td {
+                  padding:4px 8px;
+                }
 
 
 
