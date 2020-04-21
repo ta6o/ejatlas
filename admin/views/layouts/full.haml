@@ -179,6 +179,38 @@
                 %p= t "v.menu.environmental_justice_atlas"
             .ejatlas-logo#eja-logo{:style=>"z-index:11;"}
 
+            -if current_account.editor? and @maptitle == "World Map"
+              %ul.languages
+                -$available_locales.each do |locale|
+                  -next if locale == I18n.locale.to_s
+                  %li
+                    %a{:href=>(locale == "en" ? "/" : "/?translate=#{locale}")}= t("countries.language.#{locale}")
+              :css
+                ul.languages {
+                  position: fixed;
+                  top: 120px;
+                  padding: 0;
+                  left: 0px;
+                  list-style-type: none;
+                }
+                ul.languages li {
+                  background: #024357;
+                  padding: 0px 8px 1px 16px;
+                  margin-bottom: 4px;
+                  cursor: pointer;
+                  transition: 0.2s;
+                  display: table;
+                }
+                ul.languages li:hover {
+                  background: #0380A5;
+                  padding: 0px 8px 1px 24px;
+                  transition: 0.4s;
+                  font-weight: bold;
+                }
+                ul.languages li a {
+                  color: #fff;
+                }
+
         %header
           =yield_content :outer
           .container-full

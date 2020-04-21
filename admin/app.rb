@@ -61,6 +61,8 @@ class Admin < Padrino::Application
   $relatives = {"category_id" => "Categories", "types" => "Subcategories", "population_type" => "Population Type", "country_id" => "Country", "companies"=>"Companies","supporters"=>"IFI's","products"=>"Commodities", "mobilizing_groups" => "Mobilizing Groups", "mobilizing_forms" => "Mobilizing Forms", "env_impacts"=>"Environmental Impacts", "hlt_impacts"=>"Health Impacts", "sec_impacts"=>"Socioeconomical Impacts", "conflict_events" => "Outcomes"}
 
   $moderated_locales = []
+  $available_locales = []
+
   def self.check_locales 
     $moderated_locales = ["en"]
     Role.find_by_name("editor").account_roles.each do |ar| 
@@ -150,7 +152,9 @@ class Admin < Padrino::Application
         end
       end
       if request.query_string.match(/^translate=/) and not request.xhr?
-        I18n.locale = request.query_string.match(/^translate=\w+/)[0].sub(/^translate=/,"")
+        I18n.locale = request.query_string.match(/^translate=(\w+)/)[1]
+        $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
+        $global = true
       end
     else
       I18n.default_locale = :en
@@ -811,6 +815,12 @@ class Admin < Padrino::Application
       end
     end
     #$tstatus.delete("master")
+    $available_locales = []
+    totals = $tkeys.map{|k| [k,0]}.to_h
+    $tstatus.each {|k,v| v.each {|l,i| totals[l] += i } }
+    master = totals.delete("master").to_f
+    totals.each {|k,v| if v / master >= 0.8 then $available_locales << k end}
+    $available_locales.sort!
     print "\rReloading"
     I18n.backend.reload!
     print "\rDone."
@@ -903,12 +913,8 @@ class Admin < Padrino::Application
   I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
   I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
 
-  begin
-    I18n.backend.load_translations
-  rescue
-    Admin.fetch_translations false
-    I18n.backend.load_translations
-  end
+  Admin.fetch_translations false
+  I18n.backend.load_translations
 
 end
 

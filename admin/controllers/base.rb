@@ -151,7 +151,6 @@ Admin.controller do
 
   get :index do
     ca = Cached.where(:locale=>I18n.locale).first
-    puts "lalala".yellow
     pass unless ca
     #last_modified ca.updated_at
     @filterform = {}
