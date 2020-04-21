@@ -662,7 +662,7 @@ class Conflict < ActiveRecord::Base
         end
       end
       if options[:print] == true
-        tab += '<h3>'+val[0]+'</h3><table class="table"><tbody>'+ta+'</tbody></table>' unless ta === ''
+        tab += '<h3>'+val[0]+'</h3><table class="table"><tbody>'+ta+'</tbody></table>' unless ta.nil? or ta === ''
       else
         tab += '<div class="horipane"><div class="title active">'+val[0]+'</div><div class="content"><table class="table"><tbody>'+ta+'</tbody></table></div></div>' unless ta === ''
       end
