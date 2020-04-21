@@ -297,6 +297,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.text "supporters_json"
     t.text "supporters_link"
     t.integer "iso_numeric"
+    t.string "default_locale", limit: 3
     t.string "capital", limit: 255
   end
 
