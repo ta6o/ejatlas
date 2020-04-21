@@ -107,6 +107,12 @@
                     %li.divider
                   %li
                     %a{:href=>'/featured'}= t "v.menu.see_all_featured_maps"
+                  -if current_account.editor?
+                    %li.divider
+                    -$moderated_locales.each do |loc|
+                      -next if loc == I18n.locale.to_s
+                      %li
+                        %a{:href=>"#{Admin.local_url(loc)}"}= "#{t("v.menu.environmental_justice_atlas", :locale=>loc)} <small>(#{t("countries.language.#{loc}")})</small>".html_safe
                   %li.divider
                   %li
                     %a{:href=>'/country'}= t "v.menu.country_maps"
