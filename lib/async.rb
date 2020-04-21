@@ -857,7 +857,7 @@ class AsyncTask
               client.index index: "#{$esindex}_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
             end
             #times[:index] += Time.now - tc
-            markers << c.as_marker if c.approval_status == "approved" and Country.where(:default_locale=>locale).map(&:id).include?(c.country_id)
+            markers << c.as_marker if c.approval_status == "approved" and (locale == "en" or Country.where(:default_locale=>locale).map(&:id).include?(c.country_id))
             print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
           end
           File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.txt","w") {|f| f << "Updating conflicts: #{(counter/total.to_f*1000).to_i/10.0}% done. (#{counter}/#{total}, #{((Time.now-t0)/counter).round(3)}s per case) #{Admin.divtime(Time.now-t00)} passed."} if job_id

@@ -35,10 +35,13 @@
                   %a{:href=>"#",:title=>"#{@iso639[k]} translations in general","data-content"=>"#{v} / #{totals["master"]} <small>(#{(v.to_f / totals["master"].to_f * 100).to_i}%)</small>", "data-toggle"=>"popover" }= (v.to_f / totals["master"].to_f * 100).to_i
 
       .pull-left{:style=>"margin-top:8px;"}
-        %span Last updated
-        %b
-          = Admin.divtime((Time.now - Time.at(File.read("#{Dir.pwd}/lib/sheets/stamp").to_i)), false, false)
-        %span ago.
+        -if File.exists?("#{Dir.pwd}/lib/sheets/stamp")
+          %span Last updated
+          %b
+            = Admin.divtime((Time.now - Time.at(File.read("#{Dir.pwd}/lib/sheets/stamp").to_i)), false, false)
+          %span ago.
+        -else
+          in progress...
       %input#trans.btn.pull-right{:value=>'Update translations'}
 
   .status.row

@@ -151,6 +151,7 @@ Admin.controller do
 
   get :index do
     ca = Cached.where(:locale=>I18n.locale).first
+    puts "lalala".yellow
     pass unless ca
     #last_modified ca.updated_at
     @filterform = {}
@@ -868,7 +869,6 @@ Admin.controller do
     Admin.fetch_translations(false) if $tstatus.nil?
     @tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort
     @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! @tkeys.include?(x)}
-    pp @iso639
     render 'base/translations', :layout => :application
   end
 
