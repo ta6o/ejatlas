@@ -86,5 +86,8 @@ class NilClass
   def html_safe
     ""
   end
+  def gsub x, y
+    ""
+  end
 end
 
