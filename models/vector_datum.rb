@@ -16,7 +16,8 @@ class GeoLayer < ActiveRecord::Base
       attrs = {:name=>data["title"], :slug=>data["name"], :url=>"#{data["namespace"]["name"]}:#{data["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:layer_type=>type,:srs=>data["srs"]}
       if local.include?(data["name"])
         local.delete data["name"]
-        gl = GeoLayer.find_by_slug(data["name"]).update_attributes(attrs)
+        gl = GeoLayer.find_by_slug(data["name"])
+        gl.update_attributes(attrs)
         gl.update_style
       else
         gl = GeoLayer.create attrs
