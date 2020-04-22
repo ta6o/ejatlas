@@ -204,16 +204,18 @@
                   transition: 0.2s;
                   display: table;
                 }
-                ul.languages li.active {
-                  background: #0380A5;
-                  font-weight: bold;
-                  cursor: default;
-                }
                 ul.languages li:hover {
                   background: #0380A5;
                   padding: 0px 8px 1px 24px;
                   transition: 0.4s;
                   font-weight: bold;
+                }
+                ul.languages li.active,
+                ul.languages li.active:hover {
+                  background: #0380A5;
+                  font-weight: bold;
+                  padding: 0px 8px 1px 16px;
+                  cursor: default;
                 }
                 ul.languages li a {
                   color: #fff;
