@@ -182,8 +182,12 @@
             -if current_account.editor? and ["World Map", "Local Map"].include?(@maptitle)
               %ul.languages
                 -$available_locales.each do |locale|
-                  %li
-                    %a{:href=>(locale == "en" ? "/?translate=en" : "/?translate=#{locale}"),:class=>(locale==I18n.locale.to_s ? "active" : "")}= t("countries.language.#{locale}")
+                  -if locale==I18n.locale.to_s
+                    %li.active
+                      %a{:href=>"#"}= t("countries.language.#{locale}")
+                  -else
+                    %li
+                      %a{:href=>(locale == "en" ? "/?translate=en" : "/?translate=#{locale}")}= t("countries.language.#{locale}")
               :css
                 ul.languages {
                   position: fixed;
