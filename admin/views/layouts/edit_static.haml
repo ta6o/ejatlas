@@ -35,16 +35,18 @@
         .container{:style=>"position:relative;"}
           %form#static_form
             .row
-              .col-sm-5
+              .col-sm-4
                 %label.inline{:for=>:name} Name
                 %input{:name=>:name,:type=>:text,:value=>@name}
-              .col-sm-5
+              .col-sm-4
                 %label.inline{:for=>:slug} Slug
                 %input{:name=>:slug,:type=>:text,:value=>@slug,:disabled=>true}
               .col-sm-2
                 %br/
-                %button.btn.btn-info#save SAVE
-                %a.btn.btn-success{:href=>"/#{@slug}"} VIEW
+                %button.btn.btn-info.full#save SAVE
+              .col-sm-2
+                %br/
+                %a.btn.btn-success.full{:href=>"/#{@slug}"} VIEW
 
           #success.alert.alert-success.alert-dismissible{:role=>"alert",:style=>"position:absolute;top:-40px;right:0;display:none !important;"}
             %b Page saved successfully.
