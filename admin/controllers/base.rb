@@ -156,7 +156,7 @@ Admin.controller do
     @filterform = {}
     @filterform = JSON.parse(ca.filterdata) if ca
     @filter = render "base/filter", :layout => false
-    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
+    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>$global ? "en" : I18n.locale).count
     countries = ca.countries ? JSON.parse(ca.countries) : []
     companies = ca.companies ? JSON.parse(ca.companies) : []
     commodities = ca.commodities ? JSON.parse(ca.commodities) : []
@@ -737,6 +737,13 @@ Admin.controller do
   end
 
   get "/info/:id" do
+    puts I18n.locale.to_s.green
+    if request.referer and loc = request.referrer.match(/[\?&]translate=(\w+)/)
+      I18n.locale = loc[1]
+      puts I18n.locale.to_s.yellow
+    else
+      puts I18n.locale.to_s.red
+    end
     c = Conflict.find(params[:id])
     target = ""
     target = " target='_blank'" if request.referer.match(/\/embed/) or request.referer.match(/\/761317/)

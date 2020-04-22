@@ -160,12 +160,12 @@
                       %form#signout.hide{:action=>'/sessions/destroy',:method=>'post'}
                         %input{:value=>'delete',:name=>'_method',:type=>'hidden'}
                       %a{:href=>'#',:onclick=>'$("#signout").submit()'}= t "v.menu.logout"
-            -if current_account and current_account.editor?
+            -if current_account.editor? and false
               .tagline{:style=>"height:28px;"}
                 %ul
                   %li.dropdown#locales
                     %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#locales'}
-                      %p{:style=>"margin: 0 !important;"}= t "v.menu.environmental_justice_atlas"
+                      %p{:style=>"margin: 0 !important;"}= t "v.menu.#{ $global ? "environment" : "loc" }al_justice_atlas"
                       %b.caret{:style=>"position: relative; top: -20px; left: -16px; border-top: 8px solid white;"}
                     %ul.dropdown-menu{:style=>"margin: -9px -8px; background: transparent;padding-top:28px;"}
                       -($moderated_locales).sort.each do |l|
@@ -176,7 +176,7 @@
                           %a{:href=>"#{Admin.local_url(l)}#{request.path}",:style=>"padding: 3px 9px"}= "#{trt} (#{l.upcase})"
             -else
               .tagline{:style=>"height:28px;"}
-                %p= t "v.menu.environmental_justice_atlas"
+                %p= t "v.menu.#{ $global ? "environment" : "loc" }al_justice_atlas"
             .ejatlas-logo#eja-logo{:style=>"z-index:11;"}
 
             -if current_account.editor? and @maptitle == "World Map"
