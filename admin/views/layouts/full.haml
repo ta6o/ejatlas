@@ -179,7 +179,7 @@
                 %p= t "v.menu.#{ $global ? "environment" : "loc" }al_justice_atlas"
             .ejatlas-logo#eja-logo{:style=>"z-index:11;"}
 
-            -if current_account.editor? and @maptitle == "World Map"
+            -if current_account.editor? and ["World Map", "Local Map"].include?(@maptitle)
               %ul.languages
                 -$available_locales.each do |locale|
                   -next if locale == I18n.locale.to_s
