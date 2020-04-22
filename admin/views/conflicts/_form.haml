@@ -1453,7 +1453,8 @@
                     -@conflict.conflict_locale_suggestions.each do |cls|
                       %li{"data-id"=>cls.id,"data-locale"=>cls.locale}
                         %a{:href=>"#{$siteurl.split("://").join("://#{cls.locale}.")}/conflicts/translate/#{@conflict.id}"}= "#{@iso639[cls.locale]} <small>(#{cls.account.name})</small>".html_safe
-                        %span= "#{Admin.divtime(Time.now - cls.created_at, true, false)} ago"
+                        -if cls.created_at
+                          %span= "#{Admin.divtime(Time.now - cls.created_at, true, false)} ago"
                         -if cls.account == current_account
                           &nbsp;
                           %a.rm_cls{"data-id"=>cls.id,:style=>"color:#c00;font-weight:bold;cursor:pointer"} 
