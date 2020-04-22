@@ -6498,6 +6498,28 @@ ul.sidelink li.active {
 .graybg {
   background: url('/images/bg.png');
 }
+#cookies_disclaimer {
+  display: none;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 9999;
+  width: 100%;
+  background: #0380a5;
+  color: white;
+}
+#cookies_disclaimer td {
+  padding: 12px;
+}
+#cookies_disclaimer a,
+#cookies_disclaimer a:focus {
+  color: white;
+  text-decoration: underline;
+}
+#cookies_disclaimer a:hover {
+  color: white;
+  text-decoration: none;
+}
 /* required styles */
 
 .leaflet-pane,

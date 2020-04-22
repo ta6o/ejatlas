@@ -109,3 +109,6 @@ class ConflictMessage < ActiveRecord::Base
   belongs_to :account
 end
 
+class StaticPage < ActiveRecord::Base
+end
+

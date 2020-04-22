@@ -528,6 +528,14 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "name", limit: 255
   end
 
+  create_table "static_pages", id: :serial, force: :cascade do |t|
+    t.string "name", limit: 255
+    t.string "slug", limit: 255
+    t.string "locale", limit: 7
+    t.text   "content"
+    t.timestamps
+  end
+
   create_table "supporters", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255
     t.string "slug", limit: 255

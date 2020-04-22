@@ -16,7 +16,55 @@ Admin.controller do
     return 'ok'
   end
 
+  get /^\/(legal|privacy_policy|about|faq|disclaimer|contact|credits|welcome)\/?/ do
+    @slug = params[:captures].first
+    if sp = StaticPage.where(:slug=>@slug, :locale=>I18n.locale).first
+      @static = true
+      @name = sp.name
+      @content = sp.content
+      render "base/static", :layout => :application
+    else
+      pass
+    end
+  end
+
+  get :edit_static, :with => :page do
+    pass unless current_account.editor?
+    @slug = params[:page]
+    if sp = StaticPage.where(:slug=>@slug,:locale=>I18n.locale).first
+      @name = sp.name
+      @content = sp.content
+      render "base/edit_static", :layout => :edit_static
+    elsif File.exists? "#{Dir.pwd}/admin/views/base/#{@slug}_#{I18n.locale}.haml"
+      @name = @slug
+      render "base/#{@slug}_#{I18n.locale}", :layout => :edit_static
+    elsif sp = StaticPage.where(:slug=>@slug,:locale=>I18n.default_locale).first
+      @name = sp.name
+      @content = sp.content
+      render "base/edit_static", :layout => :edit_static
+    else
+      @name = @slug
+      render "base/#{@slug}_#{I18n.default_locale}", :layout => :edit_static
+    end
+  end
+
+  post :edit_static do
+    pass unless current_account.editor?
+    @slug = params["slug"]
+    pass if @slug.nil? or @slug == ""
+    unless sp = StaticPage.where(:slug=>@slug,:locale=>I18n.locale).first
+      sp = StaticPage.new(:slug=>@slug,:locale=>I18n.locale)
+    end
+    begin
+      sp.update! :name => params["name"], :content => params["content"]
+      return {:status=>:success}.to_json
+    rescue => e
+      return {:status=>:error, :message=>e.to_s}.to_json
+    end
+  end
+
   get :legal do
+    @static = true
     @name = "Aviso legal"   
     if File.exists? "#{Dir.pwd}/admin/views/base/legal_#{I18n.locale}.haml"
       render "base/legal_#{I18n.locale}", :layout => :application
@@ -27,6 +75,7 @@ Admin.controller do
 
   get :privacy_policy do
     pass unless current_account
+    @static = true
     @name = "Privacy policy"   
     if File.exists? "#{Dir.pwd}/admin/views/base/accept_privacy_#{I18n.locale}.haml"
       render "base/accept_privacy_#{I18n.locale}", :layout => :application
@@ -36,6 +85,7 @@ Admin.controller do
   end
 
   get :about do
+    @static = true
     @name = "About"   
     if File.exists? "#{Dir.pwd}/admin/views/base/about_#{I18n.locale}.haml"
       render "base/about_#{I18n.locale}", :layout => :application
@@ -45,6 +95,7 @@ Admin.controller do
   end
 
   get :faq do
+    @static = true
     @name = "Frequently Asked Questions"   
     if File.exists? "#{Dir.pwd}/admin/views/base/faq_#{I18n.locale}.haml"
       render "base/faq_#{I18n.locale}", :layout => :application
@@ -54,6 +105,7 @@ Admin.controller do
   end
 
   get :disclaimer do
+    @static = true
     @name = "Disclaimer"   
     if File.exists? "#{Dir.pwd}/admin/views/base/disclaimer_#{I18n.locale}.haml"
       render "base/disclaimer_#{I18n.locale}", :layout => :application
@@ -63,6 +115,7 @@ Admin.controller do
   end
 
   get :contact do
+    @static = true
     @name = "Contact"   
     if File.exists? "#{Dir.pwd}/admin/views/base/contact_#{I18n.locale}.haml"
       render "base/contact_#{I18n.locale}", :layout => :application
@@ -72,6 +125,7 @@ Admin.controller do
   end
 
   get :credits do
+    @static = true
     @name = "Credits & Collaborators"   
     if File.exists? "#{Dir.pwd}/admin/views/base/credits_#{I18n.locale}.haml"
       render "base/credits_#{I18n.locale}", :layout => :application
@@ -81,6 +135,7 @@ Admin.controller do
   end
 
   get :welcome do
+    @static = true
     @name = "Welcome"   
     render "base/welcome_#{I18n.locale}", :layout => :application
   end
