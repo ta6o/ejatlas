@@ -182,9 +182,8 @@
             -if current_account.editor? and ["World Map", "Local Map"].include?(@maptitle)
               %ul.languages
                 -$available_locales.each do |locale|
-                  -next if locale == I18n.locale.to_s
                   %li
-                    %a{:href=>(locale == "en" ? "/?translate=en" : "/?translate=#{locale}")}= t("countries.language.#{locale}")
+                    %a{:href=>(locale == "en" ? "/?translate=en" : "/?translate=#{locale}"),:class=>(locale==I18n.locale.to_s ? "active" : "")}= t("countries.language.#{locale}")
               :css
                 ul.languages {
                   position: fixed;
@@ -201,7 +200,7 @@
                   transition: 0.2s;
                   display: table;
                 }
-                ul.languages li:hover {
+                ul.languages li:hover, ul.languages li.active {
                   background: #0380A5;
                   padding: 0px 8px 1px 24px;
                   transition: 0.4s;
