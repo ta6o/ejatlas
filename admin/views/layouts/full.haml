@@ -202,7 +202,7 @@
                   margin-bottom: 4px;
                   cursor: pointer;
                   transition: 0.2s;
-                  display: table;
+                  /*display: table;*/
                 }
                 ul.languages li:hover {
                   background: #0380A5;
@@ -367,7 +367,7 @@
           %img{:src=>'/images/eu.jpg',:title=>'European Union'}
         -if I18n.locale.to_sym === :it
           %a.pull-left{:href=>'http://cdca.it',:target=>"_blank"}
-            %img{:src=>'http://cdca.it/wp-content/uploads/2015/03/logo-cdca1.png',:title=>'Centro di Documentazione sui Conflitti Ambientali',:style=>"max-height:32px !important; margin-top: -6px !important"}
+            %img{:src=>'/images/logo-cdca1.png',:title=>'Centro di Documentazione sui Conflitti Ambientali',:style=>"max-height:32px !important; margin-top: -6px !important"}
         -else
           %a.pull-left{:href=>'https://creativecommons.org/licenses/by-nc-sa/3.0/',:target=>"_blank"}
             %img{:src=>'/images/cc.png',:title=>'CC Attribution NonCommercial ShareAlike'}
