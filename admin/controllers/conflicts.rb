@@ -303,6 +303,9 @@ Admin.controllers :conflicts do
     rescue
       pass
     end
+    unless @conflict.local_data(I18n.locale)
+      ConflictText.create(:conflict_id=>@conflict.id,:locale=>I18n.locale,:slug=>@conflict.slug)
+    end
     if current_account.contributor?(@conflict) or current_account.translator?
       @translate_only = true
       @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
