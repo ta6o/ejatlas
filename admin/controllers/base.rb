@@ -330,7 +330,7 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     @markerinfo = con.conflicts_marker
-    pp @markerinfo
+    #pp @markerinfo
     contents = File.read('admin/views/base/filter.haml')
     @filterinfo = con.conflicts_json
     @name = I18n.t("countries.#{con.name.shorten_en}")

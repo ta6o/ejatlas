@@ -119,7 +119,7 @@ class GeoLayer < ActiveRecord::Base
             end
           end
           script += "\n      stroke: false," unless layer["paint"].has_key?("line-color")
-          script += "\n      fill: false,"   unless layer["paint"].has_key?("fill-color")
+          script += "\n      fill: false,"   unless layer["paint"].has_key?("fill-color") or layer["paint"].has_key?("icon-color")
           script += "\n    })"
           script += "\n  }" if condition.any?
           if condition.any?

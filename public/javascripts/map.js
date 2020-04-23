@@ -133,6 +133,7 @@ function geoLayers() {
       eval("styls[s] = "+styl);
 
       overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
+        buffer: 500,
         interactive: f["clickable"],
         transparent: true,
         vectorTileLayerStyles: styls,
