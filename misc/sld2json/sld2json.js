@@ -429,7 +429,7 @@ function getGraphicObj(file, symbTag, type, obj) {
   try {
     try {
       fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['Function'][0]['Literal'][1];
-    } catch {
+    } catch(e) {
       fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['_'];
     }
     console.log(fillColor)
