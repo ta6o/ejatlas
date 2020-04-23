@@ -793,12 +793,8 @@ Admin.controller do
   end
 
   get "/info/:id" do
-    puts I18n.locale.to_s.green
     if request.referer and loc = request.referrer.match(/[\?&]translate=(\w+)/)
       I18n.locale = loc[1]
-      puts I18n.locale.to_s.yellow
-    else
-      puts I18n.locale.to_s.red
     end
     c = Conflict.find(params[:id])
     target = ""
