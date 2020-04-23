@@ -543,7 +543,7 @@ class Admin < Padrino::Application
     end
     #Admin.color_pp(filter)
     result = $client.search(index: "#{$esindex}_#{I18n.locale}", type: "conflict", body: {sort:{order=>{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
-    pp result
+    #pp result
     result
   end
 
