@@ -315,6 +315,18 @@ Admin.controllers :conflicts do
     end
   end
 
+  get "/translation_redirect/:id/:locale?" do
+    begin
+      co = Conflict.find(params[:id])
+      lo = params[:locale]
+      return redirect to "#{Admin.local_url(lo)}/conflicts/translate/#{co.id}"
+    rescue => e
+      puts e.to_s.red
+      pass
+    end
+  end
+
+
   get "/auto_translate/:id/?" do
     begin
       cls = ConflictLocaleSuggestion.find(params[:id])

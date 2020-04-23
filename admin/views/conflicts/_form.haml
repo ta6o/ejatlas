@@ -1687,7 +1687,31 @@
                   } 
                 });
 
-            -if @translate_only and current_account.editor? or current_account.translator?
+            -if not @translate_only or true
+              .row
+                .col-md-12
+                  %br/
+                  %label= t("f.conflict.translate")
+              .row
+                .col-md-8.col-sm-12
+                  %select.tx.yestr
+                    %option{:disabled=>true,:selected=>true,:value=>""}= t("f.conflict.select_language")
+                    -cos = @conflict.conflict_texts.map(&:locale)
+                    -@iso639.each do |k,v|
+                      -if $available_locales.include?(k)
+                        -next if k == I18n.locale.to_s
+                        %option{:value=>k}= t("countries.language.#{k}")
+                .col-md-4.col-sm-12
+                  %button#tx{:disabled=>true}= t("f.conflict.translate")
+                :javascript
+                  $("#tx").on("click",function(e){
+                    window.location = "/conflicts/translation_redirect/#{@conflict.id}/"+$("select.tx option:selected").val();
+                  })
+                  $(".tx").on("change",function(e){
+                    $("#tx").prop("disabled",false)
+                  })
+
+            -if @translate_only and current_account.editor?
               %br/
               %label= t("f.conflict.translate_automatically")
               %table.auto_tx
