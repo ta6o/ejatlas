@@ -4045,6 +4045,17 @@ function identify(e) {
   });
 }
 
+function removeGutters() {
+  $('#map > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tile-pane > div > div > img').each(function() {
+    if (String($( this ).css("width")).includes('.5') === false) {
+      var imgW = String($( this ).css("width")).split( "px" ).join( ".5" )
+      var imgH = String($( this ).css("height")).split( "px" ).join( ".5" )
+      $( this ).css("width", imgW);
+      $( this ).css("height", imgH);
+    }
+  })
+}
+
 function geoLayers() {
 
   $.each(layerranks,function(i,s){
@@ -4083,6 +4094,7 @@ function geoLayers() {
       eval("styls[s] = "+styl);
 
       overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
+        buffer: 500,
         interactive: f["clickable"],
         transparent: true,
         vectorTileLayerStyles: styls,
@@ -4758,6 +4770,7 @@ function onResize() {
   }
   if ($('#carousel_container').length > 0){resetCarousel();}
   resetColumns();
+  removeGutters();
   dragEnd();
 }
 
