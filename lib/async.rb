@@ -19,7 +19,7 @@ class AsyncTask
     else
       stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
     end
-    stack = stack[0..(limit-1)] if limit > 0
+    #stack = stack[0..(limit-1)] if limit > 0
     puts "#{stack.length} cases to be exported."
     #return stack.map(&:name).to_s
     mania = {Type=>[],Product=>[],ConflictEvent=>[],ConflictEvent=>[],MobilizingGroup=>[],MobilizingForm=>[]}
@@ -32,9 +32,11 @@ class AsyncTask
     header = []
     stack.each_with_index do |conf,index|
       next unless conf.conflict_texts.where(:locale=>locale).any?
+      limit -= 1
+      break if limit < 0
       nfields = 0
       line = []
-      #puts "#{conf.id} #{conf.name}"
+      puts "#{conf.id} #{conf.name}"
       print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{job_id}"
       cont = conf.conflict_texts.where(:locale=>locale).first
       cont.attributes.each do |k,v|
@@ -281,7 +283,10 @@ class AsyncTask
           row do
             header.each {|x| cell x }
           end
+          puts
+          puts actor.to_s.magenta
           lines.each do |line|
+            pp line
             row do
               line.each {|x| cell x }
             end
@@ -308,21 +313,23 @@ class AsyncTask
       end
       conflict_actors.each do |many,lines|
         header = ["conflict_id"]
-        maxx = lines.values.map(&:length).max
-        if maxx 
-          maxx.times do |maxi|
-            header << "id_#{many.to_s.downcase}_#{maxi+1}"
-            header << "name_#{many.to_s.downcase}_#{maxi+1}"
-            header << "country_#{many.to_s.downcase}_#{maxi+1}"
-            header << "involvement_#{many.to_s.downcase}_#{maxi+1}"
-          end
+        maxx = lines.values.map(&:length).max || 0
+        puts maxx.to_s.red
+        maxx.times do |maxi|
+          header << "id_#{many.to_s.downcase}_#{maxi+1}"
+          header << "name_#{many.to_s.downcase}_#{maxi+1}"
+          header << "country_#{many.to_s.downcase}_#{maxi+1}"
+          header << "involvement_#{many.to_s.downcase}_#{maxi+1}"
         end
         sheet.table "#{many.to_s.downcase}_conflicts" do
           row do
             header.each {|x| cell x }
           end
+          puts
+          puts many.to_s.yellow
           lines.each do |id, comp|
             line = [id]
+            p [id.to_s.cyan, comp]
             comp.each do |da|
               line << da[0]
               line << da[1]
@@ -337,7 +344,8 @@ class AsyncTask
       end
       actor_conflicts.each do |many,lines|
         header = ["#{many.to_s.downcase}_id"]
-        maxx = lines.values.map(&:length).max
+        maxx = lines.values.map(&:length).max || 0
+        puts maxx.to_s.cyan
         maxx.times do |maxi|
           header << "conflict_id_#{maxi+1}"
         end
@@ -350,6 +358,7 @@ class AsyncTask
             comp.each do |da|
               line << da
             end
+            pp line
             row do
               line.each {|x| cell x }
             end
@@ -382,7 +391,7 @@ class AsyncTask
     else
       stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
     end
-    stack = stack[0..(limit-1)] if limit > 0
+    #stack = stack[0..(limit-1)] if limit > 0
     puts "#{stack.length} cases to be exported."
     puts ::CSV
     if limit > 0
@@ -399,6 +408,8 @@ class AsyncTask
     header = []
     stack.each_with_index do |conf,index|
       next unless conf.conflict_texts.where(:locale=>locale).any?
+      limit -= 1
+      break if limit < 0
       nfields = 0
       line = []
       #puts "#{conf.id} #{conf.name}"
@@ -642,7 +653,7 @@ class AsyncTask
     end
     conflict_actors.each do |many,lines|
       header = ["conflict_id"]
-      maxx = lines.values.map(&:length).max
+      maxx = lines.values.map(&:length).max || 0
       maxx.times do |maxi|
         header << "id_#{many.to_s.downcase}_#{maxi+1}"
         header << "name_#{many.to_s.downcase}_#{maxi+1}"
@@ -666,7 +677,7 @@ class AsyncTask
     end
     actor_conflicts.each do |many,lines|
       header = ["#{many.to_s.downcase}_id"]
-      maxx = lines.values.map(&:length).max
+      maxx = lines.values.map(&:length).max || 0
       maxx.times do |maxi|
         header << "conflict_id_#{maxi+1}"
       end
