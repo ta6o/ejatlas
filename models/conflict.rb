@@ -118,7 +118,11 @@ class Conflict < ActiveRecord::Base
     if new
       return self.slug 
     else
-      return self.local_data(:en).slug 
+      if self.conflict_texts.where(:locale=>:en).any?
+        return self.local_data(:en).slug 
+      else
+        return self.slug 
+      end
     end
     nil
   end
