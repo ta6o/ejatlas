@@ -303,7 +303,10 @@ Admin.controllers :conflicts do
     rescue
       pass
     end
-    unless @conflict.local_data(I18n.locale)
+    if @conflict.local_data.approval_status == "auto_tx"
+     @conflict.local_data.destroy
+    end
+    unless @conflict.local_data
       ConflictText.create(:conflict_id=>@conflict.id,:locale=>I18n.locale,:slug=>@conflict.slug)
     end
     if current_account.contributor?(@conflict) or current_account.translator?

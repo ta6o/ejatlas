@@ -110,6 +110,12 @@ class GeoLayer < ActiveRecord::Base
               script += "\n      fillColor: \"#{val}\","
             elsif key == "fill-opacity"
               script += "\n      fillOpacity: #{val},"
+            elsif key == "icon-color"
+              script += "\n      fill: true,"
+              script += "\n      fillColor: \"#{val}\","
+              script += "\n      color: \"#{val}\","
+            elsif key == "icon-size"
+              script += "\n      radius: #{val},"
             end
           end
           script += "\n      stroke: false," unless layer["paint"].has_key?("line-color")

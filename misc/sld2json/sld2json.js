@@ -437,7 +437,7 @@ function getGraphicObj(file, symbTag, type, obj) {
     var regInteger = /^\d+$/;
     if (!regInteger.test(fillColor)) {
       console.log('Different graphic tag: '+fillColor+ ' from file: '+ file);
-      obj['icon-color'] = color;
+      obj['icon-color'] = fillColor;
     } else {
       obj['icon-color'] = color;
     }
