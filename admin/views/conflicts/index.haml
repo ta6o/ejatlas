@@ -54,6 +54,7 @@
         %tbody
           -@conflicts.each do |conflict|
             -next unless conflict.has_key?("name")
+            -next if conflict["approval_status"] == 'auto_tx'
             -if conflict["approval_status"] == 'approved'
               %tr{:id=>"tr_#{conflict["id"]}"}
                 %td.first=conflict["name"]

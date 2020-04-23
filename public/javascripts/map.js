@@ -84,6 +84,17 @@ function identify(e) {
   });
 }
 
+function removeGutters() {
+  $('#map > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tile-pane > div > div > img').each(function() {
+    if (String($( this ).css("width")).includes('.5') === false) {
+      var imgW = String($( this ).css("width")).split( "px" ).join( ".5" )
+      var imgH = String($( this ).css("height")).split( "px" ).join( ".5" )
+      $( this ).css("width", imgW);
+      $( this ).css("height", imgH);
+    }
+  })
+}
+
 function geoLayers() {
 
   $.each(layerranks,function(i,s){
@@ -797,6 +808,7 @@ function onResize() {
   }
   if ($('#carousel_container').length > 0){resetCarousel();}
   resetColumns();
+  removeGutters();
   dragEnd();
 }
 

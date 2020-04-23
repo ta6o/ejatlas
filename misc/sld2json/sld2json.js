@@ -63,7 +63,7 @@ var CONV_TYPE = {
   'LineSymbolizer': 'line',
   'PolygonSymbolizer': 'fill',
   'TextSymbolizer': 'symbol',
-  'PointSymbolizer': 'symbol'
+  'PointSymbolizer': 'raster'
 };
 
 //attributes that must be handeled different than the rest,
@@ -427,16 +427,23 @@ function getGeometryObj(symbTag, obj) {
 function getGraphicObj(file, symbTag, type, obj) {
   var fillColor;
   try {
-    fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['Function'][0]['Literal'][1];
+    try {
+      fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['Function'][0]['Literal'][1];
+    } catch {
+      fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['_'];
+    }
+    console.log(fillColor)
     var color = '#' + fillColor;
     var regInteger = /^\d+$/;
     if (!regInteger.test(fillColor)) {
-      //console.log('Different graphic tag: '+fillColor+ ' from file: '+ file);
+      console.log('Different graphic tag: '+fillColor+ ' from file: '+ file);
+      obj['icon-color'] = color;
     } else {
       obj['icon-color'] = color;
     }
   } catch (err) {
-    console.log('Could not set fill color for graphic tag in file: ' + file);
+    console.log('Could not set fill color for graphic tag in file: ' + file + "\n" + err + "\n");
+    console.log(symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'])
   }
   //Sets size
   try {
@@ -445,12 +452,7 @@ function getGraphicObj(file, symbTag, type, obj) {
   } catch (err) {
       console.log('Size does not exist in this graphic-tag');
   }
-  var img = getIconImage(file);
-  if (img !== undefined) {
-    obj['icon-image'] = img;
-  } else {
-    obj['icon-image'] = 'circle-12';
-  }
+  console.log(obj)
   return obj;
 }
 

@@ -802,6 +802,7 @@ class AsyncTask
   def print_progress(counter, total, t0, name)
     print "\r  #{((counter/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{counter.to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per case)      "
   end
+
   def setcache params
     t00 = Time.now
     job_id = nil
@@ -842,7 +843,7 @@ class AsyncTask
         ConflictText.where(:locale=>locale).find_in_batches(batch_size: 64) do |batch|
           batch.each do |ct|
             c = ct.conflict
-            next unless c
+            next if c.nil? or c.approval_status == "auto_tx"
             counter += 1
             tc = c.ping(locale)
             #times[:ping][0] += tc[0]
