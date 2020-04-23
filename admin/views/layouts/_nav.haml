@@ -1,7 +1,7 @@
-.navbar{:role=>'navigation'}
+.navbar.navbar-fixed-top{:role=>'navigation'}
   .navbar-inner
     .container
-      %ul.nav.nav-pills{:style=>"left:#{(current_account.editor? ? "212px" : "208px")};top:44px;z-index:10;"}
+      %ul.nav.nav-pills
         %li.first
           %a &nbsp;
         %li.home
@@ -152,8 +152,8 @@
                     .pull-left.small
                       %a{:href=>"/sessions/login"}= t "v.menu.help"
 
-      -if current_account and current_account.editor?
-        .tagline{:style=>"height:28px;top: 16px;left: 227px;padding-left: 40px;"}
+      -if current_account.editor? and false
+        .tagline
           %ul{:style=>"margin:0;padding:0"}
             %li.dropdown#locales
               %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#locales'}
@@ -167,8 +167,8 @@
                   %li{:style=>"background:#024357"}
                     %a{:href=>"#{Admin.local_url(l)}#{request.path}",:style=>"font-weight:bold;padding: 3px 9px"}= "#{trt} (#{l.upcase})"
       -else
-        .tagline{:style=>"height:28px;top: 16px;left: 203px;padding-left: 20px;"}
-          %p{:style=>"line-height:21px;"}= t "v.menu.environmental_justice_atlas"
+        .tagline
+          %p= t "v.menu.environmental_justice_atlas"
       .ejatlas-logo{:style=>"left:175px;z-index:11;"}
 
 

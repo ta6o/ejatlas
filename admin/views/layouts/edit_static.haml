@@ -16,7 +16,15 @@
     %meta{:content => $pagekeyws, :name => "keywords"}/
     /%link{:href => "/stylesheets/bootstrap.less", :rel => "stylesheet/less"}/
     /=javascript_include_tag 'less'
-    =stylesheet_link_tag 'main'
+    -if $dir == "ltr"
+      =stylesheet_link_tag 'main'
+    -else
+      =stylesheet_link_tag 'main-rtl'
+      :css
+        .ql-editor {
+          direction: rtl;
+          text-align: right !important;
+        }
     =stylesheet_link_tag 'quill.core'
     =stylesheet_link_tag 'quill.snow'
     / Le HTML5 shim, for IE6-8 support of HTML5 elements
@@ -30,6 +38,10 @@
   %body{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
     #top.contentwrapper
       =partial "layouts/nav"
+      %br/
+      %br/
+      %br/
+      %br/
 
       %header
         .container{:style=>"position:relative;"}
@@ -48,18 +60,18 @@
                 %br/
                 %a.btn.btn-success.full{:href=>"/#{@slug}"} VIEW
 
-          #success.alert.alert-success.alert-dismissible{:role=>"alert",:style=>"position:absolute;top:-40px;right:0;display:none !important;"}
-            %b Page saved successfully.
+          #success.alert.alert-success.alert-dismissible{:role=>"alert",:style=>"position:absolute;top:-46px;right:0;display:none !important;"}
+            %b &nbsp; &nbsp; Page saved successfully. &nbsp; &nbsp;
 
-          #error.alert.alert-danger.alert-dismissible{:role=>"alert",:style=>"position:absolute;top:-40px;right:0;display:none !important;"}
-            %b Page could not be saved.
+          #error.alert.alert-danger.alert-dismissible{:role=>"alert",:style=>"position:absolute;top:-46px;right:0;display:none !important;"}
+            %b &nbsp; &nbsp; Page could not be saved. &nbsp; &nbsp;
             %span
 
           :css
             form#static_form {
               position: absolute;
-              top: -48px;
-              right: 0; 
+              top: -57px;
+              #{ $dir == "ltr" ? "right" : "left"}: 0; 
             }
             form#static_form input {
               background-color: rgba(255,255,255,0.66);
@@ -73,7 +85,8 @@
           .inner
             #ql_toolbar
             %br/
-            #ql_editor= yield
+            #ql_editor
+              .ql-direction-rtl= yield
 
     -if ENV['RACK_ENV'] == 'development'
       =javascript_include_tag 'backall'

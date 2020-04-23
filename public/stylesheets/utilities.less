@@ -911,20 +911,6 @@ position: relative;
 .nav a.disable, .nav a.disable:hover {
   color: #999;
 }
-.nav.nav-pills {
-  left: 48px;
-  top: 40px;
-  min-width: 283px;
-  font-weight: bold;
-  background: @brand-primary;
-  height:24px;
-  li.first {
-    width: 44px;
-    a:hover{
-      background: @brand-primary;
-    }
-  }
-}
 .logos {
   a {
     img {
@@ -1001,19 +987,25 @@ position: relative;
   cursor: default;
   position:absolute;
   top:16px;
-  left:48px;
+  left:203px;
+  height:28px;
+  padding: 4px 16px 4px 0px;
   background-color: @brand-dark;
-  padding: 4px 16px;
   p {
     margin: 0 0 0 36px !important;
+    line-height: 21px;
     font-size: 16px;
     color: #FFF;
     font-weight: bold;
   }
 }
+body.editor .tagline {
+  /*left: 227px;
+  padding-left: 40px;*/
+}
 .ejatlas-logo {
-  width:76px;
-  height:111px;
+  width:55px;
+  height:80px;
   background: url('/images/ejatlas-logo.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -1024,30 +1016,63 @@ position: relative;
 .navbar {
   margin-left: -164px;
   .nav.nav-pills {
-    left: 48px;
-    top: 48px;
-    height:28px;
+    left: 200px;
+    top: 44px;
     min-width: 283px;
     font-weight: bold;
     background: @brand-primary;
-    li {
-      a {
-        margin-top: 0px;
-      }
-      &.first {
-        width: 44px;
-        a:hover{
-          background: @brand-primary;
-        }
+    height:24px;
+    z-index: 10;
+    li a {
+      margin-top: 0px !important;
+    }
+    li.first {
+      width: 31px;
+      a:hover{
+        background: @brand-primary;
       }
     }
   }
+  body.editor .nav.nav-pills {
+    /*left: 214px;*/
+  }
+}
+@media (max-width: @screen-md) {
+  .navbar-fixed-top {
+    position:fixed;
+    min-height:12px !important;
+    top: -16px;
+  }
+  .ejatlas-logo {
+    position: absolute;
+    top:22px;
+    left:182px;
+    width: 51px;
+    height: 74px;
+  }
+  .tagline {
+    position: absolute;
+    top:16px;
+    left:162px;
+    padding: 6px 40px;
+    width:100%;
+    p {
+      line-height: 16px;
+    }
+  }
+  .nav, .nav.nav-pills {
+    position: absolute;
+    top:20px;
+    left:44px;
+    li.first{width:24px;}
+  }
 }
 @media (max-width: @screen-sm) {
-  .navbar {margin-left:-83px;}
+  /*.navbar {margin-left:-83px;}*/
 }
 @media (max-width: @screen-xs) {
   .navbar * {font-size:11px;}
+  .taglinep {font-size:14px;}
 }
 
 #conflict_summary {

@@ -189,7 +189,7 @@
             %a{:href=>"https://www.facebook.com/ejolt"} Environmental Justice
 
 
-  -if @feats
+  -if @feats and (I18n.locale == :en or @global)
     .horipane
       .title.active= t "v.index.featured_maps"
       .content
@@ -275,7 +275,7 @@
         initMap();
         $.ajax({
           //url: "#{$fileurl}/markers/markers-#{I18n.locale}.json",
-          url: "/data/markers-#{$global ? "en" : I18n.locale}.json",
+          url: "/data/markers-#{@global ? "en" : I18n.locale}.json",
           type: "GET",
           dataType: 'json',
           cache: true,

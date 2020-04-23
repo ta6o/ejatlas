@@ -16,7 +16,10 @@
     %meta{:content => $pagekeyws, :name => "keywords"}/
     /%link{:href => "/stylesheets/bootstrap.less", :rel => "stylesheet/less"}/
     /=javascript_include_tag 'less'
-    =stylesheet_link_tag 'main'
+    -if $dir == "ltr"
+      =stylesheet_link_tag 'main'
+    -else
+      =stylesheet_link_tag 'main-rtl'
     -if ENV['RACK_ENV'] == 'development'
       =javascript_include_tag 'backall'
     -else
@@ -31,7 +34,7 @@
     / %link{:href => "assets/ico/apple-touch-icon-72-precomposed.png", :rel => "apple-touch-icon-precomposed", :sizes => "72x72"}/
     / %link{:href => "assets/ico/apple-touch-icon-57-precomposed.png", :rel => "apple-touch-icon-precomposed"}/
 
-  %body{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav"}
+  %body{"data-offset" => "0", "data-spy" => "scroll", "data-target" => ".subnav",:class=>(current_account.editor? ? "editor" : "")}
     #top.contentwrapper
       =partial "layouts/nav"
 
@@ -45,12 +48,14 @@
       %header
         .container{:style=>"position:relative;"}
           -if @static and current_account.editor?
-            %a{:href=>"/edit_static/#{@slug}",:title=>"Edit",:style=>"position:absolute; right:18px;top:20px;font-size:32px;"}
+            %a{:href=>"/edit_static/#{@slug}",:title=>"Edit",:style=>"position:absolute; right:18px;top:100px;font-size:32px;"}
               %span.glyphicon.glyphicon-edit
 
           =yield_content :outer
+          %br/
+          %br/
+          %br/
           -if @static
-            %br/
             %br/
           .inner= yield
           %br/

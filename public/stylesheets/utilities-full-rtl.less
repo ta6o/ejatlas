@@ -712,8 +712,10 @@ ul.sidelink {
     max-width: none;
   }
   .home-button {
-    padding: 0 5px 5px;
+    padding: 2px 7px;
     cursor: pointer;
+    width: 26px;
+    height: 26px;
     &:hover {
       background-color: #fff;
       color: #777;
@@ -1567,6 +1569,9 @@ position: relative;
   top: 36px;
   width: max-content;
   font-weight: bold;
+  li {
+    margin: 0 !important;
+  }
   li.first {
     width: 44px;
     a:hover{
@@ -1577,6 +1582,7 @@ position: relative;
 .leaflet-left { left: 12px !important; }
 .leaflet-top { top: 72px !important; }
 .leaflet-control-layers { margin-left: 8px !important; }
+.leaflet-control-layers-toggle { width: 26px !important; height: 26px !important; background-size: 80%; }
 .leaflet-control-zoom a { background-color: transparent !important; }
 .leaflet-control-attribution { 
   margin: 0 -12px 0 0 !important; 
@@ -1691,7 +1697,7 @@ br.small {
     height: auto;
     top:none;
   }
-  .navbar-fixed-top{position:relative;min-height:12px !important;}
+  .navbar-fixed-top{position:fixed;min-height:12px !important;}
   .ejatlas-logo {
     position: absolute;
     top:6px;
@@ -1708,7 +1714,7 @@ br.small {
   }
   .nav, .nav.nav-pills {
     position: absolute;
-    top:24px;
+    top:20px;
     right:44px;
     li.first{width:24px;}
   }
@@ -1736,8 +1742,8 @@ br.small {
   .navbar-fixed-top{min-height:37px !important;}
   .ejatlas-logo {
     position: absolute;
-    top:-22px;
-    right:-12px;
+    top:4px;
+    right:2px;
     width: 51px;
     height: 74px;
     cursor:pointer;
@@ -1755,7 +1761,6 @@ br.small {
     position: absolute;
     top:20px;
     right:0px;
-    width:100%;
     background-color:@brand-primary;
     li.first{width:48px;}
     li.home, span.ej {display:none;}

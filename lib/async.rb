@@ -309,11 +309,13 @@ class AsyncTask
       conflict_actors.each do |many,lines|
         header = ["conflict_id"]
         maxx = lines.values.map(&:length).max
-        maxx.times do |maxi|
-          header << "id_#{many.to_s.downcase}_#{maxi+1}"
-          header << "name_#{many.to_s.downcase}_#{maxi+1}"
-          header << "country_#{many.to_s.downcase}_#{maxi+1}"
-          header << "involvement_#{many.to_s.downcase}_#{maxi+1}"
+        if maxx 
+          maxx.times do |maxi|
+            header << "id_#{many.to_s.downcase}_#{maxi+1}"
+            header << "name_#{many.to_s.downcase}_#{maxi+1}"
+            header << "country_#{many.to_s.downcase}_#{maxi+1}"
+            header << "involvement_#{many.to_s.downcase}_#{maxi+1}"
+          end
         end
         sheet.table "#{many.to_s.downcase}_conflicts" do
           row do

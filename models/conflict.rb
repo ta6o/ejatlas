@@ -115,7 +115,11 @@ class Conflict < ActiveRecord::Base
     if self.old_slugs.any?
       return self.old_slugs[0].name
     end
-    return self.slug if new
+    if new
+      return self.slug 
+    else
+      return self.local_data(:en).slug 
+    end
     nil
   end
 

@@ -263,7 +263,7 @@ form {
 
 html, body {
   width: 100%;
-  overflow-x: hidden;
+  /*overflow-x: hidden;*/
 }
 
 .contentwrapper {
@@ -1139,8 +1139,8 @@ ul.sidelink {
 }
 
 .ejatlas-logo {
-  width:76px;
-  height:111px;
+  width:55px;
+  height:80px;
   background: url('/images/ejatlas-logo.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -1296,7 +1296,7 @@ ul.sidelink {
   background-color: @brand-dark;
   padding: 4px 16px;
   p {
-    margin: 0 36px 0 0 !important;
+    margin: 0 12px 0 0 !important;
     font-size: 16px;
     color: #FFF;
     font-weight: bold;
@@ -1464,20 +1464,6 @@ position: relative;
   margin: 0 auto;
   width: 100%;
 }
-.nav.nav-pills {
-  right: 48px;
-  top: 36px;
-  font-weight: bold;
-  > li + li {
-    margin: 0;
-  }
-  li.first {
-    width: 44px;
-    a:hover{
-      background: @brand-primary;
-    }
-  }
-}
 .leaflet-left { left: 12px !important; }
 .leaflet-top { top: 72px !important; }
 .leaflet-control-layers { margin-left: 8px !important; }
@@ -1504,7 +1490,33 @@ position: relative;
 
 .navbar { 
   min-height: 0px !important; 
+  margin-right: -164px;
+  .nav.nav-pills {
+    right: 200px;
+    left: unset;
+    top: 44px;
+    min-width: 283px;
+    font-weight: bold;
+    background: @brand-primary;
+    height:24px;
+    z-index: 10;
+    li {
+      margin: 0 !important;
+      a {
+        margin-top: 0px !important;
+      }
+    }
+    li.first {
+      width: 31px;
+      a:hover{
+        background: @brand-primary;
+      }
+    }
   }
+  body.editor .nav.nav-pills {
+    /*left: 214px;*/
+  }
+}
 .navbar-collapse { height: 0px !important; }
 #disqus_thread {
   background: url('/images/bg.png');
@@ -1587,7 +1599,11 @@ br.small {
     height: auto;
     top:none;
   }
-  .navbar-fixed-top{position:relative;min-height:12px !important;}
+  .navbar-fixed-top{
+    position:fixed;
+    min-height:12px !important;
+    margin: 0 !important;
+  }
   .ejatlas-logo {
     position: absolute;
     top:6px;
@@ -1599,12 +1615,16 @@ br.small {
     position: absolute;
     top:0px;
     right:0px;
-    padding: 6px 40px;
+    padding: 6px 80px;
     width:100%;
+    max-height: 28px;
+    p {
+      line-height: 16px;
+    }
   }
-  .nav, .nav.nav-pills {
+  .nav, .navbar .nav.nav-pills {
     position: absolute;
-    top:24px;
+    top:28px;
     right:44px;
     li.first{width:24px;}
   }
@@ -1629,11 +1649,13 @@ br.small {
   body {
     font-size: 12px;
   }
-  .navbar-fixed-top{min-height:37px !important;}
+  .navbar-fixed-top{
+    min-height:37px !important;
+  }
   .ejatlas-logo {
     position: absolute;
-    top:-22px;
-    right:-12px;
+    top:4px;
+    right:8px;
     width: 51px;
     height: 74px;
     cursor:pointer;
@@ -1642,7 +1664,7 @@ br.small {
     position: absolute;
     top:0px;
     right:0px;
-    padding: 6px 20px;
+    padding: 6px 60px;
     width:100%;
     cursor:pointer;
     p {font-size:14px;}
@@ -1651,7 +1673,6 @@ br.small {
     position: absolute;
     top:20px;
     right:0px;
-    width:100%;
     background-color:@brand-primary;
     li.first{width:48px;}
     li.home, span.ej {display:none;}
@@ -1711,4 +1732,26 @@ br.small {
       }
     }
   }
+}
+#cookies_disclaimer {
+  display: none;
+  position:fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 9999;
+  width: 100%;
+  background: #0380a5;
+  color: white;
+}
+#cookies_disclaimer td {
+  padding: 12px;
+}
+#cookies_disclaimer a,
+#cookies_disclaimer a:focus {
+  color: white;
+  text-decoration: underline;
+}
+#cookies_disclaimer a:hover {
+  color: white;
+  text-decoration: none;
 }

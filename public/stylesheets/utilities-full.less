@@ -706,8 +706,10 @@ ul.sidelink {
     max-width: none;
   }
   .home-button {
-    padding: 0 5px 5px;
+    padding: 2px 7px;
     cursor: pointer;
+    width: 26px;
+    height: 26px;
     &:hover {
       background-color: #fff;
       color: #777;
@@ -1392,6 +1394,7 @@ ul.sidelink {
   left:48px;
   background-color: @brand-dark;
   padding: 4px 16px;
+  height:28px;
   p {
     margin: 0 0 0 36px !important;
     font-size: 16px;
@@ -1575,6 +1578,7 @@ position: relative;
 .leaflet-right { right: 12px !important; }
 .leaflet-top { top: 72px !important; }
 .leaflet-control-layers { margin-right: 4px !important; }
+.leaflet-control-layers-toggle { width: 26px !important; height: 26px !important; background-size: 80%; }
 .leaflet-control-zoom a { background-color: transparent !important; }
 
 .leaflet-control-attribution { 
@@ -1684,7 +1688,7 @@ br.small {
     height: auto;
     top:none;
   }
-  .navbar-fixed-top{position:relative;min-height:12px !important;}
+  .navbar-fixed-top{position:fixed;min-height:12px !important;}
   .ejatlas-logo {
     position: absolute;
     top:6px;
@@ -1701,12 +1705,13 @@ br.small {
   }
   .nav, .nav.nav-pills {
     position: absolute;
-    top:24px;
+    top:20px;
     left:44px;
     li.first{width:24px;}
   }
   #map {
     max-height: 500px !important;
+    margin-top: -4px;
   }
   footer {padding:20px;margin-top:20px;}
   .full { margin-left: -30px; }
@@ -1729,8 +1734,8 @@ br.small {
   .navbar-fixed-top{min-height:37px !important;}
   .ejatlas-logo {
     position: absolute;
-    top:-22px;
-    left:-12px;
+    top:4px;
+    left:-6px;
     width: 51px;
     height: 74px;
     cursor:pointer;
@@ -1746,13 +1751,16 @@ br.small {
   }
   .nav, .nav.nav-pills {
     position: absolute;
-    top:20px;
+    top:28px;
     left:0px;
     width:100%;
     background-color:@brand-primary;
     li.first{width:48px;}
     li.home, span.ej {display:none;}
     * {font-size:12px;}
+  }
+  .nav>li>a {
+    margin:0;
   }
   h1,h2 {
     font-size:18px;
@@ -1763,7 +1771,7 @@ br.small {
     margin: 0 !important;
   }
 }
-@media (min-width: 0) {//(@screen-md - 1)) {
+@media (min-width: 0) {
   .embed {
     &body {
       width: 100% !important;

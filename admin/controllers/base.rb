@@ -205,19 +205,20 @@ Admin.controller do
   end
 
   get :index do
+    puts "@global: #{@global}".cyan
     ca = Cached.where(:locale=>I18n.locale).first
     pass unless ca
     #last_modified ca.updated_at
     @filterform = {}
     @filterform = JSON.parse(ca.filterdata) if ca
     @filter = render "base/filter", :layout => false
-    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>$global ? "en" : I18n.locale).count
+    @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>@global ? "en" : I18n.locale).count
     countries = ca.countries ? JSON.parse(ca.countries) : []
     companies = ca.companies ? JSON.parse(ca.companies) : []
     commodities = ca.commodities ? JSON.parse(ca.commodities) : []
     types = ca.types ? JSON.parse(ca.types) : []
     @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
-    @maptitle = $global ? "World Map" : "Local Map"
+    @maptitle = @global ? "World Map" : "Local Map"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = $baselayers
@@ -814,7 +815,7 @@ Admin.controller do
     Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true)).each do |c|
       j = {"conflict"=>c}
       begin 
-        j["conflict"]["image"] = Conflict.find(c["id"]).images.first.file.thumb.url
+        j["conflict"]["image"] = Conflict.find(c["id"]).images.first.thumb.url
       rescue 
         j["conflict"]["image"] = "/images/bg.png"
       end

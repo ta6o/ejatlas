@@ -7577,8 +7577,10 @@ ul.sidelink li.active {
   max-width: none;
 }
 #map .home-button {
-  padding: 0 5px 5px;
+  padding: 2px 7px;
   cursor: pointer;
+  width: 26px;
+  height: 26px;
 }
 #map .home-button:hover {
   background-color: #fff;
@@ -8450,6 +8452,9 @@ ul.sidelink li.active {
   width: max-content;
   font-weight: bold;
 }
+.nav.nav-pills li {
+  margin: 0 !important;
+}
 .nav.nav-pills li.first {
   width: 44px;
 }
@@ -8464,6 +8469,11 @@ ul.sidelink li.active {
 }
 .leaflet-control-layers {
   margin-left: 8px !important;
+}
+.leaflet-control-layers-toggle {
+  width: 26px !important;
+  height: 26px !important;
+  background-size: 80%;
 }
 .leaflet-control-zoom a {
   background-color: transparent !important;
@@ -8584,7 +8594,7 @@ br.small {
     top: none;
   }
   .navbar-fixed-top {
-    position: relative;
+    position: fixed;
     min-height: 12px !important;
   }
   .ejatlas-logo {
@@ -8604,7 +8614,7 @@ br.small {
   .nav,
   .nav.nav-pills {
     position: absolute;
-    top: 24px;
+    top: 20px;
     right: 44px;
   }
   .nav li.first,
@@ -8643,8 +8653,8 @@ br.small {
   }
   .ejatlas-logo {
     position: absolute;
-    top: -22px;
-    right: -12px;
+    top: 4px;
+    right: 2px;
     width: 51px;
     height: 74px;
     cursor: pointer;
@@ -8665,7 +8675,6 @@ br.small {
     position: absolute;
     top: 20px;
     right: 0px;
-    width: 100%;
     background-color: #0380A5;
   }
   .nav li.first,

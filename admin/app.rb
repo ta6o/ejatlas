@@ -144,6 +144,7 @@ class Admin < Padrino::Application
       I18n.default_locale = :en
       I18n.locale = :en
       $dir = "ltr"
+      @global = true
       q = CGI::parse request.query_string
       if request.referrer and request.referrer.match(/translate=/) and not request.xhr?
         q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
@@ -154,7 +155,6 @@ class Admin < Padrino::Application
       if request.query_string.match(/^translate=/) and not request.xhr?
         I18n.locale = request.query_string.match(/^translate=(\w+)/)[1]
         $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
-        $global = true
       end
     else
       I18n.default_locale = :en
@@ -536,12 +536,14 @@ class Admin < Padrino::Application
     #puts query.to_json.green
     if query.length > 0
       filter = Admin.elasticify( { bool: { must: [ { match: { approval_status: "approved" }}, {bool: query}]}} )
+    elsif I18n.locale == :en
+      filter = Admin.elasticify( { bool: { must:   { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     else
-      filter = Admin.elasticify( { bool: { must: { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
+      filter = Admin.elasticify( { bool: { must:   { match: { approval_status: "approved" }}}} )
     end
     #Admin.color_pp(filter)
     result = $client.search(index: "#{$esindex}_#{I18n.locale}", type: "conflict", body: {sort:{order=>{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
-    #pp result.map{|x|x["name"]}
+    pp result
     result
   end
 
