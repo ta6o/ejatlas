@@ -49,6 +49,9 @@
               %span.glyphicon.glyphicon-edit
 
           =yield_content :outer
+          -if @static
+            %br/
+            %br/
           .inner= yield
           %br/
           %br/
