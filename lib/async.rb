@@ -275,6 +275,7 @@ class AsyncTask
           end
         end
       end
+=begin
       actors.each do |actor,lines|
         next if actor == :ids
         header = ["id", "name", "slug", "description", "url", "acronym", "country"]
@@ -283,16 +284,13 @@ class AsyncTask
           row do
             header.each {|x| cell x }
           end
-          puts
-          puts actor.to_s.magenta
           lines.each do |line|
-            pp line
             row do
-              line.each {|x| cell x }
+              line[1][:attrs].each {|x| cell x }
             end
           end
         end
-=begin
+      end
         ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
           output << header
           lines.each do |id, comp|
@@ -310,11 +308,9 @@ class AsyncTask
         end
         csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
 =end
-      end
       conflict_actors.each do |many,lines|
         header = ["conflict_id"]
         maxx = lines.values.map(&:length).max || 0
-        puts maxx.to_s.red
         maxx.times do |maxi|
           header << "id_#{many.to_s.downcase}_#{maxi+1}"
           header << "name_#{many.to_s.downcase}_#{maxi+1}"
@@ -325,11 +321,8 @@ class AsyncTask
           row do
             header.each {|x| cell x }
           end
-          puts
-          puts many.to_s.yellow
           lines.each do |id, comp|
             line = [id]
-            p [id.to_s.cyan, comp]
             comp.each do |da|
               line << da[0]
               line << da[1]
@@ -345,7 +338,6 @@ class AsyncTask
       actor_conflicts.each do |many,lines|
         header = ["#{many.to_s.downcase}_id"]
         maxx = lines.values.map(&:length).max || 0
-        puts maxx.to_s.cyan
         maxx.times do |maxi|
           header << "conflict_id_#{maxi+1}"
         end
@@ -358,7 +350,6 @@ class AsyncTask
             comp.each do |da|
               line << da
             end
-            pp line
             row do
               line.each {|x| cell x }
             end
@@ -394,9 +385,6 @@ class AsyncTask
     #stack = stack[0..(limit-1)] if limit > 0
     puts "#{stack.length} cases to be exported."
     puts ::CSV
-    if limit > 0
-      stack = stack[0..(limit-1)]
-    end
     #return stack.map(&:name).to_s
     mania = {Type=>[],Product=>[],ConflictEvent=>[],ConflictEvent=>[],MobilizingGroup=>[],MobilizingForm=>[]}
     imps = {EnvImpact=>[],HltImpact=>[],SecImpact=>[]}
