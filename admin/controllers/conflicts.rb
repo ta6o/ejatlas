@@ -952,19 +952,40 @@ Admin.controllers :conflicts do
   end
 
   post :getfile do
-    @file = Document.new(params['document'])
-    @file.locale = I18n.locale
-    if @file.save
-      @conflict = @file.conflict
-      if ps = @conflict.documents.map(&:pid) and ps.length != (ps - [nil]).uniq.length
-        @conflict.documents.order(:id).order(:pid).each_with_index do |doc,ind|
-          doc.update_attribute(:pid,ind+1)
+    if params['document']['file']['type'].split("/")[0] == "image"
+      cid = params['document'].delete("conflict_id")
+      params['document']["attachable_id"] = cid
+      params['document']["attachable_type"] = "Conflict"
+      @file = Image.new(params['document'])
+      @file.locale = I18n.locale
+      if @file.save
+        @conflict = @file.attachable
+        if ps = @conflict.images.map(&:pid) and ps.length != (ps - [nil]).uniq.length
+          @conflict.images.order(:id).order(:pid).each_with_index do |img,ind|
+            img.update_attribute(:pid,ind+1)
+          end
         end
+        @file = Image.find(@file.id)
+        return @file.to_json
+      else
+        return 'no'
       end
-      @file = Document.find(@file.id)
-      return @file.to_json
     else
-      return 'no'
+      return "{}"
+      @file = Document.new(params['document'])
+      @file.locale = I18n.locale
+      if @file.save
+        @conflict = @file.conflict
+        if ps = @conflict.documents.map(&:pid) and ps.length != (ps - [nil]).uniq.length
+          @conflict.documents.order(:id).order(:pid).each_with_index do |doc,ind|
+            doc.update_attribute(:pid,ind+1)
+          end
+        end
+        @file = Document.find(@file.id)
+        return @file.to_json
+      else
+        return 'no'
+      end
     end
   end
 

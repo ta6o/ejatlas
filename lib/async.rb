@@ -1079,7 +1079,7 @@ class AsyncTask
 
       # TODO: use mimetypes
       ext = ["jpg", "bmp", "png", "jpeg", "gif"]
-      Document.order(:id).each do |doc|
+      Document.where(:locale=>locale).order(:id).each do |doc|
         if ext.include? doc.file.file.filename.split('.')[-1].downcase
           docs << doc.id
         end
