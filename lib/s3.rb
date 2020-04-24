@@ -17,6 +17,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   def store_dir
     at = self.model.attachable 
     return "" unless at
+    return "#{$filedir}/img/#{at.class}/#{at.id}" if at.is_a?(Conflict)
     return "#{$filedir}/img/#{at.class}/#{at.old_slug}" if at.methods.include?(:old_slug) and at.old_slug
     return "#{$filedir}/img/#{at.class}/#{at.slug}" if at.has_attribute?('slug')
     begin
@@ -34,9 +35,10 @@ class ImageUploader < CarrierWave::Uploader::Base
     at = self.model.attachable 
     return "" unless at
     return "" unless self.file
-    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
-    return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" if at.has_attribute?('slug')
     begin
+      return "#{$filedir}/img/#{at.class}/#{at.id}/#{self.file.filename}" if at.is_a?(Conflict)
+      return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
+      return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" if at.has_attribute?('slug')
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" unless at.slug.nil?
     rescue
       "#{$fileurl}/img/#{at.class}/#{at.id}/#{self.file.filename}"
@@ -46,9 +48,10 @@ class ImageUploader < CarrierWave::Uploader::Base
   def thumb_url
     at = self.model.attachable 
     return "" unless at
-    return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
-    return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" if at.has_attribute?('slug')
     begin
+      return "#{$filedir}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}" if at.is_a?(Conflict)
+      return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
+      return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" if at.has_attribute?('slug')
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" unless at.slug.nil?
     rescue
       "#{$fileurl}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}"

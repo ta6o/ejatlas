@@ -896,269 +896,106 @@
 
 
 
-    #materials.tab-pane
-      :javascript
-        function handleModal(model) {
-          $('#m_'+model).on('hidden.bs.modal', function () {
-            $('.i_'+model).val('');
-            $('#b_'+model).removeClass('disabled');
-          })
-          $('#m_'+model).on('shown.bs.modal', function() {
-            $('#'+model+'_description').focus();
-          });
-          $('.d_'+model).live('click', function(e){
-            par = $(this).closest('.'+model);
-            id = par.find('textarea').attr('name').split('_')[2];
-            html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
-            par.html(html);
-          });
-          $('#b_'+model).click(function(e){
-            if ($('#'+model+'_description').val()=='') {
-              $('#'+model+'_description').focus();
-              return
-            }
-            $('#b_'+model).addClass('disabled');
-            e.preventDefault();
-            modeldata = {
-              'description': $('#'+model+'_description').val(),
-              'url': $('#'+model+'_url').val(),
-              'conflict_id': '#{@conflict.id.to_s}'
-            }
-            if ('#{@example}') {
-              html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+'+model+'['id']+'">'+'+model+'['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+'+model+'['id']+'" placeholder="http://" style="width:98%" type="text" value="'+'+model+'['url']+'"> </div> ';
-              $('#current_'+model+'s').append(html);
+    -unless @translate_only
+      #materials.tab-pane
+        :javascript
+          function handleModal(model) {
+            $('#m_'+model).on('hidden.bs.modal', function () {
+              $('.i_'+model).val('');
               $('#b_'+model).removeClass('disabled');
-              $('#m_'+model).modal('hide');
-            } else {
-              $.ajax({
-                type: 'POST',
-                url: '/conflicts/'+model, 
-                data: modeldata, 
-                success: function(data,ts){
-                  dat = JSON.parse(data)[''+model];
-                  //console.log(dat)
-                  html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+dat['id']+'">'+dat['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+dat['id']+'" placeholder="http://" style="width:98%" type="text" value="'+dat['url']+'"> </div> ';
-                  $('#current_'+model+'s').append(html);
-                  $('#b_'+model).removeClass('disabled');
-                  $('#m_'+model).modal('hide');
-                },
-                error: function(data,ts,error){
-                  alert(ts+' '+error)
-                }
-              });
-            }
-          });
-        }
-      .row
-        .col-md-9
-          %p.lead= t("f.conflict.sources_and_materials")
-        .col-md-3
-          .pull-right.btn-group.png
-            %button.btn.pn.prev= t("f.conflict.previous")
-            %button.btn.pn.next= t("f.conflict.next")
-            %button#save{:class=>"btn btn-inverse pn "+(@example ? "disabled" : "")}= t("f.conflict.save")
-            %br/
+            })
+            $('#m_'+model).on('shown.bs.modal', function() {
+              $('#'+model+'_description').focus();
+            });
+            $('.d_'+model).live('click', function(e){
+              par = $(this).closest('.'+model);
+              id = par.find('textarea').attr('name').split('_')[2];
+              html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
+              par.html(html);
+            });
+            $('#b_'+model).click(function(e){
+              if ($('#'+model+'_description').val()=='') {
+                $('#'+model+'_description').focus();
+                return
+              }
+              $('#b_'+model).addClass('disabled');
+              e.preventDefault();
+              modeldata = {
+                'description': $('#'+model+'_description').val(),
+                'url': $('#'+model+'_url').val(),
+                'conflict_id': '#{@conflict.id.to_s}'
+              }
+              if ('#{@example}') {
+                html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+'+model+'['id']+'">'+'+model+'['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+'+model+'['id']+'" placeholder="http://" style="width:98%" type="text" value="'+'+model+'['url']+'"> </div> ';
+                $('#current_'+model+'s').append(html);
+                $('#b_'+model).removeClass('disabled');
+                $('#m_'+model).modal('hide');
+              } else {
+                $.ajax({
+                  type: 'POST',
+                  url: '/conflicts/'+model, 
+                  data: modeldata, 
+                  success: function(data,ts){
+                    dat = JSON.parse(data)[''+model];
+                    //console.log(dat)
+                    html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+dat['id']+'">'+dat['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+dat['id']+'" placeholder="http://" style="width:98%" type="text" value="'+dat['url']+'"> </div> ';
+                    $('#current_'+model+'s').append(html);
+                    $('#b_'+model).removeClass('disabled');
+                    $('#m_'+model).modal('hide');
+                  },
+                  error: function(data,ts,error){
+                    alert(ts+' '+error)
+                  }
+                });
+              }
+            });
+          }
+        .row
+          .col-md-9
+            %p.lead= t("f.conflict.sources_and_materials")
+          .col-md-3
+            .pull-right.btn-group.png
+              %button.btn.pn.prev= t("f.conflict.previous")
+              %button.btn.pn.next= t("f.conflict.next")
+              %button#save{:class=>"btn btn-inverse pn "+(@example ? "disabled" : "")}= t("f.conflict.save")
+              %br/
 
 
-      .row
-        .col-md-6
-          #m_legislation.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-            .modal-dialog
-              .modal-content
-                %form
-                  .modal-header
-                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3=t("f.conflict.related_legislation")
-                  .modal-body
-                    %label=t("f.conflict.name_description_legislation")
-                    %textarea.i_legislation#legislation_description{:type=>'text',:name=>'legislation_description'}
-                    %br/
-                    %label=t("f.conflict.address")
-                    %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://'}
-                    %br/
-                    %br/
-                  .modal-footer
-                    %a.btn#b_legislation=t("f.conflict.create")
-          .group
-            .row
-              .col-md-12
-                %label=t("f.conflict.related_laws_legislations_juridical_texts")
-                %a#n_legislation.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_legislation'}=t("f.conflict.add")
-            #current_legislations
-              -@conflict.legislations.where(:locale=>I18n.locale).order(:pid).each do |l|
-                .legislation
-                  %br
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
-                  -if @conflict.native_locale?
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-10
-                        %textarea.yestr{:name=>'legislation_description_'+l.pid.to_s}= l.description
-                      .col-md-2
-                        %a.d_legislation.pull-right.btn.notr=t("f.conflict.remove")
-                  -else
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-12
-                        %p
-                          %b="#{$iso639[@conflict.original_locale]}:"
-                          = l.description
-                    .row
-                      .col-md-10
-                        %textarea.yestr{:name=>'legislation_description_'+l.pid.to_s}= @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
-                      .col-md-2
-                        %a.d_legislation.pull-right.btn.notr=t("f.conflict.remove")
-                  %input{:type=>'text',:name=>'legislation_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-                  %br/
-            :javascript
-              $(document).ready(function(){
-                handleModal('legislation');
-              });
-            %hr/
-
-          #m_weblink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-            .modal-dialog
-              .modal-content
-                %form
-                  .modal-header
-                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3=t("f.conflict.related_web_link")
-                  .modal-body
-                    %label=t("f.conflict.name_description_link_please_include")
-                    %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
-                    %br/
-                    %label=t("f.conflict.address")
-                    %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://'}
-                    %br/
-                    %br/
-                  .modal-footer
-                    %a.btn#b_weblink=t("f.conflict.create")
-          .group
-            .row
-              .col-md-12
-                %label=t("f.conflict.links_to_general_newspaper_articles")
-                %a#n_weblink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_weblink'}=t("f.conflict.add")
-            #current_weblinks
-              -@conflict.weblinks.where(:locale=>I18n.locale).order(:pid).each do |l|
-                .weblink
-                  %br
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
-                  -if @conflict.native_locale?
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-10
-                        %textarea.yestr{:name=>'weblink_description_'+l.pid.to_s}= l.description
-                      .col-md-2
-                        %a.d_weblink.pull-right.btn.notr=t("f.conflict.remove")
-                  -else
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-12
-                        %p
-                          %b="#{$iso639[@conflict.original_locale]}:"
-                          = l.description
-                    .row
-                      .col-md-10
-                        %textarea.yestr{:name=>'weblink_description_'+l.pid.to_s}= @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
-                      .col-md-2
-                        %a.d_weblink.pull-right.btn.notr=t("f.conflict.remove")
-                  %input{:type=>'text',:name=>'weblink_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-                  %br/
-          :javascript
-              $(document).ready(function(){
-                handleModal('weblink');
-              });
-          %hr/
-
-          .group
-            %label{:for=>"conflict_other_comments"}= t("f.conflict.other_comments")
-            .required=f.error_message_on :other_comments
-            .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_comments.html_safe
-            ~f.text_area :other_comments, :class => :text_area, :rows=>4
-
-        .col-md-6
-          #m_reference.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
-            .modal-dialog
-              .modal-content
-                %form
-                  .modal-header
-                    %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                    %h3=t("f.conflict.related_reference")
-                  .modal-body
-                    %label=t("f.conflict.name_description_source_material")
-                    %textarea.i_reference#reference_description{:type=>'text',:name=>'reference_description'}
-                    %br/
-                    %label=t("f.conflict.address")
-                    %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://'}
-                    %br/
-                    %br/
-                  .modal-footer
-                    %a.btn#b_reference=t("f.conflict.create")
-          .group
-            .row
-              .col-md-12
-                %label=t("f.conflict.references_to_published_books_academic")
-                %a#n_reference.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_reference'}=t("f.conflict.add")
-            #current_references
-              -@conflict.references.where(:locale=>I18n.locale).order(:pid).each do |l|
-                .reference
-                  %br
-                  %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
-                  -if @conflict.native_locale?
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-10
-                        %textarea{:name=>'reference_description_'+l.pid.to_s}= l.description
-                      .col-md-2
-                        %a.d_reference.pull-right.btn.notr=t("f.conflict.remove")
-                  -else
-                    .row{:style=>'margin-top:8px;'}
-                      .col-md-12
-                        %p
-                          %b="#{$iso639[@conflict.original_locale]}:"
-                          = l.description
-                    .row
-                      .col-md-10
-                        %textarea.yestr{:name=>'reference_description_'+l.pid.to_s}= @conflict.references.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.references.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
-                      .col-md-2
-                        %a.d_reference.pull-right.btn.notr=t("f.conflict.remove")
-                  %input{:type=>'text',:name=>'reference_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
-                  %br/
-            :javascript
-              $(document).ready(function(){
-                handleModal('reference');
-              });
-            %hr/
-
-
-            #m_medialink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+        .row
+          .col-md-6
+            #m_legislation.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
               .modal-dialog
                 .modal-content
                   %form
                     .modal-header
                       %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                      %h3=t("f.conflict.related_media")
+                      %h3=t("f.conflict.related_legislation")
                     .modal-body
-                      %label=t("f.conflict.description_about_media")
-                      %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
+                      %label=t("f.conflict.name_description_legislation")
+                      %textarea.i_legislation#legislation_description{:type=>'text',:name=>'legislation_description'}
                       %br/
                       %label=t("f.conflict.address")
-                      %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
+                      %input.i_legislation#legislation_url{:type=>'text',:name=>'legislation_url',:placeholder=>'http://'}
                       %br/
                       %br/
                     .modal-footer
-                      %a.btn#b_medialink=t("f.conflict.add")
+                      %a.btn#b_legislation=t("f.conflict.create")
             .group
               .row
                 .col-md-12
-                  %label=t("f.conflict.related_media_links_to_videos")
-                  %a#n_medialink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_medialink'}=t("f.conflict.add")
-              #current_medialinks
-                -@conflict.medialinks.where(:locale=>I18n.locale).order(:pid).each do |l|
-                  .medialink
+                  %label=t("f.conflict.related_laws_legislations_juridical_texts")
+                  %a#n_legislation.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_legislation'}=t("f.conflict.add")
+              #current_legislations
+                -@conflict.legislations.where(:locale=>I18n.locale).order(:pid).each do |l|
+                  .legislation
                     %br
                     %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
                     -if @conflict.native_locale?
                       .row{:style=>'margin-top:8px;'}
                         .col-md-10
-                          %textarea{:name=>'medialink_description_'+l.pid.to_s}= l.description
+                          %textarea.yestr{:name=>'legislation_description_'+l.pid.to_s}= l.description
                         .col-md-2
-                          %a.d_medialink.pull-right.btn.notr=t("f.conflict.remove")
+                          %a.d_legislation.pull-right.btn.notr=t("f.conflict.remove")
                     -else
                       .row{:style=>'margin-top:8px;'}
                         .col-md-12
@@ -1167,186 +1004,371 @@
                             = l.description
                       .row
                         .col-md-10
-                          %textarea.yestr{:name=>'medialink_description_'+l.pid.to_s}= @conflict.medialinks.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.medialinks.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
+                          %textarea.yestr{:name=>'legislation_description_'+l.pid.to_s}= @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
                         .col-md-2
-                          %a.d_medialink.pull-right.btn.notr=t("f.conflict.remove")
-                    %input{:type=>'text',:name=>'medialink_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                          %a.d_legislation.pull-right.btn.notr=t("f.conflict.remove")
+                    %input{:type=>'text',:name=>'legislation_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
                     %br/
               :javascript
                 $(document).ready(function(){
-                  handleModal('medialink');
+                  handleModal('legislation');
                 });
               %hr/
 
-          -content_for :include do
-            =javascript_include_tag 'upload_iframe'
-          -content_for :outer do
-            #m_document.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+            #m_weblink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
               .modal-dialog
                 .modal-content
                   %form
                     .modal-header
                       %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
-                      %h3=t("f.conflict.another_document")
+                      %h3=t("f.conflict.related_web_link")
                     .modal-body
-                      %label=t("f.conflict.name")
-                      %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
+                      %label=t("f.conflict.name_description_link_please_include")
+                      %textarea.i_weblink#weblink_description{:type=>'text',:name=>'weblink_description'}
                       %br/
-                      %label=t("f.conflict.description")
-                      %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
+                      %label=t("f.conflict.address")
+                      %input.i_weblink#weblink_url{:type=>'text',:name=>'weblink_url',:placeholder=>'http://'}
                       %br/
-                      %label=t("f.conflict.file")
                       %br/
-                      %input.i_document#document_file{:type=>'file',:name=>'document[file]'}
-                      %input#document_file_cache{:type=>'hidden',:name=>'document[file_cache]'}
-                      %input#document_conflict_id{:type=>'hidden',:name=>'document[conflict_id]',:value=>"#{@conflict.id}"}
-                      %p
-                        #upload
                     .modal-footer
-                      %input.btn#b_document{:type=>'button',:onclick=>"fileUpload(this.form,'index.php','upload'); return false;",:value=>t("f.conflict.send")} 
+                      %a.btn#b_weblink=t("f.conflict.create")
+            .group
+              .row
+                .col-md-12
+                  %label=t("f.conflict.links_to_general_newspaper_articles")
+                  %a#n_weblink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_weblink'}=t("f.conflict.add")
+              #current_weblinks
+                -@conflict.weblinks.where(:locale=>I18n.locale).order(:pid).each do |l|
+                  .weblink
+                    %br
+                    %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                    -if @conflict.native_locale?
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-10
+                          %textarea.yestr{:name=>'weblink_description_'+l.pid.to_s}= l.description
+                        .col-md-2
+                          %a.d_weblink.pull-right.btn.notr=t("f.conflict.remove")
+                    -else
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-12
+                          %p
+                            %b="#{$iso639[@conflict.original_locale]}:"
+                            = l.description
+                      .row
+                        .col-md-10
+                          %textarea.yestr{:name=>'weblink_description_'+l.pid.to_s}= @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
+                        .col-md-2
+                          %a.d_weblink.pull-right.btn.notr=t("f.conflict.remove")
+                    %input{:type=>'text',:name=>'weblink_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                    %br/
+            :javascript
+                $(document).ready(function(){
+                  handleModal('weblink');
+                });
+            %hr/
 
-          .group
-            .row
-              .col-md-12
-                %label=t("f.conflict.upload_picture_here_in_jpg")
-                -if @conflict.new_record?
-                  %p &nbsp;
-                  %p.description
-                    %strong=t("f.conflict.please_save_form_after_uploading")
-                -else
-                  %a#n_document.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
-                #current_documents
-                  %h4=t("f.conflict.images")
-                  -ifs = []
-                  -@conflict.images.where(:locale=>I18n.locale).order(:pid).each do |d|
-                    -next if d.lost
-                    -if d and d.file
-                      -ifs << d.file.file.filename
-                    .document
+            .group
+              %label{:for=>"conflict_other_comments"}= t("f.conflict.other_comments")
+              .required=f.error_message_on :other_comments
+              .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_comments.html_safe
+              ~f.text_area :other_comments, :class => :text_area, :rows=>4
+
+          .col-md-6
+            #m_reference.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+              .modal-dialog
+                .modal-content
+                  %form
+                    .modal-header
+                      %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                      %h3=t("f.conflict.related_reference")
+                    .modal-body
+                      %label=t("f.conflict.name_description_source_material")
+                      %textarea.i_reference#reference_description{:type=>'text',:name=>'reference_description'}
+                      %br/
+                      %label=t("f.conflict.address")
+                      %input.i_reference#reference_url{:type=>'text',:name=>'reference_url',:placeholder=>'http://'}
+                      %br/
+                      %br/
+                    .modal-footer
+                      %a.btn#b_reference=t("f.conflict.create")
+            .group
+              .row
+                .col-md-12
+                  %label=t("f.conflict.references_to_published_books_academic")
+                  %a#n_reference.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_reference'}=t("f.conflict.add")
+              #current_references
+                -@conflict.references.where(:locale=>I18n.locale).order(:pid).each do |l|
+                  .reference
+                    %br
+                    %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                    -if @conflict.native_locale?
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-10
+                          %textarea{:name=>'reference_description_'+l.pid.to_s}= l.description
+                        .col-md-2
+                          %a.d_reference.pull-right.btn.notr=t("f.conflict.remove")
+                    -else
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-12
+                          %p
+                            %b="#{$iso639[@conflict.original_locale]}:"
+                            = l.description
+                      .row
+                        .col-md-10
+                          %textarea.yestr{:name=>'reference_description_'+l.pid.to_s}= @conflict.references.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.references.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
+                        .col-md-2
+                          %a.d_reference.pull-right.btn.notr=t("f.conflict.remove")
+                    %input{:type=>'text',:name=>'reference_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                    %br/
+              :javascript
+                $(document).ready(function(){
+                  handleModal('reference');
+                });
+              %hr/
+
+
+              #m_medialink.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+                .modal-dialog
+                  .modal-content
+                    %form
+                      .modal-header
+                        %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                        %h3=t("f.conflict.related_media")
+                      .modal-body
+                        %label=t("f.conflict.description_about_media")
+                        %textarea.i_medialink#medialink_description{:type=>'text',:name=>'medialink_description'}
+                        %br/
+                        %label=t("f.conflict.address")
+                        %input.i_medialink#medialink_url{:type=>'text',:name=>'medialink_url',:placeholder=>'http://'}
+                        %br/
+                        %br/
+                      .modal-footer
+                        %a.btn#b_medialink=t("f.conflict.add")
+              .group
+                .row
+                  .col-md-12
+                    %label=t("f.conflict.related_media_links_to_videos")
+                    %a#n_medialink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_medialink'}=t("f.conflict.add")
+                #current_medialinks
+                  -@conflict.medialinks.where(:locale=>I18n.locale).order(:pid).each do |l|
+                    .medialink
                       %br
                       %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
                       -if @conflict.native_locale?
                         .row{:style=>'margin-top:8px;'}
-                          .col-md-3
-                            %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                            .center-text
-                              [[IMAGE]]
-                          .col-md-9
-                            .row
-                              .col-md-9
-                                %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                                %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>d.title}
-                              .col-md-3
-                                %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
-                                -#%input{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
-                            %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+                          .col-md-10
+                            %textarea{:name=>'medialink_description_'+l.pid.to_s}= l.description
+                          .col-md-2
+                            %a.d_medialink.pull-right.btn.notr=t("f.conflict.remove")
                       -else
                         .row{:style=>'margin-top:8px;'}
-                          .col-md-3
-                            %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                            .center-text
-                              [[IMAGE]]
-                          .col-md-9
-                            .row
-                              .col-md-9
-                                %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                                %p
-                                  %b="#{$iso639[@conflict.original_locale]}:"
-                                  = d.title
-                                %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>(@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].title : "")}
-                              .col-md-3
-                                %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
-                                -#%input.yestr{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                          .col-md-12
                             %p
                               %b="#{$iso639[@conflict.original_locale]}:"
-                              = d.description
-                            %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= (@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].description : "")
-
-                  %h4=t("f.conflict.documents")
-                  -@conflict.documents.where(:locale=>I18n.locale).order(:pid).each do |d|
-                    -next if d and d.copied? and ifs.include?(d.file.file.filename)
-                    .document
-                      %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
-                      -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
-                        .row{:style=>'margin-top:8px;background:#aaa;'}
-                          .col-md-3
-                            %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
-                          .col-md-9
-                            .row
-                              .col-md-9
-                                %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                                %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
-                              .col-md-3
-                                %a.d_document.pull-right.btn=t("f.conflict.remove")
-                            %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
-                      -else
-                        .row{:style=>'margin-top:8px;'}
+                              = l.description
+                        .row
                           .col-md-10
-                            %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
-                            %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
+                            %textarea.yestr{:name=>'medialink_description_'+l.pid.to_s}= @conflict.medialinks.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.medialinks.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
                           .col-md-2
-                            %a.d_document.pull-right.btn=t("f.conflict.remove")
-                        %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+                            %a.d_medialink.pull-right.btn.notr=t("f.conflict.remove")
+                      %input{:type=>'text',:name=>'medialink_url_'+l.pid.to_s,:placeholder=>'http://',:style=>'width:98%',:value=>l.url}
+                      %br/
+                :javascript
+                  $(document).ready(function(){
+                    handleModal('medialink');
+                  });
+                %hr/
 
-            :javascript
-              var uploading = false;
-              function uploadResponse (resp) {
-                if (uploading){
-                  return 
-                }
-                uploading = true;
-                //$('iframe#upload_iframe').remove();
-                //console.log(resp);
-                if (resp === 'no') {
-                  alert ('A problem occured uploading the file.');
-                  return
-                }
-                dat = JSON.parse(resp)['document'];
-                console.log(dat)
-                filare = dat['file']['url'].split('/');
-                filename = filare[filare.length-1];
-                html = '<div class="document"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <a href="'+dat['file']['url']+'" target="_blank">'+filename+'</a> <input name="document_title_'+dat['pid']+'" type="text" value="'+dat['title']+'"> </div> <div class="col-md-2"> <a class="d_document pull-right btn">Remove</a> </div> </div> <textarea name="document_description_'+dat['pid']+'" style="width:98%">'+dat['description']+'</textarea> </div>'
-                $('#current_documents').append(html);
-                $('#m_document').modal('hide');
-              }
-              $(document).ready(function(){
-                $('#m_document').on('hidden.bs.modal', function () {
-                  $('.i_document').val('');
-                  $('#b_document').removeClass('disabled');
-                  uploading = false;
-                })
-                $('#m_document').on('shown.bs.modal', function() {
-                  $('#document_title').focus();
-                  $('#b_document').removeClass('disabled');
-                });
-                $('.d_document').live('click', function(e){
-                  par = $(this).closest('.document');
-                  id = par.find('input').attr('name').split('_')[2];
-                  html = '<input name="document_remove_'+id+'" type="hidden"></input>';
-                  par.html(html);
-                });
-                $('.d_image').live('click', function(e){
-                  par = $(this).closest('.document');
-                  id = par.find('input').attr('name').split('_')[2];
-                  html = '<input name="image_remove_'+id+'" type="hidden"></input>';
-                  par.html(html);
-                });
-                $('#b_document').click(function(e){
-                  if ($('#document_file').val()=='') {
-                    $('#document_file').focus();
+            -content_for :include do
+              =javascript_include_tag 'upload_iframe'
+            -content_for :outer do
+              #m_document.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+                .modal-dialog
+                  .modal-content
+                    %form
+                      .modal-header
+                        %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+                        %h3=t("f.conflict.another_document")
+                      .modal-body
+                        %label=t("f.conflict.name")
+                        %input.i_document#document_title{:type=>'text',:name=>'document[title]'}
+                        %br/
+                        %label=t("f.conflict.description")
+                        %textarea.i_document#document_description{:type=>'text',:name=>'document[description]'}
+                        %br/
+                        %label=t("f.conflict.file")
+                        %br/
+                        %input.i_document#document_file{:type=>'file',:name=>'document[file]'}
+                        %input#document_file_cache{:type=>'hidden',:name=>'document[file_cache]'}
+                        %input#document_conflict_id{:type=>'hidden',:name=>'document[conflict_id]',:value=>"#{@conflict.id}"}
+                        %p
+                          #upload
+                      .modal-footer
+                        %input.btn#b_document{:type=>'button',:onclick=>"fileUpload(this.form,'index.php','upload'); return false;",:value=>t("f.conflict.send")} 
+
+            .group
+              .row
+                .col-md-12
+                  %label=t("f.conflict.upload_picture_here_in_jpg")
+                  -if @conflict.new_record?
+                    %p &nbsp;
+                    %p.description
+                      %strong=t("f.conflict.please_save_form_after_uploading")
+                  -else
+                    %a#n_document.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_document'}=t("f.conflict.add")
+                  #current_documents
+                    %h4=t("f.conflict.images")
+                    -ifs = []
+                    -@conflict.images.where(:locale=>I18n.locale).order(:pid).each do |d|
+                      -next if d.lost
+                      -if d and d.file
+                        -ifs << d.file.file.filename
+                      .document
+                        %br
+                        %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #666;'}/
+                        -if @conflict.native_locale?
+                          .row{:style=>'margin-top:8px;'}
+                            .col-md-3
+                              %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                              .center-text
+                                [[IMAGE]]
+                            .col-md-9
+                              .row
+                                .col-md-9
+                                  %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                                  %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>d.title}
+                                .col-md-3
+                                  %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
+                                  -#%input{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                              %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+                        -else
+                          .row{:style=>'margin-top:8px;'}
+                            .col-md-3
+                              %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                              .center-text
+                                [[IMAGE]]
+                            .col-md-9
+                              .row
+                                .col-md-9
+                                  %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                                  %p
+                                    %b="#{$iso639[@conflict.original_locale]}:"
+                                    = d.title
+                                  %input.yestr{:type=>'text',:name=>'image_title_'+d.pid.to_s,:value=>(@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].title : "")}
+                                .col-md-3
+                                  %a.d_image.pull-right.btn.notr=t("f.conflict.remove")
+                                  -#%input.yestr{:type=>'radio',:name=>"image_prime",:value=>d.pid,:checked=>d.prime}
+                              %p
+                                %b="#{$iso639[@conflict.original_locale]}:"
+                                = d.description
+                              %textarea.yestr{:name=>'image_description_'+d.pid.to_s,:style=>'width:98%'}= (@conflict.images.where(:locale=>I18n.locale,:pid=>d.pid).any? ? @conflict.images.where(:locale=>I18n.locale,:pid=>d.pid)[0].description : "")
+
+                    %h4=t("f.conflict.documents")
+                    -@conflict.documents.where(:locale=>I18n.locale).order(:pid).each do |d|
+                      -next if d and d.copied? and ifs.include?(d.file.file.filename)
+                      .document
+                        %hr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                        -if ['jpg','jpeg','png','gif','bmp'].include?(d.file.to_s.split('.')[-1]) 
+                          .row{:style=>'margin-top:8px;background:#aaa;'}
+                            .col-md-3
+                              %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                            .col-md-9
+                              .row
+                                .col-md-9
+                                  %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                                  %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
+                                .col-md-3
+                                  %a.d_document.pull-right.btn=t("f.conflict.remove")
+                              %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+                        -else
+                          .row{:style=>'margin-top:8px;'}
+                            .col-md-10
+                              %a{:href=>d.file.to_s,:target=>'_blank'}= d.file.to_s.split('/')[-1]
+                              %input{:type=>'text',:name=>'document_title_'+d.pid.to_s,:value=>d.title}
+                            .col-md-2
+                              %a.d_document.pull-right.btn=t("f.conflict.remove")
+                          %textarea{:name=>'document_description_'+d.pid.to_s,:style=>'width:98%'}= d.description
+
+              :javascript
+                var uploading = false;
+                function uploadResponse (resp) {
+                  if (uploading){
+                    return 
+                  }
+                  uploading = true;
+                  //$('iframe#upload_iframe').remove();
+                  //console.log(resp);
+                  if (resp === 'no') {
+                    alert ('A problem occured uploading the file.');
                     return
                   }
-                  $('#b_document').addClass('disabled');
-                  e.preventDefault();
-                  if ('#{@example}') {
-                    $('#m_document').modal('hide');
-                  } else {
-                    fileUpload(this.form,'/conflicts/getfile','upload');
-                  }
+                  dat = JSON.parse(resp)['document'];
+                  console.log(dat)
+                  filare = dat['file']['url'].split('/');
+                  filename = filare[filare.length-1];
+                  html = '<div class="document"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <a href="'+dat['file']['url']+'" target="_blank">'+filename+'</a> <input name="document_title_'+dat['pid']+'" type="text" value="'+dat['title']+'"> </div> <div class="col-md-2"> <a class="d_document pull-right btn">Remove</a> </div> </div> <textarea name="document_description_'+dat['pid']+'" style="width:98%">'+dat['description']+'</textarea> </div>'
+                  $('#current_documents').append(html);
+                  $('#m_document').modal('hide');
+                }
+                $(document).ready(function(){
+                  $('#m_document').on('hidden.bs.modal', function () {
+                    $('.i_document').val('');
+                    $('#b_document').removeClass('disabled');
+                    uploading = false;
+                  })
+                  $('#m_document').on('shown.bs.modal', function() {
+                    $('#document_title').focus();
+                    $('#b_document').removeClass('disabled');
+                  });
+                  $('.d_document').live('click', function(e){
+                    par = $(this).closest('.document');
+                    id = par.find('input').attr('name').split('_')[2];
+                    html = '<input name="document_remove_'+id+'" type="hidden"></input>';
+                    par.html(html);
+                  });
+                  $('.d_image').live('click', function(e){
+                    par = $(this).closest('.document');
+                    id = par.find('input').attr('name').split('_')[2];
+                    html = '<input name="image_remove_'+id+'" type="hidden"></input>';
+                    par.html(html);
+                  });
+                  $('#b_document').click(function(e){
+                    if ($('#document_file').val()=='') {
+                      $('#document_file').focus();
+                      return
+                    }
+                    $('#b_document').addClass('disabled');
+                    e.preventDefault();
+                    if ('#{@example}') {
+                      $('#m_document').modal('hide');
+                    } else {
+                      fileUpload(this.form,'/conflicts/getfile','upload');
+                    }
+                  });
                 });
-              });
-            %hr/
-          %input#activetab{:name=>'activetab',:type=>'hidden'}
+              %hr/
+            %input#activetab{:name=>'activetab',:type=>'hidden'}
+    -else
+      #materials.tab-pane
+        .row
+          .col-md-9
+            %p.lead= t("f.conflict.sources_and_materials")
+          .col-md-3
+            .pull-right.btn-group.png
+              %button.btn.pn.prev= t("f.conflict.previous")
+              %button.btn.pn.next= t("f.conflict.next")
+              %button#save{:class=>"btn btn-inverse pn "+(@example ? "disabled" : "")}= t("f.conflict.save")
+              %br/
+
+
+        .row
+          .col-md-6
+            .group
+              %label{:for=>"conflict_other_comments"}= t("f.conflict.other_comments")
+              .required=f.error_message_on :other_comments
+              .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.other_comments.html_safe
+              ~f.text_area :other_comments, :class => :text_area, :rows=>4
+
 
 
     #meta.tab-pane

@@ -58,7 +58,7 @@ class GeoLayer < ActiveRecord::Base
     begin
       if self.layer_type == "vector"
         data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
-        sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{self.slug}.sld", params={}).body.gsub(/<\w+:/,"<").gsub(/<\/\w+:/,"</").gsub("<CssParameter","<SvgParameter").gsub("</CssParameter","</SvgParameter")
+        sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{self.slug}.sld", params={}).body.gsub(/<\w+:/,"<").gsub(/<\/\w+:/,"</").gsub("<CssParameter","<SvgParameter").gsub("</CssParameter","</SvgParameter")#.gsub("<UserStyle","<StyledLayerDescriptor").gsub("</UserStyle","</StyledLayerDescriptor")
         File.open("/tmp/#{self.slug}.sld","w") {|f| f << sld}
         `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json.js /tmp/#{self.slug}.sld`
         sld = File.read("/tmp/#{self.slug}.json")
@@ -76,7 +76,7 @@ class GeoLayer < ActiveRecord::Base
           script = ""
           condition = []
           condition << "zoom >= #{layer['minzoom']}" if layer.has_key? "minzoom"
-          condition << "zoom <  #{layer['maxzoom']}" if layer.has_key? "maxzoom"
+          condition << "zoom <  #{layer['maxzoom']}" if layer.has_key? "maxzoom" and layer["maxzoom"].to_f > 0
           if layer.has_key? "filter"
             layer["filter"].each do |key,val|
               filter = []
@@ -118,7 +118,13 @@ class GeoLayer < ActiveRecord::Base
               script += "\n      radius: #{val},"
             end
           end
-          script += "\n      stroke: false," unless layer["paint"].has_key?("line-color")
+          if layer["paint"].has_key?("line-color")
+            unless layer["paint"].has_key?("line-width")
+              script += "\n      weight: 1,"
+            end
+          else
+            script += "\n      stroke: false," 
+          end
           script += "\n      fill: false,"   unless layer["paint"].has_key?("fill-color") or layer["paint"].has_key?("icon-color")
           script += "\n    })"
           script += "\n  }" if condition.any?

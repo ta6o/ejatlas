@@ -220,7 +220,11 @@ function writeEndOfJSON() {
 var parseFile = function (data, file) {
   writeStartOfJSON();
   parser.parseString(data, function (err, result) {
-    var FeatureTypeStyle = result.StyledLayerDescriptor.NamedLayer[0].UserStyle[0]['FeatureTypeStyle'];
+    try {
+      var FeatureTypeStyle = result.StyledLayerDescriptor.NamedLayer[0].UserStyle[0]['FeatureTypeStyle'];
+    } catch (err) {
+      var FeatureTypeStyle = result.UserStyle['FeatureTypeStyle'];
+    }
     var rulesArr = [];
     var k;
     var rules = [];
@@ -242,12 +246,17 @@ var parseFile = function (data, file) {
       if (typeof rule["Filter"] != "undefined" ) {
         if (Object.keys(rule["Filter"][0]).indexOf("PropertyIsEqualTo") >= 0) {
           fils = rule["Filter"][0]["PropertyIsEqualTo"]
-        } else if (Object.keys(Object.values(rule["Filter"][0])[1][0]).indexOf("PropertyIsEqualTo") >= 0){
+        } else if (Object.values(rule["Filter"][0]).length == 1 && Object.keys(Object.values(rule["Filter"][0])[0][0]).indexOf("PropertyIsEqualTo") >= 0){
+          fils = Object.values(rule["Filter"][0])[0][0]["PropertyIsEqualTo"];
+        } else if (Object.values(rule["Filter"][0]).length > 1 && Object.keys(Object.values(rule["Filter"][0])[1][0]).indexOf("PropertyIsEqualTo") >= 0){
           fils = Object.values(rule["Filter"][0])[1][0]["PropertyIsEqualTo"];
         }
-        for (var fi=0; fi<fils.length; fi++){
-          if (Object.keys(filter).indexOf(fils[fi]['PropertyName'][0]) == -1 ) { filter[fils[fi]['PropertyName']] = []; }
-          filter[fils[fi]['PropertyName'][0]].push(fils[fi]['Literal'][0])
+        try {
+          for (var fi=0; fi<fils.length; fi++){
+            if (Object.keys(filter).indexOf(fils[fi]['PropertyName'][0]) == -1 ) { filter[fils[fi]['PropertyName']] = []; }
+            filter[fils[fi]['PropertyName'][0]].push(fils[fi]['Literal'][0])
+          }
+        } catch (err) {
         }
       }
       name = ""
@@ -355,11 +364,16 @@ function getSymbolizersObj(symbTag, type, file) {
 function getCssParameters(symbTag, validAttrTag, type, outerTag) {
   var cssArr = [];
   if (outerTag === undefined) {
-    var allCssArray = symbTag[0][validAttrTag][0]['SvgParameter'];
+    if (Object.keys(symbTag[0][validAttrTag][0]).indexOf('SvgParameter') >= 0) {
+      var allCssArray = symbTag[0][validAttrTag][0]['SvgParameter'];
+    } else if  (Object.keys(symbTag[0][validAttrTag][0]).indexOf('GraphicFill') >= 0) {
+      var allCssArray = symbTag[0][validAttrTag][0].GraphicFill[0].Graphic[0].Mark[0].Fill[0].SvgParameter;
+    }
   } else {
     var allCssArray = symbTag[0][outerTag][0][validAttrTag][0]['SvgParameter'];
   }
 
+  console.log(allCssArray)
   var nrOfCssTags = Object.keys(allCssArray).length;
   var j;
   for (j = 0; j < nrOfCssTags; j++) { //for all cssParameters
@@ -417,11 +431,7 @@ function getHaloObj(tagName, type, symbTag, obj) {
 }
 
 function getGeometryObj(symbTag, obj) {
-  if (symbTag[0].Geometry[0]['Function'][0].$.name === 'vertices') {
-    obj['icon-image'] = PUNKT;
-  } else {
-    console.log('Cannot convert attribute value: ' + symbTag[0].Geometry[0]['Function'][0].$.name + ', for tag Geometry');
-  }
+  obj['icon-image'] = PUNKT;
   return obj;
 }
 function getGraphicObj(file, symbTag, type, obj) {

@@ -4076,7 +4076,6 @@ function geoLayers() {
       checked = "";
       bold = "";
       if (f["shown"] == 1) {
-        console.log(f)
         console.log(overlayMaps[name])
         overlayMaps[name].addTo(geoLayer);
         wmsLayers.push(name);
@@ -4092,7 +4091,13 @@ function geoLayers() {
       ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
       console.log(ranks)
       $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
+
+
+
     } else if (f.type == "vector") {
+
+
+
       var styls = {}
       name = f["name"];
       styl = f["style"]
@@ -4104,6 +4109,7 @@ function geoLayers() {
         transparent: true,
         vectorTileLayerStyles: styls,
         getFeatureId: function(fi) {
+          console.log(idcol)
           return fi.properties[idcol];
         },
         s: s
