@@ -1302,6 +1302,7 @@
                     alert ('A problem occured uploading the file.');
                     return
                   }
+                  console.log(JSON.parse(resp))
                   dat = Object.values(JSON.parse(resp))[0]
                   console.log(dat)
                   filare = dat['file']['url'].split('/');
