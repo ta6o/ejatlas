@@ -5,7 +5,7 @@ class Document < ActiveRecord::Base
   belongs_to :conflict
 
   def file_url
-    return "#{$fileurl}/docs/#{self.conflict.old_slug(true)}/#{self.file}"
+    return "#{$fileurl}/docs/#{self.conflict.id}/#{self.file.file.filename}"
   end
 
   def set_defaults

@@ -66,11 +66,11 @@ end
 class DocumentUploader < CarrierWave::Uploader::Base
   storage :file
   def store_dir
-    "#{$filedir}/docs/"
+    "#{$filedir}/docs/#{self.conflict_id}"
   end
 
   def url
-    "#{$fileurl}/docs/#{self.file.filename}"
+    "#{$fileurl}/docs/#{self.conflict_id}/#{self.file.filename}"
   end
 
   def cache_dir
