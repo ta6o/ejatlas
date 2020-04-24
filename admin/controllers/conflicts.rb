@@ -971,7 +971,6 @@ Admin.controllers :conflicts do
         return 'no'
       end
     else
-      return "{}"
       @file = Document.new(params['document'])
       @file.locale = I18n.locale
       if @file.save
