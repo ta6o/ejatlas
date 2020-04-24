@@ -6,6 +6,7 @@ class Image < ActiveRecord::Base
 
   def file_url
     at = self.attachable
+    return "#{$fileurl}/img/Conflict/#{at.id}/#{self.file.file.filename}" if at.is_a?(Conflict) and File.exists?("#{$filedir}/img/Conflict/#{at.id}/#{self.file.file.filename}")
     return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.file.filename}" if at.has_attribute?('old_slug') and at.old_slug and File.exists?("#{$filedir}/img/#{at.class}/#{at.old_slug}/#{self.file.file.filename}")
 
     if at.is_a? Conflict
@@ -25,6 +26,7 @@ class Image < ActiveRecord::Base
 
   def thumb_url
     at = self.attachable
+    return "#{$fileurl}/img/Conflict/#{at.id}/thumb_#{self.file.file.filename}" if at.is_a?(Conflict) and File.exists?("#{$filedir}/img/Conflict/#{at.id}/thumb_#{self.file.file.filename}")
     return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.file.filename}" if at.has_attribute?('old_slug') and at.old_slug and File.exists?("#{$filedir}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.file.filename}")
 
     if at.is_a? Conflict

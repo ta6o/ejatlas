@@ -36,7 +36,7 @@ class ImageUploader < CarrierWave::Uploader::Base
     return "" unless at
     return "" unless self.file
     begin
-      return "#{$filedir}/img/#{at.class}/#{at.id}/#{self.file.filename}" if at.is_a?(Conflict)
+      return "#{$fileurl}/img/#{at.class}/#{at.id}/#{self.file.filename}" if at.is_a?(Conflict)
       return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" if at.has_attribute?('slug')
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/#{self.file.filename}" unless at.slug.nil?
@@ -49,7 +49,7 @@ class ImageUploader < CarrierWave::Uploader::Base
     at = self.model.attachable 
     return "" unless at
     begin
-      return "#{$filedir}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}" if at.is_a?(Conflict)
+      return "#{$fileurl}/img/#{at.class}/#{at.id}/thumb_#{self.file.filename}" if at.is_a?(Conflict)
       return "#{$fileurl}/img/#{at.class}/#{at.old_slug}/thumb_#{self.file.filename}" if at.methods.include?(:old_slug) and at.old_slug
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" if at.has_attribute?('slug')
       return "#{$fileurl}/img/#{at.class}/#{at.slug}/thumb_#{self.file.filename}" unless at.slug.nil?
