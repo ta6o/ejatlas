@@ -1302,7 +1302,7 @@
                     alert ('A problem occured uploading the file.');
                     return
                   }
-                  dat = JSON.parse(resp)['document'];
+                  dat = Object.values(JSON.parse(resp))[0]
                   console.log(dat)
                   filare = dat['file']['url'].split('/');
                   filename = filare[filare.length-1];
