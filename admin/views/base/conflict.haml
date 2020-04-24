@@ -188,7 +188,10 @@
             This case form has been translated for your convenience using translation software powered by Google Translate. Therefore, they may contain errors. Any discrepancies or differences created in translating this content from the original version into another language are not binding and have no legal effect. If any questions arise related to the accuracy of the information contained in these translations, please refer to the version of the case in:
             -@conflict.conflict_texts.each do |ct|
               -next if ct.approval_status == "auto_tx"
-              %a{:href=>"/conflict/#{@conflict.slug}?translate=#{ct.locale}"}= t("countries.language.#{ct.locale}")
+              -if request.host.match(/#{I18n.locale}\./)
+                %a{:href=>"#{Admin.local_url(ct.locale)}/conflict/#{@conflict.slug}"}= t("countries.language.#{ct.locale}")
+              -else
+                %a{:href=>"/conflict/#{@conflict.slug}?translate=#{ct.locale}"}= t("countries.language.#{ct.locale}")
         .col-md-1.col-sm-4
           %button.btn.btn-info{:onclick=>"$('#auto_tx_disclaimer').fadeOut()"}= t("v.info.close")
     :css
