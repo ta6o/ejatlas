@@ -805,7 +805,7 @@ Admin.controller do
     Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true)).each do |c|
       j = {"conflict"=>c}
       begin 
-        j["conflict"]["image"] = Conflict.find(c["id"]).images.first.thumb.url
+        j["conflict"]["image"] = Conflict.find(c["id"]).images.first.thumb_url
       rescue 
         j["conflict"]["image"] = "/images/bg.png"
       end
