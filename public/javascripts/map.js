@@ -46,7 +46,7 @@ function geoEach(f,l) {
 }
 
 function identify(e) {
-  console.log(e.target.options.s)
+  console.log(e)
   console.log(wmsLayers)
   if (wmsLayers.length == 0) return
   var sw = map.options.crs.project(map.getBounds().getSouthWest());
@@ -86,12 +86,16 @@ function identify(e) {
 
 function removeGutters() {
   $('#map > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tile-pane > div > div > img').each(function() {
+    console.log(this.getBoundingClientRect().width)
     if (String($( this ).css("width")).includes('.5') === false) {
       var imgW = String($( this ).css("width")).split( "px" ).join( ".5" )
       var imgH = String($( this ).css("height")).split( "px" ).join( ".5" )
-      $( this ).css("width", imgW);
-      $( this ).css("height", imgH);
+      console.log(imgW)
+      $( this ).width(imgW);
+      $( this ).height(imgH);
     }
+    console.log($( this ).width())
+    console.log(this.getBoundingClientRect().width)
   })
 }
 
@@ -99,6 +103,7 @@ function geoLayers() {
 
   $.each(layerranks,function(i,s){
     f = layerinfo[s]
+    console.log(f)
     if (f.type == "raster") {
       var styls = {}
       name = f["name"];
@@ -110,7 +115,6 @@ function geoLayers() {
       checked = "";
       bold = "";
       if (f["shown"] == 1) {
-        console.log(f)
         console.log(overlayMaps[name])
         overlayMaps[name].addTo(geoLayer);
         wmsLayers.push(name);
@@ -126,25 +130,32 @@ function geoLayers() {
       ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
       console.log(ranks)
       $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
+
+
+
     } else if (f.type == "vector") {
+
+
+
       var styls = {}
       name = f["name"];
       styl = f["style"]
+      idcol = f['id_column'];
       eval("styls[s] = "+styl);
 
       overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
-        buffer: 500,
         interactive: f["clickable"],
         transparent: true,
         vectorTileLayerStyles: styls,
         getFeatureId: function(fi) {
-          idcol = f['id_column'];
+          console.log(idcol)
           return fi.properties[idcol];
         },
         s: s
       }).on( {
           click:identify,
           mouseover: function(e) {
+            console.log(e)
             return
             layer = overlayMaps[name];
             idcol = f['id_column'];
@@ -335,7 +346,7 @@ function initMap() {
       box.prop('checked',true);
       map.addLayer(overlayMaps[name]);
       title.css('font-weight','bold');
-      console.log(overlayMaps[name])
+      //console.log(overlayMaps[name])
       if (Object.keys(overlayMaps[name]).indexOf("_vectorTiles") >= 0) {
         wmsLayers.push(name);
       }

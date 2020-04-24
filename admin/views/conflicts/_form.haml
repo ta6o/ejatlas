@@ -1379,6 +1379,9 @@
           .group
             .required=f.error_message_on :approval_status
             %label{:for=>"conflict_approval_status"}= t("f.conflict.approval_status")
+            -if @conflict.approval_status == "auto_tx"
+              %label.checkbox.inline.apstat
+                %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'auto_tx',:name=>'conflict[approval_status]',:disabled=>true}=" &nbsp;#{t("f.conflict.auto_tx")}".html_safe
             %label.checkbox.inline.apstat
               %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'deleted',:name=>'conflict[approval_status]'}=" &nbsp;#{t("f.conflict.deleted")}".html_safe
             %label.checkbox.inline.apstat

@@ -26,8 +26,14 @@
               %a{:onclick=>"update_attrs()",:href=>"#"} Update layer attributes
 
           .col-sm-6
-            -available = JSON.parse(@layer.attributes_available)
-            -omitted = JSON.parse(@layer.attributes_omitted)
+            -begin
+              -available = JSON.parse(@layer.attributes_available)
+            -rescue
+              -available = []
+            -begin
+              -omitted = JSON.parse(@layer.attributes_omitted)
+            -rescue
+              -omitted = []
 
             .group
               %label{:for=>:id_column} ID Column

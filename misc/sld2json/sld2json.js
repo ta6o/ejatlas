@@ -427,23 +427,25 @@ function getGeometryObj(symbTag, obj) {
 function getGraphicObj(file, symbTag, type, obj) {
   var fillColor;
   try {
-    try {
-      fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['Function'][0]['Literal'][1];
-    } catch(e) {
-      fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['_'];
-    }
-    console.log(fillColor)
-    var color = '#' + fillColor;
-    var regInteger = /^\d+$/;
-    if (!regInteger.test(fillColor)) {
-      console.log('Different graphic tag: '+fillColor+ ' from file: '+ file);
-      obj['icon-color'] = fillColor;
-    } else {
-      obj['icon-color'] = color;
-    }
+    fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['_'];
+    obj['icon-color'] = fillColor;
   } catch (err) {
     console.log('Could not set fill color for graphic tag in file: ' + file + "\n" + err + "\n");
-    console.log(symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'])
+  }
+  var strokeColor;
+  try {
+    strokeColor = symbTag[0].Graphic[0].Mark[0].Stroke[0]['SvgParameter'][0]['_'];
+    obj['line-color'] = strokeColor;
+  } catch (err) {
+    console.log('Could not set stroke color for graphic tag in file: ' + file + "\n" + err + "\n");
+  }
+  var strokeWidth;
+  try {
+    strokeWidth = symbTag[0].Graphic[0].Mark[0].Stroke[0]['SvgParameter'][1]['_'];
+    obj['line-width'] = strokeWidth;
+  } catch (err) {
+    console.log('Could not set stroke width for graphic tag in file: ' + file + "\n" + err + "\n");
+    console.log(symbTag[0].Graphic[0].Mark[0].Stroke[0]['SvgParameter'][1])
   }
   //Sets size
   try {
