@@ -1730,6 +1730,7 @@
                   %button#tx{:disabled=>true}= t("f.conflict.translate")
                 :javascript
                   $("#tx").on("click",function(e){
+                    e.preventDefault();
                     window.location = "/conflicts/translation_redirect/#{@conflict.id}/"+$("select.tx option:selected").val();
                   })
                   $(".tx").on("change",function(e){
