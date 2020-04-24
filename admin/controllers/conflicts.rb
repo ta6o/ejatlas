@@ -303,7 +303,7 @@ Admin.controllers :conflicts do
     rescue
       pass
     end
-    if @conflict.local_data.approval_status == "auto_tx"
+    if @conflict.local_data and @conflict.local_data.approval_status == "auto_tx"
      @conflict.local_data.destroy
     end
     unless @conflict.local_data

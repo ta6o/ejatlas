@@ -18,7 +18,7 @@
       if (typeof initMap === 'function' ) {
         initMap();
         showMarkers(markerinfo);
-        getInfo (#{@cid},"#{@name}",#{@pos.to_s.html_safe},#{@zoom},true);
+        getInfo (#{@conflict.id},"#{@name}",#{[@conflict.lat, @conflict.lon].to_s.html_safe},#{@zoom},true);
       } else {
         setTimeout(onLoad,10);
       }
@@ -36,19 +36,19 @@
       #commands{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
         %ul.clearfix.list-unstyled
           %li
-            %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org%2Fconflict%2F#{@slug}",:target=>"_blank",:title=>"Share on Facebook"}
+            %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org%2Fconflict%2F#{@conflict.slug}",:target=>"_blank",:title=>"Share on Facebook"}
               #share_fb 
                 #img &nbsp;
           %li
-            %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out "+@name.split(',')[0]+" on #EJAtlas:")}&url=#{$siteurl}/conflict/#{@slug}",:target=>"_blank",:title=>"Tweet"}
+            %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out "+@name.split(',')[0]+" on #EJAtlas:")}&url=#{$siteurl}/conflict/#{@conflict.slug}",:target=>"_blank",:title=>"Tweet"}
               #share_tw 
                 #img &nbsp;
           %li
-            %a{:href=>"/print/#{@slug}",:target=>"_blank",:title=>"Full page"}
+            %a{:href=>"/print/#{@conflict.slug}",:target=>"_blank",:title=>"Full page"}
               %span.glyphicon.glyphicon-print
           -if current_account.editor?
             %li
-              %a{:href=>"/conflicts/edit/#{@id}",:target=>"_blank",:title=>"Edit"}
+              %a{:href=>"/conflicts/edit/#{@conflict.id}",:target=>"_blank",:title=>"Edit"}
                 %span.glyphicon.glyphicon-edit
         %span#modified{:style=>"text-align:center;color:#666;margin-top:-6px;",:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
           =@modified.html_safe
@@ -57,14 +57,14 @@
     .clearfix#disclaimer
       %h2= @maptitle
 
-  -if @images.any?
+  -if @conflict.images.any?
     .full.row
       #carousel_container{:style=>'display:none'}
         #left_scroll
           %span.glyphicon.glyphicon-chevron-left
         #carousel_inner
           %ul#carousel_ul
-            -@images.order(:created_at).each do |image|
+            -@conflict.images.order(:created_at).each do |image|
               -#next unless File.exists?("#{image.file.store_path}#{i.file.file.filename}")
               -next if image.lost
               %li
@@ -158,9 +158,9 @@
           });
         });
 
-  -if @headline
+  -if @conflict.headline and @conflict.headline.length > 0 
     %p.headline
-      %em= @headline
+      %em= @conflict.headline
     %br/
 
   #conflict_summary=(@summary||"").html_safe
@@ -180,6 +180,44 @@
       #disqus_thread
 
 -content_for :body_end do
+  -if @conflict.approval_status == "auto_tx"
+    #auto_tx_disclaimer
+      .row
+        .col-md-11.col-sm-8
+          %p.auto_tx_disclaimer
+            This case form has been translated for your convenience using translation software powered by Google Translate. Therefore, they may contain errors. Any discrepancies or differences created in translating this content from the original version into another language are not binding and have no legal effect. If any questions arise related to the accuracy of the information contained in these translations, please refer to the version of the case in:
+            -@conflict.conflict_texts.each do |ct|
+              -next if ct.approval_status == "auto_tx"
+              %a{:href=>"/conflict/#{@conflict.slug}?translate=#{ct.locale}"}= t("countries.language.#{ct.locale}")
+        .col-md-1.col-sm-4
+          %button.btn.btn-info{:onclick=>"$('#auto_tx_disclaimer').fadeOut()"}= t("v.info.close")
+    :css
+      #auto_tx_disclaimer {
+        position:fixed;
+        bottom: 0px;
+        right: 0px;
+        z-index: 9999;
+        width: 100%;
+        background: #666;
+        color: white;
+        padding:12px 12px 0;
+      }
+      #auto_tx_disclaimer button {
+        float: right;
+        margin: 4px 12px;
+      }
+      #auto_tx_disclaimer a,
+      #auto_tx_disclaimer a:focus {
+        color: white;
+        font-weight: bold;
+        text-decoration: underline;
+      }
+      #auto_tx_disclaimer a:hover {
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
   :javascript
     var disqus_shortname = 'ejatlas'; 
     (function() { 

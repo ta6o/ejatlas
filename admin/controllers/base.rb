@@ -240,6 +240,7 @@ Admin.controller do
         pass
       end
     end
+    @conflict = c
     @markerinfo = c.accurate_marker
     @cmarker = c.as_marker.to_json
     @defs = []
@@ -251,22 +252,15 @@ Admin.controller do
     @defs = @defs.to_set.to_a
     @vectors = c.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
     @name = c.name
-    @id = c.id
-    @slug = c.slug
-    @desc = c.description
-    @headline = c.headline
     @modified = c.modified_at ? "#{I18n.t('f.conflict.last_update',:locale=>I18n.locale)}:<br/><b>#{I18n.l(c.modified_at.to_date)}</b>".gsub(/\s+/,"&nbsp;") : "&nbsp;"
     @title = c.title
     @ogimage = c.images.first.file.url if c.images.any?
-    @cid = c.id 
     @maptitle = c.name
-    @pos = [c.lat,c.lon]
-    @images = c.images
     @zoom = 8
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
     @baselayers = $baselayers
     @related = c.related
-    @headline = c.headline and c.headline.length > 0 ? c.headline : nil
+    @headline = c.headline
     @summary = c.table
     c.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
