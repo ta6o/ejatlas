@@ -470,7 +470,7 @@
 
             :javascript
               $(document).ready(function(){
-                $('.d_actor').live('click', function(e){
+                $('.d_actor').on('click', function(e){
                   par = $(this).closest('.actor');
                   id = par.children('div').children('div').children('input').val();
                   model = par.parent().attr('class').replace('_list','')
@@ -778,7 +778,7 @@
 
           :javascript
             $(document).ready(function(){
-              $('.desrad').live('click', function() { 
+              $('.desrad').on('click', function() { 
                 var previousValue = $(this).attr('previousValue');
                 if(previousValue == 'true'){
                   $(this).prop('checked', false)
@@ -907,7 +907,7 @@
             $('#m_'+model).on('shown.bs.modal', function() {
               $('#'+model+'_description').focus();
             });
-            $('.d_'+model).live('click', function(e){
+            $('.d_'+model).on('click', function(e){
               par = $(this).closest('.'+model);
               id = par.find('textarea').attr('name').split('_')[2];
               html = '<input name="'+model+'_remove_'+id+'" type="hidden"></input>';
@@ -1321,13 +1321,13 @@
                     $('#document_title').focus();
                     $('#b_document').removeClass('disabled');
                   });
-                  $('.d_document').live('click', function(e){
+                  $('.d_document').on('click', function(e){
                     par = $(this).closest('.document');
                     id = par.find('input').attr('name').split('_')[2];
                     html = '<input name="document_remove_'+id+'" type="hidden"></input>';
                     par.html(html);
                   });
-                  $('.d_image').live('click', function(e){
+                  $('.d_image').on('click', function(e){
                     par = $(this).closest('.document');
                     id = par.find('input').attr('name').split('_')[2];
                     html = '<input name="image_remove_'+id+'" type="hidden"></input>';
@@ -1881,8 +1881,10 @@
       $("#fixed").css("opacity",1);
       window.location.hash = window.location.hash.split("&")[0];
     }
-
-    wlh = $('#conflict-tabs > li > a[href='+lochash[0]+']');
+    if (lochash[0] == "") {
+      lochash[0] == "#none";
+    }
+    wlh = $('#conflict-tabs > li > a[href=\\'+lochash[0]+']');
     if (wlh.length > 0) {
       wlh.tab('show',function(){
         window.scrollTo(0,0);

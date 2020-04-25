@@ -4,9 +4,12 @@
     %span
       UID:
       %b= @filter.uid
-    %pre#query{:style=>"font-family:sans-serif, sans; line-height:16px;"}
+    -#%pre#query{:style=>"font-family:sans-serif, sans; line-height:16px;"}
 
   .col-md-8
+    %br/
+    %br/
+    %br/
     #filter-row.block{'data-width'=>350}
       #filter= render "base/filter", :layout => false
 
