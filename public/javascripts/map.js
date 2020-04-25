@@ -86,16 +86,12 @@ function identify(e) {
 
 function removeGutters() {
   $('#map > div.leaflet-pane.leaflet-map-pane > div.leaflet-pane.leaflet-tile-pane > div > div > img').each(function() {
-    console.log(this.getBoundingClientRect().width)
     if (String($( this ).css("width")).includes('.5') === false) {
       var imgW = String($( this ).css("width")).split( "px" ).join( ".5" )
       var imgH = String($( this ).css("height")).split( "px" ).join( ".5" )
-      console.log(imgW)
       $( this ).width(imgW);
       $( this ).height(imgH);
     }
-    console.log($( this ).width())
-    console.log(this.getBoundingClientRect().width)
   })
 }
 
@@ -208,7 +204,7 @@ function geoLayers() {
 }
 
 function initMap() {
-  console.log("map init")
+  //console.log("map init")
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');
@@ -820,8 +816,8 @@ function onResize() {
   }
   if ($('#carousel_container').length > 0){resetCarousel();}
   resetColumns();
-  removeGutters();
   dragEnd();
+  removeGutters();
 }
 
 function dragEnd() {

@@ -16,10 +16,6 @@ class Featured < ActiveRecord::Base
   validates_presence_of :slug
   #validates_uniqueness_of :slug
 
-  def inspect
-    self.name
-  end
-
   before_save :set_slug
 
   def jsonize
@@ -39,10 +35,22 @@ class Featured < ActiveRecord::Base
     return self.viewport.split("|")
   end
 
+  def followed
+    JSON.parse(self.conflicts_marker).map{|x| Conflict.find(JSON.parse(x)["i"])}
+  end
+
+  def followed_count
+    JSON.parse(self.conflicts_marker).length
+  end
+
   def filterping
     filter = "{}"
     filter = self.filter if self.filter.length > 0
-    self.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
+    begin
+      self.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
+    rescue
+      self.ping((Admin.old_filter(filter) || []).sort{|a,b| a.slug <=> b.slug})
+    end
   end
 
   def ping conflicts
@@ -194,6 +202,10 @@ class Featured < ActiveRecord::Base
 
   def self.find_name name
     Featured.where(:name=>slug.downcase).first
+  end
+
+  def inspect
+    "Featured ##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.followed_count.to_s.magenta} #{"conflicts".magenta})"
   end
 
   private

@@ -149,10 +149,9 @@
   .col-md-4
     .group
       =f.label :filter
-      %a.btn{:onclick=>"$('#filter-modal').modal('show');"} Edit filter options
-      =f.error_message_on :filter
-      ~f.text_field :filter, :class => :text_field
-      #filter-info
+      #filter-info= "Featuring #{@followed.count} cases."
+      ~f.text_field :filter, :class => :text_field, :style=>"display:none;"
+      %a.btn.btn-info{:onclick=>"$('#filter-modal').modal('show');"} Edit filter options
 
     .group#tfields
       %label Tags
@@ -366,10 +365,13 @@
       .group
         #filter-head
         #filter-list
-          .clearfix
-            %strong.pull-left{:style=>'margin:8px 0 0 -15px'}= "Showing #{@followed.count} filtered cases."
-            %a.btn.pull-left{:href=>"/featureds/export/#{@featured.id}"} Export CSV
-            %a.btn.pull-left{:onclick=>"$('#csv-modal').modal('show');"} Import CSV
+          %strong= "Showing #{@followed.count} filtered cases."
+          %small (Please save the map to update filter changes)
+          %br/
+          %a{:href=>"/featureds/export/#{@featured.id}"} Export CSV
+          &nbsp; 
+          %a{:onclick=>"$('#csv-modal').modal('show');"} Import CSV
+          %br/
           %br/
           -@followed.each do |conflict|
             .row
@@ -583,3 +585,15 @@
     $('#featured_viewport').val(center);
     $('#viewport-modal').modal('hide');
   }
+
+-content_for :body_end do
+  :css
+    #conflict_filter, #conflict_filter .body { height: unset}
+  :javascript
+    $(document).ready(function(){
+      data = #{@featured.filter.html_safe};
+      hash = #{@filterhash.to_json.html_safe};
+      console.log(data)
+      dive(data,[],hash)
+    })
+

@@ -211,7 +211,7 @@ Admin.controller do
     #last_modified ca.updated_at
     @filterform = {}
     @filterform = JSON.parse(ca.filterdata) if ca
-    @filter = render "base/filter", :layout => false
+    @filterhtml = render "base/filter", :layout => false
     @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>@global ? "en" : I18n.locale).count
     countries = ca.countries ? JSON.parse(ca.countries) : []
     companies = ca.companies ? JSON.parse(ca.companies) : []
@@ -693,21 +693,37 @@ Admin.controller do
     else
       redirect to "/filters"
     end
+    @filterform = {}
+    ca = Cached.where(:locale=>I18n.locale)
+    @filterform = JSON.parse(ca.first.filterdata) if ca.any?
+    @filterhash = {}
+    if @filter.query.match(/"(country_id|companies|supporters|country_of_company)":"/)
+      @filter.query.scan(/("(country_id|companies|supporters|country_of_company)":"\d+")/).each do |a|
+        @filterhash[a[1]] = {} unless @filterhash.has_key?(a[1])
+        id = a[0].gsub(/"/,"").split(":")[-1].to_i
+        val = {"country_id"=>Country,"companies"=>Company,"supporters"=>Supporter,"country_of_company"=>Country}[a[1]].find(id).name.strip
+        @filterhash[a[1]][id] = val
+      end
+    end
+    pp @filterhash
     render "base/editfilter", :layout => "application"
   end
 
   post :savefilter do
     pass unless current_account
-    unless filter = Filter.find_by_query(params["data"])
-      filter = Filter.create(query: params["data"], account_id: current_account.id)
+    unless filter = Filter.find_by_uid(params["uid"])
+      unless filter = Filter.where(:query=>params["data"],:account_id=>current_account.id)
+        filter = Filter.new(account_id: current_account.id)
+      end
     end
+    filter.update! :query => params["data"]
     return filter.uid
   end
 
   post :filter do
     #pp params["filter"]
     if params['page_type'] == "feat"
-      (Admin.filter(params["filter"]).map{|i| begin Conflict.select('id, slug, name').find(i['_id'].to_i) rescue nil end }-[nil]).sort{|a,b| a.slug <=> b.slug}.to_json
+      Admin.filter(params["filter"],false).to_json
     elsif params['page_type'] == "network" or params['page_type'] == "graph"
       result = Admin.filter(params["filter"],true,params["fields"].split(","))
       response = {"_count"=>result.length,"_names"=>{}}
@@ -801,6 +817,7 @@ Admin.controller do
   end
 
   get :more_recent do
+    #puts params[:filter]
     result = []
     Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true)).each do |c|
       j = {"conflict"=>c}

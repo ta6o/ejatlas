@@ -510,11 +510,13 @@
       var categoryHash = #{CGI.unescapeHTML($cathash.to_json).html_safe};
 
     -if ENV['RACK_ENV'] == 'development'
+      %script{:src=>"/javascripts/main-dev.js",:type=>"text/javascript"}
+      %script{:src=>"/javascripts/map.js",:type=>"text/javascript"}
       :javascript
         conflict = false;
         $full = true;
         //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/Leaflet.VectorGrid.bundled.js','/javascripts/leaflet-tilelayer-wms-headers.js','/javascripts/VectorTileLayer.min.js','/javascripts/map.js'); 
-        jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
+        //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
     -else
       :javascript
         conflict = false;

@@ -1198,7 +1198,7 @@ class AsyncTask
       
       filterdata["project"] = {}
       filterdata["project"]["commodity"] = {:content=>Product.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"products"}
-      filterdata["project"]["level_of_investment"] = {:content=>"0:24",:name=>"investment_sum"}
+      filterdata["project"]["level_of_investment"] = {:content=>"0-24",:name=>"investment_sum"}
       filterdata["project"]["company"] = {:content=>'auto',:name=>"companies"}
       filterdata["project"]["country_of_company"] = {:content=>'auto',:name=>"country_of_company"}
       filterdata["project"]["financial_institution"] = {:content=>'auto',:name=>"supporters"}
@@ -1206,8 +1206,8 @@ class AsyncTask
       filterdata["project"]["project_details"] = {:content=>'flat'}
       
       filterdata["conflict"] = {}
-      filterdata["conflict"]["start_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"start_datestamp"}
-      filterdata["conflict"]["end_date"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"end_datestamp"}
+      filterdata["conflict"]["start_date"] = {:content=>"#{(Time.now-100.years).year}-#{Time.now.year}",:name=>"start_datestamp"}
+      filterdata["conflict"]["end_date"] = {:content=>"#{(Time.now-100.years).year}-#{Time.now.year}",:name=>"end_datestamp"}
       filterdata["conflict"]["intensity"] = {:content=>Status.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"status_id"}
       filterdata["conflict"]["reaction_stage"] =  {:content=>Reaction.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"reaction_id"}
       filterdata["conflict"]["description"] = {:content=>'flat'}

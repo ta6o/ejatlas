@@ -6,7 +6,6 @@ class Filter < ActiveRecord::Base
   validate :unique
 
   def inspect
-    puts JSON.pretty_generate(JSON.parse(Filter.last.query))
     self.uid
   end
 

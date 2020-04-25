@@ -48,8 +48,8 @@
                         .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-section"=>"prefix"}
                           %icon.glyphicon{:class=>"glyphicon-arrow-#{$dir == "ltr" ? "right":"left"}"}
                     %ul
-                -elsif options['content'].match(/\d+:\d+/)
-                  -range = options['content'].split(':')
+                -elsif options['name'].match(/(_datestamp|_sum)$/)
+                  -range = options['content'].split('-')
                   %h4= "#{t "v.filter.#{field.shorten_en}"}"
                   .slider{:id=>"#{field}-slider"}
                   .clearfix{:style=>'width:100%'}
@@ -61,7 +61,7 @@
                       %input.lte{:type=>'number',:id=>"#{field}-lte",:value=>range[1]}
                   %ul
                     %li
-                      %span.drag.graybg{:id=>"#{field}-drag","data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-value"=>"#{range[0]}:#{range[1]}"}
+                      %span.drag.graybg{:id=>"#{field}-drag","data-section"=>"field","data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-value"=>"#{range[0]}-#{range[1]}"}
                         %strong= "#{t "v.filter.#{field.shorten_en}"}:"
                         ="#{range[0]} - #{range[1]}"
                   -if name == 'investment_sum'
@@ -136,7 +136,7 @@
                           slide: function( event, ui ) {
                             $(".options ##{field}-gte").val(ui.values[0]);
                             $(".options ##{field}-lte").val(ui.values[1]);
-                            $(".options ##{field}-drag").attr('data-value',ui.values[ 0 ]+":"+ui.values[ 1 ]);
+                            $(".options ##{field}-drag").attr('data-value',ui.values[ 0 ]+"-"+ui.values[ 1 ]);
                             $(".options ##{field}-drag").html("<strong>#{t "v.filter.#{field.shorten_en}"}:</strong> "+ui.values[ 0 ]+" - "+ui.values[ 1 ]);
                           }
                         });
@@ -153,9 +153,10 @@
           -if @page_type == "graph"
             %span.count &nbsp;
           .ready
-            .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"}= t "v.filter.apply"
+            -unless @filter
+              .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"}= t "v.filter.apply"
             .btn.btn-default{:onclick=>'clearFilter()'}= t "v.filter.clear"
-            -if current_account
+            -if current_account and @page_type != "feat"
               .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"}= t "v.filter.save"
             -if @page_type == "graph"
               .btn.btn-default{'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
@@ -335,7 +336,8 @@
       if (that.prop('tagName')=='SPAN') {
         $(that).find('strong').detach()
         text = $(that).text();
-        return $('<span title="'+toTitleCase($(that).attr('data-field-local').replace(/_/g,' '))+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+$(that).attr('data-field-local')+':</strong> '+(text)+'</span>');
+        dfl = toTitleCase($(that).attr('data-field-local').replace(/_/g,' '));
+        return $('<span title="'+dfl+': '+$(that).text()+'"data-value="'+$(that).attr('data-value')+'" data-field="'+$(that).attr('data-field')+'" data-name="'+$(that).attr('data-name')+'" data-section="'+$(that).attr('data-section')+'" data-field-local="'+$(that).attr('data-field-local')+'" class="drag graybg" ><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+dfl+':</strong> '+(text)+'</span>');
       } else if ($(that).prop('tagName')=='DIV') {
         if ($(that).attr('class').split(' ').indexOf('idrag') >= 0) {
           that = $(that).find('div')
@@ -357,35 +359,38 @@
       sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');
     };
 
+
+
     function serializeFilter(page_type){
-      function dive(el,ro){
-        $.each(el.children().not('icon'),function(i,e){
+      function sdive(el,ro){
+        $.each(el.find("> span"),function(i,e){
           e = $(e);
-          if (e.prop('tagName')=="SPAN") {
-            key = e.attr('data-name');
-            val = e.attr('data-value').toLowerCase().replace(/^\s+/,'').replace(/\s+$/,'');
-            if (e.attr('data-section') == 'prefix' && val.split(/\s/).length > 1) {
-              terms = ""
-              $.each(val.split(/\s/),function(i,e){
-                terms += "<term><"+key+">"+e+"</"+key+"></term>";
-              })
-              $('<must>'+terms+'</must>').appendTo($('<bool></bool>').appendTo(ro));
-            } else {
-              $('<'+key+'>'+val+'</'+key+'>').appendTo($('<term></term>').appendTo(ro));
-            }
-          } else if (e.prop('tagName')=="DIV") {
-            e = $(e.find('div'))
-            if (e.find('div, span').length == 0) return true
-            filter = {"or":"should","and":"must","not":"must_not"}[e.attr("data-value")]
-            dive(e,$('<'+filter+'></'+filter+'>').appendTo($('<bool></bool>').appendTo(ro)));
+          key = e.attr('data-name');
+          if (key.match(/_(datestamp|sum)$/)) {
+            val = e.attr('data-value').toLowerCase().replace(/^\s+/,'').replace(/\s+$/,'').replace("-",":");
           } else {
-            //console.log (e)
+            val = e.attr('data-value').toLowerCase().replace(/^\s+/,'').replace(/\s+$/,'');
           }
-        });
+          if (e.attr('data-section') == 'prefix' && val.split(/\s/).length > 1) {
+            terms = ""
+            $.each(val.split(/\s/),function(i,e){
+              terms += "<term><"+key+">"+e+"</"+key+"></term>";
+            })
+            $('<must>'+terms+'</must>').appendTo($('<bool></bool>').appendTo(ro));
+          } else {
+            $('<'+key+'>'+val+'</'+key+'>').appendTo($('<term></term>').appendTo(ro));
+          }
+        })
+        $.each(el.find("> div"),function(i,e){
+          e = $(e).find('> div');
+          if (e.find('> div, > span').length == 0) return true
+          filter = {"or":"should","and":"must","not":"must_not"}[e.attr("data-value")]
+          sdive(e,$('<'+filter+'></'+filter+'>').appendTo($('<bool></bool>').appendTo(ro)));
+        })
       }
       var root = $('<query><bool></bool></query>')
       log = {"or":"should","and":"must","not":"must_not"}[$('.root.dropbox').attr('data-value')]
-      dive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find("bool")));
+      sdive($('.root.dropbox'),$('<'+log+'></'+log+'>').appendTo($(root).find("bool")));
       //if (root.html() == "<bool><should></should></bool>") {root.html("<bool><should><match_all>{}</match_all></should></bool>")};
       query = JSON.stringify($.xml2json(root.html()));
       if (query.match(/{"(should|must|must_not)":""}/)) query = '{"should":{"match_all":{}}}';
@@ -397,6 +402,7 @@
       } 
       return {data:data,query:query}
     }
+
     function saveFilter(data){
       $.ajax({
         type: "POST",
@@ -427,8 +433,9 @@
             filterFollowed(data);
             $('#featured_filter').val(query);
             $('#filter-modal').modal('hide');
+            $('#filter-info').text("Featuring "+data.length+" cases.")
           } else if (page_type == 'network' || page_type == 'graph') {
-            console.log(data)
+            //console.log(data)
 
             count = data._count;
             names = data._names;
@@ -454,5 +461,71 @@
     }
     function toTitleCase(str) {
       return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
+
+    function makeid(length,arr) {
+      var result           = '';
+      var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var charactersLength = characters.length;
+      for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+    }
+
+    function random_id(l,a) {
+      r = makeid(l, a);
+      while (a.indexOf(r) >= 0) {
+        r = makeid(l, a);
+      }
+      return r
+    }
+
+    function dive(obj, level, hash) {
+      $.each(obj,function(k,v){
+        lvl = level.slice();
+        if (["must","should","must_not"].indexOf(k) >= 0) {
+          val = {"must":"and","should":"or","must_not":"not"}[k];
+          rid = random_id(3,lvl)
+          if (lvl.length == 0) {
+            elem = $("#filter .body .root");
+            elem.attr("id", rid);
+            elem.attr("data-value", val);
+            elem.removeClass("and or not").addClass(val);
+          } else {
+            elem = $("#filter .body #"+lvl.join(" #"));
+            elem.append("<div><div id='"+rid+"' data-value='"+val+"' data-section='box' class='dropbox "+val+" ui-sortable'><icon class='glyphicon glyphicon-chevron-down op ui-sortable-handle'></icon></div></div>")
+          }
+          lvl.push(rid)
+        }
+        sp = ""
+        $.each(lvl, function(i,e) { sp += "  "})
+        //console.log(sp+"K: "+k+", L: ["+lvl.join(", ")+"], T: "+(typeof v))
+        if (typeof v == "object") {
+          dive(v, lvl, hash) 
+        } else if ($("#filter .data ul li span[data-name="+k+"][data-value="+v+"]").length > 0){
+          orig = $("#filter .data ul li span[data-name="+k+"][data-value="+v+"]")
+          span = '<span title="'+orig.data('field-local')+': '+orig.text()+'" data-value="'+orig.data('value')+'" data-field="'+orig.data('field')+'" data-name="'+orig.data('name')+'" data-section="field" data-field-local="'+orig.data('field-local')+'" class="drag graybg"><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+orig.data('field-local')+':</strong> '+orig.text()+'</span>'
+          elem = $("#filter .body #"+lvl.join(" #"));
+          elem.append(span)
+        } else if (["country_id","companies","supporters","country_of_company"].indexOf(k) >= 0) {
+          elem = $("#filter .body #"+lvl.join(" #"));
+          orig = $("#filter .data input[data-name="+k+"]")
+          span = '<span title="'+orig.data('field-local')+': '+hash[k][v]+'" data-value="'+v+'" data-field="'+orig.data('field')+'" data-name="'+orig.data('name')+'" data-section="field" data-field-local="'+orig.data('field-local')+'" class="drag graybg"><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+orig.data('field-local')+':</strong> '+hash[k][v]+'</span>'
+          elem.append(span)
+        } else if (k.match(/_datestamp$/)) {
+          v = v.replace(":","-")
+          val = v.replace("-"," - ")
+          elem = $("#filter .body #"+lvl.join(" #"));
+          orig = $("#filter .data span[data-name="+k+"]")
+          span = '<span title="'+orig.data('field-local')+': '+val+'" data-value="'+v+'" data-field="'+orig.data('field')+'" data-name="'+orig.data('name')+'" data-section="field" data-field-local="'+orig.data('field-local')+'" class="drag graybg"><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+orig.data('field-local')+':</strong> '+val+'</span>'
+          elem.append(span)
+        } else {
+          elem = $("#filter .body #"+lvl.join(" #"));
+          t = $("#filter .panel-body ul li a[data-id="+k+"]").text();
+          span = '<span title="'+t+':  '+v+'" data-value="'+v+'" data-field="'+k+'" data-name="'+k+'" data-section="prefix" data-field-local="'+orig.data('field-local')+'" class="drag graybg"><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+t+':</strong>  '+v+'</span>'
+          elem.append(span)
+        }
+      })
     }
 

@@ -62,7 +62,7 @@ Admin.controllers :featureds do
       @contained[$attrhash.select{|k,v| v == val}.keys.first] = val
     end
     begin
-      @followed = JSON.parse(@featured.conflicts_marker).map{|x| Conflict.find(JSON.parse(x)["i"])}
+      @followed = @featured.followed
     rescue => e
       @followed = nil
       #puts e.to_s.red
@@ -70,6 +70,15 @@ Admin.controllers :featureds do
       #puts "...".red
     end
     @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
+    @filterhash = {}
+    if @featured.filter.match(/"(country_id|companies|supporters|country_of_company)":"/)
+      @featured.filter.scan(/("(country_id|companies|supporters|country_of_company)":"\d+")/).each do |a|
+        @filterhash[a[1]] = {} unless @filterhash.has_key?(a[1])
+        id = a[0].gsub(/"/,"").split(":")[-1].to_i
+        val = {"country_id"=>Country,"companies"=>Company,"supporters"=>Supporter,"country_of_company"=>Country}[a[1]].find(id).name.strip
+        @filterhash[a[1]][id] = val
+      end
+    end
     @mania = ['types','products','conflict_events','mobilizing_groups','mobilizing_forms','companies']
     @imps = ['env_impacts','hlt_impacts','sec_impacts']
     render 'featureds/edit'
@@ -78,7 +87,7 @@ Admin.controllers :featureds do
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
     redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or current_account.editor?)
-    pp params
+    #pp params
     rank = 0
     (params.delete("vectors") || []).each do |id, data|
       vector = VectorDatum.find(id)
@@ -114,9 +123,7 @@ Admin.controllers :featureds do
       end
     end
     params[:featured][:color].gsub! /#/, ''
-    unless params[:featured].has_key?('published')
-      @featured.published = false
-    end
+    @featured.published = false unless params[:featured].has_key?('published')
     if @featured.update_attributes!(params[:featured])
       #puts "featured map saved".green
       flash[:notice] = 'Featured was successfully updated.'
@@ -165,14 +172,10 @@ Admin.controllers :featureds do
         redirect url(:featureds, :edit, :id => @featured.id)
       end
       features = JSON.parse(@featured.features || '{}')
-      begin
-        #puts "featured filter...".cyan
-        filter = "{}"
-        filter = @featured.filter if @featured.filter.length > 0
-        @featured.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
-      rescue => e
-        @featured.ping((Admin.old_filter(@featured.filter) || []).sort{|a,b| a.slug <=> b.slug})
-      end
+      puts "filterping".red
+      puts @featured.inspect
+      @featured.filterping
+      puts @featured.inspect
       return {:status=>"success",:message=>@error}.to_json
     else
       return {:status=>"error",:message=>"featured map not saved"}.to_json

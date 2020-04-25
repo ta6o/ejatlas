@@ -418,6 +418,7 @@ class Admin < Padrino::Application
       coc = nil
       range = nil
       obj.each do |key,val|
+        #puts "#{key.to_s.magenta}, #{key.class}"
         if val.is_a? String and val.length == 0 and key == "must"
           obj[key] = {}
         end
@@ -453,7 +454,7 @@ class Admin < Padrino::Application
             obj.delete('term')
           elsif key == "term" and val.values.first.is_a? String and val.values.first.match(/\d+:\d+/)
             k = val.keys.first
-            if k.match(/datestamp$/)
+            if k.match(/_datestamp$/)
               r = val.values.first.split(':').map{|i| i.to_i}
               r[0] = Date.new(r[0])
               r[1] = Date.new(r[1]+1) - 1.days
@@ -533,15 +534,16 @@ class Admin < Padrino::Application
   end
 
   def self.filter_recent offset=0, query={}, order="modified_at", size=6
-    #puts query.to_json.green
+    #puts JSON.pretty_generate(query).green
     if query.length > 0
-      filter = Admin.elasticify( { bool: { must: [ { match: { approval_status: "approved" }}, {bool: query}]}} )
+      filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse(query.to_json) }}} )
     elsif I18n.locale == :en
-      filter = Admin.elasticify( { bool: { must:   { match: { approval_status: "approved" }}, must_not: { match: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
+      filter = Admin.elasticify( { bool: { must:   { term: { approval_status: "approved" }}, must_not: { term: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     else
-      filter = Admin.elasticify( { bool: { must:   { match: { approval_status: "approved" }}}} )
+      filter = Admin.elasticify( { bool: { must:   { term: { approval_status: "approved" }}}} )
     end
     #Admin.color_pp(filter)
+    #puts JSON.pretty_generate(filter).yellow
     result = $client.search(index: "#{$esindex}_#{I18n.locale}", type: "conflict", body: {sort:{order=>{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
     #pp result
     result
@@ -549,16 +551,25 @@ class Admin < Padrino::Application
 
   def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type="conflict", sort="id", order="asc"
     return [] if !all_if_empty and ["{}","",nil].include?(filter)
+    if stored_fields == []
+      source = false
+    else
+      source = {"includes"=>stored_fields}
+    end
+    if filter.is_a? String
+      filter = JSON.parse(filter,:symbolize_keys => true)
+    end
+    #puts JSON.pretty_generate(filter).green
     if type == "conflict"
       if approved
-        filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse( filter ) }}} )
+        filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: filter }}} )
       else
-        filter = Admin.elasticify( { bool: { filter: { bool: JSON.parse( filter ) }}} )
+        filter = Admin.elasticify( { bool: { filter: { bool: filter }}} )
       end
       #puts JSON.pretty_generate(filter).yellow
-      result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+      result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
-      filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: JSON.parse( filter ) }}} )
+      filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: filter }}} )
       filter = Admin.cleanup(filter)
       result = $client.search(index: $esindex, type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     end
