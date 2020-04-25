@@ -689,7 +689,7 @@
 
             :javascript
               $(document).ready(function(){
-                $('.desrad').live('click', function() { 
+                $('.desrad').on('click', function() { 
                   var previousValue = $(this).attr('previousValue');
                   if(previousValue == 'true'){
                     $(this).prop('checked', false)
