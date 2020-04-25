@@ -158,6 +158,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "acronym", limit: 255
     t.string "logo_image", limit: 255
     t.integer "country_id"
+    t.integer "parent_id"
     t.text "other_products"
     t.text "conflicts_marker"
     t.text "conflicts_json"
@@ -544,6 +545,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "acronym", limit: 255
     t.string "url", limit: 255
     t.integer "country_id"
+    t.integer "parent_id"
     t.text "conflicts_marker"
     t.text "conflicts_json"
     t.text "conflicts_link"

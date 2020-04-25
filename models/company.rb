@@ -11,13 +11,17 @@ class Company < ActiveRecord::Base
   has_many :old_slugs, class_name: "OldSlug", as: :attachable, dependent: :destroy
   has_many :former_infos, class_name: "FormerInfo", as: :attachable, dependent: :destroy
 
-  belongs_to :country
+  belongs_to :parent, :class_name => "Company", :foreign_key => "parent_id"
 
   before_save :set_slug
   before_destroy :destroy_instance
 
   def inspect
     self.name
+  end
+
+  def children
+    Company.where(:parent_id=>self.id)
   end
 
   def jsonize

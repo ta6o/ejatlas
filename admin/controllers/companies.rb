@@ -182,7 +182,7 @@ Admin.controllers :companies do
     local.delete ""
     params["company"]["local_names"] = local.to_json
     @company = Company.find(params[:id])
-    if @company.update_attributes(params[:company])
+    if @company.update!(params[:company])
       flash[:notice] = 'Company was successfully updated.'
       redirect url(:companies, :edit, :id => @company.id)
     else

@@ -28,6 +28,12 @@
       =f.error_message_on :url
       =f.text_field :url, :class => :text_field
 
+    .group
+      =f.label :parent
+      =f.error_message_on :parent_id
+      %input.cautocomplete.ui-autocomplete-input{:type=>:text,:value=>(@supporter.parent ? @supporter.parent.name : "")}
+      %input.hautocomplete{:type=>:hidden,:name=>"supporter[parent_id]",:value=>(@supporter.parent ? @supporter.parent.id : "")}
+
   .col-md-4
     .group
       =f.label :description
@@ -98,3 +104,24 @@
 
   -rescue
     %p Corrupt local data
+
+-content_for :body_end do
+  :javascript
+
+    $( ".cautocomplete" ).autocomplete({
+      minLength: 3,
+      position: { my : "left top", at: "left bottom" },
+      source: function( request, response ) {
+        $source = "/ac_json/financial_institution";
+        $.ajax({
+          type: "GET",
+          url: $source+'?token='+request.term,
+          success: function(data){ response( JSON.parse(data) ); }
+        })
+      },
+      select: function( event, ui ) {
+        console.log(ui.item.label)
+        $('.hautocomplete').val(ui.item.value);
+        window.setTimeout(function(){$('.cautocomplete').val(ui.item.value);},100);
+      }
+    })

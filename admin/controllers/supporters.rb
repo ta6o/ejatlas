@@ -167,7 +167,7 @@ Admin.controllers :ifis do
     local.delete ""
     params["supporter"]["local_names"] = local.to_json
     @supporter = Supporter.find(params[:id])
-    if @supporter.update_attributes(params[:supporter])
+    if @supporter.update!(params[:supporter])
       flash[:notice] = 'supporter was successfully updated.'
       redirect url(:ifis, :edit, :id => @supporter.id)
     else
