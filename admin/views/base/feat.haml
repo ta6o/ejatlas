@@ -22,39 +22,6 @@
     :javascript
       layerinfo = #{@layers};
       layerranks = #{@ranks};
-  -if @view == [0,0,1]
-    :javascript
-      $(document).ready(onLoad);
-      function onLoad() {
-        if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
-          setTimeout(onLoad,10);
-        } else {
-          //console.log(markerinfo.length)
-          //console.log(legend)
-          if (markerinfo.length === 0 && false) {
-            legend = "";
-          }
-          initMap();
-          showMarkers(markerinfo);
-          mapFit();
-          if (#{@fid === 69}) { map.setMaxBounds()};
-        }
-      }
-  -else
-    :javascript
-      $(document).ready(onLoad);
-      function onLoad() {
-        if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
-          setTimeout(onLoad,10);
-        } else {
-          if (markerinfo.length === 0) {
-            legend = "";
-          }
-          initMap();
-          showMarkers(markerinfo);
-          map.setView([#{@view[0]},#{@view[1]}],#{@view[2]});
-        }
-      }
 
 .front
   %svg{:style=>'height:0'}
@@ -262,6 +229,40 @@
       #disqus_thread
 
 -content_for :body_end do
+  -if @view == [0,0,1]
+    :javascript
+      $(document).ready(onLoad);
+      function onLoad() {
+        console.log("not ready")
+        if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
+          setTimeout(onLoad,10);
+        } else {
+          //console.log(markerinfo.length)
+          //console.log(legend)
+          if (markerinfo.length === 0 && false) {
+            legend = "";
+          }
+          initMap();
+          showMarkers(markerinfo);
+          mapFit();
+          if (#{@fid === 69}) { map.setMaxBounds()};
+        }
+      }
+  -else
+    :javascript
+      $(document).ready(onLoad);
+      function onLoad() {
+        if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
+          setTimeout(onLoad,10);
+        } else {
+          if (markerinfo.length === 0) {
+            legend = "";
+          }
+          initMap();
+          showMarkers(markerinfo);
+          map.setView([#{@view[0]},#{@view[1]}],#{@view[2]});
+        }
+      }
   :javascript
     var disqus_shortname = 'ejatlas'; 
     (function() { 
