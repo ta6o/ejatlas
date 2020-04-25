@@ -367,6 +367,8 @@ ActiveRecord::Schema.define(version: 0) do
     t.boolean "public"
     t.text "description"
     t.integer "result_length"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "former_infos", force: :cascade do |t|

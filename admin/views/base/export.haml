@@ -29,12 +29,26 @@
         %label Limit
         %input{:type=>'number',:name=>'limit',:style=>'width:40px !important'}
         %br/
-        %br/
-        -#
-          %label Filter
-          %input{:type=>'text',:name=>'filter',:style=>'width:40px !important',:maxlength=>6}
-          %br/
-          %br/
+      
+        %label By Filter
+        -if current_account.editor?
+          -filters = Filter.order("updated_at desc")
+        -else
+          -filters = current_account.filters.order("updated_at desc")
+        %select#filter{:type=>'text',:name=>'filter'}
+          %option{:disabled=>true,:selected=>true} Please select a filter
+          -filters.each do |f|
+            %option{:value=>f.uid}= f.name || f.uid
+
+        %label By featured map
+        -if current_account.editor?
+          -feats = Featured.order("updated_at desc")
+        -else
+          -feats = current_account.featureds.order("updated_at desc")
+        %select#feat{:type=>'text',:name=>'feat'}
+          %option{:disabled=>true,:selected=>true} Please select a featured map
+          -feats.each do |f|
+            %option{:value=>f.id}= f.name
 
         %input{:type=>'checkbox',:name=>'split',:checked=>true} &nbsp; Split values to columns
         %br/
@@ -58,3 +72,11 @@
         %br/
         %input.btn.btn-warning{:type=>'submit',:value=>'Export companies',:style=>"width:100%;"}
 
+-content_for :body_end do
+  :javascript
+    $("#filter").on("change",function(){
+      $("#feat option:first").prop("selected","true")
+    })
+    $("#feat").on("change",function(){
+      $("#filter option:first").prop("selected","true")
+    })

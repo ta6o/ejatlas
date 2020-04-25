@@ -1,12 +1,40 @@
 .row
-  .col-md-4
+  .col-md-3.col-sm-4.col-xs-12
+    %br/
     %h3 Edit filter
-    %span
-      UID:
-      %b= @filter.uid
-    -#%pre#query{:style=>"font-family:sans-serif, sans; line-height:16px;"}
+    .group
+      %label{:for=>"name"} Name
+      %br/
+      %input#name{:name=>:name,:type=>:text,:style=>"width:100%;",:value=>@filter.name}
 
-  .col-md-8
+    .group
+      %label{:for=>"description"} Description
+      %br/
+      %textarea#description{:name=>:description,:rows=>5,:style=>"width:100%;"}= @filter.description
+
+    .group
+      %br/
+      %input#public{:name=>:public,:type=>:checkbox,:checked=>@filter.public}
+      %label{:for=>"public"} public?
+
+    .group
+      %button.btn.btn-info{:style=>"width:100%;",:onclick=>"saveFilter();"} SAVE
+
+    .group
+      %br/
+      %span
+        UID:
+        %b= @filter.uid
+      %br/
+      %br/
+      %span
+        Results in
+        %b#result= @filter.result_length || 0
+        cases.
+      -#%pre#query{:style=>"font-family:sans-serif, sans; line-height:16px;"}
+
+
+  .col-md-9.col-sm-8.col-xs-12
     %br/
     %br/
     %br/
@@ -20,17 +48,19 @@
     $(document).ready(function(){
       data = #{@filter.query.html_safe};
       hash = #{@filterhash.to_json.html_safe};
-      console.log(data)
       //$("pre#query").html(JSON.stringify(data, undefined, 2))
       dive(data,[],hash)
     })
-    function saveFilter(data){
+    function filterFollowed(data){
+      $("#result").text(data.length)
+    }
+    function saveFilter(){
       $.ajax({
         type: "POST",
         url: "/savefilter",
-        data: {uid:"#{@filter.uid}",data:serializeFilter().query},
+        data: {uid:"#{@filter.uid}",data:serializeFilter().query,name:$("#name").val(),description:$("#description").val(),"public":$("#public").prop("checked")},
         success: function(uid){
-          alert(window.location.origin+"/embed_filter/"+uid)
+          window.location.reload();
         }
       })
     }

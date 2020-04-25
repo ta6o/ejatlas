@@ -153,10 +153,9 @@
           -if @page_type == "graph"
             %span.count &nbsp;
           .ready
-            -unless @filter
-              .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"}= t "v.filter.apply"
+            .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"}= t "v.filter.apply"
             .btn.btn-default{:onclick=>'clearFilter()'}= t "v.filter.clear"
-            -if current_account and @page_type != "feat"
+            -if current_account and @page_type != "feat" and not @filter
               .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"}= t "v.filter.save"
             -if @page_type == "graph"
               .btn.btn-default{'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
@@ -354,9 +353,9 @@
       if (typeof map != 'undefined') {
         $('.map_icon').show();
         map.fitBounds(markerLayer.getBounds());
+        sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');
       }
       //$('#head p strong').text("#{t 'v.index.var_cases_reported',num_cases:'data_length'}".replace("data_length",$('.map_icon').length))
-      sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');
     };
 
 

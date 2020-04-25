@@ -686,6 +686,7 @@ Admin.controller do
   end
 
   get :editfilter, :with => :uid do
+    @page_type = "feat"
     pass unless current_account
     filter = Filter.find_by_uid(params["uid"])
     if filter and filter.account == current_account or current_account.editor?
@@ -716,8 +717,17 @@ Admin.controller do
         filter = Filter.new(account_id: current_account.id)
       end
     end
-    filter.update! :query => params["data"]
-    return filter.uid
+    pp params
+    filter.query = params["data"]
+    filter.result_length = Admin.filter(params["data"],false).length
+    filter.name = params["name"] if (params.has_key?("name"))
+    filter.description = params["description"] if (params.has_key?("description"))
+    filter.public = params["public"] if (params.has_key?("public"))
+    if filter.save
+      return filter.uid
+    else
+      return "error"
+    end
   end
 
   post :filter do
@@ -908,10 +918,14 @@ Admin.controller do
   post :export do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    if params.has_key?("filter") and params["filter"].length == 6 and flt = Filter.find_by_uid(params.delete("filter"))
-      params["idset"] = Admin.filter(flt.query).map {|x| x["_id"]}
+    if params.has_key?("filter") and params["filter"].length == 6 and flt = Filter.find_by_uid(params["filter"])
+      params["idset"] = Admin.filter(flt.query,false).map {|x| x["_id"]}
     end
     params.delete("filter")
+    if params.has_key?("feat") and feat = Featured.find(params["feat"])
+      params["idset"] = Admin.filter(feat.filter,false).map {|x| x["_id"]}
+    end
+    params.delete("feat")
     params["locale"] = I18n.locale
     params["run_by"] = current_account.name
     if params.delete("filetype") == "csv"

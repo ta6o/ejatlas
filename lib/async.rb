@@ -12,13 +12,16 @@ class AsyncTask
     locale = params.delete("locale").to_s
     I18n.locale = locale
     limit = params.delete("limit").to_i
+    limit = Conflict.count if limit == 0
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
+    pp params
     if params.has_key?("idset")
       stack = Conflict.order("#{order} #{ascdsc}").find(params["idset"])
     else
       stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
     end
+    p stack
     #stack = stack[0..(limit-1)] if limit > 0
     puts "#{stack.length} cases to be exported."
     #return stack.map(&:name).to_s
@@ -36,7 +39,7 @@ class AsyncTask
       break if limit < 0
       nfields = 0
       line = []
-      puts "#{conf.id} #{conf.name}"
+      #puts "#{conf.id} #{conf.name}"
       print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{job_id}"
       cont = conf.conflict_texts.where(:locale=>locale).first
       cont.attributes.each do |k,v|
