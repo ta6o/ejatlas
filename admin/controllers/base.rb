@@ -712,8 +712,11 @@ Admin.controller do
 
   post :savefilter do
     pass unless current_account
-    unless filter = Filter.find_by_uid(params["uid"])
-      unless filter = Filter.where(:query=>params["data"],:account_id=>current_account.id)
+    unless filter = Filter.find(params["uid"])
+      filter = Filter.where(:query=>params["data"],:account_id=>current_account.id)
+      if filter.any?
+        filter = filter.first
+      else
         filter = Filter.new(account_id: current_account.id)
       end
     end

@@ -39,6 +39,14 @@ class Filter < ActiveRecord::Base
     (0..5).map{ (('a'..'z').to_a+('A'..'Z').to_a+(0..9).to_a)[rand(62)] }.join
   end
 
+  def self.find id
+    if id.is_a? String and id.length == 6
+      Filter.find_by_uid(id)
+    else
+      Filter.find_by_id(id)
+    end
+  end
+
   def unique
     while self.new_record? && (self.uid == nil || Filter.find_by_uid(self.uid))
       self.uid = Filter.randomize

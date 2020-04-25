@@ -34,7 +34,7 @@ function showMarkers (ids) {
   console.log(ids)
   updateInfo(1, ids.length+" cases filtered." )
   classes = ".id_"+ids.join(", .id_");
-  //console.log(classes)
+  console.log(classes)
   $('.leaflet-marker-icon').hide();
   $(classes).show();
 }

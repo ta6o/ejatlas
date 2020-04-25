@@ -408,7 +408,9 @@
         url: "/savefilter",
         data: {data: data.query},
         success: function(uid){
-          alert(window.location.origin+"/embed_filter/"+uid)
+          if (window.confirm('Please click "OK" to edit your filter.')) {
+            window.open(window.location.origin+"/editfilter/"+uid)
+          }
         }
       })
     }
