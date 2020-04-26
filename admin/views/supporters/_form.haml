@@ -120,8 +120,8 @@
         })
       },
       select: function( event, ui ) {
-        console.log(ui.item.label)
+        event.preventDefault();
         $('.hautocomplete').val(ui.item.value);
-        window.setTimeout(function(){$('.cautocomplete').val(ui.item.value);},100);
+        $('.cautocomplete').val(ui.item.label);
       }
     })

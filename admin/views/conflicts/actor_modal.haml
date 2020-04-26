@@ -16,12 +16,17 @@
         .row
           .col-md-6
             -if @actor.has_attribute? :name
-              %label Name of actor
+              %label= "Name of #{@actor.class.to_s.downcase}"
               %input.i_actor#actor_name{:type=>'text',:name=>'name',:value=>(@actor.name if @actor.name), :maxlength=>255, :validate=>true}
             -if @actor.has_attribute? :description# and ['admin','editor'].include?(current_account.role)
               %label= "General description for this #{namehash[@actor.class.to_s]}"
               %textarea.i_actor#actor_description{:type=>'text',:name=>'description',:rows=>6}
                 = @actor.description if @actor.description
+            -if @actor.has_attribute? :parent_id
+              %label= "Parent #{@actor.class.to_s.downcase}"
+              %input.cautocomplete.ui-autocomplete-input{:type=>:text,:value=>(@actor.parent ? @actor.parent.name : "")}
+              %input.hautocomplete{:type=>:hidden,:name=>"parent_id",:value=>(@actor.parent ? @actor.parent.id : "")}
+
           .col-md-6
             -if @actor.has_attribute? :acronym #and ['admin','editor'].include?(current_account.role)
               %label Acronym
@@ -108,3 +113,21 @@
             }
             $id = undefined;
           });
+
+          $( ".cautocomplete" ).autocomplete({
+            minLength: 3,
+            position: { my : "left top", at: "left bottom" },
+            source: function( request, response ) {
+              $source = "/ac_json/#{{Company=>"company",Supporter=>"financial_institution"}[@actor.class]}";
+              $.ajax({
+                type: "GET",
+                url: $source+'?token='+request.term,
+                success: function(data){ response( JSON.parse(data) ); }
+              })
+            },
+            select: function( event, ui ) {
+              event.preventDefault();
+              $('.hautocomplete').val(ui.item.value);
+              $('.cautocomplete').val(ui.item.label);
+            }
+          })
