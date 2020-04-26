@@ -205,7 +205,6 @@ Admin.controller do
   end
 
   get :index do
-    puts "@global: #{@global}".cyan
     ca = Cached.where(:locale=>I18n.locale).first
     pass unless ca
     #last_modified ca.updated_at
@@ -213,16 +212,25 @@ Admin.controller do
     @filterform = JSON.parse(ca.filterdata) if ca
     @filterhtml = render "base/filter", :layout => false
     @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>@global ? "en" : I18n.locale).count
-    countries = ca.countries ? JSON.parse(ca.countries) : []
-    companies = ca.companies ? JSON.parse(ca.companies) : []
-    commodities = ca.commodities ? JSON.parse(ca.commodities) : []
-    types = ca.types ? JSON.parse(ca.types) : []
-    @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
+    if @global
+      cg = Cached.where(:locale=>:en).first
+      companies = cg.companies ? JSON.parse(cg.companies) : []
+      commodities = cg.commodities ? JSON.parse(cg.commodities) : []
+      types = cg.types ? JSON.parse(cg.types) : []
+      countries = cg.countries ? JSON.parse(cg.countries) : []
+      @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
+    else
+      companies = ca.companies ? JSON.parse(ca.companies) : []
+      commodities = ca.commodities ? JSON.parse(ca.commodities) : []
+      types = ca.types ? JSON.parse(ca.types) : []
+      provinces = []
+      @browseinfo = {"province"=>provinces,"company"=>companies,"commodity"=>commodities,"type"=>types}
+    end
     @maptitle = @global ? "World Map" : "Local Map"
     #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = $baselayers
-    @recent = Admin.filter_recent
+    @recent = Admin.filter_recent(0,{},"modified_at",6,@global)
     @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("created_at desc").limit(2)
     render "base/map", :layout => @layout
   end
@@ -674,6 +682,12 @@ Admin.controller do
     redirect to 'jobs'
   end
 
+  post :update_all_cache do
+    redirect to "/sessions/login?return=cache" unless current_account
+    redirect back unless ["admin"].include? current_account.role
+    Admin.update_all_cache
+  end
+
 
   get :filters do
     pass unless current_account
@@ -832,7 +846,7 @@ Admin.controller do
   get :more_recent do
     #puts params[:filter]
     result = []
-    Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true)).each do |c|
+    Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true),"modified_at",6,@global).each do |c|
       j = {"conflict"=>c}
       begin 
         j["conflict"]["image"] = Conflict.find(c["id"]).images.first.thumb_url

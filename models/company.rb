@@ -13,6 +13,8 @@ class Company < ActiveRecord::Base
 
   belongs_to :parent, :class_name => "Company", :foreign_key => "parent_id"
 
+  belongs_to :country
+
   before_save :set_slug
   before_destroy :destroy_instance
 

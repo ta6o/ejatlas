@@ -12,9 +12,13 @@ class Type < ActiveRecord::Base
 
   before_save :set_slug
 
-  def jsonize locale=:en
+  def jsonize locale=:en, keep_para=false
     @json = {}
-    @json[:name] = I18n.t("m.types.#{self.name.slug("_").split("_")[0..7].join("_")}",:locale=>locale).gsub(/\([^\)]+\)/,"")
+    if keep_para
+      @json[:name] = I18n.t("m.types.#{self.name.slug("_").split("_")[0..7].join("_")}",:locale=>locale)
+    else
+      @json[:name] = I18n.t("m.types.#{self.name.slug("_").split("_")[0..7].join("_")}",:locale=>locale).gsub(/\([^\)]+\)/,"")
+    end
     @json[:slug] = self.slug
     return @json.to_json
   end

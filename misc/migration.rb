@@ -267,25 +267,12 @@ def migrate_to_i18n
 
   # cache update
   
-  update_all_cache
+  Admin.update_all_cache
 
   dur = Time.now - t00
   puts "Migration finished in #{(dur/60.0).floor}m #{(dur % 60).to_i}s".magenta
   puts "Check cache update process to make sure all is finished.".red
 
-end
-
-def update_all_cache
-  cacheparams = {"filter"=>"on", "conflicts"=>"on", "countries"=>"on", "companies"=>"on", "ifis"=>"on", "commodities"=>"on", "categories"=>"on", "featureds"=>"on"}
-
-  $tkeys.each do |loc|
-    cacheparams["locale"] = loc
-    AsyncTask.new.setcache cacheparams
-  end
-
-  ActiveRecord::Migration.verbose = verbose
-
-  true
 end
 
 def produce_conflict_getter_methods

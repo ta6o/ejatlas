@@ -159,17 +159,33 @@
             %div{:id=>"browse#{k}"}
               %a.sort.count{:onclick=>"toggle_browse('#{k}','alpha')"}= t("v.index.sort_alphabetically").downcase #"A > Z"
               %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= t("v.index.sort_by_frequency").downcase #"9 > 1"
-              -v.each_with_index do |vv,ii|
-                %ul.columns{:class=>ii==0 ? "count" : "alpha", :style=>ii==0 ? "" : "display:none;"}
-                  -vv.each do |c|
-                    -j = JSON.parse c[0]
-                    -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
-                    -if k == "company"
-                      %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-                    -elsif k == "country"
-                      %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
-                    -else
-                      %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+              -if @global and I18n.locale != :en
+                -v.each_with_index do |vv,ii|
+                  -pp ii
+                  -next if ii < 2 and ["country","commodity","type"].include?(k)
+                  %ul.columns{:class=>ii%2==0 ? "count" : "alpha", :style=>ii%2==0 ? "" : "display:none;"}
+                    -vv.each do |c|
+                      -j = JSON.parse c[0]
+                      -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
+                      -if k == "company"
+                        %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                      -elsif k == "country"
+                        %li="<a href='/#{k}/#{j['slug']}'>#{t("countries.#{j['name'].shorten_en}")}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                      -else
+                        %li="<a href='/#{k}/#{j['slug']}'>#{t("#{scope}.#{j['name'].slug("_").split("_")[0..7].join("_")}").gsub(/\([^\)]+\)/,"")}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+              -else
+                -v.each_with_index do |vv,ii|
+                  -next if ii > 1
+                  %ul.columns{:class=>ii%2==0 ? "count" : "alpha", :style=>ii%2==0 ? "" : "display:none;"}
+                    -vv.each do |c|
+                      -j = JSON.parse c[0]
+                      -scope = {"commodity"=>"m.products","country"=>"countries","type"=>"m.types"}[k]
+                      -if k == "company"
+                        %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                      -elsif k == "country"
+                        %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
+                      -else
+                        %li="<a href='/#{k}/#{j['slug']}'>#{j['name']}</a>&nbsp;&nbsp;<strong style='font-size:85%;'>#{c[1]}</strong>".html_safe
 
 
   -#.horipane

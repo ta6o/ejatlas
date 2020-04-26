@@ -2,8 +2,6 @@ class Supporter < ActiveRecord::Base
   has_many :c_supporters
   has_many :conflicts, :through => :c_supporters
 
-  belongs_to :country
-
   has_many :logo_images, class_name: "Image", as: :attachable, dependent: :destroy
   has_many :vector_data, as: :attachable, dependent: :destroy
 
@@ -11,6 +9,8 @@ class Supporter < ActiveRecord::Base
   has_many :former_infos, class_name: "FormerInfo", as: :attachable, dependent: :destroy
 
   belongs_to :parent, :class_name => "Supporter", :foreign_key => "parent_id"
+
+  belongs_to :country
 
   before_save :set_slug
   before_destroy :destroy_instance

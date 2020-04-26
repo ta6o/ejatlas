@@ -36,9 +36,21 @@
           %input#reindex{:type=>'checkbox',:name=>'reindex'} &nbsp;  Reindex
           %br/
           %br/
-        %input.btn.full.btn-warning{:type=>'submit',:value=>'Update now'}
+        %input.btn.full.btn-warning{:type=>'submit',:value=>'UPDATE NOW'}
         %br/
         %br/
+        -if current_account.role == "admin"
+          %input.btn.full.btn-danger{:onclick=>"update_all();",:value=>'UPDATE ALL'}
+          :javascript
+            function update_all() {
+              $.post("/update_all_cache",function(data){
+                if (data == "ack") {
+                  window.location = "/jobs"
+                }
+              })
+            }
+          %br/
+          %br/
         %p
           Last updated:
           %ul{:style=>"padding:0;"}

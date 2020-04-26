@@ -533,18 +533,18 @@ class Admin < Padrino::Application
     end
   end
 
-  def self.filter_recent offset=0, query={}, order="modified_at", size=6
+  def self.filter_recent offset=0, query={}, order="modified_at", size=6, global=false
     #puts JSON.pretty_generate(query).green
     if query.length > 0
       filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse(query.to_json) }}} )
-    elsif I18n.locale == :en
+    elsif I18n.locale == :en or global
       filter = Admin.elasticify( { bool: { must:   { term: { approval_status: "approved" }}, must_not: { term: { headline: "" }}, filter: {exists: { field: "headline"}, }}} )
     else
       filter = Admin.elasticify( { bool: { must:   { term: { approval_status: "approved" }}}} )
     end
     #Admin.color_pp(filter)
     #puts JSON.pretty_generate(filter).yellow
-    result = $client.search(index: "#{$esindex}_#{I18n.locale}", type: "conflict", body: {sort:{order=>{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+    result = $client.search(index: "#{$esindex}_#{global ? :en : I18n.locale}", type: "conflict", body: {sort:{order=>{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
     #pp result
     result
   end
@@ -836,7 +836,9 @@ class Admin < Padrino::Application
     $available_locales.sort!
     print "\rReloading"
     I18n.backend.reload!
-    print "\rDone."
+    print "\r            "
+    print "\r"
+
   end
 
   def self.log_stdout request, status, account, keys
@@ -928,6 +930,15 @@ class Admin < Padrino::Application
 
   Admin.fetch_translations false
   I18n.backend.load_translations
+
+  def self.update_all_cache
+    cacheparams = {"filter"=>"on", "conflicts"=>"on", "countries"=>"on", "companies"=>"on", "ifis"=>"on", "commodities"=>"on", "categories"=>"on", "featureds"=>"on"}
+    $available_locales.each do |loc|
+      cacheparams["locale"] = loc
+      AsyncTask.new.setcache cacheparams
+    end
+    "ack"
+  end
 
 end
 

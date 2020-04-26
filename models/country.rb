@@ -23,9 +23,13 @@ class Country < ActiveRecord::Base
     self.conflicts.where(approval_status: 'approved').count
   end
 
-  def jsonize locale=:en
+  def jsonize locale=:en, keep_para=false
     @json = {}
-    @json[:name] = I18n.t("countries.#{self.name.shorten_en}",:locale=>locale).gsub(/\([^\)]+\)/,"")
+    if keep_para
+      @json[:name] = I18n.t("countries.#{self.name.shorten_en}",:locale=>locale)
+    else
+      @json[:name] = I18n.t("countries.#{self.name.shorten_en}",:locale=>locale).gsub(/\([^\)]+\)/,"")
+    end
     @json[:slug] = self.slug
     return @json.to_json
   end

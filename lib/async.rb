@@ -378,6 +378,7 @@ class AsyncTask
     locale = params.delete("locale").to_s
     I18n.locale = locale
     limit = params.delete("limit").to_i
+    limit = Conflict.count if limit == 0
     order = params.delete("order")
     ascdsc = params.delete("ascdsc")
     if params.has_key?("idset")
@@ -878,6 +879,7 @@ class AsyncTask
 
     if params["countries"] == "on" or params["reindex"] == "on"
       countries = []
+      global = [] if locale.to_s == "en"
       t1 = Time.now
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.country : nil}.flatten.uniq - [nil])
       total = cos.length
@@ -887,7 +889,8 @@ class AsyncTask
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
         next if lc == 0
-        countries << [c.jsonize(locale),lc] if lc >= 1
+        countries << [c.jsonize(locale,false),lc] if lc >= 1
+        global << [c.jsonize(locale,true),lc] if lc >= 1 and locale.to_s == "en"
         c.save
         client.index index: $esindex, type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per country)      "
@@ -903,7 +906,15 @@ class AsyncTask
       cc = countries.reverse
       countries.sort_by! {|c| c[0]}
       cb = countries
-      ca.countries = [cc,cb].to_json
+      if locale.to_s == "en"
+        global.sort_by! {|c| c[1]}
+        gc = global.reverse
+        global.sort_by! {|c| c[0]}
+        gb = global
+        ca.countries = [cc,cb,gc,gb].to_json
+      else
+        ca.countries = [cc,cb].to_json
+      end
     end
 
     if params["companies"] == "on" or params["reindex"] == "on"
@@ -964,6 +975,7 @@ class AsyncTask
 
     if params["commodities"] == "on"
       commodities = []
+      global = [] if locale.to_s == "en"
       t1 = Time.now
       cos = (ConflictText.where(:locale=>locale).map{|ct| ct.conflict ? ct.conflict.products : nil}.flatten.uniq - [nil])
       total = cos.length
@@ -973,7 +985,8 @@ class AsyncTask
         t0 = Time.now if counter == 0
         lc = c.local_conflicts_count(locale)
         next if lc == 0
-        commodities << [c.jsonize(locale),lc] if lc >= 1 and c.name != "Other"
+        commodities << [c.jsonize(locale,false),lc] if c.name != "Other"
+        global << [c.jsonize(locale,true),lc] if c.name != "Other" and locale.to_s == "en"
         c.save
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per commodity)      "
         if job_id and Time.now - tu >= 12
@@ -988,11 +1001,20 @@ class AsyncTask
       cc = commodities.reverse
       commodities.sort_by! {|c| c[0]}
       cb = commodities
-      ca.commodities = [cc,cb].to_json
+      if locale.to_s == "en"
+        global.sort_by! {|c| c[1]}
+        gc = global.reverse
+        global.sort_by! {|c| c[0]}
+        gb = global
+        ca.commodities = [cc,cb,gc,gb].to_json
+      else
+        ca.commodities = [cc,cb].to_json
+      end
     end
 
     if params["categories"] == "on"
       types = []
+      global = [] if locale.to_s == "en"
       t1 = Time.now
       total = Type.count
       puts "Updating categories...".green if total > 0
@@ -1003,9 +1025,8 @@ class AsyncTask
         ty = CType.where(:type_id=>t.id).map(&:conflict_id) - [nil]
         cs = ConflictText.where(:conflict_id=>ty.uniq,:locale=>locale, :approval_status=>"approved")
         next if cs.length == 0
-        if cs.length >= 1
-          types << [t.jsonize(locale),cs.count]
-        end
+        types << [t.jsonize(locale,false),cs.count]
+        global << [t.jsonize(locale,true),cs.count] if locale.to_s == "en"
         t.save
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per category)      "
         if job_id and Time.now - tu >= 12
@@ -1020,7 +1041,15 @@ class AsyncTask
       cc = types.reverse
       types.sort_by! {|c| c[0]}
       cb = types
-      ca.types = [cc,cb].to_json
+      if locale.to_s == "en"
+        global.sort_by! {|c| c[1]}
+        gc = global.reverse
+        global.sort_by! {|c| c[0]}
+        gb = global
+        ca.types = [cc,cb,gc,gb].to_json
+      else
+        ca.types = [cc,cb].to_json
+      end
     end
 
     if params["featureds"] == "on"
