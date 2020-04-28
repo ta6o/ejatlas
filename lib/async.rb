@@ -820,7 +820,7 @@ class AsyncTask
     locale = params.delete("locale")
     puts
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
-    ca = Cached.new(:locale=>locale) unless ca = Cached.where(:locale=>locale).first
+    ca = Cached.new(:locale=>locale) unless ca = Cached.loc(locale)
     client = Elasticsearch::Client.new log: false
 
     if params["reindex"] == "on"

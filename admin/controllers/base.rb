@@ -4,7 +4,7 @@ Admin.controller do
   before do
     @layout = :full
     begin
-      @featureds = Featured.where(:id=>JSON.parse(Cached.where(:locale=>I18n.locale).first.featureds||"[]")).order("created_at desc").select("name, slug").limit(6)
+      @featureds = Featured.where(:id=>JSON.parse(Cached.loc(I18n.locale).featureds||"[]")).order("created_at desc").select("name, slug").limit(6)
     rescue
       @featureds = []
     end
@@ -205,7 +205,7 @@ Admin.controller do
   end
 
   get :index do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     pass unless ca
     #last_modified ca.updated_at
     @filterform = {}
@@ -213,7 +213,7 @@ Admin.controller do
     @filterhtml = render "base/filter", :layout => false
     @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>@global ? "en" : I18n.locale).count
     if @global
-      cg = Cached.where(:locale=>:en).first
+      cg = Cached.loc(:en)
       companies = cg.companies ? JSON.parse(cg.companies) : []
       commodities = cg.commodities ? JSON.parse(cg.commodities) : []
       types = cg.types ? JSON.parse(cg.types) : []
@@ -306,33 +306,40 @@ Admin.controller do
   get "/:model" do
     browseinfo = {"country"=>"countries","company"=>"companies","commodity"=>"commodities","type"=>"types"}
     pass unless browseinfo.has_key?(params[:model])
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
-    @markercount = JSON.parse(ca.conflicts_marker).length
-    @markerinfo = ca.conflicts_marker
-    @filterinfo = ca.conflicts_json
-    info = eval("JSON.parse(ca.#{browseinfo[params[:model]]})")
-    puts params[:model].to_s.yellow
-    puts info.to_s.magenta
-    @browseinfo = {params[:model] => info}
     @name = I18n.t("f.menu.#{browseinfo[params[:model]]}")
     @maptitle = "Browse #{@name}"
     @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json
     @baselayers = $baselayers
+    if @global
+      puts "global".cyan
+      cg = Cached.loc(:en)
+      info = eval("JSON.parse(cg.#{browseinfo[params[:model]]})")
+      @markercount = JSON.parse(cg.conflicts_marker).length
+      @markerinfo = cg.conflicts_marker
+      @filterinfo = cg.conflicts_json
+    else
+      info = eval("JSON.parse(ca.#{browseinfo[params[:model]]})")
+      @markercount = JSON.parse(ca.conflicts_marker).length
+      @markerinfo = ca.conflicts_marker
+      @filterinfo = ca.conflicts_json
+    end
+    @browseinfo = {params[:model] => info}
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     render "base/front"
   end
 
   get :country, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     con = Country.find_slug(params[:slug])
     con = Region.find_slug(params[:slug]) unless con
     pass unless con
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     @markerinfo = con.conflicts_marker
-    #pp @markerinfo
+    pp JSON.parse(@markerinfo).length
     contents = File.read('admin/views/base/filter.haml')
     @filterinfo = con.conflicts_json
     @name = I18n.t("countries.#{con.name.shorten_en}")
@@ -357,7 +364,7 @@ Admin.controller do
   end
 
   get :company, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     con = Company.find_slug(params[:slug])
     pass unless con
     @filterform = JSON.parse(ca.filterdata)
@@ -379,7 +386,7 @@ Admin.controller do
   end
 
   get :institution, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     con = Supporter.find_slug(params[:slug])
     pass unless con
     @filterform = JSON.parse(ca.filterdata)
@@ -400,7 +407,7 @@ Admin.controller do
   end
 
   get :commodity, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Product.find_slug(params[:slug])
@@ -419,7 +426,7 @@ Admin.controller do
   end
 
   get :type, :with => :slug do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     con = Type.find_slug(params[:slug])
@@ -443,7 +450,7 @@ Admin.controller do
   get 'country-of-company', :with => :slug do
     con = Country.find_slug(params[:slug])
     pass unless con
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     @filterform = JSON.parse(ca.filterdata)
     @filter = render "base/filter", :layout => false
     ##last_modified con.updated_at
@@ -463,7 +470,7 @@ Admin.controller do
   get 'country-of-institution', :with => :slug do
     con = Country.find_slug(params[:slug])
     pass unless con
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     ##last_modified con.updated_at
     @markerinfo = con.supporters_marker
     @name = "Financial Institutions from #{con.name}"
@@ -568,7 +575,7 @@ Admin.controller do
   end
 
   get :embed do
-    ca = Cached.where(:locale=>I18n.locale).first
+    ca = Cached.loc(I18n.locale)
     pass unless ca
     @markercount = ConflictText.where(:approval_status=> 'approved',:locale=>I18n.locale).count
     @baselayers = $baselayers
@@ -911,7 +918,7 @@ Admin.controller do
   get :network do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
+    @filterform = JSON.parse(Cached.loc(I18n.locale).filterdata)
     @page_type = "network"
     @filter = render "base/filter", :layout => false
     render 'base/network', :layout => :application
@@ -920,7 +927,7 @@ Admin.controller do
   get :graph do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
-    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
+    @filterform = JSON.parse(Cached.loc(I18n.locale).filterdata)
     @page_type = "graph"
     @filter = render "base/filter", :layout => false
     render 'base/network', :layout => :application

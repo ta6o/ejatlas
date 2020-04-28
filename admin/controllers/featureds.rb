@@ -29,8 +29,9 @@ Admin.controllers :featureds do
     @featured = Featured.new
     @features = []
     @page_type = "feat"
-    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
-    @filterinfo = Cached.where(:locale=>I18n.locale).first.conflicts_json
+    ca = Cached.loc(I18n.locale)
+    @filterform = JSON.parse(ca.filterdata)
+    @filterinfo = ca.conflicts_json
     render 'featureds/new'
   end
 
@@ -69,7 +70,7 @@ Admin.controllers :featureds do
       #puts e.backtrace
       #puts "...".red
     end
-    @filterform = JSON.parse(Cached.where(:locale=>I18n.locale).first.filterdata)
+    @filterform = JSON.parse(Cached.loc(I18n.locale).filterdata)
     @filterhash = {}
     if @featured.filter.match(/"(country_id|companies|supporters|country_of_company)":"/)
       @featured.filter.scan(/("(country_id|companies|supporters|country_of_company)":"\d+")/).each do |a|

@@ -220,7 +220,7 @@ Admin.controllers :conflicts do
       @conflicts = Admin.filter("{}", true, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),true,"conflict","saved_at","asc").map{|x| x["_source"]}
       @accounts = Admin.filter("{}", true, "id,name".split(","),false,"account").map{|x| [x["_source"]["id"], x["_source"]["name"]]}.to_h
       @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-      @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
+      @conflicts.sort_by! {|c| ( c["saved_at"] || Time.now ) }
       @conflicts.reverse!
     else
       @conflicts = Conflict.where(:approval_status => 'approved', :account_id => current_account.id).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
@@ -528,6 +528,8 @@ Admin.controllers :conflicts do
             ref.save
           end
           flash[:notice] = 'Conflict was successfully saved.'
+          #@conflict.ping(I18n.locale)
+          #client.update index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(locale)}
           return {:status=>:success}.to_json
         end
       else
@@ -744,6 +746,8 @@ Admin.controllers :conflicts do
               end
             end
             #redirect "/conflicts/edit/#{@conflict.id}#{hash}"
+            @conflict.ping(I18n.locale)
+            $client.update index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(locale)}
             response = {:status=>"success"}
           end
         rescue => e
