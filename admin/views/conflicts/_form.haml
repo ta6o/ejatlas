@@ -1641,17 +1641,20 @@
                   });
 
 
-          -if current_account.editor?
+          -if current_account.editor? or @conflict.account == current_account
             .group
               %label{:for=>"conflict_notes"}= t("f.conflict.internal_notes")
               .required=f.error_message_on :notes
               %p.description=t("f.conflict.please_indicate_changes_you_have")
               .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.original_data.notes.html_safe
               ~f.text_area :notes, :class => "text_area", :rows=>4
-              -if current_account.editor? and @conflict.account
-                %p
-                  By
-                  %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
+          -if @conflict.account
+            %p
+              By
+              -if current_account.editor? or @conflict.account == current_account
+                %a{:href=>"/accounts/edit/#{@conflict.account.id}"}= @conflict.account.name
+              -else
+                = @conflict.account.name
 
           .group
             %label{:for=>"conflict_contributor"}= t("f.conflict.contributor")

@@ -201,23 +201,19 @@ Admin.controllers :conflicts do
 
   get :index do
     if current_account.editor?
-      @conflicts = Admin.filter("{\"must_not\":[{\"term\":{\"approval_status\":\"deleted\"}},{\"term\":{\"approval_status\":\"auto_tx\"}}]}", true, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","asc").map{|x| x["_source"]}
+      @conflicts = Admin.filter({:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}]}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
       @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
       @categories = Category.all.map {|c| [c.id,c.name]}.to_h
       @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
       @conflicts.reverse!
     else
-      proper = Conflict.where(account_id: current_account.id)
-      other =  Conflict.where(id: current_account.conflict_accounts.map(&:conflict_id))
-      @conflicts = proper.or(other).order('saved_at desc').map {|c| c.attributes.slice(*'id,account_id,approval_status,category_id,saved_at'.split(",")).merge(c.local_data ? c.local_data.attributes.slice("name","slug"):{})}
-      #pp @conflicts.class
+      @conflicts = Admin.filter({:must => [ { :bool => {:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}] }}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
     render 'conflicts/index'
   end
 
   get :approved do
     if current_account.editor?
-      aid = 1304
       @conflicts = Admin.filter({:must => { :term => { :approval_status=>:approved}}}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
       @accounts = Admin.filter("{}", true, "id,name".split(","),false,"account").map{|x| [x["_source"]["id"], x["_source"]["name"]]}.to_h
       @categories = Category.all.map {|c| [c.id,c.name]}.to_h
