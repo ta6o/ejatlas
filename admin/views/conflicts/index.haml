@@ -33,10 +33,10 @@
     .hero-unit
       %h1.title
         =mt('Conflicts')
-    .inner
       -if ["admin","editor"].include?(current_account.role)
         .pull-right
           %a.btn.notr.btn-info{'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
+    .inner
       %table.table.tablesorter#sortme
         %thead
           %tr
