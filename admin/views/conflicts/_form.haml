@@ -58,7 +58,7 @@
           %span.required.large *
           %p.description= t("f.conflict.eg_company_or_community_name")
           .required=f.error_message_on :name
-          %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.original_data.name}
+          %input.local_only{:type=>:text,:disabled=>true,:value=>@conflict.new_record? ? "" : @conflict.original_data.name}
           =f.text_field :name, :class => 'text_field basic_input'
 
         -if current_account.editor?
