@@ -31,11 +31,11 @@
 .row.wide
   .col-md-12
     .hero-unit
-      %h1.title
+      %h1.title.pull-left
         =mt('Conflicts')
       -if ["admin","editor"].include?(current_account.role)
         .pull-right
-          %a.btn.notr.btn-info{'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
+          %a.btn.notr.btn-info{:style=>"margin-top:18px;",'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
     .inner
       %table.table.tablesorter#sortme
         %thead
