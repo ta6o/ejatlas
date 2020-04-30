@@ -135,7 +135,7 @@
           var images, counter, crswidth;
           images = $('#rightpane img');
           counter = images.length;  // initialize the counter
-          images.each(function() {
+          $.each(images,function() {
             if( this.complete ) {
               imageLoaded.call( this );
             } else {
