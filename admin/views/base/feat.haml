@@ -73,7 +73,7 @@
           #right_scroll
             %span.glyphicon.glyphicon-chevron-right
         :javascript
-          crsgap = 6;
+          crsgap = 0;
           function resetCarousel (){
             wdiff = $('#carousel_container').width() - crswidth;
             if (wdiff > 0){
@@ -133,21 +133,19 @@
             }
           }
           var images, counter, crswidth;
-          $(function() {
-            images = $('#rightpane img');
-            counter = images.length;  // initialize the counter
-            images.each(function() {
-              if( this.complete ) {
-                imageLoaded.call( this );
-              } else {
-                $(this).one('load', imageLoaded);
-              }
-            });
-            images.error(function(){
-              imageLoaded();
-              $(this).addClass('error');
-            });
+          images = $('#rightpane img');
+          counter = images.length;  // initialize the counter
+          images.each(function() {
+            if( this.complete ) {
+              imageLoaded.call( this );
+            } else {
+              $(this).one('load', imageLoaded);
+            }
           });
+          /*images.error(function(){
+            imageLoaded();
+            $(this).addClass('error');
+          });*/
 
     -if @descriptions and @id == 75 and @maptitle
       .less

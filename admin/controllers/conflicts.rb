@@ -204,8 +204,6 @@ Admin.controllers :conflicts do
       @conflicts = Admin.filter({:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}]}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
       @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
       @categories = Category.all.map {|c| [c.id,c.name]}.to_h
-      @conflicts.sort_by! {|c| ( c["updated_at"] || Time.now ) }
-      @conflicts.reverse!
     else
       @conflicts = Admin.filter({:must => [ { :bool => {:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}] }}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
