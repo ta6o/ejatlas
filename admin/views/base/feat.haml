@@ -132,20 +132,6 @@
               });
             }
           }
-          var images, counter, crswidth;
-          images = $('#rightpane img');
-          counter = images.length;  // initialize the counter
-          $.each(images,function() {
-            if( this.complete ) {
-              imageLoaded.call( this );
-            } else {
-              $(this).one('load', imageLoaded);
-            }
-          });
-          /*images.error(function(){
-            imageLoaded();
-            $(this).addClass('error');
-          });*/
 
     -if @descriptions and @id == 75 and @maptitle
       .less
@@ -279,6 +265,20 @@
         }
       })
     });
+    var images, counter, crswidth;
+    images = $('#rightpane img');
+    counter = images.length;  // initialize the counter
+    $.each(images,function() {
+      if( this.complete ) {
+        imageLoaded.call( this );
+      } else {
+        $(this).one('load', imageLoaded);
+      }
+    });
+    /*images.error(function(){
+      imageLoaded();
+      $(this).addClass('error');
+    });*/
 
     function test() {
       var owsrootUrl = 'https://geo.ejatlas.org/geoserver/ows';
