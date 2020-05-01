@@ -838,7 +838,7 @@ Admin.controller do
 
   get "/info/:id" do
     c = Conflict.find(params[:id])
-    if request.referer and loc = request.referrer.match(/[\?&]translate=(\w+)/) and c.local_data(loc)
+    if request.referer and loc = request.referrer.match(/[\?&]translate=(\w+)/) and c.local_data(loc[1])
       I18n.locale = loc[1]
     end
     target = ""
