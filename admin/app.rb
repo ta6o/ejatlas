@@ -566,7 +566,7 @@ class Admin < Padrino::Application
       else
         filter = Admin.elasticify( { bool: { filter: { bool: filter }}} )
       end
-      puts filter.to_s.yellow
+      #puts filter.to_s.yellow
       result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: filter }}} )

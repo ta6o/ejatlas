@@ -182,7 +182,7 @@
             -if current_account and @global
               -if ["World Map", "Local Map"].include?(@maptitle)
                 -locs = $available_locales
-              -else if @conflict
+              -elsif @conflict
                 -locs = @conflict.conflict_texts.map(&:locale)
               %ul.languages
                 -locs.each do |locale|
