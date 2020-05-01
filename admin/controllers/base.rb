@@ -245,7 +245,7 @@ Admin.controller do
     if c.approval_status != "approved"
       if current_account.editor?
       else
-        pass
+        pass unless c.approval_status == "auto_tx"
       end
     end
     @conflict = c
