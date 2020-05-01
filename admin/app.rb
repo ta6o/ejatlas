@@ -864,9 +864,15 @@ class Admin < Padrino::Application
     puts "#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{status.to_s.colorize(scolor)} #{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} #{account ? "#{account.email.green}" : ""}@#{request.ip.cyan} (#{platform.cyan}/#{agent.cyan})#{ (keys.any? and request.request_method != "GET") ? " [#{keys.map{|x| x.to_s.cyan}.join(",")}]" : ""}"
   end
 
+  $tx_lock = false
+
   def self.tx_conflict ct, locale, all=false, verbose=false
     unless cn = ConflictText.where(:conflict_id=>ct.conflict_id, :locale=>locale).first
-      cn = ConflictText.new(:conflict_id=>ct.conflict_id, :locale=>locale, :approval_status=>"auto_tx", :slug=>ct.slug)
+      ce = ConflictText.where(:conflict_id=>ct.conflict_id, :locale=>:en).first
+      unless ce
+        ce = ct
+      end
+      cn = ConflictText.new(:conflict_id=>ct.conflict_id, :locale=>locale, :approval_status=>"auto_tx", :slug=>ce.slug)
     end
     if cn.approval_status != "auto_tx"
       puts "translation already found!".yellow
@@ -895,7 +901,14 @@ class Admin < Padrino::Application
       end
       ws[i+1,3] = "=GOOGLETRANSLATE(B#{i+1}, \"#{ct.locale}\",\"#{locale}\")"
     end
+    if $tx_lock
+      puts "waiting for lock".yellow if verbose
+      while $tx_lock
+        sleep 0.1
+      end
+    end
     puts "updating".green if verbose
+    $tx_lock = true
     ws.save
     puts "waiting".cyan if verbose
     b1 = nil
@@ -916,6 +929,7 @@ class Admin < Padrino::Application
         end
       end
     end
+    $tx_lock = false
     pp attrs.symbolize_keys if verbose and false
     puts "saving".red if verbose
     cn.attributes = attrs
