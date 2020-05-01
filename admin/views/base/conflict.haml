@@ -224,19 +224,21 @@
       }
     }
 
-    var images, counter, crswidth;
-    images = $('#rightpane img');
-    counter = images.length;  // initialize the counter
-    $.each(images,function() {
-      console.log(this)
-      if( this.complete ) {
-        imageLoaded.call( this );
-      } else {
-        $(this).one('load', imageLoaded);
-      }
-    });
-    /*images.error(function(){
-      imageLoaded();
-      $(this).addClass('error');
-    });*/
+    $(document).ready(function(){
+      var images, counter, crswidth;
+      images = $('#rightpane img');
+      counter = images.length;  // initialize the counter
+      $.each(images,function() {
+        console.log(this)
+        if( this.complete ) {
+          imageLoaded.call( this );
+        } else {
+          $(this).one('load', imageLoaded);
+        }
+      });
+      /*images.error(function(){
+        imageLoaded();
+        $(this).addClass('error');
+      });*/
 
+    })
