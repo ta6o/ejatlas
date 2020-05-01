@@ -183,7 +183,7 @@
               -if ["World Map", "Local Map"].include?(@maptitle)
                 -locs = $available_locales
               -elsif @conflict
-                -locs = @conflict.conflict_texts.map(&:locale)
+                -locs = @conflict.conflict_texts.where(:approval_status=>"approved").map(&:locale)
               %ul.languages
                 -locs.each do |locale|
                   -if locale==I18n.locale.to_s
