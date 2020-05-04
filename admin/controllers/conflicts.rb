@@ -287,6 +287,8 @@ Admin.controllers :conflicts do
         @saves << row if row[2] == @conflict.id.to_s
       end
       render 'conflicts/edit'
+    else
+      pass
     end
   end
 

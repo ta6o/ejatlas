@@ -180,7 +180,6 @@
             .ejatlas-logo#eja-logo{:style=>"z-index:11;"}
 
             -if current_account and @global
-              -puts request.path
               -if request.path.match(/^\/$/) or request.path.match(/^\/(country|company|commodity|type)/)
                 -locs = $available_locales
               -elsif request.path.match(/^\/conflict\//) and @conflict

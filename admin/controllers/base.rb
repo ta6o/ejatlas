@@ -197,7 +197,7 @@ Admin.controller do
   end
 
   get "/:slug/manifest.txt" do
-    puts params[:slug]
+    #puts params[:slug]
     content_type :manifest
     man = "CACHE MANIFEST\n# #{File.read("./lib/stamp").strip}\n\nNETWORK:\n"
     man += "*\n"
@@ -314,7 +314,7 @@ Admin.controller do
     @vectors = []#VectorDatum.where(name:'Borders').select('name,url').to_json
     @baselayers = $baselayers
     if @global
-      puts "global".cyan
+      #puts "global".cyan
       cg = Cached.loc(:en)
       info = eval("JSON.parse(cg.#{browseinfo[params[:model]]})")
       @markercount = JSON.parse(cg.conflicts_marker).length

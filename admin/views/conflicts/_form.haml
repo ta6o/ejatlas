@@ -1813,7 +1813,7 @@
   }
   function valPage(page){
     if ('#{@example}') {return true}
-    pageName = $(page['selector']).children('a').attr('href').replace('#','');
+    pageName = $(page).children('a').attr('href').replace('#','');
     result = true;
     $.each($('.'+pageName+'_input'),function(i,v){
       var id = $('.'+pageName+'_input').eq(i).attr('id');
