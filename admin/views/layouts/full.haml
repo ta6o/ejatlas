@@ -184,6 +184,8 @@
                 -locs = $available_locales
               -elsif request.path.match(/^\/conflict\//) and @conflict
                 -locs = @conflict.conflict_texts.where(:approval_status=>"approved").map(&:locale)
+              -else
+                -locs = []
               %ul.languages
                 -locs.each do |locale|
                   -if locale==I18n.locale.to_s
