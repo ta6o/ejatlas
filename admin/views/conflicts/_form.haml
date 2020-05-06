@@ -43,7 +43,7 @@
         %p.lead= t("f.conflict.basic_data")
       .col-md-2
         .pull-right.btn-group.png
-          -unless @conflict.new_record?
+          -if @example or not @conflict.new_record?
             %button.btn.pn.next= t("f.conflict.next")
           %button#save{:class=>"btn btn-inverse pn "+(@example ? "disabled" : "")}= t("f.conflict.save")
           %br/
@@ -182,7 +182,7 @@
         %p &nbsp;
       .col-md-2
         .pull-right.btn-group.png
-          -unless @conflict.new_record?
+          -if @example or not @conflict.new_record?
             %button.btn.pn.next= t("f.conflict.next")
           %button#save{:class=>"btn btn-inverse pn "+(@example ? "disabled" : "")}= t("f.conflict.save")
           %br/
@@ -533,7 +533,7 @@
               %option{:title=>t("help.reaction_id.#{c.name.shorten_en}"),:value=>c.id,:selected=>c.id==@conflict.reaction_id}=t("m.reaction_id.#{c.name.slug("_").split("_")[0..7].join("_")}")
 
 
-          -unless @conflict.new_record?
+          -if @example or not @conflict.new_record?
             .group
               %label= t("f.conflict.is_this_conflict_directly_related")
               .required=f.error_message_on :related_conflict_id
@@ -1210,7 +1210,7 @@
               .row
                 .col-md-12
                   %label=t("f.conflict.upload_picture_here_in_jpg")
-                  -if @conflict.new_record?
+                  -if @example or not @conflict.new_record?
                     %p &nbsp;
                     %p.description
                       %strong=t("f.conflict.please_save_form_after_uploading")
@@ -1385,7 +1385,7 @@
 
       .row
         .col-md-4
-          -unless @conflict.new_record?
+          -if @example or not @conflict.new_record?
             .group
               %label= "#{t("f.conflict.conflict_id")}  <font style='font-weight:normal'>#{@conflict.id}</font>".html_safe
               %br/
@@ -2000,7 +2000,7 @@
   });
   */
 
--if @conflict.new_record? 
+-if @conflict.new_record? and not @example
   :javascript
     $('#conflict-tabs > li').not('.active').addClass('closed');
 -else

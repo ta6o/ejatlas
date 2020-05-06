@@ -267,13 +267,15 @@ Admin.controllers :conflicts do
   end
 
   get :new  do
-    @title = 'New Conflict'
-    @name = 'New Conflict'
+    @title = t("f.conflict.new_conflict")
+    @name = t("f.conflict.new_conflict")
     @conflict = Conflict.new
     render 'conflicts/new'
   end
 
   get :edit, :with => :id do
+    @title = t("f.conflict.edit_conflict")
+    @name = t("f.conflict.edit_conflict")
     begin
       @conflict = Conflict.find(params[:id])
     rescue

@@ -7,7 +7,7 @@
         %li.home
           %a{:href => "/"}= t "v.menu.home"
         -if current_account
-          -if ['admin','editor'].include? current_account.role
+          -if current_account.editor?
             %li.dropdown#conflicts
               %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#conflicts'}
                 = t "f.menu.conflicts"
@@ -41,6 +41,8 @@
                   %a{:href=>'/export'}= t "f.menu.export_cases"
                 %li
                   %a{:href=>'/jobs'}= t "f.menu.jobs"
+                %li
+                  %a{:href=>'/translations'}= t "f.menu.translations"
 
             %li.dropdown#models
               %a.dropdown-toggle{'data-toggle'=>'dropdown',:href=>'#models'}
