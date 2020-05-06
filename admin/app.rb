@@ -832,7 +832,7 @@ class Admin < Padrino::Application
     totals = $tkeys.map{|k| [k,0]}.to_h
     $tstatus.each {|k,v| v.each {|l,i| totals[l] += i } }
     master = totals.delete("master").to_f
-    totals.each {|k,v| if v / master >= 0.8 then $available_locales << k end}
+    totals.each {|k,v| if v / master >= 0.75 then $available_locales << k end}
     $available_locales.sort!
     print "\rReloading"
     I18n.backend.reload!
