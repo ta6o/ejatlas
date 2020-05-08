@@ -1703,7 +1703,7 @@
                   e.preventDefault();
                   if (!$("#invite").hasClass("error")) {
                     $.post("/conflicts/ca_create",
-                      {aid:$("#invite").val(),cid:#{@conflict.new_record? ? 0 : @conflict.id}},
+                      {aid:$("#invite").val(),cid:#{@conflict.new_record? ? 0 : @conflict.id},loc:"#{I18n.locale}"},
                       function(data){
                         console.log(data)
                         if (data === "ok") {
@@ -1728,7 +1728,6 @@
                     -cos = @conflict.conflict_texts.map(&:locale)
                     -@iso639.each do |k,v|
                       -if $available_locales.include?(k)
-                        -next if k == I18n.locale.to_s
                         %option{:value=>k}= t("countries.language.#{k}")
                 .col-md-4.col-sm-12
                   %button#tx{:disabled=>true}= t("f.conflict.translate")

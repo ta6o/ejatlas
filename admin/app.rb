@@ -342,6 +342,16 @@ class Admin < Padrino::Application
     Admin.send_mail(@account, I18n.t("emails.conflict_locale_suggestion.moderation_request_for_var_on", conflict_name: @conflict.name, language:@language), html)
   end
 
+  def self.collaborator_invite(ct,account,suggesting)
+    @account = account
+    @suggesting_account = suggesting
+    @ct = ct
+    @conflict = ct.conflict
+    return unless @account or @suggesting_account or @ct or @conflict
+    html = Tilt.new("#{Dir.getwd}/admin/views/mailers/collaborator_invite.haml").render(self)
+    Admin.send_mail(@account, I18n.t("emails.conflict_collaborator_invite.collaboration_request", conflict: @ct.name), html)
+  end
+
   def self.local_url locale=I18n.locale
     $siteurl.split("://").join("://#{ locale.to_s == 'en' ? "" : locale.to_s+"." }")
   end

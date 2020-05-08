@@ -372,15 +372,26 @@ Admin.controllers :conflicts do
 
   post :ca_create do
     if current_account.editor?
-      if acc = Account.find_by_email(params["aid"])
-        if ConflictAccount.where(:conflict_id => params["cid"], :account_id => acc.id).any?
-          return "Error: contributor exists"
+      if acc = Account.find_by_email(params["aid"]) 
+        if conflict = Conflict.find(params["cid"])
+          if ct = ConflictText.where(:conflict_id=>params["cid"],:locale=>params["loc"]).any?
+            if conflict.account_id == acc.id or ConflictAccount.where(:conflict_id => conflict.id, :account_id => acc.id).any?
+              return "Error: contributor exists"
+            else
+              ConflictAccount.create :conflict_id => conflict.id, :account_id => acc.id
+              conflict.ping(params["loc"])
+              $client.update index: "#{$esindex}_#{params["loc"]}", type: 'conflict', id: conflict.id, body: {doc: conflict.elastic(params["loc"])}
+              Admin.collaborator_invite ConflictText.where(:conflict_id=>conflict.id, :locale=>params["loc"]).first, acc, current_account
+              return "ok"
+            end
+          else
+            return "Error: Conflict not available in #{$iso639[params["loc"].to_s]}"
+          end
         else
-          ConflictAccount.create :conflict_id => params["cid"], :account_id => acc.id
-          return "ok"
+          return "Error: Conflict not found"
         end
       else
-        return "Error: account not found"
+        return "Error: Account not found"
       end
     end
   end
