@@ -49,7 +49,7 @@ class Image < ActiveRecord::Base
   end
 
   def inspect
-    self.file
+    self.file_url
   end
 
   def set_defaults

@@ -952,6 +952,7 @@ Admin.controller do
     params.delete("feat")
     params["locale"] = I18n.locale
     params["run_by"] = current_account.name
+    pp params
     if params.delete("filetype") == "csv"
       AsyncTask.new.csvexport params
     else
@@ -972,7 +973,7 @@ Admin.controller do
 
   get :translations do
     redirect to "/sessions/login?return=parse" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
+    redirect back unless current_account.editor?
     Admin.fetch_translations(false) if $tstatus.nil?
     @tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort
     @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! @tkeys.include?(x)}
