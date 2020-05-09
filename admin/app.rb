@@ -585,6 +585,8 @@ class Admin < Padrino::Application
       filter = Admin.cleanup(filter)
       result = $client.search(index: $esindex, type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":{"includes"=>stored_fields},"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
     end
+    #puts result.length.to_s.green
+    #result
   end
 
   def self.get_elastic id

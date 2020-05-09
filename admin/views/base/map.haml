@@ -316,7 +316,9 @@
           } else {
             $("form#search a span.search-button").hide();
             $("form#search a span.spin").show();
-            $.post("/search",{token:$("input.search").val()},function(data){
+            token = $("input.search").val();
+            $.post("/search",{token:token},function(data){
+              console.log(data)
               data = JSON.parse(data);
               //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
               if (data.length == 0) {
@@ -329,6 +331,9 @@
               $("form#search a span.search-button").show();
               $("form#search a span.spin").hide();
               filterMarkers(data);
+              $query = '{"should":[{"match_phrase":{"name":"'+token+'"}},{"match_phrase":{"description":"'+token+'"}},{"match_phrase":{"project_details":"'+token+'"}},{"match_phrase":{"suggested_alternatives":"'+token+'"}}]}';
+              $('.recent tr').remove();
+              ask();
             })
           }
         }
@@ -362,7 +367,9 @@
     }
     function ask() {
       if(!scrolling) return
+      console.log($query)
       $.getJSON("/more_recent","offset="+$('.recent tr').length+"&filter="+$query,function(data){
+        console.log(data)
         if (data.length < 6) {
           scrolling = false;
         }
