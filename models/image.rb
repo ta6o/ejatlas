@@ -5,7 +5,11 @@ class Image < ActiveRecord::Base
   belongs_to :attachable, polymorphic: true
 
   def check_lost
-    self.update_attribute(:lost, true) unless File.exists?("#{self.file.store_path}#{self.file.file.filename}")
+    if File.exists?("#{self.file.store_path}#{self.file.file.filename}")
+      self.update_attribute(:lost, false) if self.lost
+    else
+      self.update_attribute(:lost, true) unless self.lost
+    end
   end
 
   def file_url
