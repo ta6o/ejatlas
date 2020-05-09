@@ -25,4 +25,5 @@ Admin.controllers :sessions do
     set_current_account(nil)
     redirect to '/'
   end
+
 end

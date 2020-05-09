@@ -30,13 +30,14 @@ class Admin < Padrino::Application
 
   require 'pp'
   require 'colorize'
+  require "./lib/i18n-translate-override.rb"
+  load "./config/vars.rb"
+
   enable  :sessions
   enable  :store_location
 
+  set :sessions, :domain => ".#{$siteurl.sub(/^https?:\/\//,"")}"
   set :login_page, "/sessions/login"
-
-  require "./lib/i18n-translate-override.rb"
-  load "./config/vars.rb"
 
   $title = 'EJAtlas'
   $tkeys = []
