@@ -1210,7 +1210,7 @@
               .row
                 .col-md-12
                   %label=t("f.conflict.upload_picture_here_in_jpg")
-                  -if @example or not @conflict.new_record?
+                  -if not @example and @conflict.new_record?
                     %p &nbsp;
                     %p.description
                       %strong=t("f.conflict.please_save_form_after_uploading")

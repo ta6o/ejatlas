@@ -37,7 +37,6 @@ class Admin < Padrino::Application
   enable  :store_location
 
   #set :sessions, :domain => ".#{$siteurl.sub(/^https?:\/\//),""}"
-  puts ".#{$siteurl.sub(/^https?:\/\//,"")}"
   set :login_page, "/sessions/login"
 
   $title = 'EJAtlas'
