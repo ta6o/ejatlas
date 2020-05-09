@@ -871,7 +871,7 @@ class Admin < Padrino::Application
       color = :yellow 
       scolor = :yellow 
     end
-    puts CGI.unescape("#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{status.to_s.colorize(scolor)} #{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} #{account ? "#{account.email.green}" : ""}@#{request.ip.cyan} (#{platform.cyan}/#{agent.cyan})#{ (keys.any? and request.request_method != "GET") ? " [#{keys.map{|x| x.to_s.cyan}.join(",")}]" : ""}")
+    puts CGI.unescape("#{Time.now.strftime("%Y%m%d%H%M%S%L")[2..-1].colorize(color)} #{request.xhr? ? "X#{request.request_method}".rjust(5," ").colorize(color) : request.request_method.rjust(5," ").cyan} #{status.to_s.colorize(scolor)} #{I18n.locale.to_s.upcase.cyan}#{request.url.sub(/^https?:\/\/(\w+\.)?ejatlas\.org/,"").colorize(color)} #{account ? "#{account.email.green}" : ""}@#{request.ip.cyan} (#{platform.cyan}/#{agent.cyan})#{ (keys.any? and request.request_method != "GET") ? " [#{keys.map{|x| x.to_s.cyan}.join(",")}]" : ""}")
   end
 
   $tx_lock = false

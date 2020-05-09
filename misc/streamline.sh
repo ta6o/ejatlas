@@ -17,7 +17,8 @@ cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js mo
   jquery-ui-1.12.1.js jquery.maskedinput.min.js Google.js raphael.js colorwheel.js \
   xml2json.js nicedit.js modal.js > backall.js
 
-java -jar ../../lib/yui.jar --type js all.js > main.js
+java -jar ../../lib/yui.jar --type js --nomunge all.js > main.js
+#cp all.js main.js
 java -jar ../../lib/yui.jar --type js --nomunge all-dev.js > main-dev.js
 #cp all-dev.js main-dev.js
 java -jar ../../lib/yui.jar --type js --nomunge backall.js > backend.js
