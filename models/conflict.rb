@@ -627,10 +627,10 @@ class Conflict < ActiveRecord::Base
             dsc = ''
             if options[:print] == true
               url = m.url if m.has_attribute? 'url' and m.url and m.url.length > 2
-              url = m.file.url if m.has_attribute? 'file' and m.file
+              url = m.file_url if m.has_attribute? 'file' and m.file
             else
               url = '<a class="refanch small" href="'+m.url+'" target="_blank">[click to view]</a>' if m.has_attribute? 'url' and m.url and m.url.length > 2
-              url = '<a class="refanch small" href="'+m.file.url+'" target="_blank">[click to view]</a>' if m.has_attribute? 'file' and m.file
+              url = '<a class="refanch small" href="'+m.file_url+'" target="_blank">[click to view]</a>' if m.has_attribute? 'file' and m.file
             end
             tit = m.title if m.has_attribute?('title') and m.title and m.title.length > 2
             tit = m.name if m.has_attribute?('name') and m.name and m.name.length > 2

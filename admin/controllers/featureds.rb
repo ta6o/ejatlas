@@ -484,7 +484,7 @@ Admin.controllers :featureds do
     image = Image.new(params['image'])
     image.prime = true if f.images.where(prime:1).empty?
     if image.save
-      return {:file=>image.file.url,:thumb=>image.file.thumb_url,:n=>f.images.count,:title=>image.title}.to_json
+      return {:file=>image.file_url,:thumb=>image.file.thumb_url,:n=>f.images.count,:title=>image.title}.to_json
     else
       return 'no'
     end

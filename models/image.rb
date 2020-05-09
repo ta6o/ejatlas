@@ -4,6 +4,10 @@ class Image < ActiveRecord::Base
   mount_uploader :file, ImageUploader
   belongs_to :attachable, polymorphic: true
 
+  def check_lost
+    self.update_attribute(:lost, true) unless File.exists?("#{self.file.store_path}#{self.file.file.filename}")
+  end
+
   def file_url
     at = self.attachable
     return "#{$fileurl}/img/Conflict/#{at.id}/#{self.file.file.filename}" if at.is_a?(Conflict) and File.exists?("#{$filedir}/img/Conflict/#{at.id}/#{self.file.file.filename}")

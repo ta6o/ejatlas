@@ -223,7 +223,7 @@ class AsyncTask
         rels.each do |m|
           ttl = m.title ? "#{m.title}\n" : ""
           dsc = m.description ? "#{m.description}\n" : ""
-          url = m.file.url ? "#{m.file.url}\n" : ""
+          url = m.file_url ? "#{m.file_url}\n" : ""
           at += "#{ttl}#{dsc}#{url}\n"
           lin += "#{ttl}#{dsc}#{url}\n"
         end
@@ -588,7 +588,7 @@ class AsyncTask
         rels.each do |m|
           ttl = m.title ? "#{m.title}\n" : ""
           dsc = m.description ? "#{m.description}\n" : ""
-          url = m.file.url ? "#{m.file.url}\n" : ""
+          url = m.file_url ? "#{m.file_url}\n" : ""
           at += "#{ttl}#{dsc}#{url}\n"
           lin += "#{ttl}#{dsc}#{url}\n"
         end
@@ -744,7 +744,7 @@ class AsyncTask
         :description => con.headline ? con.headline.strip : ""
       }
       begin
-        ops[:image] = con.images.first.file.url
+        ops[:image] = con.images.first.file_url
       rescue
         ops[:image] = ""
       end
@@ -757,7 +757,7 @@ class AsyncTask
         ops[:type] = key
         ops[:name] = act.name.strip
         begin
-          ops[:image] = act.images.first.file.url
+          ops[:image] = act.images.first.file_url
         rescue
           ops[:image] = ""
         end
@@ -1135,7 +1135,7 @@ class AsyncTask
           next
         end
         img = Image.new
-        img.remote_file_url = doc.file.url
+        img.remote_file_url = doc.file_url
         img.title = doc.title
         img.locale = doc.locale
         img.description = doc.description
@@ -1148,10 +1148,10 @@ class AsyncTask
         rescue => e
           doc.update_attribute :copied?, nil
           if e.to_s.match("en.errors.messages.rmagick_processing_error")
-            #puts "#{doc.id.to_s.red}(#{doc.conflict.id.to_s.cyan})  invalid image:   #{doc.file.url.red}\n"
+            #puts "#{doc.id.to_s.red}(#{doc.conflict.id.to_s.cyan})  invalid image:   #{doc.file_url.red}\n"
             errors << doc.id
           else
-            #puts "#{doc.id.to_s.magenta}(#{doc.conflict.id.to_s.cyan})  image not found: #{doc.file.url.magenta}\n"
+            #puts "#{doc.id.to_s.magenta}(#{doc.conflict.id.to_s.cyan})  image not found: #{doc.file_url.magenta}\n"
             absents << doc.id
           end
         end

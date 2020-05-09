@@ -262,7 +262,7 @@ Admin.controller do
     @name = c.name
     @modified = c.modified_at ? "#{I18n.t('f.conflict.last_update',:locale=>I18n.locale)}:<br/><b>#{I18n.l(c.modified_at.to_date)}</b>".gsub(/\s+/,"&nbsp;") : "&nbsp;"
     @title = c.title
-    @ogimage = c.images.first.file.url if c.images.any?
+    @ogimage = c.images.first.file_url if c.images.any?
     @maptitle = c.name
     @zoom = 8
     @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
@@ -357,7 +357,7 @@ Admin.controller do
     @defs = @defs.to_set.to_a
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown').to_json
     @image = nil
-    @image = con.flag_images.first.file.url if con.flag_images.any?
+    @image = con.flag_images.first.file_url if con.flag_images.any?
     @maptitle = I18n.t("v.index.environmental_conflicts_in_var",:country=>I18n.t("countries.#{con.name.shorten_en}"))
     @baselayers = $baselayers
     render "base/front", :layout => @layout
@@ -379,7 +379,7 @@ Admin.controller do
     @markercount = con.conflicts.where(approval_status: 'approved').count
     @desc = "Description of #{con.name}"#con.description
     @image = nil
-    @image = con.logo_images.first.file.url if con.logo_images.any?
+    @image = con.logo_images.first.file_url if con.logo_images.any?
     @maptitle = I18n.t("v.index.environmental_conflicts_var",:company=>con.name)
     @baselayers = $baselayers
     render "base/front", :layout => @layout
@@ -509,7 +509,7 @@ Admin.controller do
     end
     @desc = con.description
     @headline = con.slogan
-    @ogimage = con.images.where(prime:1)[0].file.url if con.images.where(prime:1).any?
+    @ogimage = con.images.where(prime:1)[0].file_url if con.images.where(prime:1).any?
     @markercount = JSON.parse(@markerinfo || "[]").count
     @defs = []
     con.vector_data.each do |vd|
@@ -539,7 +539,7 @@ Admin.controller do
     @ranks = (@ranks - [nil]).reverse.to_json.html_safe
     @images = []
     @images = con.images.order("updated_at desc") if con.images.any?
-    @ogimage = @images.first.file.url if @images.any?
+    @ogimage = @images.first.file_url if @images.any?
     @feature = true
     @maptitle = con.slogan
     @title = con.headline
@@ -594,7 +594,7 @@ Admin.controller do
     @id = con.id
     @desc = con.description
     @headline = con.slogan
-    @ogimage = con.images.where(prime:1)[0].file.url if con.images.where(prime:1).any?
+    @ogimage = con.images.where(prime:1)[0].file_url if con.images.where(prime:1).any?
     @markercount = JSON.parse(@markerinfo || "[]").count
     @defs = []
     con.vector_data.each do |vd|
@@ -605,7 +605,7 @@ Admin.controller do
     @defs = @defs.to_set.to_a
     @vectors = con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link').to_json
     @image = nil
-    @image = con.images.first.file.url if con.images.any?
+    @image = con.images.first.file_url if con.images.any?
     @ogimage = @image
     @feature = true
     @maptitle = con.slogan

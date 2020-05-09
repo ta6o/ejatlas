@@ -230,7 +230,7 @@ Admin.controllers :accounts do
     image.attachable = a
     image.prime = true if a.images.where(prime:1).empty?
     if image.save
-      return {:file=>image.file.url,:thumb=>image.file.thumb_url,:n=>a.images.count,:title=>image.title}.to_json
+      return {:file=>image.file_url,:thumb=>image.file.thumb_url,:n=>a.images.count,:title=>image.title}.to_json
     else
       return 'no'
     end
