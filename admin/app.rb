@@ -912,7 +912,7 @@ class Admin < Padrino::Application
       else
         ws[i+1,2] = ""
       end
-      ws[i+1,3] = "=GOOGLETRANSLATE(B#{i+1}, \"#{ct.locale}\",\"#{locale}\")"
+      ws[i+1,3] = "=GOOGLETRANSLATE(B#{i+1}, \"#{ct.locale}\",\"#{locale.sub(/^cn$/,"zh")}\")"
     end
     if $tx_lock
       puts "waiting for lock".yellow if verbose
@@ -927,7 +927,7 @@ class Admin < Padrino::Application
     b1 = nil
     while b1.nil?
       ws.reload
-      b1 = ws[1,2]
+      b1 = ws[1,3]
       sleep 0.1
     end
     puts "loading".blue if verbose
@@ -935,6 +935,7 @@ class Admin < Padrino::Application
     fields.each_with_index do |x,i| 
       val = ws[i+1,3]
       if val != "#VALUE!" and (all or cn.attributes[x].nil? or cn.attributes[x] === "")
+        puts "#{x.green} #{val}"
         if x == "description"
           attrs[x] = val.gsub("$%&","<br/>")
         else
@@ -943,10 +944,10 @@ class Admin < Padrino::Application
       end
     end
     $tx_lock = false
-    pp attrs.symbolize_keys if verbose and false
+    pp attrs.symbolize_keys if verbose
     puts "saving".red if verbose
     cn.attributes = attrs
-    cn.save!(:validate=>false)
+    cn.save!
     puts "pinging".yellow if verbose
     cn.conflict.ping
     cn

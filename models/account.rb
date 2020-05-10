@@ -50,7 +50,7 @@ class Account < ActiveRecord::Base
 
   def contributor? conflict, locale=I18n.locale
     return false unless conflict
-    conflict.account_id == self.id or conflict.conflict_accounts.map(&:account_id).include?(self.id) or self.editor?
+    conflict.account_id == self.id or conflict.conflict_accounts.map(&:account_id).include?(self.id) or self.editor?(locale)
   end
 
   def translator? locale=I18n.locale

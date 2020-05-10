@@ -300,8 +300,8 @@ Admin.controllers :conflicts do
     rescue
       pass
     end
-    if @conflict.local_data and @conflict.local_data.approval_status == "auto_tx"
-     @conflict.local_data.destroy
+    if @conflict.local_data and ["auto_tx",nil].include? @conflict.local_data.approval_status and false
+      @conflict.local_data.destroy
     end
     unless @conflict.local_data
       ConflictText.create(:conflict_id=>@conflict.id,:locale=>I18n.locale,:slug=>@conflict.slug)
@@ -475,7 +475,11 @@ Admin.controllers :conflicts do
 
     if params["conflict"]["slug"].nil? or params["conflict"]["slug"] == ""
       #return {:status=>"error",:errors=>["Name on address bar can not be blank"]}.to_json 
-      params["conflict"]["slug"] = Admin.slugify(params["conflict"]["name"])
+      if @conflict.local_data("en").slug and @conflict.local_data("en").slug.length > 0
+        params["conflict"]["slug"] = @conflict.local_data("en").slug
+      else
+        params["conflict"]["slug"] = Admin.slugify(params["conflict"]["name"])
+      end
     end
     oldstat = @conflict.approval_status
     sameslug = ConflictText.where(:slug=>params["conflict"]["slug"]).map(&:conflict_id) - [params["id"].to_i]

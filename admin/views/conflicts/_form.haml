@@ -1389,7 +1389,16 @@
             .group
               %label= "#{t("f.conflict.conflict_id")}  <font style='font-weight:normal'>#{@conflict.id}</font>".html_safe
               %br/
-              %label= "#{t("f.conflict.available_in")} <font style='font-weight:normal'>#{@conflict.conflict_texts.map{|x| "<span title='#{x.id}'>#{t("countries.language.#{x.locale}")}</span>" }.join(", ")}</font>".html_safe
+              %label
+                %span= t("f.conflict.available_in")
+                -cts = @conflict.conflict_texts.where("approval_status is not null")
+                -cts.each_with_index do |ct,ind|
+                  %font{:style=>"font-weight:normal;#{ct.approval_status == "auto_tx" ? "color:#c00;" : ""}"} 
+                    -comma = (ind == cts.length - 1) ? "" : ", "
+                    -if current_account.contributor?(@conflict,ct.locale)
+                      %a{:title=>"#{ct.id}",:href=>"#{Admin.local_url(ct.locale)}/conflicts/edit/#{@conflict.id}"}= "#{t("countries.language.#{ct.locale}")}#{comma}"
+                    -else
+                      %span{:title=>"#{ct.id}"}= "#{t("countries.language.#{ct.locale}")}#{comma}"
 
           .group
             %label{:for=>"conflict_headline"}= t("f.conflict.headline_text")
@@ -1745,7 +1754,7 @@
               %label= t("f.conflict.translate_automatically")
               %table.auto_tx
                 %tbody
-                  -@conflict.conflict_texts.order(:locale).each do |ct|
+                  -@conflict.conflict_texts.where("approval_status" => ["approved","modified","queued","draft"]).order(:locale).each do |ct|
                     -next if ct.locale == I18n.locale.to_s
                     %tr
                       %td=t("countries.language.#{ct.locale}")
