@@ -88,7 +88,7 @@
                     %a{:href=>'/credits'}= t "v.menu.credits_collaborators"
                   %li
                     %a{:href=>'/contact'}= t "v.menu.contact"
-                  -if current_account.editor?
+                  -if current_account and $moderated_locales.any?
                     %li.divider
                     -$moderated_locales.each do |loc|
                       -next if loc == I18n.locale.to_s

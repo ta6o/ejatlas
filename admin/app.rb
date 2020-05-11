@@ -64,18 +64,21 @@ class Admin < Padrino::Application
   $moderated_locales = []
   $available_locales = []
 
-  def self.check_locales 
+  def self.check_locales
     $moderated_locales = ["en"]
     Role.find_by_name("editor").account_roles.each do |ar| 
       if ar.account 
         ar.account.account_roles.each do |ro| 
           if ro.role.name.match(/^locale-/)
             loc = ro.role.name.sub(/^locale-/,"")
-            $moderated_locales << loc unless $moderated_locales.include?(loc)
+            if ConflictText.where(:locale=>loc,:approval_status=>"approved").any? and not $moderated_locales.include?(loc)
+              $moderated_locales << loc 
+            end
           end
         end
       end
     end
+    []
   end
   self.check_locales
 
@@ -944,7 +947,7 @@ class Admin < Padrino::Application
       end
     end
     $tx_lock = false
-    pp attrs.symbolize_keys if verbose
+    pp attrs.symbolize_keys if verbose and false
     puts "saving".red if verbose
     cn.attributes = attrs
     cn.save!
