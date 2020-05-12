@@ -4,6 +4,16 @@ class Image < ActiveRecord::Base
   mount_uploader :file, ImageUploader
   belongs_to :attachable, polymorphic: true
 
+  def self.check_lost
+    lost = 0
+    total = Image.count.to_s
+    Image.order(:id).each_with_index do |img,ind|
+      print "\r#{ind.to_s.green} / #{total.yellow}"
+      lost += 1 if img.check_lost
+    end
+    puts "\r#{total.yellow} images processed, #{lost.to_s.red} images found to be lost."
+  end
+
   def check_lost
     if File.exists?("#{self.file.store_path}#{self.file.file.filename}")
       self.update_attribute(:lost, false) if self.lost
