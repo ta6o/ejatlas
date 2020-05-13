@@ -915,7 +915,7 @@ class Admin < Padrino::Application
       else
         ws[i+1,2] = ""
       end
-      ws[i+1,3] = "=GOOGLETRANSLATE(B#{i+1}, \"#{ct.locale}\",\"#{locale.sub(/^cn$/,"zh")}\")"
+      ws[i+1,3] = "=GOOGLETRANSLATE(B#{i+1}, \"#{ct.locale}\",\"#{locale.to_s.sub(/^cn$/,"zh")}\")"
     end
     if $tx_lock
       puts "waiting for lock".yellow if verbose
