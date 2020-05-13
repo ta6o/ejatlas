@@ -236,41 +236,34 @@ Admin.controller do
   end
 
   get :conflict, :with => :slug do
-    c = Conflict.find_slug(params[:slug].downcase)
-    pass unless c
-    if I18n.locale != I18n.default_locale and params.has_key?("translate") and ConflictText.where(:conflict_id=>c.id, :locale=>I18n.locale).empty?
-      Admin.tx_conflict c.conflict_texts.order(:created_at).first, I18n.locale, false, true
+    @conflict = Conflict.find_slug(params[:slug].downcase)
+    pass unless @conflict
+    if I18n.locale != I18n.default_locale and params.has_key?("translate") and ConflictText.where(:conflict_id=>@conflict.id, :locale=>I18n.locale).empty?
+      Admin.tx_conflict @conflict.conflict_texts.order(:created_at).first, I18n.locale, false, true
     end
-    #last_modified c.updated_at
-    if c.approval_status != "approved"
-      if current_account.editor?
-      else
-        pass unless c.approval_status == "auto_tx"
-      end
-    end
-    @conflict = c
-    @markerinfo = c.accurate_marker
-    @cmarker = c.as_marker.to_json
+    pass unless ["approved","auto_tx"].include?(@conflict.approval_status) or current_account.contributor?(@conflict)
+    @markerinfo = @conflict.accurate_marker
+    @cmarker = @conflict.as_marker.to_json
     @defs = []
-    c.country.vector_data.each do |vd|
+    @conflict.country.vector_data.each do |vd|
       if vd.vector_style and vd.vector_style.defs
         @defs << JSON.parse(vd.vector_style.defs)
       end
     end
     @defs = @defs.to_set.to_a
-    @vectors = c.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
-    @name = c.name
-    @modified = c.modified_at ? "#{I18n.t('f.conflict.last_update',:locale=>I18n.locale)}:<br/><b>#{I18n.l(c.modified_at.to_date)}</b>".gsub(/\s+/,"&nbsp;") : "&nbsp;"
-    @title = c.title
-    @ogimage = c.images.first.file_url if c.images.any?
-    @maptitle = c.name
+    @vectors = @conflict.country.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style').to_json
+    @name = @conflict.name
+    @modified = @conflict.modified_at ? "#{I18n.t('f.conflict.last_update',:locale=>I18n.locale)}:<br/><b>#{I18n.l(@conflict.modified_at.to_date)}</b>".gsub(/\s+/,"&nbsp;") : "&nbsp;"
+    @title = @conflict.title
+    @ogimage = @conflict.images.first.file_url if @conflict.images.any?
+    @maptitle = @conflict.name
     @zoom = 8
-    @zoom = [8,8,10,16][c.accuracy_level] if c.accuracy_level
+    @zoom = [8,8,10,16][@conflict.accuracy_level] if @conflict.accuracy_level
     @baselayers = $baselayers
-    @related = c.related
-    @headline = c.headline
-    @summary = c.table
-    c.medialinks.each do |ml|
+    @related = @conflict.related
+    @headline = @conflict.headline
+    @summary = @conflict.table
+    @conflict.medialinks.each do |ml|
       if ml.url and ml.url.match(/\.jpg$/)
         @image = ml.url
         break

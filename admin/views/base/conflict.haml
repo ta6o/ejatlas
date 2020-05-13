@@ -46,7 +46,7 @@
           %li
             %a{:href=>"/print/#{@conflict.slug}",:target=>"_blank",:title=>"Full page"}
               %span.glyphicon.glyphicon-print
-          -if current_account.editor?
+          -if current_account.contributor?(@conflict)
             %li
               %a{:href=>"/conflicts/edit/#{@conflict.id}",:target=>"_blank",:title=>"Edit"}
                 %span.glyphicon.glyphicon-edit
