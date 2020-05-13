@@ -44,6 +44,18 @@ class Account < ActiveRecord::Base
     ["admin","editor"].include? self.role or self.roles.map(&:name).sort.join(",").match(/editor.+locale-#{locale}/)
   end
 
+  def editor_in
+    rs = self.roles.map(&:name)
+    ed = rs.delete("editor")
+    re = []
+    if ed
+      rs.each do |r|
+        re << r.split("-")[1] if r.match(/^locale-/)
+      end
+    end
+    re
+  end
+
   def gis?
     self.editor? or self.roles.map(&:name).sort.join(",").match(/gis/)
   end

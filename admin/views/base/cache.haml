@@ -29,7 +29,8 @@
         %br/
         %select{:name=>"locale"}
           -@tkeys.each do |loc|
-            %option{:value=>loc,:selected=>(loc.to_sym === I18n.locale)}= @iso639[loc]
+            -if (["admin","editor"].include?(current_account.role) or current_account.editor_in.include?(loc.to_s))
+              %option{:value=>loc,:selected=>(loc.to_sym === I18n.locale)}= @iso639[loc]
         %br/
         %br/
         -if current_account.role == "admin"
@@ -55,7 +56,7 @@
           Last updated:
           %ul{:style=>"padding:0;"}
             -Cached.order("updated_at desc").each do |ca|
-              -if @tkeys.include?(ca.locale)
+              -if @tkeys.include?(ca.locale) and (["admin","editor"].include?(current_account.role) or current_account.editor_in.include?(ca.locale.to_s))
                 %li{:style=>"list-style-type:none;"}
                   %b= "#{@iso639[ca.locale]}:"
                   = "#{Admin.divtime((Time.now - ca.updated_at), false, false)} ago"

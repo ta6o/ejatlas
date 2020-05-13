@@ -182,13 +182,13 @@ Admin.controllers :conflicts do
   def self.protect(protected)
     condition do
       return redirect back if current_account.nil? 
-      #redirect to '/sessions/new' unless ['admin','editor'].include? current_account.role
+      #redirect to '/sessions/new' unless current_account.editor?
     end if protected
   end
 =end
 
   before /^(?!\/(off))/ do
-    #redirect to '/conflicts/off' unless ['admin','editor'].include?(current_account.role)
+    #redirect to '/conflicts/off' unless current_account.editor?
     redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}" unless current_account
     redirect to "/not_authorized" unless current_account.approved and current_account.confirmed
     @lat = 0
@@ -427,7 +427,7 @@ Admin.controllers :conflicts do
 =end
 
   post :stamp, :with=>:id do
-    return "nack" unless ["admin","editor"].include?(current_account.role)
+    return "nack" unless current_account.editor?
     @conflict = Conflict.find(params[:id])
     "nack"
     if @conflict and @conflict.update_attribute("modified_at",Time.now) 
@@ -739,7 +739,7 @@ Admin.controllers :conflicts do
           if @conflict.save! :validate=>false
             flash[:notice] = 'Conflict was successfully saved.'
             #puts current_account.role.yellow
-            if ['admin','editor'].include?(current_account.role)
+            if current_account.editor?
               $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
               $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
             else
@@ -751,7 +751,7 @@ Admin.controllers :conflicts do
             end
 
             if oldstat != @conflict.approval_status and @conflict.account_id and @conflict.account_id > 0 
-              if ['admin','editor'].include?(current_account.role)
+              if current_account.editor?
                 Admin.notify_collaborator @conflict
               elsif ["queued","modified"].include?(@conflict.approval_status)
                 Admin.notify_moderator @conflict
@@ -809,7 +809,7 @@ Admin.controllers :conflicts do
     @name = c.name
     @id = c.id
     if current_account
-      if ['admin', 'editor'].include? current_account.role
+      if current_account.editor?
         @table = c.as_table(:full=>true) 
       elsif current_account.role == 'user' and current_account.conflicts.include? c
         @prop = true
@@ -829,7 +829,7 @@ Admin.controllers :conflicts do
     @name = c.name
     @id = c.id
     if current_account
-      if ['admin', 'editor'].include? current_account.role
+      if current_account.editor?
         @table = c.as_table(:full=>true) 
       elsif current_account.role == 'user' and current_account.conflicts.include? c
         @prop = true

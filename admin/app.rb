@@ -316,7 +316,7 @@ class Admin < Padrino::Application
     @account = m.account
     @conflict = m.conflict
     return unless @account
-    if ["admin","editor"].include?(@account.role)
+    if @account.editor?
       @collab = @conflict.account
       html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_collaborator.haml").render(self)
       #Admin.send_mail(@collab, (@conflict.approval_status == "approved" ? "#{@conflict.name} approved on EJAtlas" : "Moderation update for #{@conflict.name}"), html)
@@ -720,7 +720,7 @@ class Admin < Padrino::Application
   $namies = [ "Herbie", "Barney", "Zahra", "Ernesto", "Turgut", "Igor", "Sebastian", "Akaki", "Bobo"]
 
   before do
-    if current_account and current_account.privacy_accepted.nil? and not request.path.match(/^\/(privacy_policy|accept_privacy|legal)/) # and current_account.role == "admin"
+    if current_account and current_account.privacy_accepted.nil? and not request.path.match(/^\/(privacy_policy|accept_privacy|legal)/)
       redirect to "/privacy_policy?return=#{request.path.sub(/^\//,'')}"
     end
   end

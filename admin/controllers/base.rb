@@ -674,7 +674,7 @@ Admin.controller do
 
   get :cache do
     redirect to "/sessions/login?return=cache" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
+    redirect back unless current_account.editor?
     Admin.fetch_translations(false) if $tstatus.nil?
     @tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort - ["master"]
     @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! @tkeys.include?(x)}
@@ -683,7 +683,7 @@ Admin.controller do
 
   post :cache do
     redirect to "/sessions/login?return=cache" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
+    redirect back unless current_account.editor?
     params["run_by"] = current_account.name
     AsyncTask.new.setcache params
     redirect to 'jobs'
@@ -972,8 +972,8 @@ Admin.controller do
   end
 
   get :translations do
-    redirect to "/sessions/login?return=parse" unless current_account
-    redirect back unless current_account.editor?
+    redirect to "/sessions/login?return=translations" unless current_account
+    redirect back unless current_account.translator?
     Admin.fetch_translations(false) if $tstatus.nil?
     @tkeys = $tstatus.values.map(&:keys).flatten.uniq.sort
     @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! @tkeys.include?(x)}
@@ -999,7 +999,7 @@ Admin.controller do
   get :jobs do
     @name = "Queued Jobs"
     redirect to "/sessions/login?return=jobs" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
+    redirect back unless current_account.editor?
     @jobs = Delayed::Job.all
     @exports = []
     if ENV["RACK_ENV"] == "production"

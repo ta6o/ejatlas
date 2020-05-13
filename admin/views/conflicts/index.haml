@@ -33,7 +33,7 @@
     .hero-unit
       %h1.title.pull-left
         =mt('Conflicts')
-      -if ["admin","editor"].include?(current_account.role)
+      -if current_account.editor?
         .pull-right
           %a.btn.notr.btn-info{:style=>"margin-top:18px;",'data-toggle'=>'modal','data-target'=>'#collab'} Add collaborator(s) to selected conflicts
     .inner
@@ -45,7 +45,7 @@
             %th=mat(:conflict, :submitted_by)
             %th=mat(:conflict, 'last modified')
             %th=mat(:conflict, 'approval')
-            -if ["admin","editor"].include?(current_account.role)
+            -if current_account.editor?
               %th=mat(:conflict, 'tags')
             %th.last
               %form#filter-form
@@ -85,7 +85,7 @@
                     %span &nbsp;
                 %td
                   %span=conflict["approval_status"]
-                -if ["admin","editor"].include?(current_account.role)
+                -if current_account.editor?
                   %td
                     -if conflict["tags"]
                       %span=conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
@@ -97,10 +97,10 @@
                     =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                     |
                     =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
-                    -if ["admin","editor"].include? current_account.role
+                    -if current_account.editor?
                       %br/
                       =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
-                  -if ["admin","editor"].include?(current_account.role)
+                  -if current_account.editor?
                     .pull-right{:style=>"margin:1px 0 -4px"}
                       %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
             -else
@@ -134,7 +134,7 @@
                       %span &nbsp;
                   %td
                     %span=conflict["approval_status"]
-                  -if ["admin","editor"].include?(current_account.role)
+                  -if current_account.editor?
                     %td
                       -if conflict["tags"]
                         %span=conflict["tags"].map{|t| Tag.find(t).name}.join(", ")
@@ -146,15 +146,15 @@
                       =link_to pat('Edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                       |
                       =link_to pat('View'), "/conflict/#{conflict["slug"]}", :method => :get
-                      -if ["admin","editor"].include? current_account.role
+                      -if current_account.editor?
                         %br/
                         =link_to pat('Approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
-                    -if ["admin","editor"].include?(current_account.role)
+                    -if current_account.editor?
                       .pull-right{:style=>"margin:1px 0 -4px"}
                         %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
 
       -unless current_account.nil?
-        -if ["admin","editor"].include? current_account.role
+        -if current_account.editor?
           :javascript
             $(document).ready(function(){
               $('#sortme').tablesorter({
