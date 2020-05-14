@@ -65,7 +65,7 @@ Admin.controllers :featureds do
     begin
       @followed = @featured.followed
     rescue => e
-      @followed = nil
+      @followed = []
       #puts e.to_s.red
       #puts e.backtrace
       #puts "...".red
