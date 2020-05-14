@@ -16,7 +16,7 @@ Admin.controller do
     return 'ok'
   end
 
-  get /^\/(legal|privacy_policy|about|faq|disclaimer|contact|credits|welcome)\/?/ do
+  get /^\/(legal|privacy_policy|about|faq|disclaimer|contact|credits|welcome|datapolicy)\/?/ do
     @slug = params[:captures].first
     if sp = StaticPage.where(:slug=>@slug, :locale=>I18n.locale).first
       @static = true
@@ -131,6 +131,16 @@ Admin.controller do
       render "base/credits_#{I18n.locale}", :layout => :application
     else
       render "base/credits_en", :layout => :application
+    end
+  end
+
+  get :datapolicy do
+    @static = true
+    @name = t("v.menu.data_use_policy")   
+    if File.exists? "#{Dir.pwd}/admin/views/base/credits_#{I18n.locale}.haml"
+      render "base/datapolicy_#{I18n.locale}", :layout => :application
+    else
+      render "base/datapolicy_en", :layout => :application
     end
   end
 
