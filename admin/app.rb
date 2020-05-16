@@ -971,5 +971,18 @@ class Admin < Padrino::Application
     "ack"
   end
 
+  def self.svgwalk data, path
+    Dir.foreach(path).sort.each do |f|
+      next if f.match(/^\./)
+      ff = "#{path.sub(/\/+$/,"")}/#{f}"
+      if File.directory?(ff)
+        data[f] = {"_files"=>[]}
+        Admin.svgwalk(data[f],ff)
+      elsif File.file?(ff)
+        data["_files"] << f
+      end
+    end
+  end
+
 end
 

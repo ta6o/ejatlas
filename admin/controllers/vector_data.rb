@@ -15,6 +15,13 @@ Admin.controllers :vectors do
     render 'vector_data/index'
   end
 
+  get :svg do
+    @name = "SVG Icons"
+    @svgs = {"_files"=>[]}
+    Admin.svgwalk(@svgs,"#{$filedir}/svg/")
+    render 'vector_data/svg'
+  end
+
   get :styles do
     @name = "Vector styles"
     @styles = VectorStyle.all
