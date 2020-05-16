@@ -51,7 +51,7 @@
                                                   =file
   .col-sm-6
     %p.showtext
-    %p.copied
+    %p.copied Copied!
     %br/
     .showcase
 
@@ -83,6 +83,7 @@
       width: 100%;
       height: 24px;
       padding-left: 48px;
+      opacity: 0;
     }
     li.file {
       cursor: pointer;
@@ -98,7 +99,7 @@
          filename = "https://file.ejatlas.org/svg"+$(this).data("path")+$(this).text().trim()
          $(".showtext").text(filename);
          $(".showcase, .showtext").css("background-image", "url('"+filename+"')")
-         $(".copied").html("&nbsp;")
+         $(".copied").css("opacity",0)
        })
        $(".showtext").on("click",function(){
           if (window.getSelection) {
@@ -113,7 +114,8 @@
             textRange.select();
           }
           document.execCommand("copy");
-          $(".copied").html("Copied!")
+          $(".copied").css("opacity",1)
+          $(".copied").delay(500).animate({opacity:0},500)
        })
      });
 
