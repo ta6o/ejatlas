@@ -22801,7 +22801,7 @@ function geoLayers() {
         transparent: true,
         vectorTileLayerStyles: styls,
         getFeatureId: function(fi) {
-          console.log(idcol)
+          console.log(fi.properties[idcol])
           return fi.properties[idcol];
         },
         s: s
@@ -22917,7 +22917,7 @@ function initMap() {
   }
 
   if (Object.keys(layerinfo).length > 0 ) {
-    loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.min.js')
+    loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js')
     window.setTimeout(waitForVectorGrid,10)
   }
   if (Object.keys(baselayers).length > 1){ 

@@ -46,6 +46,7 @@ function geoEach(f,l) {
 }
 
 function identify(e) {
+  console.log("NALAN")
   console.log(e)
   console.log(wmsLayers)
   if (wmsLayers.length == 0) return
@@ -82,6 +83,7 @@ function identify(e) {
       }
     }
   });
+  L.DomEvent.stop(e);
 }
 
 function removeGutters() {
@@ -142,9 +144,10 @@ function geoLayers() {
       overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
         interactive: f["clickable"],
         transparent: true,
+        buffer: 512,
         vectorTileLayerStyles: styls,
         getFeatureId: function(fi) {
-          console.log(idcol)
+          //console.log(fi.properties[idcol])
           return fi.properties[idcol];
         },
         s: s
@@ -167,7 +170,6 @@ function geoLayers() {
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
               layer.bringToFront(layer.highlight);
             }
-
             L.DomEvent.stop(e);
           }, 
           mouseout:function(e){ overlayMaps[name].clearHighlight(); }
@@ -260,7 +262,8 @@ function initMap() {
   }
 
   if (Object.keys(layerinfo).length > 0 ) {
-    loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.min.js')
+    loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js')
+    //loadJS('/javascripts/Leaflet.VectorGrid.js')
     window.setTimeout(waitForVectorGrid,10)
   }
   if (Object.keys(baselayers).length > 1){ 

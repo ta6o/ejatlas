@@ -7,9 +7,9 @@
       .modal-header
         %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true,:style=>"font-size:32px;"} &times;
         %h4= "Select layers for featured <b>#{@featured.name}</b>".html_safe
-        %a{:onclick=>"update_geoserver()",:href=>"#"} Update from GeoServer
+        %a{:onclick=>"update_geoserver()",:href=>"#"} Update selected layers from GeoServer
       .modal-body
-        %table
+        %table.geolayers
           %thead
             %tr
               %th ADD?
@@ -49,7 +49,11 @@
     function update_geoserver(){
       $("body").prepend("<div id='loading'><div class='loading'></div></div>")
       $("#loading .loading").show();
-      $.post("/featureds/update_geoserver",{},function(data){
+      slugs = []
+      $.each($(".geolayers input[type=checkbox]:checked"),function(i,e){
+        slugs.push($(e).closest("td").next("td").text())
+      })
+      $.post("/featureds/update_geoserver",{slugs:slugs},function(data){
         if (data == "ack") {
           window.location.reload();
         } else {

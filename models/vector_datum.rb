@@ -3,8 +3,9 @@ class GeoLayer < ActiveRecord::Base
   has_many :featureds, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Featured"
   has_many :conflicts, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Conflict"
 
-  def self.check_layers
+  def self.check_layers slugs=[]
     require "rest_client"
+    p slugs
     local = GeoLayer.all.map(&:slug)
     layers = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"]
     layers |= []
@@ -16,9 +17,11 @@ class GeoLayer < ActiveRecord::Base
       attrs = {:name=>data["title"], :slug=>data["name"], :url=>"#{data["namespace"]["name"]}:#{data["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:layer_type=>type,:srs=>data["srs"]}
       if local.include?(data["name"])
         local.delete data["name"]
-        gl = GeoLayer.find_by_slug(data["name"])
-        gl.update_attributes(attrs)
-        gl.update_style
+        if slugs.empty? or slugs.include?(data["name"])
+          gl = GeoLayer.find_by_slug(data["name"])
+          gl.update_attributes(attrs)
+          gl.update_style
+        end
       else
         gl = GeoLayer.create attrs
         gl.update_attrs true
@@ -87,37 +90,58 @@ class GeoLayer < ActiveRecord::Base
             end
           end
           script += "\n  if(#{condition.join(" && ")}) {" if condition.any?
-          script += "\n    return ({"
-          layer["paint"].each do |key,val|
-            val = val.to_s.strip
-            if    key == "line-color"
-              script += "\n      stroke: true,"
-              script += "\n      color: \"#{val}\","
-            elsif key == "line-width"
-              script += "\n      weight: #{val},"
-            elsif key == "line-opacity"
-              script += "\n      opacity: #{val},"
-            elsif key == "line-cap"
-              script += "\n      lineCap: \"#{val.sub(/^#/,'')}\","
-            elsif key == "line-join"
-              script += "\n      lineJoin: \"#{val.sub(/^#/,'')}\","
-            elsif key == "line-dasharray"
-              script += "\n      dashArray: #{val},"
-            elsif key == "line-dashoffset"
-              script += "\n      dashOffset: #{val},"
-            elsif key == "fill-color"
-              script += "\n      fill: true,"
-              script += "\n      fillColor: \"#{val}\","
-            elsif key == "fill-opacity"
-              script += "\n      fillOpacity: #{val},"
-            elsif key == "icon-color"
-              script += "\n      fill: true,"
-              script += "\n      fillColor: \"#{val}\","
-              script += "\n      color: \"#{val}\","
-            elsif key == "icon-size"
-              script += "\n      radius: #{val},"
+          if layer["paint"].has_key?("icon-url")
+            script += "\n    return ( {"
+            script += "\n      icon: new L.icon({"
+            layer["paint"].each do |key,val|
+              if val.is_a? Hash
+                val = val.to_json.strip
+              else
+                val = val.to_s.strip
+              end
+              if    key == "icon-url"
+                script += "\n        iconUrl: '#{val}',"
+              elsif key == "icon-size"
+                script += "\n        iconSize: #{val},"
+              elsif key == "icon-anchor"
+                script += "\n        iconAnchor: #{val},"
+              end
+            end
+            script += "\n      })"
+          else
+            script += "\n    return ({"
+            layer["paint"].each do |key,val|
+              val = val.to_s.strip
+              if    key == "line-color"
+                script += "\n      stroke: true,"
+                script += "\n      color: \"#{val}\","
+              elsif key == "line-width"
+                script += "\n      weight: #{val},"
+              elsif key == "line-opacity"
+                script += "\n      opacity: #{val},"
+              elsif key == "line-cap"
+                script += "\n      lineCap: \"#{val.sub(/^#/,'')}\","
+              elsif key == "line-join"
+                script += "\n      lineJoin: \"#{val.sub(/^#/,'')}\","
+              elsif key == "line-dasharray"
+                script += "\n      dashArray: #{val},"
+              elsif key == "line-dashoffset"
+                script += "\n      dashOffset: #{val},"
+              elsif key == "fill-color"
+                script += "\n      fill: true,"
+                script += "\n      fillColor: \"#{val}\","
+              elsif key == "fill-opacity"
+                script += "\n      fillOpacity: #{val},"
+              elsif key == "icon-color"
+                script += "\n      fill: true,"
+                script += "\n      fillColor: \"#{val}\","
+                script += "\n      color: \"#{val}\","
+              elsif key == "icon-size"
+                script += "\n      radius: #{val},"
+              end
             end
           end
+
           if layer["paint"].has_key?("line-color")
             unless layer["paint"].has_key?("line-width")
               script += "\n      weight: 1,"

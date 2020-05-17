@@ -202,7 +202,8 @@ Admin.controllers :featureds do
   end
 
   post :update_geoserver do
-    GeoLayer.check_layers
+    pp params
+    GeoLayer.check_layers params["slugs"]
     return "ack"
   end
 

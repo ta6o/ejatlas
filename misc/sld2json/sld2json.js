@@ -459,10 +459,27 @@ function getGraphicObj(file, symbTag, type, obj) {
   }
   //Sets size
   try {
-    var size = symbTag[0].Graphic[0].Size[0];
-      obj['icon-size'] = parseInt(size, 10);
+    console.log(symbTag[0].Graphic[0].Size)
+    if (symbTag[0].Graphic[0].Size.length == 1) {
+      obj['icon-size'] = {x:parseInt(symbTag[0].Graphic[0].Size[0], 10), y:parseInt(symbTag[0].Graphic[0].Size[0], 10)};
+    } else {
+      obj['icon-size'] = {x:parseInt(symbTag[0].Graphic[0].Size[0], 10), y:parseInt(symbTag[0].Graphic[0].Size[1], 10)};
+    }
   } catch (err) {
       console.log('Size does not exist in this graphic-tag');
+  }
+  try {
+      var anchor = []
+      anchor[0] = parseInt(symbTag[0].Graphic[0].Displacement[0].DisplacementX[0]);
+      anchor[1] = parseInt(symbTag[0].Graphic[0].Displacement[0].DisplacementY[0]);
+      obj['icon-anchor'] = anchor;
+  } catch (err) {
+      console.log('Anchor does not exist in this graphic-tag');
+  }
+  try {
+      obj['icon-url'] = symbTag[0].Graphic[0].ExternalGraphic[0].OnlineResource[0]["$"]["xlink:href"];
+  } catch (err) {
+      console.log('URL does not exist in this graphic-tag');
   }
   console.log(obj)
   return obj;
