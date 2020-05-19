@@ -37,10 +37,8 @@ def rescue_refs
   [Weblink,Medialink,Reference,Legislation].each do |model|
     losts = model.where(:locale=>nil)
     losts.each_with_index do |lost,index|
-      if lost.conflict.conflict_texts.length == 1
-        print "\r#{model.to_s.green} #{index} / #{losts.length}"
-        lost.update :locale=>lost.conflict.conflict_texts.first.locale
-      end
+      print "\r#{model.to_s.green} #{index} / #{losts.length}"
+      lost.update :locale=>lost.conflict.conflict_texts.order(:id).first.locale
     end
     puts
   end
