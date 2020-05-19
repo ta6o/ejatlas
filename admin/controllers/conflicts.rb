@@ -510,7 +510,7 @@ Admin.controllers :conflicts do
         }
         updated['refs'].each do |k,v|
           v.each do |l,w|
-            #puts "#{k}: #{l},#{w}".green
+            puts "#{k}: #{l},#{w}".green
             next unless multies.has_key?(k)
             ref = multies[k][:class].where(:id=>l)
             if ref.any?
@@ -940,6 +940,7 @@ Admin.controllers :conflicts do
   end
 
   post :reference do
+    params[:locale] = I18n.locale
     reference = Reference.new(params)
     if reference.save
       return reference.to_json
@@ -947,6 +948,7 @@ Admin.controllers :conflicts do
   end
 
   post :legislation do
+    params[:locale] = I18n.locale
     legislation = Legislation.new(params)
     if legislation.save
       return legislation.to_json
@@ -954,6 +956,7 @@ Admin.controllers :conflicts do
   end
 
   post :weblink do
+    params[:locale] = I18n.locale
     weblink = Weblink.new(params)
     if weblink.save
       return weblink.to_json
@@ -961,6 +964,7 @@ Admin.controllers :conflicts do
   end
 
   post :medialink do
+    params[:locale] = I18n.locale
     medialink = Medialink.new(params)
     if medialink.save
       return medialink.to_json

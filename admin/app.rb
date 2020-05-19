@@ -228,8 +228,8 @@ class Admin < Padrino::Application
   end
 
   def self.send_mail user, subject, message
-    if ENV['RACK_ENV'] == "development" and false
-      puts "SENDGRID omitting mail =>".yellow
+    if ENV['RACK_ENV'] == "development"
+      puts "SENDGRID omitting mail to #{user.email} =>".yellow
       puts subject
       return
     end
@@ -260,10 +260,8 @@ class Admin < Padrino::Application
 
     begin
       sending = sg.client.mail._('send').post(request_body: mail.to_json)
-      puts "SENDGRID #{sending.status_code} #{sending.body.to_json}"
-      puts
+      puts "SENDGRID #{sending.status_code} TO #{user.email}"
       puts sending
-      puts
     rescue => exc
       sending = exc
       puts "SENDGRID #{sending}"

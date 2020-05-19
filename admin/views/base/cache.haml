@@ -41,7 +41,7 @@
         %br/
         %br/
         -if current_account.role == "admin"
-          %input.btn.full.btn-danger{:onclick=>"update_all();",:value=>'UPDATE ALL'}
+          %input.btn.full.btn-danger{:onclick=>"update_all();",:value=>'UPDATE EVERYTHING'}
           :javascript
             function update_all() {
               $.post("/update_all_cache",function(data){
