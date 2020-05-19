@@ -83,7 +83,6 @@ function identify(e) {
       }
     }
   });
-  L.DomEvent.stop(e);
 }
 
 function removeGutters() {
@@ -170,6 +169,7 @@ function geoLayers() {
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
               layer.bringToFront(layer.highlight);
             }
+
             L.DomEvent.stop(e);
           }, 
           mouseout:function(e){ overlayMaps[name].clearHighlight(); }
@@ -262,8 +262,8 @@ function initMap() {
   }
 
   if (Object.keys(layerinfo).length > 0 ) {
-    loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js')
-    //loadJS('/javascripts/Leaflet.VectorGrid.js')
+    //loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js')
+    loadJS(window.location.protocol+'//'+window.location.host+'/javascripts/Leaflet.VectorGrid.js')
     window.setTimeout(waitForVectorGrid,10)
   }
   if (Object.keys(baselayers).length > 1){ 
