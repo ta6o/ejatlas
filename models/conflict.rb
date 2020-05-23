@@ -161,8 +161,9 @@ class Conflict < ActiveRecord::Base
             end
             dups = dups.reject {|x| x == dups.where(:pid=>nil).first}
           else
-            del << dups.sort_by{|x| x.pid}[-1].id
-            dups = dups.reject {|x| x == dups.order(:pid)[-1]}
+            d = dups.sort_by{|x| x.pid}[-1].id
+            del << d
+            dups = dups.reject {|x| x.id == d}
           end
           dups.each do |hef|
             #puts "#{hef.pid} #{hef.id} #{hef.class}".yellow
