@@ -3,6 +3,6 @@ class Weblink < ActiveRecord::Base
   before_save :trim
   private
   def trim
-    self.description.gsub!(/\r?\n/,"\r\n")
+    self.description.gsub!(/\r?\n/,"\r\n") if self.description
   end
 end
