@@ -28,3 +28,7 @@ misc/saves.csv
 misc/sld2json/node_modules/
 misc/sld2json/package-lock.json
 
+node_modules/
+package-lock.json
+package.json
+

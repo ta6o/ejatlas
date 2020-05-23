@@ -149,7 +149,11 @@ Admin.controllers :conflicts do
               id = rr.first.id
             end
           else
+            puts
+            p kk
+            puts v.green
             rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
+            p rr
             if rr.empty?
               rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
             end
@@ -675,6 +679,7 @@ Admin.controllers :conflicts do
             end
           end
         end
+        @conflict.order_refs
 
         general = false
         ct = @conflict.local_data
@@ -941,6 +946,7 @@ Admin.controllers :conflicts do
 
   post :reference do
     params[:locale] = I18n.locale
+    params[:pid] = Conflict.find(params[:conflict_id]).refs_length+1
     reference = Reference.new(params)
     if reference.save
       return reference.to_json
@@ -949,6 +955,7 @@ Admin.controllers :conflicts do
 
   post :legislation do
     params[:locale] = I18n.locale
+    params[:pid] = Conflict.find(params[:conflict_id]).refs_length+1
     legislation = Legislation.new(params)
     if legislation.save
       return legislation.to_json
@@ -957,6 +964,7 @@ Admin.controllers :conflicts do
 
   post :weblink do
     params[:locale] = I18n.locale
+    params[:pid] = Conflict.find(params[:conflict_id]).refs_length+1
     weblink = Weblink.new(params)
     if weblink.save
       return weblink.to_json
@@ -965,6 +973,7 @@ Admin.controllers :conflicts do
 
   post :medialink do
     params[:locale] = I18n.locale
+    params[:pid] = Conflict.find(params[:conflict_id]).refs_length+1
     medialink = Medialink.new(params)
     if medialink.save
       return medialink.to_json

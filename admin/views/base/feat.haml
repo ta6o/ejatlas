@@ -228,8 +228,8 @@
           }
           initMap();
           showMarkers(markerinfo);
-          mapFit();
-          if (#{@fid === 69}) { map.setMaxBounds()};
+          //mapFit();
+          //if (#{@fid === 69}) { map.setMaxBounds()};
         }
       }
   -else
@@ -247,14 +247,16 @@
           map.setView([#{@view[0]},#{@view[1]}],#{@view[2]});
         }
       }
-  :javascript
-    var disqus_shortname = 'ejatlas'; 
-    (function() { 
-      var dsq = document.createElement('script'); 
-      dsq.type = 'text/javascript'; 
-      dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; 
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); 
+  -if ENV["RACK_ENV"] == "production"
+    :javascript
+      var disqus_shortname = 'ejatlas'; 
+      (function() { 
+        var dsq = document.createElement('script'); 
+        dsq.type = 'text/javascript'; 
+        dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js'; 
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); })(); 
 
+  :javascript
     $(document).ready(function(){
       $('.horipane .ctitle').on('click',function(e){
         target = $(this).parent().find('.cdata')

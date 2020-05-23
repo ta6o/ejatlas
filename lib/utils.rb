@@ -44,3 +44,20 @@ def rescue_refs
   end
 end
 
+def fix_refs
+  [Weblink,Medialink,Reference,Legislation].each do |model|
+    losts = model.where(:pid=>nil)
+    del = []
+    puts "#{model}: #{losts.length}"
+    losts.each_with_index do |lost,index|
+      print("\r#{index+1}/#{losts.length}")
+      if model.where(:conflict_id=>lost.conflict_id,:url=>lost.url,:description=>lost.description).count > 1
+        del << lost.id
+      end
+    end
+    model.find(del).each &:destroy
+    puts "\r#{model} cleaned: #{model.where(:pid=>nil).length} left"
+    puts
+    Conflict.each &:order_refs
+  end
+end

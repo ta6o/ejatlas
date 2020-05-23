@@ -17,9 +17,15 @@ cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js mo
   jquery-ui-1.12.1.js jquery.maskedinput.min.js Google.js raphael.js colorwheel.js \
   xml2json.js nicedit.js modal.js > backall.js
 
+
+cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
+  tooltip.js popover.js \
+  oms.js noui.js ascii.js jquery-ui-1.12.1.js providers.js xml2json.js > ol-dev.js
+
+
 java -jar ../../lib/yui.jar --type js --nomunge all.js > main.js
 #cp all.js main.js
-java -jar ../../lib/yui.jar --type js --nomunge all-dev.js > main-dev.js
+#java -jar ../../lib/yui.jar --type js --nomunge all-dev.js > main-dev.js
 cp all-dev.js main-dev.js
 java -jar ../../lib/yui.jar --type js --nomunge backall.js > backend.js
 #cp backall.js backend.js
@@ -36,10 +42,14 @@ cat jquery-ui.min.css app-full.css leaflet.css leaflet-loading.css > all-full.cs
 cat jquery-ui.min.css app-rtl.css leaflet.css leaflet-loading.css > all-rtl.css
 cat jquery-ui.min.css app-full-rtl.css leaflet.css leaflet-loading.css > all-full-rtl.css
 
+cat jquery-ui.min.css app-full.css > ol-full.css
+
 java -jar ../../lib/yui.jar --type css ./all.css > ./main.css
 java -jar ../../lib/yui.jar --type css ./all-full.css > ./main-full.css
 java -jar ../../lib/yui.jar --type css ./all-rtl.css > ./main-rtl.css
 java -jar ../../lib/yui.jar --type css ./all-full-rtl.css > ./main-full-rtl.css
+
+java -jar ../../lib/yui.jar --type css ./ol-full.css > ./main-ol.css
 
 echo `date` > ../../lib/stamp
 date

@@ -560,6 +560,66 @@ Admin.controller do
     render "base/feat", :layout => @layout
   end
 
+  get :featured_ol_test, :with => :slug do
+    con = Featured.find_slug(params[:slug])
+    pass unless con
+    ca = Cached.select(:filterdata).first
+    @markerinfo = con.conflicts_marker
+    @load = con.conflicts_link.length > (2**17) ? nil : con.conflicts_link
+    @name = con.name
+    @id = con.id
+    @description = con.description
+    @desc = con.description
+    @headline = con.slogan
+    @ogimage = con.images.where(prime:1)[0].file_url if con.images.where(prime:1).any?
+    @markercount = JSON.parse(@markerinfo || "[]").count
+    @defs = []
+    con.vector_data.each do |vd|
+      if vd.vector_style and vd.vector_style.defs
+        @defs << JSON.parse(vd.vector_style.defs)
+      end
+    end
+    @defs = @defs.to_set.to_a
+    @vectors = CGI.unescapeHTML(con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link, rank, clickable, geometry_type').order(:rank).to_json).html_safe
+    @ranks = []
+    @layers = con.geo_layers.map{|x| [x.slug,x.info]}.reverse.to_h
+    @layers.each do |n,l|
+      att = GeoLayerAttachable.where(:attachable_type=>"Featured",:attachable_id=>con.id,:geo_layer_id=>l[:id]).first
+      if att
+        l["shown"] = att.shown || 0
+        l["clickable"] = att.clickable || false
+        if att.rank
+          l["rank"] = att.rank
+          @ranks[att.rank] = n
+        else
+          l["rank"] = 0
+          @ranks << n
+        end
+      end
+    end
+    @layers = @layers.to_json.html_safe
+    @ranks = (@ranks - [nil]).reverse.to_json.html_safe
+    @images = []
+    @images = con.images.order("updated_at desc") if con.images.any?
+    @ogimage = @images.first.file_url if @images.any?
+    @feature = true
+    @maptitle = con.slogan
+    @title = con.headline
+    @view = con.view
+    @baselayers = (con.baselayers != "" ? con.baselayers : "")
+    begin
+      @domains = []
+      JSON.parse(con.filter).each{}
+      #puts JSON.pretty_generate @domains
+    rescue
+    end
+    @fid = con.id
+    @color = "##{con.color}"
+    @ol = true
+    headers({ 'X-Frame-Options' => 'ALLOWALL' })
+    render "base/feat", :layout => @layout
+  end
+
   get "/761317/?" do
     @markercount = 176
     @markerinfo = Conflict.select("lat, lon, id, category_id").where(:id=>[181,158,346,464,795,804,1016,1092,1026,1140,1196,1522,1749,1820,1839,1869,1953,1958,1969,2007,2089,2386,2387,2307,2299,2287,2461,2435,2586,35,455,509,477,677,682,674,695,725,727,811,809,1165,1168,1276,1223,1194,1464,1629,1742,1712,1758,1804,1911,1942,1983,2005,2026,2091,2229,2462,2432,2524,2779,2773,833,160,224,344,471,445,694,683,702,781,813,927,1042,1157,1213,1195,1569,1895,1919,2002,2003,1976,2146,2070,2196,2248,2364,2402,2518,2474,2566,2568,2593,2526,2574,99,123,206,240,222,227,452,486,468,478,520,708,672,782,784,785,752,792,803,1185,1359,1591,1620,1740,1724,1838,1878,1915,2006,2134,2139,2217,2279,2373,2573,2591,2579,165,194,291,325,504,510,680,686,706,783,812,807,1024,1062,1065,1068,1086,1148,1149,1218,1260,1193,1368,1504,1747,1748,1753,1767,1798,1967,1938,2199,2343,2345,2408,2450,2559,2523,2679,2587]).map do |c| 

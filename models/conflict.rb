@@ -127,6 +127,76 @@ class Conflict < ActiveRecord::Base
     nil
   end
 
+  def refs_length
+    self.references.length + self.weblinks.length + self.medialinks.length + self.legislations.length
+  end
+
+  def order_refs
+    [self.references,
+     self.weblinks,
+     self.medialinks,
+     self.legislations
+    ].each do |refs|
+      next if refs.empty?
+      del = []
+      refs.order(:pid).each do |ref|
+        if [nil,""].include?(ref.url) and [nil,""].include?(ref.description)
+          del << ref.id
+        end
+        if md = ref.description.strip.match(/^\[(\d+)\]/)
+          #puts "#{md[1]} #{ref.description}"
+          ref.update :pid => md[1].to_i
+        elsif ref.pid
+          ref.update :pid => ref.pid + 1000
+        end
+        dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description, :url=>ref.url )
+        while dups.count > 1
+          if dups.where(:pid=>nil).any?
+            del << dups.where(:pid=>nil).first.id
+            dups = dups.reject {|x| x == dups.where(:pid=>nil).first}
+          else
+            del << dups.order(:pid)[-1].id
+            dups = dups.reject {|x| x == dups.order(:pid)[-1]}
+          end
+          dups.each do |hef|
+            #puts "#{hef.pid} #{hef.id} #{hef.class}".yellow
+          end
+          #puts
+        end
+      end
+      (refs-[nil]).first.class.find(del).each &:destroy
+=begin
+      if (refs-[nil]).any?
+        (refs-[nil]).first.class.find(del).each &:destroy
+      end
+=end
+    end
+    #puts
+    pids = {}
+    ind = 1
+    [self.references.where("pid is not null"),
+     self.weblinks.where("pid is not null"),
+     self.medialinks.where("pid is not null"),
+     self.legislations.where("pid is not null")
+    ].flatten.sort_by{|x| x.pid}.sort_by{|x| x.pid}.each do |ref|
+      pids[ref] = ind
+      ind += 1
+    end
+    [self.references.where(:pid=>nil),
+     self.weblinks.where(:pid=>nil),
+     self.medialinks.where(:pid=>nil),
+     self.legislations.where(:pid=>nil)
+    ].flatten.sort_by{|x| x.created_at}.each do |ref|
+      pids[ref] = ind
+      ind += 1
+    end
+    pids.each do |ref,pid|
+      ref.update :pid => pid
+      #puts "#{ref.pid.to_s.green} #{ref.id.to_s.yellow} #{ref.class.to_s.cyan} #{ref.description} #{ref.url.magenta}"
+    end
+    nil
+  end
+
   def native_locale?
     self.original_locale == I18n.locale.to_s
   end

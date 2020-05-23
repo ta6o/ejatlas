@@ -938,7 +938,7 @@
                   success: function(data,ts){
                     dat = JSON.parse(data)[''+model];
                     //console.log(dat)
-                    html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+dat['id']+'">'+dat['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+dat['id']+'" placeholder="http://" style="width:98%" type="text" value="'+dat['url']+'"> </div> ';
+                    html = '<div class="'+model+'"> <hr style="margin:2px 0 6px;border-bottom: 2px solid #ccc;"> <div class="row" style="margin-top:8px;"> <div class="col-md-10"> <textarea name="'+model+'_description_'+dat['pid']+'">'+dat['description']+'</textarea> </div> <div class="col-md-2"> <a class="d_'+model+' pull-right btn">Remove</a> </div> </div> <input name="'+model+'_url_'+dat['id']+'" placeholder="http://" style="width:98%" type="text" value="'+dat['url']+'"> </div> ';
                     $('#current_'+model+'s').append(html);
                     $('#b_'+model).removeClass('disabled');
                     $('#m_'+model).modal('hide');

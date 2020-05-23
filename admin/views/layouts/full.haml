@@ -30,7 +30,12 @@
     %meta{:content => (@headline || $pagedesc), :name => "twitter:description"}/
     %meta{:content => (@ogimage || Admin.local_url(I18n.locale) + '/images/ejatlas-fb.jpg'), :name => "twitter:image"}/
 
-    -if $dir == "ltr"
+    -if @ol
+      -puts "ol!".cyan
+      %link{:href=>"/stylesheets/main-ol.css",:rel=>"stylesheet",:type=>"text/css"}
+      %link{:href=>"https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/css/ol.css",:rel=>"stylesheet",:type=>"text/css"}
+    -elsif $dir == "ltr"
+      -puts "nol!".red
       %link{:href=>"/stylesheets/main-full.css",:rel=>"stylesheet",:type=>"text/css"}
     -elsif $dir == "rtl"
       %link{:href=>"/stylesheets/main-full-rtl.css",:rel=>"stylesheet",:type=>"text/css"}
@@ -520,8 +525,13 @@
       var categoryHash = #{CGI.unescapeHTML($cathash.to_json).html_safe};
 
     -if ENV['RACK_ENV'] == 'development'
-      %script{:src=>"/javascripts/main-dev.js",:type=>"text/javascript"}
-      %script{:src=>"/javascripts/map.js",:type=>"text/javascript"}
+      -if @ol
+        %script{:src=>"/javascripts/ol-dev.js",:type=>"text/javascript"}
+        %script{:src=>"https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js",:type=>"text/javascript"}
+        %script{:src=>"/javascripts/map-ol.js",:type=>"text/javascript"}
+      -else
+        %script{:src=>"/javascripts/main-dev.js",:type=>"text/javascript"}
+        %script{:src=>"/javascripts/map.js",:type=>"text/javascript"}
       :javascript
         conflict = false;
         $full = true;
