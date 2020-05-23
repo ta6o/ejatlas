@@ -150,14 +150,19 @@ class Conflict < ActiveRecord::Base
         elsif ref.pid
           ref.update :pid => ref.pid + 1000
         end
-        dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description, :url=>ref.url)
+        dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description, :url=>ref.url )
         while dups.count > 1
-          if dups.where(:pid=>nil).any?
-            del << dups.where(:pid=>nil).first.id
-            dups = ref.class.where(dups.reject {|x| x == dups.where(:pid=>nil).first}.map(&:id))
+          if dups.map(&:pid).include?(nil)
+            dups.each do |dup|
+              if dup.pid.nil?
+                del << dup.id
+              end
+              break
+            end
+            dups = dups.reject {|x| x == dups.where(:pid=>nil).first}
           else
             del << dups.order(:pid)[-1].id
-            dups = ref.class.where(dups.reject {|x| x == dups.order(:pid)[-1]}.map(&:id))
+            dups = dups.reject {|x| x == dups.order(:pid)[-1]}
           end
           dups.each do |hef|
             #puts "#{hef.pid} #{hef.id} #{hef.class}".yellow
