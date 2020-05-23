@@ -142,6 +142,7 @@ class Conflict < ActiveRecord::Base
       refs.order(:pid).each do |ref|
         if [nil,""].include?(ref.url) and [nil,""].include?(ref.description)
           del << ref.id
+          next
         end
         if md = ref.description.strip.match(/^\[(\d+)\]/)
           #puts "#{md[1]} #{ref.description}"
