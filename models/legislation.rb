@@ -14,6 +14,6 @@ class Legislation < ActiveRecord::Base
 
   private
   def trim
-    self.description.gsub!(/\r?\n/,"\r\n").strip! if self.description
+    self.description.gsub!(/\r?\n/,"\r\n").strip! unless self.description.nil?
   end
 end
