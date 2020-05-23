@@ -1,4 +1,4 @@
-var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap, shownMarkers;
+var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap, shownMarkers, popup;
 
 var $msize = "mic";
 var $leg = "category_id";
@@ -236,14 +236,14 @@ function initMap() {
 
   baseLayer = new ol.layer.Group({layers:Object.values(baselayers)});
   markerLayer= new ol.layer.Vector({
-    source: new ol.source.Vector({ features: [ ] })
+    source: new ol.source.Vector({ features: [ ] }),
+    style: markerStyle
   });
   featureLayer = new ol.layer.Group({layers:[]});
   geoLayer = new ol.layer.Group({layers:[]});
 
   $topflo = ($dir == "ltr") ? "topright" : "topleft";
   $botflo = ($dir == "ltr") ? "bottomright" : "bottomleft";
-
 
 	map = new ol.Map({
 		layers: [baseLayer,markerLayer,featureLayer,geoLayer],
@@ -254,6 +254,15 @@ function initMap() {
 		}),
     controls: ol.control.defaults({attribution: false}).extend([new ol.control.Attribution({ collapsible: false })]),
 	});
+
+  popup = new ol.Overlay({
+    element: $("#popup")[0],
+    positioning: 'bottom-center',
+    stopEvent: false,
+    offset: [0, -5]
+  });
+
+  map.addOverlay(popup);
 
   /*maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
   bounds = maxBounds;
@@ -615,6 +624,51 @@ function initMap() {
   })*/
   window.onresize = onResize; 
 
+  map.on("pointermove", function (evt) {
+    var feature = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+      if (selected == feature) {
+      } else if (selected !== null) {
+        shrink(selected)
+      } else {
+        selected = feature;
+        grow(selected)
+      }
+      return true;
+    }); 
+    if (feature) {
+      this.getTargetElement().style.cursor = 'pointer';
+    } else {
+      if (selected !== null) {
+        shrink(selected)
+      }
+      this.getTargetElement().style.cursor = '';
+    }
+  });
+  map.on('click', function(evt) {
+    $("#popup").popover('destroy');
+    var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+        return feature;
+      });
+    if (feature) {
+      $.ajax({
+        type: "get",
+        url: "/info/"+feature.values_.id,
+        success: function(data){
+          var coordinates = feature.getGeometry().getCoordinates();
+          popup.setPosition(coordinates);
+          $("#popup").popover({
+            placement: 'top',
+            html: true,
+            content: data + feature.values_.properties.content
+          });
+          $("#popup").popover('show');
+        }
+      })
+    } else {
+      $("#popup").popover('destroy');
+    }
+  });
+
   updateInfo(1,disclaimer);
 }
 
@@ -631,6 +685,123 @@ function slideAttribution () {
   }
 }
 
+function grow(feature) {
+  feature.setStyle(highlightStyle)
+  return
+  var start = new Date().getTime();
+  var listenerKey = markerLayer.on('postrender', animate);
+  value = feature.values_.properties[default_style]
+  scode = default_style+"_"+String(value)
+  zoom = map.getView().getZoom();
+
+  function animate(event) {
+    var vectorContext = ol.render.getVectorContext(event);
+    var frameState = event.frameState;
+    var flashGeom = feature.getGeometry().clone();
+    var elapsed = frameState.time - start;
+    var elapsedRatio = elapsed / duration;
+    // radius will be 5 at start and 30 at end.
+    var radius = (ol.easing.easeOut(elapsedRatio) + 1) * (2+zoom) ;
+    console.log(radius)
+
+    var style = new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: radius,
+        fill: new ol.style.Fill({
+          color: icon_colors[default_style][value]
+        }),
+        stroke: new ol.style.Stroke({
+          color: "#000000",
+          width: 1
+        })
+      })
+    });
+
+    vectorContext.setStyle(style);
+    vectorContext.drawGeometry(flashGeom);
+    if (elapsed > duration) {
+      ol.Observable.unByKey(listenerKey);
+      return;
+    }
+    // tell OpenLayers to continue postrender animation
+    map.render();
+  }
+}
+
+function shrink(feature) {
+  feature.setStyle(undefined);
+  selected = null;
+}
+
+var icon_colors = {
+  category: [
+    "#ffffff", 
+    "#ffff00",
+    "#ff7f00",
+    "#77721c",
+    "#754c24",
+    "#111111",
+    "#00bdff",
+    "#999999",
+    "#c685d0",
+    "#00c621",
+    "#ed1c24"],
+
+}
+
+var style_cache = {}
+var default_style = "category"
+var selected = null;
+var duration = 400;
+
+function highlightStyle (feature) {
+  value = feature.values_.properties[default_style]
+  scode = default_style+"_"+String(value)
+  console.log(feature)
+  if (Object.keys(style_cache).indexOf(scode) >= 0 && false) {
+    return style_cache[scode]
+  }
+  zoom = map.getView().getZoom();
+  style = new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: 2*(2 + zoom),
+        fill: new ol.style.Fill({
+          color: icon_colors[default_style][value]
+        }),
+        stroke: new ol.style.Stroke({
+          color: "#000000",
+          width: 1
+        })
+      }),
+      zIndex: 9999
+    })
+  style_cache[scode] = style
+  return style
+}
+
+function markerStyle(feature) {
+  value = feature.values_.properties[default_style]
+  scode = default_style+"_"+String(value)
+  if (Object.keys(style_cache).indexOf(scode) >= 0 && false) {
+    return style_cache[scode]
+  }
+  zoom = map.getView().getZoom();
+  style = new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: 2 + zoom,
+        fill: new ol.style.Fill({
+          color: icon_colors[default_style][value]
+        }),
+        stroke: new ol.style.Stroke({
+          color: "#000000",
+          width: 1
+        })
+      })
+    })
+  style_cache[scode] = style
+  return style
+}
+
 function showMarkers(markers) {
   markerCount = markers.length;
   markerc = {};
@@ -639,34 +810,34 @@ function showMarkers(markers) {
   var attrhash = attributeHash;
   var arrr = []
 
-  if (cluster) {
-    markerClusters = {}
-    var cats = categoryHash;
-    console.log(cats)
-    $.each(cats,function(i,e){
-      markerClusters[i]= L.markerClusterGroup({
-        showCoverageOnHover: false,
-        maxClusterRadius: 64,
-        iconCreateFunction: function(cluster) {
-          return new L.divIcon({ 
-            className: "map_icon cluster i_"+i+" "+$msize,
-            //iconSize: [36,36],
-            html: '<b>'+cluster.getChildCount() + '</b>' 
-          });
-        }
-      }).addTo(map);
-    })
-  }
+
 
   shownMarkers = 0
   features = $.map(markers, function(e,i){
-    opts = {id:e.i,geometry:new ol.geom.Point(ol.proj.fromLonLat([e.o,e.a])),properties:{category:e.c,reaction:e.r,status:e.s,project:e.p}}
-    return new ol.Feature(opts)
+    popcontent = "<div class='features'>"
+    $.each(e,function(k,v){
+      if (["o", "a", "i", "c", "r", "s", "p", "l", "dmn", "tags"].indexOf(k) == -1 && parseInt(k.split(":")[0]) == fid) {
+        if (Object.keys(attrhash).indexOf(k.split(':')[1]) >= 0){
+          popcontent += '<br />'+attrhash[k.split(':')[1]].replace(/\sId$/,'')+' <strong>';
+        } else {
+          popcontent += '<br />'+toTitleCase(k.split(':')[1].replace(/_/g,' '))+' <strong>';
+        }
+        popcontent += v;
+        popcontent += "</strong>";
+      }
+    })
+    popcontent += "</div>";
+    console.log(popcontent)
+    opts = {id:e.i,geometry:new ol.geom.Point(ol.proj.fromLonLat([e.o,e.a])),properties:{category:e.c,reaction:e.r,status:e.s,project:e.p,content:popcontent}}
+    ma = new ol.Feature(opts)
+    return ma
   })
-  console.log(features)
   markerLayer.getSource().addFeatures(features);
   mapFit();
   return
+
+  // OBSOLETE
+
   $.each(markers, function(i,mark){
     if (!mark.a || !mark.o) {
       return 0

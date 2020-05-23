@@ -31,11 +31,23 @@
     %meta{:content => (@ogimage || Admin.local_url(I18n.locale) + '/images/ejatlas-fb.jpg'), :name => "twitter:image"}/
 
     -if @ol
-      -puts "ol!".cyan
       %link{:href=>"/stylesheets/main-ol.css",:rel=>"stylesheet",:type=>"text/css"}
       %link{:href=>"https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/css/ol.css",:rel=>"stylesheet",:type=>"text/css"}
+      :css 
+        .popover {
+          min-width: 340px;
+          border-radius: 12px;
+        }
+        .popover-content {
+          padding: 8px 20px 24px;
+          font-weight: normal;
+          font-size: 12px;
+        }
+        .maplink {
+          padding: 8px 20px;
+          margin: -18px -22px 16px;
+        }
     -elsif $dir == "ltr"
-      -puts "nol!".red
       %link{:href=>"/stylesheets/main-full.css",:rel=>"stylesheet",:type=>"text/css"}
     -elsif $dir == "rtl"
       %link{:href=>"/stylesheets/main-full-rtl.css",:rel=>"stylesheet",:type=>"text/css"}
@@ -243,6 +255,7 @@
             #map.map.leftpane.noselect{:style=>"background:#78adce !important;"}
               -#bottompane.bottompane
                 .inner=yield_content :bottom
+            #popup
             .resize#resize.noselect{:title=>'Drag to resize info pane',"data-help"=>"popover","data-placement"=>"right","title"=>"","data-content"=>t("v.help.resize_information_pane")}
               %span.glyphicon.glyphicon-forward{:title=>'Toggle info pane',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>t("v.help.go_full_screen")}
             #rightpane.rightpane.graybg

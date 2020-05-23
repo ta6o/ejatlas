@@ -30,7 +30,7 @@ function grepFields (command) {
   });
   return result
 }
-function showMarkers (ids) {
+function noshowMarkers (ids) {
   console.log(ids)
   updateInfo(1, ids.length+" cases filtered." )
   classes = ".id_"+ids.join(", .id_");
