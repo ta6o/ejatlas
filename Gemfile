@@ -27,6 +27,6 @@ gem 'rest-client'
 gem 'padrino'
 
 if ENV['RACK_ENV'] == 'production'
-  gem 'gdal'
+  gem 'gdal', "=2.0.0"
   gem 'puma'
 end
