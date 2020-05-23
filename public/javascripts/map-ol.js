@@ -1,4 +1,8 @@
 var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap, shownMarkers, popup;
+var resolutions = [];
+for (var i = 0; i <= 8; ++i) {
+  resolutions.push(156543.03392804097 / Math.pow(2, i * 2));
+}
 
 var $msize = "mic";
 var $leg = "category_id";
@@ -103,7 +107,7 @@ function geoLayers() {
     if (f.type == "raster") {
       var styls = {}
       name = f["name"];
-      overlayMaps[name] = L.tileLayer.wms("https://geo.ejatlas.org/geoserver/geonode/wms", {
+      overlayMaps[name] = ol.layer.VectorTile("https://geo.ejatlas.org/geoserver/geonode/wms", {
           layers: f['name'],
           format: 'image/png',
           transparent: true,
@@ -133,47 +137,27 @@ function geoLayers() {
 
 
 
-      var styls = {}
       name = f["name"];
       styl = f["style"]
       idcol = f['id_column'];
-      eval("styls[s] = "+styl);
+      eval(styl)
+      console.log(styl)
 
-      overlayMaps[name] = L.vectorGrid.protobuf('https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:{s}@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf', { 
-        interactive: f["clickable"],
-        transparent: true,
-        buffer: 512,
-        vectorTileLayerStyles: styls,
-        getFeatureId: function(fi) {
-          //console.log(fi.properties[idcol])
-          return fi.properties[idcol];
-        },
-        s: s
-      }).on( {
-          click:identify,
-          mouseover: function(e) {
-            console.log(e)
-            return
-            layer = overlayMaps[name];
-            idcol = f['id_column'];
-            layer.clearHighlight();
-            layer.highlight = e.layer.properties[idcol];
-            console.log(layer.highlight)
-            layer.setFeatureStyle(layer.highlight, {
-              color: "#000000",
-              fill: "#000000",
-              fillOpacity: 1,
-              weight: 4,
-            })
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-              layer.bringToFront(layer.highlight);
-            }
-
-            L.DomEvent.stop(e);
-          }, 
-          mouseout:function(e){ overlayMaps[name].clearHighlight(); }
-        }
-      );
+      overlayMaps[name] = new ol.layer.VectorTile({
+          declutter: true,
+          style: eval(name+"_style"),
+          source: new ol.source.VectorTile({
+            url: 'https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:'+name+'@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
+            format: new ol.format.MVT({
+            idProperty: idcol,
+            tileGrid: new ol.tilegrid.TileGrid({
+              extent: ol.proj.get('EPSG:3857').getExtent(),
+              resolutions: resolutions,
+              tileSize: 512
+            }),
+          }),
+          }),
+        })
 
       overlayMaps[name].highlight = null;
       overlayMaps[name].clearHighlight = function() {
@@ -297,7 +281,7 @@ function initMap() {
     loadJS(v["vector_datum"]["url"],true)
   });
   
-  //geoLayers();
+  geoLayers();
 
   $('#legendpane select.leg').on('change',function(e){
     $leg = $("#legendpane select.leg option:selected").val();
@@ -344,14 +328,17 @@ function initMap() {
     chk = box.prop('checked');
     if ((chk && !hit) || (!chk && hit)) {
       box.prop('checked',false);
-      map.removeLayer(overlayMaps[name]);
+      ind = geoLayer.getLayers().getArray().indexOf(overlayMaps[name]);
+      geoLayer.getLayers().getArray().splice(ind,1);
+      map.render();
       title.css('font-weight','normal');
       if (Object.keys(overlayMaps[name]).indexOf("_vectorTiles") >= 0) {
         wmsLayers.splice(wmsLayers.indexOf(name),1);
       }
     } else if ((chk && hit) || (!chk && !hit)){
       box.prop('checked',true);
-      map.addLayer(overlayMaps[name]);
+      geoLayer.getLayers().getArray().push(overlayMaps[name]);
+      map.render();
       title.css('font-weight','bold');
       //console.log(overlayMaps[name])
       if (Object.keys(overlayMaps[name]).indexOf("_vectorTiles") >= 0) {
@@ -451,7 +438,7 @@ function initMap() {
         });
       }
     }
-  });
+  });*/
 
   $('.resize').on('mousedown',function(e){
     e.preventDefault();
@@ -470,7 +457,7 @@ function initMap() {
         $('.resize span').removeClass('glyphicon-backward');
         $('.resize span').addClass('glyphicon-forward');
         $('.resize span').css('cursor','e-resize');
-        map.invalidateSize();
+        map.updateSize();
       });
     } else if ($flo == 'right' && $('.resize span').hasClass('glyphicon-forward')) {
       if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
@@ -483,7 +470,7 @@ function initMap() {
         $('.resize span').removeClass('glyphicon-forward');
         $('.resize span').addClass('glyphicon-backward');
         $('.resize span').css('cursor','e-resize');
-        map.invalidateSize();
+        map.updateSize();
       });
     }
     $('body').bind('mousemove',function(e){
@@ -513,7 +500,7 @@ function initMap() {
           $('.rightpane .inner').hide();
           $('.resize span').removeClass('glyphicon-forward').addClass('glyphicon-backward');
           $('.resize span').css('cursor','w-resize');
-          map.invalidateSize();
+          map.updateSize();
         });
       } else {
         if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
@@ -536,7 +523,7 @@ function initMap() {
           $('.rightpane .inner').hide();
           $('.resize span').removeClass('glyphicon-backward').addClass('glyphicon-forward');
           $('.resize span').css('cursor','e-resize');
-          map.invalidateSize();
+          map.updateSize();
         });
       } else {
         if (localStorage.key('mapWidth')) { perc = localStorage['mapWidth'] } else { perc = 70 }
@@ -611,10 +598,9 @@ function initMap() {
     selector = '#map .map_icon.id_'+$(this).attr('data-id');
     transformItem(selector, 'scale', 0.8);
     $(selector).removeClass('hovered');
-    singleSize(selector);
   })
   
-  $('.leaflet-control-attribution').on('mouseenter',function(e){
+  /*$('.leaflet-control-attribution').on('mouseenter',function(e){
     $attrSlide = true;
     slideAttribution();
   })
@@ -624,7 +610,7 @@ function initMap() {
   })*/
   window.onresize = onResize; 
 
-  map.on("pointermove", function (evt) {
+  markerLayer.on("pointermove", function (evt) {
     var feature = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
       if (selected == feature) {
       } else if (selected !== null) {
@@ -644,12 +630,12 @@ function initMap() {
       this.getTargetElement().style.cursor = '';
     }
   });
-  map.on('moveend', function(evt) {
+  /*map.on('moveend', function(evt) {
     if($(".popover:visible").length) {
-      //checkPopPadding();
+      checkPopPadding();
     }
-  });
-  map.on('click', function(evt) {
+  });*/
+  markerLayer.on('click', function(evt) {
     $("#popup").popover('destroy');
     var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
         return feature;
@@ -664,8 +650,10 @@ function initMap() {
           $("#popup").popover({
             placement: 'top',
             html: true,
+            //viewport: "#popup",
             content: data + feature.values_.properties.content
           });
+          $("#popup").popover('show');
           checkPopPadding();
         }
       })
@@ -678,9 +666,7 @@ function initMap() {
 }
 
 function checkPopPadding() {
-  buffer = 8;
   pad = {top:90,right:$("#map").width()-10,bottom:$("#map").height()-100,left:80}
-  $("#popup").popover('show');
   difpos = [0,0]
   difpos = [$("#map").width()*0.5,$("#map").height()*0.5]
   pop = $("#popup").next(".popover").offset();
@@ -690,22 +676,25 @@ function checkPopPadding() {
   pop.bottom = pop.top + $(".popover").height();
   //console.log(pop)
   var moved = false;
-  if (pop.left < pad.left - buffer ) { 
+  if (pop.left < pad.left ) { 
     difpos[0] -= pad.left - pop.left 
+    console.log("left "+String(pad.left - pop.left ))
     moved = true;
-  } else if (pop.right > pad.right + buffer ) { 
+  } else if (pop.right > pad.right && pop.left >= pad.left - (pad.right - pop.right)) { 
     difpos[0] -= pad.right - pop.right 
+    console.log("right "+String(pad.right - pop.right ))
     moved = true;
   }
-  if (pop.top < pad.top - buffer ) {
+  if (pop.top < pad.top ) {
     difpos[1] -= pad.top - pop.top 
+    console.log("top "+String(pad.top - pop.top ))
     moved = true;
-  } else if (pop.bottom > pad.bottom + buffer ) {
+  } else if (pop.bottom > pad.bottom && pop.top >= pad.top - (pad.bottom - pop.bottom)  ) {
     difpos[1] -= pad.bottom - pop.bottom 
+    console.log("bottom "+String(pad.bottom - pop.bottom ))
     moved = true;
   }
   if ( moved ) {
-    console.log("moved")
     map.getView().animate({center:map.getCoordinateFromPixel(difpos),duration:400})
   }
 }
@@ -767,6 +756,7 @@ function grow(feature) {
 }
 
 function shrink(feature) {
+  console.log(feature)
   feature.setStyle(undefined);
   selected = null;
 }
@@ -949,7 +939,6 @@ function showMarkers(markers) {
     marker.on('mouseout', function(e){
       selector = '#map .map_icon.id_'+marker.id;
       transformItem(selector, 'scale', 0.8);
-      singleSize(selector);
       $(selector).removeClass('hovered');
     });
     marker.on('click', function(e){
@@ -1033,13 +1022,15 @@ function onResize() {
   resetColumns();
   dragEnd();
   removeGutters();
+  map.updateSize();
+  //mapFit();
 }
 
 function dragEnd() {
   $('body').unbind('mousemove');
   dragging = false;
   if ($('#carousel_container').length > 0){resetCarousel();}
-  //map.invalidateSize();
+  map.updateSize();
   //if (parseInt($('#resize').css("left")) > window.innerWidth - 16) $('#resize').css("left", window.innerWidth - 16)
   if (parseInt($('#resize').css($flo)) > window.innerWidth - 16) $('#resize').css($flo, window.innerWidth - 16)
   mapWidth = document.getElementById('map').style.width
@@ -1133,25 +1124,6 @@ function markerSize() {
     default:
       $msize = "min";
       $('.map_icon').addClass('min');
-  }
-}
-
-function singleSize(selector) {
-  $(selector).removeClass('mic').removeClass('min');
-  if (conflict) { return }
-  state = 0
-  if (markerCount <= 128) { state ++; }
-  if (markerCount <= 16) { state ++; }
-  if (map.getZoom() < 3) { state --; }
-  if (map.getZoom() > 9) { state ++; }
-  switch (state) {
-    case -1:
-      $(selector).addClass('mic');
-      break;
-    case 3:
-      break;
-    default:
-      $(selector).addClass('min');
   }
 }
 

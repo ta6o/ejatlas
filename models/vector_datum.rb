@@ -13,16 +13,19 @@ class GeoLayer < ActiveRecord::Base
       pata = JSON.parse(RestClient.get(l["href"], params={}).body)["layer"]
       type = pata["type"].downcase
       data = JSON.parse(RestClient.get(pata["resource"]["href"], params={}).body)[{"vector"=>"featureType","raster"=>"coverage"}[type]]
-      puts "#{data["title"].cyan} (#{data["name"]})"
       attrs = {:name=>data["title"], :slug=>data["name"], :url=>"#{data["namespace"]["name"]}:#{data["name"]}", :description=>data["abstract"], :bbox=>"#{data["latLonBoundingBox"]["minx"]},#{data["latLonBoundingBox"]["maxx"]},#{data["latLonBoundingBox"]["miny"]},#{data["latLonBoundingBox"]["maxy"]}",:layer_type=>type,:srs=>data["srs"]}
       if local.include?(data["name"])
         local.delete data["name"]
         if slugs.empty? or slugs.include?(data["name"])
+          puts "#{data["title"].cyan} (#{data["name"]})"
           gl = GeoLayer.find_by_slug(data["name"])
           gl.update_attributes(attrs)
           gl.update_style
+        else
+          puts "#{data["title"].yellow} (#{data["name"]})"
         end
       else
+        puts "#{data["title"].green} (#{data["name"]})"
         gl = GeoLayer.create attrs
         gl.update_attrs true
         gl.update_style
@@ -137,7 +140,7 @@ class GeoLayer < ActiveRecord::Base
                 script += "\n      fillColor: \"#{val}\","
                 script += "\n      color: \"#{val}\","
               elsif key == "icon-size"
-                script += "\n      radius: #{val},"
+                script += "\n      radius: #{val.to_json},"
               end
             end
           end
@@ -158,7 +161,8 @@ class GeoLayer < ActiveRecord::Base
             last << script
           end
         end
-        style = "function(properties, zoom, geometryDimension) {"
+        style = "function #{self.slug}_style(feature, resolution) {"
+        #style += "\n  console.log(['#{self.slug}',feature.properties_]);"
         first.each {|x| style += x}
         last.each {|x| style += x}
         style += "\n}"
