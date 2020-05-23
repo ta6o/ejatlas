@@ -144,7 +144,7 @@ class Conflict < ActiveRecord::Base
           del << ref.id
           next
         end
-        if md = ref.description.strip.match(/^\[(\d+)\]/)
+        if ref.description and md = ref.description.strip.match(/^\[(\d+)\]/)
           #puts "#{md[1]} #{ref.description}"
           ref.update :pid => md[1].to_i
         elsif ref.pid
