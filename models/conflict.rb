@@ -149,7 +149,7 @@ class Conflict < ActiveRecord::Base
         elsif ref.pid
           ref.update :pid => ref.pid + 1000
         end
-        dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description.strip, :url=>ref.url.strip)
+        dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description, :url=>ref.url)
         puts "ref.class.where(:conflict_id=>#{ref.conflict_id}, :description=>\"#{ref.description.strip}\", :url=>\"#{ref.url.strip}\")"
         puts "#{dups.map(&:pid).to_s.red} #{dups.map(&:id)}"
         while dups.count > 1
