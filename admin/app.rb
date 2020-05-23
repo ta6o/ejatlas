@@ -165,6 +165,9 @@ class Admin < Padrino::Application
       I18n.locale = locale
       $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
     end
+    if CGI::parse(request.query_string).has_key?("openlayers")
+      @ol = true
+    end
   end
 
   after do

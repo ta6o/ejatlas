@@ -644,6 +644,11 @@ function initMap() {
       this.getTargetElement().style.cursor = '';
     }
   });
+  map.on('moveend', function(evt) {
+    if($(".popover:visible").length) {
+      //checkPopPadding();
+    }
+  });
   map.on('click', function(evt) {
     $("#popup").popover('destroy');
     var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
@@ -661,7 +666,7 @@ function initMap() {
             html: true,
             content: data + feature.values_.properties.content
           });
-          $("#popup").popover('show');
+          checkPopPadding();
         }
       })
     } else {
@@ -670,6 +675,39 @@ function initMap() {
   });
 
   updateInfo(1,disclaimer);
+}
+
+function checkPopPadding() {
+  buffer = 8;
+  pad = {top:90,right:$("#map").width()-10,bottom:$("#map").height()-100,left:80}
+  $("#popup").popover('show');
+  difpos = [0,0]
+  difpos = [$("#map").width()*0.5,$("#map").height()*0.5]
+  pop = $("#popup").next(".popover").offset();
+  //console.log([$(".popover")[0].offsetLeft, $(".popover")[0].offsetTop]);
+  //console.log(pop)
+  pop.right = pop.left + $(".popover").width();
+  pop.bottom = pop.top + $(".popover").height();
+  //console.log(pop)
+  var moved = false;
+  if (pop.left < pad.left - buffer ) { 
+    difpos[0] -= pad.left - pop.left 
+    moved = true;
+  } else if (pop.right > pad.right + buffer ) { 
+    difpos[0] -= pad.right - pop.right 
+    moved = true;
+  }
+  if (pop.top < pad.top - buffer ) {
+    difpos[1] -= pad.top - pop.top 
+    moved = true;
+  } else if (pop.bottom > pad.bottom + buffer ) {
+    difpos[1] -= pad.bottom - pop.bottom 
+    moved = true;
+  }
+  if ( moved ) {
+    console.log("moved")
+    map.getView().animate({center:map.getCoordinateFromPixel(difpos),duration:400})
+  }
 }
 
 function slideAttribution () {
@@ -757,20 +795,19 @@ var duration = 400;
 function highlightStyle (feature) {
   value = feature.values_.properties[default_style]
   scode = default_style+"_"+String(value)
-  console.log(feature)
   if (Object.keys(style_cache).indexOf(scode) >= 0 && false) {
     return style_cache[scode]
   }
   zoom = map.getView().getZoom();
   style = new ol.style.Style({
       image: new ol.style.Circle({
-        radius: 2*(2 + zoom),
+        radius: 12,//2*(1 + zoom),
         fill: new ol.style.Fill({
           color: icon_colors[default_style][value]
         }),
         stroke: new ol.style.Stroke({
           color: "#000000",
-          width: 1
+          width: zoom / 8
         })
       }),
       zIndex: 9999
@@ -788,13 +825,13 @@ function markerStyle(feature) {
   zoom = map.getView().getZoom();
   style = new ol.style.Style({
       image: new ol.style.Circle({
-        radius: 2 + zoom,
+        radius: 1 + zoom,
         fill: new ol.style.Fill({
           color: icon_colors[default_style][value]
         }),
         stroke: new ol.style.Stroke({
           color: "#000000",
-          width: 1
+          width: zoom / 8
         })
       })
     })
@@ -975,7 +1012,7 @@ function transformItem(selector, property, value) {
 
 function onResize() {
   if ($('#map').css('position')=='fixed'){
-    map.scrollWheelZoom.enable();
+    //map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
     px = Math.max(Math.min(Math.max(parseInt($('#resize').css($flo)),500),window.innerWidth - 480),500);
     //console.log(px)
@@ -983,7 +1020,7 @@ function onResize() {
     $("#rightpane").css('width',(window.innerWidth-px)+'px');
     $("#resize").css($flo,px+'px');
   } else {
-    map.scrollWheelZoom.disable();
+    //map.scrollWheelZoom.disable();
     $('#map').css('height',(window.innerHeight-96)+'px');
     $('.leftpane').css('width','auto');
     $(".rightpane").css('width','auto');
@@ -1002,7 +1039,7 @@ function dragEnd() {
   $('body').unbind('mousemove');
   dragging = false;
   if ($('#carousel_container').length > 0){resetCarousel();}
-  map.invalidateSize();
+  //map.invalidateSize();
   //if (parseInt($('#resize').css("left")) > window.innerWidth - 16) $('#resize').css("left", window.innerWidth - 16)
   if (parseInt($('#resize').css($flo)) > window.innerWidth - 16) $('#resize').css($flo, window.innerWidth - 16)
   mapWidth = document.getElementById('map').style.width
