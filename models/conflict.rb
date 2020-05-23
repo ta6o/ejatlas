@@ -153,13 +153,13 @@ class Conflict < ActiveRecord::Base
         dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description, :url=>ref.url )
         while dups.count > 1
           if dups.map(&:pid).include?(nil)
+            d = nil
             dups.each do |dup|
               if dup.pid.nil?
                 del << dup.id
+                dups = dups.reject {|x| x == dup}
               end
-              break
             end
-            dups = dups.reject {|x| x == dups.where(:pid=>nil).first}
           else
             d = dups.sort_by{|x| x.pid}[-1].id
             del << d
