@@ -145,12 +145,13 @@ class Conflict < ActiveRecord::Base
           next
         end
         if ref.description and md = ref.description.strip.match(/^\[(\d+)\]/)
-          #puts "#{md[1]} #{ref.description}"
           ref.update :pid => md[1].to_i
         elsif ref.pid
           ref.update :pid => ref.pid + 1000
         end
-        dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description, :url=>ref.url )
+        dups = ref.class.where(:conflict_id=>ref.conflict_id, :description=>ref.description.strip, :url=>ref.url.strip)
+        puts "ref.class.where(:conflict_id=>#{ref.conflict_id}, :description=>\"#{ref.description.strip}\", :url=>\"#{ref.url.strip}\")"
+        puts "#{dups.map(&:pid).to_s.red} #{dups.map(&:id)}"
         while dups.count > 1
           if dups.map(&:pid).include?(nil)
             d = nil
@@ -166,7 +167,7 @@ class Conflict < ActiveRecord::Base
             dups = dups.reject {|x| x.id == d}
           end
           dups.each do |hef|
-            #puts "#{hef.pid} #{hef.id} #{hef.class}".yellow
+            puts "#{hef.pid} #{hef.id} #{hef.class}".yellow
           end
           #puts
         end
