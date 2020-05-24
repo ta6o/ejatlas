@@ -90,6 +90,7 @@ var CONVERT_ATTR_NAME = {
     'stroke-width': 'line-width',
     'stroke-dasharray': 'line-dasharray',
     'stroke-linejoin': 'line-join',
+    'stroke-linecap': 'line-cap',
     'opacity': 'line-opacity',
     'PolygonSymbolizer-Fill-fill': 'fill-color',
     'PolygonSymbolizer-Fill-fill-opacity': 'fill-opacity',
@@ -367,7 +368,17 @@ function getCssParameters(symbTag, validAttrTag, type, outerTag) {
     if (Object.keys(symbTag[0][validAttrTag][0]).indexOf('SvgParameter') >= 0) {
       var allCssArray = symbTag[0][validAttrTag][0]['SvgParameter'];
     } else if  (Object.keys(symbTag[0][validAttrTag][0]).indexOf('GraphicFill') >= 0) {
-      var allCssArray = symbTag[0][validAttrTag][0].GraphicFill[0].Graphic[0].Mark[0].Fill[0].SvgParameter;
+      if (Object.keys(symbTag[0][validAttrTag][0].GraphicFill[0].Graphic[0].Mark[0]).indexOf('Fill') >= 0) {
+        var allCssArray = symbTag[0][validAttrTag][0].GraphicFill[0].Graphic[0].Mark[0].Fill[0].SvgParameter;
+      } else {
+        var allCssArray = [];
+      }
+      if (Object.keys(symbTag[0][validAttrTag][0].GraphicFill[0].Graphic[0].Mark[0]).indexOf('Stroke') >= 0) {
+        strokeArray = symbTag[0][validAttrTag][0].GraphicFill[0].Graphic[0].Mark[0].Stroke[0].SvgParameter;
+        for (var i=0; i<strokeArray.length; i++) {
+          allCssArray.push(strokeArray[i]);
+        }
+      }
     }
   } else {
     var allCssArray = symbTag[0][outerTag][0][validAttrTag][0]['SvgParameter'];
@@ -435,6 +446,13 @@ function getGeometryObj(symbTag, obj) {
   return obj;
 }
 function getGraphicObj(file, symbTag, type, obj) {
+  var symbol;
+  try {
+    symbol = symbTag[0].Graphic[0].Mark[0].WellKnownName[0];
+    obj['icon-symbol'] = symbol;
+  } catch (err) {
+    console.log('Could not set symbol for graphic tag in file: ' + file + "\n" + err + "\n");
+  }
   var fillColor;
   try {
     fillColor = symbTag[0].Graphic[0].Mark[0].Fill[0]['SvgParameter'][0]['_'];
@@ -455,11 +473,11 @@ function getGraphicObj(file, symbTag, type, obj) {
     obj['line-width'] = strokeWidth;
   } catch (err) {
     console.log('Could not set stroke width for graphic tag in file: ' + file + "\n" + err + "\n");
-    console.log(symbTag[0].Graphic[0].Mark[0].Stroke[0]['SvgParameter'][1])
+    //console.log(symbTag[0].Graphic[0].Mark[0].Stroke[0]['SvgParameter'][1])
   }
   //Sets size
   try {
-    console.log(symbTag[0].Graphic[0].Size)
+    //console.log(symbTag[0].Graphic[0].Size)
     if (symbTag[0].Graphic[0].Size.length == 1) {
       obj['icon-size'] = {x:parseInt(symbTag[0].Graphic[0].Size[0], 10), y:parseInt(symbTag[0].Graphic[0].Size[0], 10)};
     } else {

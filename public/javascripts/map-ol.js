@@ -14,6 +14,8 @@ var wmsLayers = [ ];
 var overlayMaps = { };
 var choropleths = { };
 var baselayers = { };
+var geoStyles = { };
+var geoImages = { };
 var dmns = [ ];
 var info = $("#infopane");
 var legendpane = $("#legendpane > .legend");
@@ -140,11 +142,11 @@ function geoLayers() {
       name = f["name"];
       styl = f["style"]
       idcol = f['id_column'];
-      eval(styl)
       console.log(styl)
+      eval(styl)
 
       overlayMaps[name] = new ol.layer.VectorTile({
-          declutter: true,
+          //declutter: true,
           style: eval(name+"_style"),
           source: new ol.source.VectorTile({
             url: 'https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:'+name+'@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
@@ -218,19 +220,29 @@ function initMap() {
       baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = l;
   })
 
-  baseLayer = new ol.layer.Group({layers:Object.values(baselayers)});
+  baseLayer = new ol.layer.Group({
+    layers:Object.values(baselayers),
+    zIndex: 9
+  });
+  featureLayer = new ol.layer.Group({
+    layers:[],
+    zIndex: 99
+  });
+  geoLayer = new ol.layer.Group({
+    layers:[],
+    zIndex: 999
+  });
   markerLayer= new ol.layer.Vector({
     source: new ol.source.Vector({ features: [ ] }),
-    style: markerStyle
+    style: markerStyle,
+    zIndex: 9999
   });
-  featureLayer = new ol.layer.Group({layers:[]});
-  geoLayer = new ol.layer.Group({layers:[]});
 
   $topflo = ($dir == "ltr") ? "topright" : "topleft";
   $botflo = ($dir == "ltr") ? "bottomright" : "bottomleft";
 
 	map = new ol.Map({
-		layers: [baseLayer,markerLayer,featureLayer,geoLayer],
+		layers: [baseLayer,featureLayer,geoLayer,markerLayer],
 		target: 'map',
 		view: new ol.View({
       center: [16,26],
@@ -662,6 +674,75 @@ function initMap() {
     }
   });
 
+  geoLayer.on("pointermove", function (evt) {
+    var feature = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+      /*if (selected == feature) {
+      } else if (selected !== null) {
+        shrink(selected)
+      } else {
+        selected = feature;
+        grow(selected)
+      }*/
+      return true;
+    }); 
+    if (feature) {
+      this.getTargetElement().style.cursor = 'pointer';
+    } else {
+      /*if (selected !== null) {
+        shrink(selected)
+      }*/
+      this.getTargetElement().style.cursor = '';
+    }
+  });
+
+  geoLayer.on('click', function(evt) {
+    console.log(click)
+    $("#popup").popover('destroy');
+    var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+      return feature;
+    });
+    if (feature) {
+      console.log(feature)
+      inf = "<div class='maplink darkred'><h4>"+pn+"</h4></div><div class='scrollme'>";
+      ia = []
+      if (feature.properties_ != {}) {
+        titled = false;
+        $.each(feature.properties_,function(k,v){
+          if (v) {
+            if (k.match(/country/) && !titled) {
+              ia.push("<h3>"+v+"</h3>");
+              titled = true;
+            } else {
+              ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v.replace(/\n+/g,'<br /><br />')+"<br />");
+            }
+          } 
+        });
+      }
+      inf += ia.join("<br />");
+      if (jsons[pn].desc){ 
+        inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>"; 
+      }
+      if (jsons[pn].source){ 
+        inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
+        if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
+        inf += "</p>";
+      }
+      inf += "</div>"
+      var coordinates = feature.getGeometry().getCoordinates();
+      popup.setPosition(coordinates);
+      $("#popup").popover({
+        placement: 'top',
+        html: true,
+        //viewport: "#popup",
+        content: data + feature.values_.properties.content
+      });
+      $("#popup").popover('show');
+      checkPopPadding();
+    } else {
+      $("#popup").popover('destroy');
+    }
+  });
+
   updateInfo(1,disclaimer);
 }
 
@@ -854,7 +935,7 @@ function showMarkers(markers) {
       }
     })
     popcontent += "</div>";
-    console.log(popcontent)
+    //console.log(popcontent)
     opts = {id:e.i,geometry:new ol.geom.Point(ol.proj.fromLonLat([e.o,e.a])),properties:{category:e.c,reaction:e.r,status:e.s,project:e.p,content:popcontent}}
     ma = new ol.Feature(opts)
     return ma
@@ -1095,7 +1176,7 @@ function mapFit(duration){
     map.getView().setCenter([16,26]);
     map.getView().setZoom(1.667);
   } else {
-    console.log(markerBounds)
+    //console.log(markerBounds)
     map.getView().fit(markerBounds,{padding:[80,8,80,8],duration:duration});
   }
 }
