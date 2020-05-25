@@ -22472,7 +22472,7 @@ var widgetsTooltip = $.ui.tooltip;
 
 })(jQuery);
 
-var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap, shownMarkers, popup;
+var markerc, markerLayer, featureLayer, markerBounds, disclaimer, map, sat, rect, geojson, markerCount, data, conflict, zoom, pan, bounds, maxBounds, lControl, homeButton, acme, mouseX, innerWidth, dragging, choro_last, $attrSlide, markerClusters, featureMap, shownMarkers, popup, mousePositionControl;
 var resolutions = [];
 for (var i = 0; i <= 8; ++i) {
   resolutions.push(156543.03392804097 / Math.pow(2, i * 2));
@@ -22672,7 +22672,6 @@ function waitImageLoad() {
   }
 }
 
-var mousePositionControl = new ol.control.MousePosition();
 
 function initMap() {
   //console.log("map init")
@@ -22741,8 +22740,9 @@ function initMap() {
     stopEvent: false,
     offset: [0, -5]
   });
-
   map.addOverlay(popup);
+
+  mousePositionControl = new ol.control.MousePosition();
   map.addControl(mousePositionControl);
 
   /*maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
