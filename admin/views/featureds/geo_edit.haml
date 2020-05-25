@@ -42,6 +42,12 @@
                   %option{:value=>attr,:selected=>@layer.id_column == attr}= attr
 
             .group
+              %label{:for=>:title_column} Title Column
+              %select{:name=>:title_column}
+                -available.each do |attr|
+                  %option{:value=>attr,:selected=>@layer.title_column == attr}= attr
+
+            .group
               %label{:for=>:id_column} Omitted attributes
 
               -available.each do |attr|

@@ -295,7 +295,7 @@ class GeoLayer < ActiveRecord::Base
   end
 
   def info
-    {:id=>self.id,:name=>self.name, :style=>self.style, :type=>self.layer_type, :omit=>self.attributes_omitted,:icon=>self.icon,:id_column=>self.id_column}
+    {:id=>self.id,:name=>self.name, :slug=>self.slug, :style=>self.style, :type=>self.layer_type, :omit=>self.attributes_omitted,:icon=>self.icon,:id_column=>self.id_column,:title_column=>self.title_column}
   end
 
   def inspect

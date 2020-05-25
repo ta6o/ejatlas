@@ -787,17 +787,13 @@ class AsyncTask
     else
       `/usr/bin/pg_dump -Fc --no-acl --no-owner postgres://yakup:***REMOVED***@0.0.0.0:5432/ejatlas > #{$filedir}/../backup/ej-#{now}.dump`
     end
-    begin
-      bak = Backup.new
-      bak.file = File.open("#{$filedir}/../backup/ej-#{now}.dump","rb")
-      puts "#{$filedir}/../backup/ej-#{now}.dump"
-      if bak.save
-        bak = nil
-      else
-        #puts 'nein!'
-      end
-    rescue
-      puts "AWS error".red
+    bak = Backup.new
+    bak.file = File.open("#{$filedir}/../backup/ej-#{now}.dump","rb")
+    puts "#{$filedir}/../backup/ej-#{now}.dump"
+    if bak.save
+      bak = nil
+    else
+      #puts 'nein!'
     end
     GC.start
   end

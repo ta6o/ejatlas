@@ -583,6 +583,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "srs", :limit: 32
     t.string "icon", limit: 255
     t.string "id_column", limit: 255
+    t.string "title_column", limit: 255
   end
 
   create_table "geo_layer_attachable", id: :serial, force: :cascade do |t|

@@ -140,16 +140,18 @@ function geoLayers() {
 
 
       name = f["name"];
+      slug = f["slug"];
       styl = f["style"]
       idcol = f['id_column'];
-      console.log(styl)
+      //console.log(styl)
       eval(styl)
 
       overlayMaps[name] = new ol.layer.VectorTile({
           //declutter: true,
-          style: eval(name+"_style"),
+          style: eval(slug+"_style"),
+          zIndex: f["rank"],
           source: new ol.source.VectorTile({
-            url: 'https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:'+name+'@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
+            url: 'https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:'+slug+'@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
             format: new ol.format.MVT({
             idProperty: idcol,
             tileGrid: new ol.tilegrid.TileGrid({
@@ -161,18 +163,16 @@ function geoLayers() {
           }),
         })
 
-      overlayMaps[name].highlight = null;
-      overlayMaps[name].clearHighlight = function() {
-        layer = overlayMaps[name];
-        if (layer.highlight) { layer.resetFeatureStyle(layer.highlight); }
-        layer.highlight = null;
-      };
-
+      overlayMaps[name].set("name",name)
+      overlayMaps[name].set("slug",slug)
+      overlayMaps[name].set("title_col",f['title_column'])
+      overlayMaps[name].set("clickable",f['clickable'])
       checked = "";
       bold = "";
       if (f["shown"] == 1) {
-        overlayMaps[name].addTo(geoLayer);
+        geoLayer.getLayers().getArray().push(overlayMaps[name])
         wmsLayers.push(name);
+        map.render();
         checked = " checked='checked'"
         bold = " style='font-weight:bold'"
       }
@@ -184,11 +184,21 @@ function geoLayers() {
       html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
       html += "<td"+bold+">"+name+"</td></tr>";
       ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
-      console.log(ranks)
       $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
     }
   })
+  window.setTimeout(waitImageLoad,10)
 }
+
+function waitImageLoad() {
+  if ($.map(geoImages,function(e,i){return e.complete}).indexOf(false)>=0) {
+    window.setTimeout(waitImageLoad,10)
+  } else {
+    console.log("images loaded")
+  }
+}
+
+var mousePositionControl = new ol.control.MousePosition();
 
 function initMap() {
   //console.log("map init")
@@ -259,6 +269,7 @@ function initMap() {
   });
 
   map.addOverlay(popup);
+  map.addControl(mousePositionControl);
 
   /*maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
   bounds = maxBounds;
@@ -622,19 +633,30 @@ function initMap() {
   })*/
   window.onresize = onResize; 
 
-  markerLayer.on("pointermove", function (evt) {
-    var feature = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-      if (selected == feature) {
-      } else if (selected !== null) {
-        shrink(selected)
-      } else {
-        selected = feature;
-        grow(selected)
+  map.on("pointermove", function (evt) {
+    var fl = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+      if (layer == markerLayer) {
+        if (selected == feature) {
+        } else if (selected !== null) {
+          shrink(selected)
+        } else {
+          selected = feature;
+          grow(selected)
+        }
       }
-      return true;
+      return [feature,layer];
     }); 
-    if (feature) {
+    if (fl && fl[1] == markerLayer) {
       this.getTargetElement().style.cursor = 'pointer';
+    } else if (fl && geoLayer.getLayersArray().indexOf(fl[1])>=0) {
+      if (selected !== null) {
+        shrink(selected)
+      }
+      if (fl[1].get("clickable")) {
+        this.getTargetElement().style.cursor = 'pointer';
+      } else {
+        this.getTargetElement().style.cursor = '';
+      }
     } else {
       if (selected !== null) {
         shrink(selected)
@@ -642,106 +664,80 @@ function initMap() {
       this.getTargetElement().style.cursor = '';
     }
   });
-  /*map.on('moveend', function(evt) {
-    if($(".popover:visible").length) {
-      checkPopPadding();
-    }
-  });*/
-  markerLayer.on('click', function(evt) {
+  map.on('click', function(evt) {
     $("#popup").popover('destroy');
-    var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-        return feature;
-      });
-    if (feature) {
+    var fl = map.forEachFeatureAtPixel(evt.pixel, function(feature,layer) {
+      return [feature,layer];
+    });
+    console.log(fl)
+    if (fl && fl[1] == markerLayer) {
       $.ajax({
         type: "get",
-        url: "/info/"+feature.values_.id,
+        url: "/info/"+fl[0].values_.id,
         success: function(data){
-          var coordinates = feature.getGeometry().getCoordinates();
+          var coordinates = fl[0].getGeometry().getCoordinates();
           popup.setPosition(coordinates);
           $("#popup").popover({
             placement: 'top',
             html: true,
             //viewport: "#popup",
-            content: data + feature.values_.properties.content
+            content: data + fl[0].values_.properties.content
           });
           $("#popup").popover('show');
           checkPopPadding();
         }
       })
-    } else {
-      $("#popup").popover('destroy');
-    }
-  });
 
-  geoLayer.on("pointermove", function (evt) {
-    var feature = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-      /*if (selected == feature) {
-      } else if (selected !== null) {
-        shrink(selected)
-      } else {
-        selected = feature;
-        grow(selected)
-      }*/
-      return true;
-    }); 
-    if (feature) {
-      this.getTargetElement().style.cursor = 'pointer';
-    } else {
-      /*if (selected !== null) {
-        shrink(selected)
-      }*/
-      this.getTargetElement().style.cursor = '';
-    }
-  });
-
-  geoLayer.on('click', function(evt) {
-    console.log(click)
-    $("#popup").popover('destroy');
-    var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-      return feature;
-    });
-    if (feature) {
-      console.log(feature)
-      inf = "<div class='maplink darkred'><h4>"+pn+"</h4></div><div class='scrollme'>";
-      ia = []
-      if (feature.properties_ != {}) {
-        titled = false;
-        $.each(feature.properties_,function(k,v){
-          if (v) {
-            if (k.match(/country/) && !titled) {
-              ia.push("<h3>"+v+"</h3>");
-              titled = true;
-            } else {
-              ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+v.replace(/\n+/g,'<br /><br />')+"<br />");
-            }
-          } 
+    } else if (fl && geoLayer.getLayersArray().indexOf(fl[1])>=0) {
+      if (fl[1].get("clickable")) {
+        $("#popup").popover('destroy');
+        pn = fl[0].properties_[fl[1].get("title_col")]
+        if (typeof pn == "undefined") { pn = fl[1].get("name") }
+        inf = "<div class='maplink darkred'><h4>"+pn+"</h4></div><div class='scrollme'>";
+        ia = []
+        if (fl[0].properties_ != {}) {
+          titled = false;
+          $.each(fl[0].properties_,function(k,v){
+            if (v) {
+              if (k.match(/country/) && !titled) {
+                ia.push("<h3>"+v+"</h3>");
+                titled = true;
+              } else {
+                ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+String(v).replace(/\n+/g,'<br /><br />')+"<br />");
+              }
+            } 
+          });
+        }
+        inf += ia.join("<br />");
+        /*if (jsons[pn].desc){ 
+          inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>"; 
+        }
+        if (jsons[pn].source){ 
+          inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
+          if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
+          inf += "</p>";
+        }*/
+        inf += "</div>"
+        var coordinates = $(".ol-mouse-position").text().split(",");
+        popup.setPosition([coordinates[0],coordinates[1]]);
+        console.log(fl[0])
+        $("#popup").popover({
+          placement: 'top',
+          html: true,
+          content: inf
         });
+        $("#popup").popover('show');
+        checkPopPadding();
       }
-      inf += ia.join("<br />");
-      if (jsons[pn].desc){ 
-        inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>"; 
-      }
-      if (jsons[pn].source){ 
-        inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
-        if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
-        inf += "</p>";
-      }
-      inf += "</div>"
-      var coordinates = feature.getGeometry().getCoordinates();
-      popup.setPosition(coordinates);
-      $("#popup").popover({
-        placement: 'top',
-        html: true,
-        //viewport: "#popup",
-        content: data + feature.values_.properties.content
-      });
-      $("#popup").popover('show');
-      checkPopPadding();
     } else {
       $("#popup").popover('destroy');
     }
   });
+  /*map.on('moveend', function(evt) {
+    if($(".popover:visible").length) {
+      checkPopPadding();
+    }
+  });*/
 
   updateInfo(1,disclaimer);
 }
