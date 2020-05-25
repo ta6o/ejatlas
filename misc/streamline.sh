@@ -25,10 +25,15 @@ cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js mo
 
 java -jar ../../lib/yui.jar --type js --nomunge all.js > main.js
 #cp all.js main.js
+
 #java -jar ../../lib/yui.jar --type js --nomunge all-dev.js > main-dev.js
 cp all-dev.js main-dev.js
+
 java -jar ../../lib/yui.jar --type js --nomunge backall.js > backend.js
 #cp backall.js backend.js
+
+java -jar ../../lib/yui.jar --type js --nomunge ol-dev.js > main-ol.js
+#cp ol-dev.js main-ol.js
 
 cd ../stylesheets
 

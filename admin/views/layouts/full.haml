@@ -562,10 +562,16 @@
         //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/Leaflet.VectorGrid.bundled.js','/javascripts/leaflet-tilelayer-wms-headers.js','/javascripts/VectorTileLayer.min.js','/javascripts/map.js'); 
         //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
     -else
-      :javascript
-        conflict = false;
-        $full = true;
-        jQl.loadjQ('/javascripts/main.js'); 
+      -if @ol
+        :javascript
+          conflict = false;
+          $full = true;
+          jQl.loadjQ('/javascripts/main-ol.js'); 
+      -else
+        :javascript
+          conflict = false;
+          $full = true;
+          jQl.loadjQ('/javascripts/main.js'); 
 
     :javascript
       $(document).ready(function(){
