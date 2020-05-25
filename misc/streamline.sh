@@ -36,8 +36,8 @@ cp all-dev.js main-dev.js
 java -jar ../../lib/yui.jar --type js --nomunge backall.js > backend.js
 #cp backall.js backend.js
 
-java -jar ../../lib/yui.jar --type js --nomunge all-ol.js > main-ol.js
-#cp all-ol.js main-ol.js
+#java -jar ../../lib/yui.jar --type js --nomunge all-ol.js > main-ol.js
+cp all-ol.js main-ol.js
 
 cd ../stylesheets
 
