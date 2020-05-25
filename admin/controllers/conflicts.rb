@@ -149,9 +149,6 @@ Admin.controllers :conflicts do
               id = rr.first.id
             end
           else
-            puts
-            p kk
-            puts v.green
             rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
             p rr
             if rr.empty?
@@ -647,7 +644,7 @@ Admin.controllers :conflicts do
             end
           else
             v.each do |l,w|
-              ##puts "#{k}: #{l},#{w}"
+              #puts "#{k}: #{l},#{w}"
               ref = multies[k][:class].where(:id=>l)
               if ref.any?
                 ref = ref[0]
