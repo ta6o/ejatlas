@@ -128,11 +128,13 @@ Admin.controllers :conflicts do
             else
               oloc = Conflict.find(params["id"]).original_locale
               rr = Document.where(:conflict_id=>params["id"].to_i, :pid=>kk[-1].to_i, :locale=>oloc)[0]
-              rd = rr.dup
-              rd.locale = I18n.locale
-              rd.remote_file_url = rr.file_url
-              rd.save
-              id = rd.id
+              if rr
+                rd = rr.dup
+                rd.locale = I18n.locale
+                rd.remote_file_url = rr.file_url
+                rd.save
+                id = rd.id
+              end
             end
           elsif kk[0] == "related"
             rr = Conflict.where(:id=>kk[-1].to_i)
