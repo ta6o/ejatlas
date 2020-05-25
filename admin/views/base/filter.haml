@@ -501,7 +501,7 @@
         }
         sp = ""
         $.each(lvl, function(i,e) { sp += "  "})
-        //console.log(sp+"K: "+k+", L: ["+lvl.join(", ")+"], T: "+(typeof v))
+        console.log(sp+"K: "+k+", L: ["+lvl.join(", ")+"], T: "+(typeof v))
         if (typeof v == "object") {
           dive(v, lvl, hash) 
         } else if ($("#filter .data ul li span[data-name="+k+"][data-value="+v+"]").length > 0){
@@ -524,6 +524,7 @@
         } else {
           elem = $("#filter .body #"+lvl.join(" #"));
           t = $("#filter .panel-body ul li a[data-id="+k+"]").text();
+          orig = $("#filter .data input[data-name="+k+"]")
           span = '<span title="'+t+':  '+v+'" data-value="'+v+'" data-field="'+k+'" data-name="'+k+'" data-section="prefix" data-field-local="'+orig.data('field-local')+'" class="drag graybg"><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+t+':</strong>  '+v+'</span>'
           elem.append(span)
         }
