@@ -290,7 +290,7 @@ class Conflict < ActiveRecord::Base
     lat = (self.lat.to_f * 100).to_i / 100.0 if self.lat and self.lat.to_f.abs <= 90
     lon = 0; 
     lon = (self.lon.to_f * 100).to_i / 100.0 if self.lon and self.lon.to_f.abs <= 180
-    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr,:r=>rea,:s=>sta,:p=>pst,:l=>self.conflict_texts.map(&:locale).join("-")}
+    return {:o=>lon,:a=>lat,:i=>self.id,:c=>clr,:r=>rea,:s=>sta,:p=>pst,:l=>self.conflict_texts.order(:id).map(&:locale).join("-")}
   end
 
   def accurate_marker

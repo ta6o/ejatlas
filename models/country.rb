@@ -77,10 +77,11 @@ class Country < ActiveRecord::Base
 
   def ping
     json, marker, link = [], [], []
-    self.conflicts.where(approval_status: 'approved').order("id asc").each do |c|
-      marker << JSON.parse(c.marker||c.as_marker.to_json)
-      #json << c.json
-      link << c.as_button
+    self.conflicts.order("id asc").each do |c|
+      if c.approval_status == "approved"
+        marker << JSON.parse(c.marker||c.as_marker.to_json)
+        link << c.as_button
+      end
     end
     self.conflicts_marker = marker.to_json
     self.conflicts_json = json.to_json
@@ -89,14 +90,16 @@ class Country < ActiveRecord::Base
     cs, marker, json, link = [], [], [], []
     self.companies.order("name asc").includes(:conflicts).each do |c|
       #next if c.conflicts.count < 2
-      c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
-        next if cs.include?(cc.id)
-        cs << cc.id
-        marker << JSON.parse(cc.marker)
-        json << cc.json
-        culprits = []
-        cc.companies.where(country_id: self.id).each {|cu| culprits << "<a href='/company/#{cu.slug}'>#{cu.name}</a>"}
-        link << "<p class='conflict-button' data-id='#{cc.id}'><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+      c.conflicts.order("id asc").each do |cc|
+        if cc.approval_status == "approved"
+          next if cs.include?(cc.id)
+          cs << cc.id
+          marker << JSON.parse(cc.marker)
+          json << cc.json
+          culprits = []
+          cc.companies.where(country_id: self.id).each {|cu| culprits << "<a href='/company/#{cu.slug}'>#{cu.name}</a>"}
+          link << "<p class='conflict-button' data-id='#{cc.id}'><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+        end
       end
     end
     self.companies_marker = marker.to_json
@@ -106,14 +109,16 @@ class Country < ActiveRecord::Base
     cs, marker, json, link = [], [], [], []
     self.supporters.order("name asc").includes(:conflicts).each do |c|
       #next if c.conflicts.count < 2
-      c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
-        next if cs.include?(cc.id)
-        cs << cc.id
-        marker << JSON.parse(cc.marker)
-        json << cc.json
-        culprits = []
-        cc.supporters.where(country_id: self.id).each {|cu| culprits << "<a href='/institution/#{cu.slug}'>#{cu.name}</a>"}
-        link << "<p class='conflict-button' data-id='#{cc.id}'><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+      c.conflicts.order("id asc").each do |cc|
+        if cc.approval_status == "approved"
+          next if cs.include?(cc.id)
+          cs << cc.id
+          marker << JSON.parse(cc.marker)
+          json << cc.json
+          culprits = []
+          cc.supporters.where(country_id: self.id).each {|cu| culprits << "<a href='/institution/#{cu.slug}'>#{cu.name}</a>"}
+          link << "<p class='conflict-button' data-id='#{cc.id}'><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+        end
       end
     end
     self.supporters_marker = marker.to_json
@@ -168,48 +173,59 @@ class Region < ActiveRecord::Base
   def ping
     json, marker, link = [], [], []
     if self.countries.any?
-      self.countries.first.where(approval_status: 'approved').conflicts.order("id asc").each do |c|
-        marker << JSON.parse(c.marker||c.as_marker.to_json)
-        json << c.json
-        link << c.as_button
-      end
-      self.conflicts_marker = marker.to_json
-      self.conflicts_json = json.to_json
-      self.conflicts_link = link.join
-
-      cs, marker, json, link = [], [], [], []
-      self.countries.first.companies.order("name asc").includes(:conflicts).each do |c|
-        next if c.conflicts.count < 2
-        c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
-          next if cs.include?(cc.id)
-          cs << cc.id
-          marker << cc.marker
-          json << cc.json
-          culprits = []
-          cc.companies.where(country_id: self.id).each {|cu| culprits << "<a href='/country-of-company/#{cu.slug}'>#{cu.name}</a>"}
-          link << "<p><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+      self.countries.each do |co|
+        co.conflicts.order("id asc").each do |c|
+          if c.approval_status == "approved"
+            marker << JSON.parse(c.marker||c.as_marker.to_json)
+            link << c.as_button
+          end
         end
       end
-      self.companies_marker = marker.to_json
-      self.companies_json = json.to_json
-      self.companies_link = link.join
+      self.conflicts_marker = marker.uniq.to_json
+      self.conflicts_json = json.uniq.to_json
+      self.conflicts_link = link.uniq.join
 
       cs, marker, json, link = [], [], [], []
-      self.countries.first.supporters.order("name asc").includes(:conflicts).each do |c|
-        next if c.conflicts.count < 2
-        c.conflicts.where(approval_status: 'approved').order("id asc").each do |cc|
-          next if cs.include?(cc.id)
-          cs << cc.id
-          marker << cc.marker
-          json << cc.json
-          culprits = []
-          cc.supporters.where(country_id: self.id).each {|cu| culprits << "<a href='/country-of-institution/#{cu.slug}'>#{cu.name}</a>"}
-          link << "<p><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+      self.countries.each do |co|
+        co.companies.order("name asc").includes(:conflicts).each do |c|
+          next if c.conflicts.count < 2
+          c.conflicts.order("id asc").each do |cc|
+            if cc.approval_status == "approved"
+              next if cs.include?(cc.id)
+              cs << cc.id
+              marker << cc.marker
+              json << cc.json
+              culprits = []
+              cc.companies.where(country_id: self.id).each {|cu| culprits << "<a href='/country-of-company/#{cu.slug}'>#{cu.name}</a>"}
+              link << "<p><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+            end
+          end
         end
       end
-      self.supporters_marker = marker.to_json
-      self.supporters_json = json.to_json
-      self.supporters_link = link.join
+      self.companies_marker = marker.uniq.to_json
+      self.companies_json = json.uniq.to_json
+      self.companies_link = link.uniq.join
+
+      cs, marker, json, link = [], [], [], []
+      self.countries.each do |co|
+        co.supporters.order("name asc").includes(:conflicts).each do |c|
+          next if c.conflicts.count < 2
+          c.conflicts.order("id asc").each do |cc|
+            if cc.approval_status == "approved"
+              next if cs.include?(cc.id)
+              cs << cc.id
+              marker << cc.marker
+              json << cc.json
+              culprits = []
+              cc.supporters.where(country_id: self.id).each {|cu| culprits << "<a href='/country-of-institution/#{cu.slug}'>#{cu.name}</a>"}
+              link << "<p><a href='/conflict/#{cc.slug}'>#{cc.name}</a> <small>(#{culprits.join(', ')})</small></p>"
+            end
+          end
+        end
+      end
+      self.supporters_marker = marker.uniq.to_json
+      self.supporters_json = json.uniq.to_json
+      self.supporters_link = link.uniq.join
     end
   end
 

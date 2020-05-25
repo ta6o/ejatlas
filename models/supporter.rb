@@ -40,10 +40,11 @@ class Supporter < ActiveRecord::Base
 
   def ping
     json, marker, link = [], [], []
-    self.conflicts.where(approval_status: 'approved').order("id asc").each do |c|
-      #json << c.json
-      marker << JSON.parse(c.marker||c.as_marker.to_json)
-      link << c.as_button
+    self.conflicts.order("id asc").each do |c|
+      if c.approval_status == "approved"
+        marker << JSON.parse(c.marker||c.as_marker.to_json)
+        link << c.as_button
+      end
     end
     self.conflicts_json = json.to_json
     self.conflicts_marker = marker.to_json
