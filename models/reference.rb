@@ -3,6 +3,6 @@ class Reference < ActiveRecord::Base
   before_save :trim
   private
   def trim
-    self.description = self.description.gsub(/\r?\n/,"\r\n").strip unless self.description.nil?
+    self.description = self.description.strip.gsub(/\r?\n/,"\r\n") unless self.description.nil? or destroyed?
   end
 end
