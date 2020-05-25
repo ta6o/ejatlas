@@ -501,7 +501,7 @@
         }
         sp = ""
         $.each(lvl, function(i,e) { sp += "  "})
-        console.log(sp+"K: "+k+", L: ["+lvl.join(", ")+"], T: "+(typeof v))
+        //console.log(sp+"K: "+k+", L: ["+lvl.join(", ")+"], T: "+(typeof v))
         if (typeof v == "object") {
           dive(v, lvl, hash) 
         } else if ($("#filter .data ul li span[data-name="+k+"][data-value="+v+"]").length > 0){
