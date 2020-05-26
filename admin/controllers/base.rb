@@ -379,7 +379,8 @@ Admin.controller do
     @description = con.description
     @qt = "companies"
     @id = con.id
-    @markercount = con.conflicts.where(approval_status: 'approved').count
+    cf = {:must=>{:term=>{:companies=>con.id}}}
+    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
     @desc = "Description of #{con.name}"#con.description
     @image = nil
     @image = con.logo_images.first.file_url if con.logo_images.any?
@@ -401,7 +402,8 @@ Admin.controller do
     @description = con.description
     @qt = "supporters"
     @id = con.id
-    @markercount = con.conflicts.where(approval_status: 'approved').count
+    cf = {:must=>{:term=>{:supporters=>con.id}}}
+    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = I18n.t("v.index.environmental_conflicts_of_var",:company=>con.name)
@@ -417,7 +419,8 @@ Admin.controller do
     pass unless con
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
-    @markercount = con.conflicts.where(approval_status: 'approved').count
+    cf = {:must=>{:term=>{:products=>con.id}}}
+    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @qt = "products"
     @id = con.id
@@ -442,7 +445,8 @@ Admin.controller do
     @description = con.description
     @qt = "types"
     @id = con.id
-    @markercount = con.conflicts.where(approval_status: 'approved').count
+    cf = {:must=>{:term=>{:types=>con.id}}}
+    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = I18n.t("v.index.environmental_conflicts_about_var",:category=>I18n.t("m.types.#{con.name.slug("_").split("_")[0..7].join("_")}"))

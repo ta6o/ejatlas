@@ -12,7 +12,7 @@ class Country < ActiveRecord::Base
   before_save :set_slug
 
   def local_conflicts locale=:en
-    self.conflicts.where(approval_status: 'approved').map{|c|ct=c.conflict_texts.where(:locale=>locale);if ct.any? then ct[0] else nil end}.uniq - [nil]
+    self.conflicts.map{|c|ct=c.conflict_texts.where(approval_status: 'approved', :locale=>locale);if ct.any? then ct[0] else nil end}.uniq - [nil]
   end
 
   def local_conflicts_count locale=:en
@@ -20,7 +20,8 @@ class Country < ActiveRecord::Base
   end
 
   def conflicts_count
-    self.conflicts.where(approval_status: 'approved').count
+    f = {:must=>{:term=>{:country_id=>self.id}}}
+    Admin.filter(f, true, [], true, 'conflict', 'id', 'asc', true)
   end
 
   def jsonize locale=:en, keep_para=false
@@ -141,11 +142,8 @@ class Region < ActiveRecord::Base
   before_save :set_slug
 
   def conflicts_count
-    count = 0
-    self.countries.each do |con|
-      count += con.conflicts.count
-    end
-    return count
+    f = {:must=>{:term=>{:regıon_id=>self.id}}}
+    Admin.filter(f, true, [], true, 'conflict', 'id', 'asc', true)
   end
 
   def jsonize locale=:en

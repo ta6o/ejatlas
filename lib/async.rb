@@ -706,7 +706,8 @@ class AsyncTask
       csv << ["company_name", "acronym", "country_of_origin", "conflict_name", "conflict_link", "description","environmental_impacts","health_impacts","socioeconomical_impacts"]
       Company.order(:name).includes(:conflicts).each_with_index do |c,i|
         print "\r  #{i} / #{Company.count}"
-        c.conflicts.where(approval_status: 'approved').each do |cc|
+        c.conflicts.each do |cc|
+          next unless cc.approval_status == "approved"
           row = [c.name, c.acronym, (c.country ? c.country.name : ""), cc.name,"https://ejatlas.org/conflict/#{cc.slug}"]
           if cc.headline and cc.headline.length > 12
             row << cc.headline

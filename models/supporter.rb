@@ -52,7 +52,7 @@ class Supporter < ActiveRecord::Base
   end
 
   def local_conflicts locale=:en
-    self.conflicts.where(approval_status: 'approved').map{|c|ct=c.conflict_texts.where(:locale=>locale);if ct.any? then ct[0] else nil end} - [nil]
+    self.conflicts.map{|c|ct=c.conflict_texts.where(approval_status: 'approved', locale: locale);if ct.any? then ct[0] else nil end} - [nil]
   end
 
   def local_conflicts_count locale=:en
