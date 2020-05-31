@@ -164,7 +164,11 @@ class Admin < Padrino::Application
       end
     else
       I18n.default_locale = :en
-      I18n.locale = locale
+      begin
+        I18n.locale = locale
+      rescue
+        I18n.locale = :en
+      end
       $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
     end
     if CGI::parse(request.query_string).has_key?("openlayers")
