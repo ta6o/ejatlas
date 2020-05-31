@@ -1261,7 +1261,8 @@ class AsyncTask
       filterdata["outcomes"]["outcome"] =  {:content=>ConflictEvent.order(:name).select('name, id').map{|c|{c.id=>c.name}},:name=>"conflict_events"}
 
       filterdata["meta"] = {}
-      filterdata["meta"]["collaborator"] =  {:content=>'auto',:name=>"account_id",:model=>'account'}
+      filterdata["meta"]["author"] =  {:content=>'auto',:name=>"account_id",:model=>'account'}
+      filterdata["meta"]["collaborator"] =  {:content=>'auto',:name=>"collaborators",:model=>'account'}
       filterdata["meta"]["tags"] = {:content=>'auto',:name=>"tags",:model=>'tag'}
       filterdata["meta"]["id"] = {:content=>'flat',:name=>"id"}
       #filterdata["meta"]["created"] = {:content=>"#{(Time.now-100.years).year}:#{Time.now.year}",:name=>"created_at"}

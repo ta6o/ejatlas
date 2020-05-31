@@ -31,7 +31,8 @@
         Results in
         %b#result= @filter.result_length || 0
         cases.
-      -#%pre#query{:style=>"font-family:sans-serif, sans; line-height:16px;"}
+      %br/
+      %pre#query{:style=>"font-family:sans-serif, sans; line-height:16px;"}
 
 
   .col-md-9.col-sm-8.col-xs-12
@@ -48,7 +49,7 @@
     $(document).ready(function(){
       data = #{@filter.query.html_safe};
       hash = #{@filterhash.to_json.html_safe};
-      //$("pre#query").html(JSON.stringify(data, undefined, 2))
+      $("pre#query").html(JSON.stringify(data, undefined, 2))
       dive(data,[],hash)
     })
     function filterFollowed(data){

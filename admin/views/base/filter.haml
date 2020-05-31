@@ -12,6 +12,7 @@
             .panel-body
               %ul
                 -content.each do |field,options|
+                  -next if options["model"] == "account" and current_account.nil?
                   %li
                     %a.show-filter-content{"data-id"=>"#{field}",:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= t "v.filter.#{field.slug '_'}"
   .col-sm-9.canvas
@@ -20,9 +21,10 @@
         .relative.options
           -@filterform.each do |page,content|
             -content.each do |field,options|
+              -next if options["model"] == "account" and current_account.nil?
               .data{:id=>field,:style=>(field=="success_level" ? "display:block" : "")}
-                -if options.has_key? 'name' then  name = options['name'] else name = field end
-                -if options.has_key? 'model' then  model = options['model'] else model = field end
+                -if options.has_key? 'name' then name = options['name'] else name = field end
+                -if options.has_key? 'model' then model = options['model'] else model = field end
                 -if options['content'].is_a? Array
                   .body
                     %h4= t "v.filter.#{field.shorten_en}"
@@ -484,6 +486,10 @@
 
     function dive(obj, level, hash) {
       $.each(obj,function(k,v){
+        console.log("dive:")
+        console.log(k)
+        console.log(v)
+        console.log(hash)
         lvl = level.slice();
         if (["must","should","must_not"].indexOf(k) >= 0) {
           val = {"must":"and","should":"or","must_not":"not"}[k];
@@ -514,6 +520,14 @@
           orig = $("#filter .data input[data-name="+k+"]")
           span = '<span title="'+orig.data('field-local')+': '+hash[k][v]+'" data-value="'+v+'" data-field="'+orig.data('field')+'" data-name="'+orig.data('name')+'" data-section="field" data-field-local="'+orig.data('field-local')+'" class="drag graybg"><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+orig.data('field-local')+':</strong> '+hash[k][v]+'</span>'
           elem.append(span)
+        } else if (["account_id","collaborators"].indexOf(k) >= 0) {
+
+          elem = $("#filter .body #"+lvl.join(" #"));
+          orig = $("#filter .data input[data-name="+k+"]")
+          t = $("#filter .panel-body ul li a[data-id="+{account_id:"author",collaborators:"collaborator"}[k]+"]").text();
+          span = '<span title="'+t+': '+v+'" data-value="'+v+'" data-field="'+orig.data('field')+'" data-name="'+orig.data('name')+'" data-section="field" data-field-local="'+orig.data('field-local')+'" class="drag graybg"><icon class="glyphicon glyphicon-remove ag"></icon><strong style="font-size:12px;">'+t+':</strong> '+v+'</span>'
+          elem.append(span)
+
         } else if (k.match(/_datestamp$/)) {
           v = v.replace(":","-")
           val = v.replace("-"," - ")
