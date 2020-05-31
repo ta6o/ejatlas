@@ -28,6 +28,7 @@
 Padrino.configure_apps do
   # enable :sessions
   set :session_secret, '9a018bfaa3589f8d1fa45eddbf1a16b219f911f57b10fb293b97e012b155cdf5'
+  #set :sessions, :domain => ".#{$siteurl.sub(/^https?:\/\//),""}"
 end
 
 # Mounts the core application for this project
