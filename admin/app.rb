@@ -36,7 +36,6 @@ class Admin < Padrino::Application
   enable  :sessions
   enable  :store_location
 
-  set :login_page, "/sessions/login"
 
   $title = 'EJAtlas'
   $tkeys = []
@@ -50,6 +49,10 @@ class Admin < Padrino::Application
     $filedir = "#{Dir.pwd}/../file"
     $fileurl = 'https://file.ejatlas.org'
   end
+
+  set :login_page, "/sessions/login"
+  set :sessions, :domain => ".#{$siteurl.sub(/^https?:\/\//,"")}"
+
   $pageauthor = 'EJOLT'
   $pagekeyws = ''
   $sitemail = 'ejoltmap@gmail.com'
