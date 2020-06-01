@@ -24,7 +24,7 @@ cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js mo
 
 cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
   tooltip.js popover.js oms.js noui.js ascii.js \
-  jquery-ui-1.12.1.js providers.js xml2json.js ol.js ol-layerswitcher.js map-ol.js > all-ol.js
+  jquery-ui-1.12.1.js providers.js xml2json.js ol.js > all-ol.js
 
 
 java -jar ../../lib/yui.jar --type js --nomunge all.js > main.js
