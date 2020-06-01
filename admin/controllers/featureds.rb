@@ -108,10 +108,16 @@ Admin.controllers :featureds do
     end
     rank = 0
     (params.delete("geo_layers") || []).each do |id, data|
+      p data
       vector = GeoLayer.find(id)
       attach = GeoLayerAttachable.where(:attachable_type=>"Featured",:attachable_id=>@featured.id,:geo_layer_id=>vector.id).first
       rank += 1
       attach.update_attribute(:rank, rank)
+      if data.has_key?("legend") and data["legend"] == "on"
+        attach.update_attribute(:legend, true)
+      else
+        attach.update_attribute(:legend, false)
+      end
       if data.has_key?("shown") and data["shown"] == "on"
         attach.update_attribute(:shown, 1)
       else

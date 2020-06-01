@@ -175,9 +175,11 @@
         &nbsp;
         %a{'data-toggle'=>'modal','data-target'=>'#geo-modal',:href=>"/featureds/geo_modal/#{@featured.id}"} Manage
         %span{:style=>"font-weight:normal;text-align:right;float:right"}
-          S
+          %font{:title=>"Legend"} L
           &nbsp;
-          C 
+          %font{:title=>"Shown by default"} S
+          &nbsp;
+          %font{:title=>"Clickable"} C 
           &nbsp;
           &nbsp;
       %ul#geolayers.sortable
@@ -189,18 +191,22 @@
               = vector.rank
               &nbsp;
             %span.pull-left= vector.geo_layer.name
-            .pull-right
-              &nbsp;
-            %input.pull-right{:type=>"checkbox",:name=>"geo_layers[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
-            .pull-right
-              &nbsp;
-            %input.pull-right{:type=>"checkbox",:name=>"geo_layers[#{id}][shown]",:checked=>(vector.shown == 1 ? true : false)}
-            .pull-right
-              &nbsp;
-              &nbsp;
-            %a.pull-right.geo-edit{:href=>"#",:style=>"color:#0380a5;","data-url"=>"/featureds/geo_edit/#{@featured.id}/#{id}"} edit
-            .pull-right
-              &nbsp;
+            .clearfix.pull-right
+              .pull-right
+                &nbsp;
+              %input.pull-right{:type=>"checkbox",:name=>"geo_layers[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
+              .pull-right
+                &nbsp;
+              %input.pull-right{:type=>"checkbox",:name=>"geo_layers[#{id}][shown]",:checked=>(vector.shown == 1 ? true : false)}
+              .pull-right
+                &nbsp;
+              %input.pull-right{:type=>"checkbox",:name=>"geo_layers[#{id}][legend]",:checked=>(vector.legend||false)}
+              .pull-right
+                &nbsp;
+                &nbsp;
+              %a.pull-right.geo-edit{:href=>"#",:style=>"color:#0380a5;","data-url"=>"/featureds/geo_edit/#{@featured.id}/#{id}"} edit
+              .pull-right
+                &nbsp;
 
     -if @featured.vector_data.any?
       .group#vector_order
@@ -213,20 +219,24 @@
               -#%small.pull-left
                 = vector.rank
                 &nbsp;
+              %input{:type=>"hidden",:name=>"vectors[#{id}][name]",:value=>vector.name}
               %span.pull-left= vector.name
-              %input.pull-left{:type=>"hidden",:name=>"vectors[#{id}][name]",:value=>vector.name}
               &nbsp;
-              %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
-              .pull-right
-                &nbsp;
-              %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][shown]",:checked=>(vector.shown == 1 ? true : false)}
-              .pull-right
-                &nbsp;
-              .pull-right
-                &nbsp;
-              %a.pull-right{:style=>"color:#0380a5;", :target=>"_blank", :href=>"/vectors/edit/#{vector.id}"} edit
-              .pull-right
-                &nbsp;
+              .clearfix.pull-right
+                %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][clickable]",:checked=>(vector.clickable ? true : false)}
+                .pull-right
+                  &nbsp;
+                %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][shown]",:checked=>(vector.shown == 1 ? true : false)}
+                .pull-right
+                  &nbsp;
+                %input.pull-right{:type=>"checkbox",:name=>"vectors[#{id}][legend]",:checked=>false,:disabled=>true}
+                .pull-right
+                  &nbsp;
+                .pull-right
+                  &nbsp;
+                %a.pull-right{:style=>"color:#0380a5;", :target=>"_blank", :href=>"/vectors/edit/#{vector.id}"} edit
+                .pull-right
+                  &nbsp;
 
     :javascript
       $("ul.sortable").sortable();

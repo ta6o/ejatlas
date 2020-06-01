@@ -32,7 +32,7 @@ class Featured < ActiveRecord::Base
 
   def view
     return [0,0,1] if self.viewport.nil? or self.viewport == ""
-    return self.viewport.split("|")
+    return self.viewport.split("|").map(&:to_f)
   end
 
   def followed

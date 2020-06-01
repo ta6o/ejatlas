@@ -187,8 +187,7 @@ function geoLayers() {
       if ($('#legendpane .vectorlegend').length == 0) {
         $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
       }
-      if (Object.keys(f).indexOf("legend")>=0 || true) {
-        console.log(f)
+      if (f.legend) {
         html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
         html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
         html += "<td"+bold+">"+name+"</td></tr>";
@@ -224,6 +223,7 @@ function initMap() {
       $.each(providers[f[0]].options,function(k,v){
         opts[k] = v;
       })
+      console.log(opts)
       if (f.length == 2) {
         if (Object.keys(providers[f[0]].variants[f[1]]).indexOf("url")>=0) {
           opts["url"] = providers[f[0]].variants[f[1]].url;
@@ -239,12 +239,14 @@ function initMap() {
         opts["url"] = opts["url"].replace("{variant}",variant);
         delete opts["variant"]
       }
+      opts["url"] = opts["url"].replace("{s}.","a.");
       console.log(opts)
-      l = new ol.layer.Tile({source:new ol.source.XYZ(opts)});
+      l = new ol.layer.Tile({title:f[1],type:"base",source:new ol.source.XYZ(opts)});
       baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = l;
   })
 
   baseLayer = new ol.layer.Group({
+    title: "&nbsp;",
     layers:Object.values(baselayers),
     zIndex: 9
   });
@@ -257,6 +259,7 @@ function initMap() {
     zIndex: 999
   });
   markerLayer= new ol.layer.Vector({
+    title: "Conflicts",
     source: new ol.source.Vector({ features: [ ] }),
     style: markerStyle,
     zIndex: 9999
@@ -282,6 +285,9 @@ function initMap() {
     offset: [0, -5]
   });
   map.addOverlay(popup);
+
+  var layerSwitcher = new ol.control.LayerSwitcher();
+  map.addControl(layerSwitcher);
 
   mousePositionControl = new ol.control.MousePosition();
   map.addControl(mousePositionControl);

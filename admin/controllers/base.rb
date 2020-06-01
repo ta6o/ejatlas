@@ -534,6 +534,7 @@ Admin.controller do
       if att
         l["shown"] = att.shown || 0
         l["clickable"] = att.clickable || false
+        l["legend"] = att.legend || false
         if att.rank
           l["rank"] = att.rank
           @ranks[att.rank] = n
