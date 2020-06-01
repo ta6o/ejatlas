@@ -575,6 +575,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "slug", limit: 255
     t.text   "description"
     t.string "url", limit: 255
+    t.text   "legend"
     t.string "bbox", limit: 255
     t.text   "style"
     t.text   "attributes_available"

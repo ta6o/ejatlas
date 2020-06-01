@@ -22580,7 +22580,6 @@ function geoLayers() {
 
   $.each(layerranks,function(i,s){
     f = layerinfo[s]
-    console.log(f)
     if (f.type == "raster") {
       var styls = {}
       name = f["name"];
@@ -22601,9 +22600,17 @@ function geoLayers() {
       if ($('#legendpane .vectorlegend').length == 0) {
         $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
       }
-      html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
-      html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
-      html += "<td"+bold+">"+name+"</td></tr>";
+      if (Object.keys(f).indexOf("legend")>=0) {
+        console.log(f)
+        html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
+        html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+        html += "<td"+bold+">"+name+"</td></tr>";
+        html += "<tr class='leg'><td>&nbsp;</td><td colspan='2'><img src='"+f['legend']+"'></td></tr>";
+      } else {
+        html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
+        html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+        html += "<td"+bold+">"+name+"</td></tr>";
+      }
       ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
       console.log(ranks)
       $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
@@ -22655,9 +22662,17 @@ function geoLayers() {
       if ($('#legendpane .vectorlegend').length == 0) {
         $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
       }
-      html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
-      html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
-      html += "<td"+bold+">"+name+"</td></tr>";
+      if (Object.keys(f).indexOf("legend")>=0 || true) {
+        console.log(f)
+        html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
+        html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+        html += "<td"+bold+">"+name+"</td></tr>";
+        html += "<tr class='leg'><td colspan='3' style='padding-left:18px;'><img alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=24&HEIGHT=16&LAYER=geonode:"+f["slug"]+"&legend_options=fontName:Ubuntu;fontAntiAliasing:true;fontColor:0x000033;fontSize:10;bgColor:0xFFFFEE;dpi:96;labelMargin:6'></td></tr>";
+      } else {
+        html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
+        html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+        html += "<td"+bold+">"+name+"</td></tr>";
+      }
       ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
       $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
     }
@@ -22830,6 +22845,7 @@ function initMap() {
       geoLayer.getLayers().getArray().splice(ind,1);
       map.render();
       title.css('font-weight','normal');
+      $(this).next("tr.leg").slideUp();
       if (Object.keys(overlayMaps[name]).indexOf("_vectorTiles") >= 0) {
         wmsLayers.splice(wmsLayers.indexOf(name),1);
       }
@@ -22838,6 +22854,7 @@ function initMap() {
       geoLayer.getLayers().getArray().push(overlayMaps[name]);
       map.render();
       title.css('font-weight','bold');
+      $(this).next("tr.leg").slideDown();
       //console.log(overlayMaps[name])
       if (Object.keys(overlayMaps[name]).indexOf("_vectorTiles") >= 0) {
         wmsLayers.push(name);

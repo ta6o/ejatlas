@@ -295,7 +295,9 @@ class GeoLayer < ActiveRecord::Base
   end
 
   def info
-    {:id=>self.id,:name=>self.name, :slug=>self.slug, :style=>self.style, :type=>self.layer_type, :omit=>self.attributes_omitted,:icon=>self.icon,:id_column=>self.id_column,:title_column=>self.title_column}
+    info = {:id=>self.id,:name=>self.name, :slug=>self.slug, :style=>self.style, :type=>self.layer_type, :omit=>self.attributes_omitted,:icon=>self.icon,:id_column=>self.id_column,:title_column=>self.title_column}
+    info[:legend] = self.legend if self.legend and self.legend.length > 32
+    info
   end
 
   def inspect

@@ -528,6 +528,7 @@ Admin.controller do
     @vectors = CGI.unescapeHTML(con.vector_data.where("url != ''").where("status = 'published'").select('name, url, description, style, choropleth, shown, id, source, link, rank, clickable, geometry_type').order(:rank).to_json).html_safe
     @ranks = []
     @layers = con.geo_layers.map{|x| [x.slug,x.info]}.reverse.to_h
+    pp @layers
     @layers.each do |n,l|
       att = GeoLayerAttachable.where(:attachable_type=>"Featured",:attachable_id=>con.id,:geo_layer_id=>l[:id]).first
       if att
