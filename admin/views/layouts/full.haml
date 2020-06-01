@@ -549,6 +549,10 @@
 
       var categoryHash = #{CGI.unescapeHTML($cathash.to_json).html_safe};
 
+    :javascript
+      conflict = false;
+      $full = true;
+
     -if ENV['RACK_ENV'] == 'development'
 
       -if @ol
@@ -561,21 +565,16 @@
         %script{:src=>"/javascripts/main-dev.js",:type=>"text/javascript"}
         %script{:src=>"/javascripts/map.js",:type=>"text/javascript"}
 
-      :javascript
-        conflict = false;
-        $full = true;
         //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/Leaflet.VectorGrid.bundled.js','/javascripts/leaflet-tilelayer-wms-headers.js','/javascripts/VectorTileLayer.min.js','/javascripts/map.js'); 
         //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
     -else
       -if @ol
         :javascript
-          conflict = false;
-          $full = true;
-          jQl.loadjQ('/javascripts/main-ol.js','/javascripts/ol-layerswitcher.js','/javascripts/map-ol.js'); 
+          jQl.loadjQ('/javascripts/main-ol.js');
+          jQl.loadjQdep('/javascripts/ol-layerswitcher.js');
+          jQl.loadjQdep('/javascripts/map-ol.js'); 
       -else
         :javascript
-          conflict = false;
-          $full = true;
           jQl.loadjQ('/javascripts/main.js'); 
 
     :javascript
