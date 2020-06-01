@@ -4,6 +4,7 @@ Admin.controllers :sessions do
   get :login do
     #pp request.referer
     #set_current_account(nil)
+    session.clear
     render "/sessions/new"
   end
 
