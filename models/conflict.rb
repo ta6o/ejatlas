@@ -1105,7 +1105,7 @@ class ConflictText < ActiveRecord::Base
   has_many :conflict_locale_suggestions
 
   def inspect
-    "##{self.conflict_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.green}: #{self.name} (#{(self.approval_status||"").magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
+    "##{self.conflict_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.name} (#{(self.approval_status||"").magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
   end
 end
 
@@ -1113,8 +1113,12 @@ class ConflictLocaleSuggestion < ActiveRecord::Base
   belongs_to :conflict_text
   belongs_to :account
 
+  def conflict
+    self.conflict_text.conflict
+  end
+
   def inspect
-    "##{self.conflict_text_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.green}: #{self.account.name}"
+    "##{self.conflict_text_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.conflict_text.name}"
   end
 end
 

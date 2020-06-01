@@ -67,7 +67,7 @@ class Account < ActiveRecord::Base
 
   def translator? locale=I18n.locale
     self.roles.map(&:name).sort.join(",").match(/locale-#{locale}.+translator/)
-    true
+    #true
   end
 
   def full_name

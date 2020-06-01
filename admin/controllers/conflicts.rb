@@ -307,7 +307,7 @@ Admin.controllers :conflicts do
       @conflict.local_data.destroy
     end
     unless @conflict.local_data
-      ConflictText.create(:conflict_id=>@conflict.id,:locale=>I18n.locale,:slug=>@conflict.slug)
+      ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale, :slug=>@conflict.slug, :approval_status=>"queued")
     end
     if current_account.contributor?(@conflict) or current_account.translator?
       @translate_only = true
@@ -494,7 +494,9 @@ Admin.controllers :conflicts do
       puts "translating".red
       pp updated["refs"]
       unless ct = @conflict.local_data
-        ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale, :slug=>@conflict.slug)
+        ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale, :slug=>@conflict.slug, :approval_status=>"queued")
+        cls = (ConflictLocaleSuggestion.where(:locale=>I18n.locale.to_s).map{|x| if x.conflict == @conflict then x else nil end} - [nil]).first
+        cls.destroy if cls
       end
       updated["conflict"].each do |k,v|
         ct.update_attribute k, v
@@ -542,9 +544,13 @@ Admin.controllers :conflicts do
             end
             ref.save
           end
-          flash[:notice] = 'Conflict was successfully saved.'
-          #@conflict.ping(I18n.locale)
-          #client.update index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(locale)}
+          @conflict.ping(I18n.locale)
+          if $client.exists(index: "#{$esindex}_#{I18n.locale}", id: @conflict.id)
+            $client.update index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(I18n.locale)}
+          else
+            $client.index index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(I18n.locale)}
+          end
+          flash[:notice] = 'Translation was successfully saved.'
           return {:status=>:success}.to_json
         end
       else
@@ -682,7 +688,11 @@ Admin.controllers :conflicts do
 
         general = false
         ct = @conflict.local_data
-        ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale) unless ct
+        unless ct
+          ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale) 
+          cls = (ConflictLocaleSuggestion.where(:locale=>I18n.locale.to_s).map{|x| if x.conflict == @conflict then x else nil end} - [nil]).first
+          cls.destroy if cls
+        end
         updated['conflict'].each do |k,v|
           if k == 'name' and v.match(/"/)
             quotes = ["“","","”"]

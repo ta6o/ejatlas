@@ -592,7 +592,7 @@ class Admin < Padrino::Application
       else
         filter = Admin.elasticify( { bool: { filter: { bool: filter }}} )
       end
-      puts filter.to_s.yellow
+      #puts filter.to_s.yellow
       if count_only
         result = $client.count(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"query"=>filter})["count"]
       else
