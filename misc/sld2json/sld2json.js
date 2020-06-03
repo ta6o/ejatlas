@@ -245,10 +245,13 @@ var parseFile = function (data, file) {
       rule = rules[j];
       filter = {}
       if (typeof rule["Filter"] != "undefined" ) {
+        console.log(rule["Filter"][0]);
         if (Object.keys(rule["Filter"][0]).indexOf("PropertyIsEqualTo") >= 0) {
           fils = rule["Filter"][0]["PropertyIsEqualTo"]
         } else if (Object.values(rule["Filter"][0]).length == 1 && Object.keys(Object.values(rule["Filter"][0])[0][0]).indexOf("PropertyIsEqualTo") >= 0){
           fils = Object.values(rule["Filter"][0])[0][0]["PropertyIsEqualTo"];
+        } else if (Object.values(rule["Filter"][0]).length > 1 && Object.keys(Object.values(rule["Filter"][0])[1][0]).indexOf("PropertyIsEqualTo") >= 0){
+          fils = Object.values(rule["Filter"][0])[1][0]["PropertyIsEqualTo"];
         } else if (Object.values(rule["Filter"][0]).length > 1 && Object.keys(Object.values(rule["Filter"][0])[1][0]).indexOf("PropertyIsEqualTo") >= 0){
           fils = Object.values(rule["Filter"][0])[1][0]["PropertyIsEqualTo"];
         }

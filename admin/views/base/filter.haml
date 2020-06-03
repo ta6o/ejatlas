@@ -12,9 +12,9 @@
             .panel-body
               %ul
                 -content.each do |field,options|
-                  -next if options["model"] == "account" and current_account.nil?
+                  -next if current_account.nil? and (options["model"] == "account" or options["name"] == "id")
                   %li
-                    %a.show-filter-content{"data-id"=>"#{field}",:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= t "v.filter.#{field.slug '_'}"
+                    %a.show-filter-content{"data-id"=>"#{field}",:style=>(field=="success_level" ? "color:#000;font-weight:bold" : "")}= t "v.filter.#{field.slug '_'}" || "NIL"
   .col-sm-9.canvas
     .row
       .col-sm-4

@@ -174,6 +174,7 @@ function geoLayers() {
       overlayMaps[name].set("slug",slug)
       overlayMaps[name].set("title_col",f['title_column'])
       overlayMaps[name].set("clickable",f['clickable'])
+      overlayMaps[name].set("omit",f['omit'])
       checked = "";
       bold = "";
       if (f["shown"] == 1) {
@@ -720,8 +721,9 @@ function initMap() {
         ia = []
         if (fl[0].properties_ != {}) {
           titled = false;
+          omit = fl[1].get("omit");
           $.each(fl[0].properties_,function(k,v){
-            if (v) {
+            if (omit.indexOf(k) == -1 && v) {
               if (k.match(/country/) && !titled) {
                 ia.push("<h3>"+v+"</h3>");
                 titled = true;
