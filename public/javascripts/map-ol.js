@@ -175,6 +175,7 @@ function geoLayers() {
       overlayMaps[name].set("title_col",f['title_column'])
       overlayMaps[name].set("clickable",f['clickable'])
       overlayMaps[name].set("omit",f['omit'])
+      overlayMaps[name].set("desc",f['desc'])
       checked = "";
       bold = "";
       if (f["shown"] == 1) {
@@ -190,12 +191,13 @@ function geoLayers() {
       }
       if (f.legend) {
         html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
-        html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+        //html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+        html += "<td class='icon'><img style='width: 20px; height: 20px;' alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=geonode:"+f["slug"]+"&legend_options=bgColor:0xFFFFEE;dpi:96;forceLabels:off;columnheight:20;'></td>"
         html += "<td"+bold+">"+name+"</td></tr>";
         html += "<tr class='leg'><td colspan='3' style='padding-left:18px;'><img alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=24&HEIGHT=16&LAYER=geonode:"+f["slug"]+"&legend_options=fontName:Ubuntu;fontAntiAliasing:true;fontColor:0x000033;fontSize:10;bgColor:0xFFFFEE;dpi:96;labelMargin:6'></td></tr>";
       } else {
         html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
-        html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
+        html += "<td class='icon'><img style='width: 20px; height: 20px;' alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=geonode:"+f["slug"]+"&legend_options=bgColor:0xFFFFEE;dpi:96;forceLabels:off;columnheight:20;'></td>"
         html += "<td"+bold+">"+name+"</td></tr>";
       }
       ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
@@ -721,7 +723,7 @@ function initMap() {
         ia = []
         if (fl[0].properties_ != {}) {
           titled = false;
-          omit = fl[1].get("omit");
+          omit = JSON.parse(fl[1].get("omit"));
           $.each(fl[0].properties_,function(k,v){
             if (omit.indexOf(k) == -1 && v) {
               if (k.match(/country/) && !titled) {
@@ -734,10 +736,10 @@ function initMap() {
           });
         }
         inf += ia.join("<br />");
-        /*if (jsons[pn].desc){ 
-          inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>"; 
+        if (fl[1].get("desc").length > 0 && fl[1].get("desc") != "No abstract provided"){  
+          inf += "<p><strong>"+fl[1].get("desc")+"</strong></p>"; 
         }
-        if (jsons[pn].source){ 
+        /*if (jsons[pn].source){ 
           inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
           if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
           inf += "</p>";

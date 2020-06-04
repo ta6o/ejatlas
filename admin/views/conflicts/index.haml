@@ -132,12 +132,12 @@
                       &nbsp;
                 %td.last.clearfix{:style=>"min-width:120px;"}
                   .pull-left
-                    =link_to t('f.conflict.edit'), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
+                    =link_to t("f.conflict.edit"), url(:conflicts, :edit, :id => conflict["id"]), :method => :get
                     |
-                    =link_to t('f.conflict.view'), "/conflict/#{conflict["slug"]}", :method => :get
+                    =link_to t("f.conflict.view"), "/conflict/#{conflict["slug"]}", :method => :get
                     -if current_account.editor?
                       %br/
-                      =link_to t('f.conflict.approve'), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
+                      =link_to t("f.conflict.approve"), url(:conflicts, :approve, :id => conflict["id"]), :method => :get
                   -if current_account.editor?
                     .pull-right{:style=>"margin:1px 0 -4px"}
                       %input.multiselect{:type=>:checkbox,"data-id"=>conflict["id"],:checked=>false}
