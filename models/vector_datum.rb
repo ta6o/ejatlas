@@ -5,7 +5,7 @@ class GeoLayer < ActiveRecord::Base
 
   def self.check_layers slugs=[]
     require "rest_client"
-    p slugs
+    puts slugs.join(", ").magenta
     local = GeoLayer.all.map(&:slug)
     layers = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"]
     layers |= []
@@ -90,18 +90,27 @@ class GeoLayer < ActiveRecord::Base
         condition << "zoom <  #{layer['maxzoom']}" if layer.has_key? "maxzoom" and layer["maxzoom"].to_f > 0
 
         if layer.has_key? "filter"
-          layer["filter"].each do |key,val|
-            filter = []
-            val.each do |v|
-              filter << "String(feature.properties_[\"#{key}\"]) === \"#{v}\""
+          layer["filter"].each do |op,fil|
+            cond = []
+            fil.each do |key,val|
+              filter = []
+              if val.is_a? Array
+                val.each do |v|
+                  #filter << "String(feature.properties_[\"#{key}\"]) === \"#{v}\""
+                  filter << "String(feature.properties_[\"#{key}\"]) #{op} \"#{v}\""
+                end
+              else
+                filter << "feature.properties_[\"#{key}\"] #{op} #{val}"
+              end
+              cond << filter.join(' || ')
             end
-            condition << filter.join(' || ')
+            condition << cond.join(" && ") if cond.any?
           end
         end
 
         script += "\n  if(#{condition.join(" && ")}) {" if condition.any?
         if condition.any?
-          key = condition.map{|c|c.scan(/"([^"]+)"/).map(&:first).join("=")}.join(";")
+          key = condition.map{|c|c.scan(/("[^"]+"|\d+)/).map(&:first).join(":")}.join(";").gsub(/"/,"")
           olascr += "\n  if(#{condition.join(" && ")}) {" 
           olascr += "\n    if(Object.keys(geoStyles[\"#{self.slug}_style_cache\"]).indexOf(\"#{key}\") >= 0) { return geoStyles[\"#{self.slug}_style_cache\"][\"#{key}\"] };"
         else

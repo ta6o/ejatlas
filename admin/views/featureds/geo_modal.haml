@@ -21,7 +21,7 @@
               %tr
                 %td
                   %input{:type=>"checkbox",:name=>"layer_#{layer.id}",:checked=>@featured.geo_layers.map(&:id).include?(layer.id)}
-                %td= layer.name
+                %td{"data-slug"=>layer.slug}= layer.name
                 %td= layer.layer_type
                 %td= layer.description
       .modal-footer
@@ -51,7 +51,7 @@
       $("#loading .loading").show();
       slugs = []
       $.each($(".geolayers input[type=checkbox]:checked"),function(i,e){
-        slugs.push($(e).closest("td").next("td").text())
+        slugs.push($(e).closest("td").next("td").data("slug"))
       })
       $.post("/featureds/update_geoserver",{slugs:slugs},function(data){
         if (data == "ack") {

@@ -245,22 +245,50 @@ var parseFile = function (data, file) {
       rule = rules[j];
       filter = {}
       if (typeof rule["Filter"] != "undefined" ) {
-        console.log(Object.values(rule["Filter"][0])[0][0]);
+        fils = {};
         if (Object.keys(rule["Filter"][0]).indexOf("PropertyIsEqualTo") >= 0) {
-          fils = rule["Filter"][0]["PropertyIsEqualTo"]
-        } else if (Object.values(rule["Filter"][0]).length == 1 || Object.keys(Object.values(rule["Filter"][0])[0][0]).indexOf("PropertyIsEqualTo") >= 0){
-          fils = Object.values(rule["Filter"][0])[0][0]["PropertyIsEqualTo"];
+          fils["=="] = rule["Filter"][0]["PropertyIsEqualTo"]
+        } else if (Object.values(rule["Filter"][0]).length == 1 && Object.keys(Object.values(rule["Filter"][0])[0][0]).indexOf("PropertyIsEqualTo") >= 0){
+          fils["=="] = Object.values(rule["Filter"][0])[0][0]["PropertyIsEqualTo"];
         } else if (Object.values(rule["Filter"][0]).length > 1 && Object.keys(Object.values(rule["Filter"][0])[1][0]).indexOf("PropertyIsEqualTo") >= 0){
-          fils = Object.values(rule["Filter"][0])[1][0]["PropertyIsEqualTo"];
+          fils["=="] = Object.values(rule["Filter"][0])[1][0]["PropertyIsEqualTo"];
+        } else if (Object.keys(Object.values(rule["Filter"][0])[0][0]).length > 1) {
+          Object.keys(Object.values(rule["Filter"][0])[0][0]).forEach( function(n) { 
+            switch (n) {
+              case "PropertyIsGreaterThanOrEqualTo":
+                fils[">="] = Object.values(rule["Filter"][0])[0][0]["PropertyIsGreaterThanOrEqualTo"];
+                break;
+              case "PropertyIsLessThanOrEqualTo":
+                fils["<="] = Object.values(rule["Filter"][0])[0][0]["PropertyIsLessThanOrEqualTo"];
+                break;
+              case "PropertyIsGreaterThan":
+                fils[">"] = Object.values(rule["Filter"][0])[0][0]["PropertyIsGreaterThan"];
+                break;
+              case "PropertyIsLessThan":
+                fils["<"] = Object.values(rule["Filter"][0])[0][0]["PropertyIsLessThan"];
+                break;
+            }
+          });
         }
         try {
-          for (var fi=0; fi<fils.length; fi++){
-            if (Object.keys(filter).indexOf(fils[fi]['PropertyName'][0]) == -1 ) { filter[fils[fi]['PropertyName']] = []; }
-            filter[fils[fi]['PropertyName'][0]].push(fils[fi]['Literal'][0])
+          for (var fl=0; fl<Object.values(fils).length; fl++){
+            fil = Object.values(fils)[fl];
+            fn = Object.keys(fils)[fl];
+            for (var fi=0; fi<fil.length; fi++){
+              if (Object.keys(filter).indexOf(fn) == -1 ) { filter[fn] = {}; }
+              if (Object.keys(filter[fn]).indexOf(fil[fi]['PropertyName'][0]) == -1 ) { filter[fn][fil[fi]['PropertyName']] = []; }
+              if (fn == "==") {
+                filter[fn][fil[fi]['PropertyName'][0]].push(fil[fi]['Literal'][0])
+              } else {
+                filter[fn][fil[fi]['PropertyName'][0]] = parseFloat(fil[fi]['Literal'][0])
+              }
+            }
           }
         } catch (err) {
+          console.log(err)
         }
       }
+      console.log(filter)
       name = ""
       if (Object.keys(rule).indexOf("Name") >= 0 ){
         name = rule['Name'][0];

@@ -150,7 +150,7 @@ function geoLayers() {
       slug = f["slug"];
       styl = f["style"]
       idcol = f['id_column'];
-      //console.log(styl)
+      console.log(styl)
       eval(styl)
 
       overlayMaps[name] = new ol.layer.VectorTile({
@@ -373,6 +373,9 @@ function initMap() {
     name = title.text();
     hit = e.target == box[0];
     chk = box.prop('checked');
+    if (typeof overlayMaps[name] == "undefined") {
+      return
+    }
     if ((chk && !hit) || (!chk && hit)) {
       box.prop('checked',false);
       ind = geoLayer.getLayers().getArray().indexOf(overlayMaps[name]);
@@ -389,7 +392,6 @@ function initMap() {
       map.render();
       title.css('font-weight','bold');
       $(this).next("tr.leg").slideDown();
-      //console.log(overlayMaps[name])
       if (Object.keys(overlayMaps[name]).indexOf("_vectorTiles") >= 0) {
         wmsLayers.push(name);
       }
@@ -1754,4 +1756,7 @@ function filterMarkers(m) {
   });
   markerFit(m);
 }
+
+
+
 
