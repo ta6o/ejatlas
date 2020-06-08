@@ -52,7 +52,7 @@ Admin.controllers :featureds do
 
   get :edit, :with => :id do
     @featured = Featured.find(params[:id])
-    unless current_account and @featured and (@featured.account_id == current_account.id or current_account.editor?)
+    unless current_account and @featured and (@featured.account_id == current_account.id or current_account.gis?)
       redirect to "/featureds"
     end
     @featured.description = @featured.description.gsub("\n","<br />")
@@ -87,7 +87,7 @@ Admin.controllers :featureds do
 
   put :update, :with => :id do
     @featured = Featured.find(params[:id])
-    redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or current_account.editor?)
+    redirect to "/featureds" unless current_account and @featured and (@featured.account_id == current_account.id or current_account.gis?)
     #pp params
     rank = 0
     (params.delete("vectors") || []).each do |id, data|
@@ -213,14 +213,14 @@ Admin.controllers :featureds do
   end
 
   get :geo_edit, :with => [:fid,:lid] do
-    pass unless current_account.editor?
+    pass unless current_account.gis?
     @featured = Featured.find(params[:fid])
     @layer = GeoLayer.find(params[:lid])
     render 'featureds/geo_edit', :layout=>false
   end
 
   post :geo_edit, :with => [:fid,:lid] do
-    pass unless current_account.editor?
+    pass unless current_account.gis?
     feat = Featured.find(params.delete(:fid))
     layer = GeoLayer.find(params.delete(:lid))
     params["attributes_omitted"] = params["attributes_omitted"].to_json
@@ -229,13 +229,13 @@ Admin.controllers :featureds do
   end
 
   get :geo_modal, :with => :id do
-    pass unless current_account.editor?
+    pass unless current_account.gis?
     @featured = Featured.find(params[:id])
     render 'featureds/geo_modal', :layout=>false
   end
 
   post :geo_modal, :with => :id do
-    pass unless current_account.editor?
+    pass unless current_account.gis?
     feat = Featured.find(params.delete(:id))
     oids = feat.geo_layers.map(&:id)
     nids = params.keys.map{|k| k.match(/(\d+)/)[1].to_i}
@@ -249,7 +249,7 @@ Admin.controllers :featureds do
   end
 
   get :delete, :with => :id do
-    pass unless current_account.editor?
+    pass unless current_account.gis?
     featured = Featured.find(params[:id])
     if featured.delete
       flash[:success] = 'Map is deleted successfully.'
@@ -262,7 +262,7 @@ Admin.controllers :featureds do
   get :export, :with => :id do
     featured = Featured.find(params['id'])
     redirect to '/featureds' unless featured
-    unless current_account and featured and (featured.account_id == current_account.id or current_account.editor?)
+    unless current_account and featured and (featured.account_id == current_account.id or current_account.gis?)
       redirect to "/featureds"
     end
     begin
@@ -472,7 +472,7 @@ Admin.controllers :featureds do
 
   delete :destroy, :with => :id do
     featured = Featured.find(params[:id])
-    unless current_account and featured and (featured.account_id == current_account.id or current_account.editor?)
+    unless current_account and featured and (featured.account_id == current_account.id or current_account.gis?)
       redirect to "/featureds"
     end
     if featured.destroy
