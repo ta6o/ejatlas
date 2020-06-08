@@ -82,6 +82,14 @@ class Account < ActiveRecord::Base
     "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.email.magenta}), #{self.role.titlecase.green} #{self.roles.map(&:name).join(', ').green})"
   end
 
+  def self.editors loc=I18n.locale
+    eds = Account.find(AccountRole.where(:role_id=>Role.find_by_name("locale-#{loc}").id).map(&:account_id) & AccountRole.where(:role_id=>Role.find_by_name("editor").id).map(&:account_id))
+    if eds.empty?
+      eds = Account.where(:role=>"editor")
+    end
+    eds
+  end
+
   private
     def encrypt_password
       self.crypted_password = ::BCrypt::Password.create(password)

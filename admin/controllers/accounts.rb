@@ -103,7 +103,7 @@ Admin.controllers :accounts do
     @account.role = "user"
     #puts @account.id
     if @account.save
-      Admin.notify_account_request @account
+      Admin.notify_account_request @account, I18n.locale
       redirect to "/mailsent"
     else
       render 'accounts/new'
