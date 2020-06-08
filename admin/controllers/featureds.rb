@@ -7,7 +7,7 @@ Admin.controllers :featureds do
 
   get :index do
     @featureds = []
-    if current_account.editor?
+    if current_account.gis?
       Featured.select("id, name, slug, description, image").find_in_batches do |batch|
         @featureds << batch
       end
