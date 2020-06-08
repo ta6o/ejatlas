@@ -85,7 +85,7 @@ class Account < ActiveRecord::Base
   def self.editors loc=I18n.locale
     eds = Account.find(AccountRole.where(:role_id=>Role.find_by_name("locale-#{loc}").id).map(&:account_id) & AccountRole.where(:role_id=>Role.find_by_name("editor").id).map(&:account_id))
     if eds.empty?
-      eds = Account.where(:role=>"editor")
+      eds = Account.where(:role=>"editor").to_a
     end
     eds
   end

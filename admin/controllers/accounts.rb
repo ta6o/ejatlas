@@ -123,7 +123,7 @@ Admin.controllers :accounts do
     @account = Account.find(params[:id])
     redirect_to "/accounts/my-profile" if @account == current_account
     if ["admin","editor"].include? current_account.role or @account == current_account
-      redirect to '/accounts/edit/'+current_account.id.to_s if @account.role == "admin"
+      #redirect to '/accounts/edit/'+current_account.id.to_s if @account.role == "admin"
       @pass = true
       render 'accounts/edit'
     else
