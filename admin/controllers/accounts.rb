@@ -101,9 +101,10 @@ Admin.controllers :accounts do
     @account = Account.new(params[:account])
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.role = "user"
+    @account.locale = I18n.locale
     #puts @account.id
     if @account.save
-      Admin.notify_account_request @account, I18n.locale
+      Admin.notify_account_request @account
       redirect to "/mailsent"
     else
       render 'accounts/new'

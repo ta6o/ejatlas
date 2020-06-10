@@ -21,22 +21,29 @@
         %br/
         %br/
         %b= I18n.t("m.account.name_and_surname")
-        %a{:href=>"https://ejatlas.org/accounts/edit/#{@account.id}"}= @account.name
+        %a{:href=>"#{Admin.local_url(@account.locale)}/accounts/edit/#{@account.id}"}= @account.name
         %br/
         %b= I18n.t("m.account.e_mail")
         %a{:href=>"mailto:#{@account.email}"}= @account.email
         %br/
-        %b= I18n.t("m.account.phone")
-        = @account.phone
-        %br/
-        %b= I18n.t("m.account.address")
-        = @account.address
-        %br/
-        %b= I18n.t("m.account.organization")
-        = @account.organization
-        %br/
-        %br/
+
+        -if @account.phone and @account.phone.length > 0
+          %b= I18n.t("m.account.phone")
+          = @account.phone
+          %br/
+
+        -if @account.address and @account.address.length > 0
+          %b= I18n.t("m.account.address")
+          = @account.address
+          %br/
+
+        -if @account.organization and @account.organization.length > 0
+          %b= I18n.t("m.account.organization")
+          = @account.organization
+          %br/
+
         -if @account.intention
+          %br/
           = I18n.t("emails.notify_account_request.their_intention_to_collaborate_is")
           %br/
           %blockquote

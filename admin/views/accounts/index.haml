@@ -20,7 +20,10 @@
               %th=mat(:account, "App & Cnf")
             -else
               %th=mat(:account, "Int & Com")
-            %th=mat(:account, :role)
+            -if @requests
+              %th=mat(:account, :created_at)
+            -else
+              %th=mat(:account, :role)
             %th=mat(:account, :email)
             %th.last
               %form#filter-form
@@ -63,7 +66,14 @@
                   -else
                     %span.glyphicon.glyphicon-remove
                     %span.hide 1
-              %td=account.role
+              %td
+                -if @requests
+                  -if account.created_at
+                    =account.created_at.strftime("%Y-%m-%d")
+                  -else
+                    &nbsp;
+                -else
+                  =account.role
               %td=account.email
               %td.last
                 -if account.approved
@@ -77,7 +87,7 @@
         $(document).ready(function(){
           $('#sortme').tablesorter({
             headers: { 
-              3: { sorter: false } 
+              //3: { sorter: false } 
             } 
           });
           var theTable = $('table#sortme')

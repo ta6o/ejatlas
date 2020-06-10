@@ -16,74 +16,76 @@ ActiveRecord::Schema.define(version: 0) do
   enable_extension "plpgsql"
 
   create_table "account_roles", force: :cascade do |t|
-    t.integer "account_id"
-    t.integer "role_id"
+    t.integer  "account_id"
+    t.integer  "role_id"
   end
 
   create_table "accounts", id: :serial, force: :cascade do |t|
-    t.string "name", limit: 255
-    t.string "surname", limit: 255
-    t.string "email", limit: 255
-    t.string "organization", limit: 255
-    t.text "address"
-    t.string "crypted_password", limit: 255
-    t.string "role", limit: 255
-    t.string "phone", limit: 20
-    t.boolean "approved"
-    t.boolean "confirmed"
-    t.boolean "public"
-    t.text "intention"
-    t.text "comments"
-    t.text "source"
+    t.string   "name", limit: 255
+    t.string   "surname", limit: 255
+    t.string   "email", limit: 255
+    t.string   "organization", limit: 255
+    t.text     "address"
+    t.string   "crypted_password", limit: 255
+    t.string   "role", limit: 255
+    t.string   "phone", limit: 20
+    t.boolean  "approved"
+    t.boolean  "confirmed"
+    t.boolean  "public"
+    t.text     "intention"
+    t.text     "comments"
+    t.text     "source"
+    t.string   "locale", limit: 3
+    t.timestamps
   end
 
   create_table "c_categories", id: :serial, force: :cascade do |t|
-    t.integer "category_id"
-    t.integer "conflict_id"
+    t.integer  "category_id"
+    t.integer  "conflict_id"
   end
 
   create_table "c_companies", id: :serial, force: :cascade do |t|
-    t.integer "company_id"
-    t.integer "conflict_id"
-    t.text "involvement"
+    t.integer  "company_id"
+    t.integer  "conflict_id"
+    t.text     "involvement"
   end
 
   create_table "c_conflict_events", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "conflict_event_id"
+    t.integer  "conflict_id"
+    t.integer  "conflict_event_id"
   end
 
   create_table "c_env_impacts", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "env_impact_id"
-    t.boolean "visible"
+    t.integer  "conflict_id"
+    t.integer  "env_impact_id"
+    t.boolean  "visible"
   end
 
   create_table "c_government_actors", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "government_actor_id"
+    t.integer  "conflict_id"
+    t.integer  "government_actor_id"
   end
 
   create_table "c_hlt_impacts", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "hlt_impact_id"
-    t.boolean "visible"
+    t.integer  "conflict_id"
+    t.integer  "hlt_impact_id"
+    t.boolean  "visible"
   end
 
   create_table "c_justice_parties", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "justice_party_id"
+    t.integer  "conflict_id"
+    t.integer  "justice_party_id"
   end
 
   create_table "c_legislations", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "legislation_id"
-    t.text "notes"
+    t.integer  "conflict_id"
+    t.integer  "legislation_id"
+    t.text     "notes"
   end
 
   create_table "c_mobilizing_forms", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "mobilizing_form_id"
+    t.integer  "conflict_id"
+    t.integer  "mobilizing_form_id"
   end
 
   create_table "c_mobilizing_groups", id: :serial, force: :cascade do |t|
@@ -92,42 +94,42 @@ ActiveRecord::Schema.define(version: 0) do
   end
 
   create_table "c_products", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "product_id"
+    t.integer  "conflict_id"
+    t.integer  "product_id"
   end
 
   create_table "c_project_statuses", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "project_status_id"
+    t.integer  "conflict_id"
+    t.integer  "project_status_id"
   end
 
   create_table "c_sec_impacts", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "sec_impact_id"
-    t.boolean "visible"
+    t.integer  "conflict_id"
+    t.integer  "sec_impact_id"
+    t.boolean  "visible"
   end
 
   create_table "c_supporters", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "supporter_id"
-    t.text "involvement"
+    t.integer  "conflict_id"
+    t.integer  "supporter_id"
+    t.text     "involvement"
   end
 
   create_table "c_tags", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "tag_id"
+    t.integer  "conflict_id"
+    t.integer  "tag_id"
   end
 
   create_table "c_types", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "type_id"
-    t.integer "ordering"
+    t.integer  "conflict_id"
+    t.integer  "type_id"
+    t.integer  "ordering"
   end
 
   create_table "c_weblinks", id: :serial, force: :cascade do |t|
-    t.integer "conflict_id"
-    t.integer "weblink_id"
-    t.text "notes"
+    t.integer  "conflict_id"
+    t.integer  "weblink_id"
+    t.text     "notes"
   end
 
   create_table "cacheds", id: :serial, force: :cascade do |t|

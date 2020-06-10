@@ -284,10 +284,10 @@ class Admin < Padrino::Application
     Admin.send_mail(a, I18n.t("emails.confirm.welcome_to_ejatlas"), html)
   end
 
-  def self.notify_account_request(a, loc)
+  def self.notify_account_request(a)
     @account = a
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/notify_account_request.haml").render(self)
-    Account.editors(loc).each do |ed|
+    Account.editors(@account.locale).each do |ed|
       Admin.send_mail(ed, I18n.t("emails.notify_account_request.new_message_from_var", account_name: @account.name), html)
     end
   end
@@ -367,7 +367,11 @@ class Admin < Padrino::Application
   end
 
   def self.local_url locale=I18n.locale
-    $siteurl.split("://").join("://#{ locale.to_s == 'en' ? "" : locale.to_s+"." }")
+    if locale and locale.to_s.length > 1
+      $siteurl.split("://").join("://#{ locale.to_s == 'en' ? "" : locale.to_s+"." }")
+    else
+      $siteurl
+    end
   end
 
   def self.export_markers locale=:en
