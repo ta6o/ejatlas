@@ -5178,11 +5178,13 @@ small {
 }
 .maplink.darkred {
   background: #6d1a18;
-  margin: 0;
   text-align: left;
 }
 .maplink.darkred p {
   padding-bottom: 6px;
+}
+.maplink.darkred h4 {
+  margin: 0;
 }
 .leaflet-container a.leaflet-popup-close-button {
   display: none;
