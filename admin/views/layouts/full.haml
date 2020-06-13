@@ -30,15 +30,9 @@
     %meta{:content => (@headline || $pagedesc), :name => "twitter:description"}/
     %meta{:content => (@ogimage || Admin.local_url(I18n.locale) + '/images/ejatlas-fb.jpg'), :name => "twitter:image"}/
 
-    -if @ol
-      %link{:href=>"/stylesheets/main-ol.css",:rel=>"stylesheet",:type=>"text/css"}
-      %link{:href=>"/stylesheets/ol.css",:rel=>"stylesheet",:type=>"text/css"}
-      %link{:href=>"/stylesheets/ol-layerswitcher.css",:rel=>"stylesheet",:type=>"text/css"}
-
-    -elsif $dir == "ltr"
-      %link{:href=>"/stylesheets/main-full.css",:rel=>"stylesheet",:type=>"text/css"}
-    -elsif $dir == "rtl"
-      %link{:href=>"/stylesheets/main-full-rtl.css",:rel=>"stylesheet",:type=>"text/css"}
+    -fol = @ol ? "ol" : "full"
+    -dir = $dir == "rtl" ? "-rtl" : ""
+    %link{:href=>"/stylesheets/main-#{fol}#{dir}.css",:rel=>"stylesheet",:type=>"text/css"}
     %script{:src=>"/javascripts/jQl.js",:type=>"text/javascript"}
     :javascript
       layerinfo = [];
