@@ -61,3 +61,27 @@ def fix_refs
     Conflict.each &:order_refs
   end
 end
+
+def export_tr
+  prevloc = I18n.locale
+  I18n.locale = :tr
+  CSV.open("../cases-tr.csv","w") do |csv|
+    csv << "link,id,email,isimler,diller,tamamlanma,kategori,son güncellenme,onay".split(",")
+    ConflictText.where(:locale=>:tr).order(:id).each do |ct|
+      c = ct.conflict
+      next unless c.country_id == 195
+      begin
+        emails = [c.account.email,ConflictAccount.where(:conflict_id=>c.id).map{|ca|ca.account.email}].flatten.join(", ")
+        names = [(c.contributor and c.contributor.length > 0 ? c.contributor : c.account.name),ConflictAccount.where(:conflict_id=>c.id).map{|ca|ca.account.name}].flatten.join(", ")
+        locales = c.conflict_texts.order(:id).map {|x| I18n.t("countries.language.#{x.locale}")}.join(", ")
+        comp = "#{(c.attributes.values-[nil,""]).length} / #{c.attributes.length}"
+        csv << ["https://tr.ejatlas.org/conflict/#{c.slug}",c.id,emails,names,locales,comp,I18n.t("m.category_id.#{c.category.name.slug("_").split("_")[0..7].join("_")}"),c.modified_at.strftime("%Y-%m-%d"),I18n.t("f.conflict.#{ct.approval_status.slug("_")}")]
+      rescue => e
+        puts "#{ct.id} #{ct.name.yellow}                                                  "
+        puts e.to_s.red
+      end
+    end
+  end
+  I18n.locale = prevloc
+end
+

@@ -5178,6 +5178,7 @@ small {
 }
 .maplink.darkred {
   background: #6d1a18;
+  margin: 0;
   text-align: left;
 }
 .maplink.darkred p {

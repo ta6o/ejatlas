@@ -150,13 +150,13 @@ function geoLayers() {
       slug = f["slug"];
       styl = f["style"]
       idcol = f['id_column'];
-      console.log(styl)
+      //console.log(styl)
       eval(styl)
 
       overlayMaps[name] = new ol.layer.VectorTile({
           //declutter: true,
           style: eval(slug+"_style"),
-          zIndex: f["rank"],
+          zIndex: f["rank"] * -1 + 1000,
           source: new ol.source.VectorTile({
             url: 'https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:'+slug+'@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
             format: new ol.format.MVT({

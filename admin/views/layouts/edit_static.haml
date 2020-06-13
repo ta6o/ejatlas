@@ -86,7 +86,10 @@
             #ql_toolbar
             %br/
             #ql_editor
-              .ql-direction-rtl= yield
+              -if $dir == "ltr"
+                .ql-direction-ltr= yield
+              -else
+                .ql-direction-rtl= yield
 
     -if ENV['RACK_ENV'] == 'development'
       =javascript_include_tag 'backall'
