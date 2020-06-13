@@ -52,6 +52,7 @@ cat jquery-ui.min.css app-rtl.css leaflet.css leaflet-loading.css > all-rtl.css
 cat jquery-ui.min.css app-full-rtl.css leaflet.css leaflet-loading.css > all-full-rtl.css
 
 cat jquery-ui.min.css app-full.css > ol-full.css
+cat jquery-ui.min.css app-full-rtl.css > ol-full-rtl.css
 
 java -jar ../../lib/yui.jar --type css ./all.css > ./main.css
 java -jar ../../lib/yui.jar --type css ./all-full.css > ./main-full.css
@@ -59,6 +60,7 @@ java -jar ../../lib/yui.jar --type css ./all-rtl.css > ./main-rtl.css
 java -jar ../../lib/yui.jar --type css ./all-full-rtl.css > ./main-full-rtl.css
 
 java -jar ../../lib/yui.jar --type css ./ol-full.css > ./main-ol.css
+java -jar ../../lib/yui.jar --type css ./ol-full-rtl.css > ./main-ol-rtl.css
 
 echo `date` > ../../lib/stamp
 date
