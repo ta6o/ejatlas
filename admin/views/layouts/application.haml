@@ -124,7 +124,7 @@
       -if request.path.match(/edit/) or current_account.editor?
         :javascript
           $full = false;
-          $.getJSON("/data/autocomplete.json?#{rand(1000)}",function(data){
+          $.getJSON("/data/autocomplete_#{I18n.locale}.json?#{rand(1000)}",function(data){
             relateds = data[0];
             tag_names = data[1];
             emails = data[2];

@@ -1211,7 +1211,7 @@ class AsyncTask
       cjson = ConflictText.where(:approval_status=>'approved', :locale=>locale).order('slug').select('name,conflict_id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["conflict_id"]}}
       tjson = Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}
       ajson = Account.where(:approved=>true,:confirmed=>true).order('email').select('email,id').to_a.map(&:attributes).map{|c|{"value":c["email"],"id":c["id"]}}
-      File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << [cjson,tjson,ajson].to_json}
+      File.open("#{Dir.pwd}/public/data/autocomplete_#{locale}.json","w") {|f| f << [cjson,tjson,ajson].to_json}
       print "\r  #{(((total+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(total).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/total).round(3)}s per account) #{"#{(Time.now-t0).to_i}s".yellow}" if cs.any?
       puts if cs.any?
 
