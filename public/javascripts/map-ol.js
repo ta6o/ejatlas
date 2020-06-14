@@ -726,6 +726,7 @@ function initMap() {
         if (fl[0].properties_ != {}) {
           titled = false;
           omit = JSON.parse(fl[1].get("omit"));
+          omit.push("layer")
           $.each(fl[0].properties_,function(k,v){
             if (omit.indexOf(k) == -1 && v) {
               if (k.match(/country/) && !titled) {
@@ -739,7 +740,8 @@ function initMap() {
         }
         inf += ia.join("<br />");
         if (fl[1].get("desc").length > 0 && fl[1].get("desc") != "No abstract provided"){  
-          inf += "<p><strong>"+fl[1].get("desc")+"</strong></p>"; 
+          inf += "<br/><p style='background:#e0d5d5;padding: 8px;margin: 0px'><b>"+fl[1].get("name")+"</b><br/><br/>"; 
+          inf += fl[1].get("desc")+"</p>"; 
         }
         /*if (jsons[pn].source){ 
           inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
