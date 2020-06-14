@@ -95,11 +95,12 @@
         =f.label t("m.account.role")
         =f.error_message_on :role
         =f.select :role, :options => access_control.roles
-      .group
-        -Role.all.to_a.sort_by{|r| ["editor","translator","gis"].index(r.name)||3}.each do |role|
-          %br/
-          %input{:type=>"hidden", :name=>"account[roles][#{role.name}]", :value=>"off"}
-          %input.role{:type=>"checkbox", :name=>"account[roles][#{role.name}]", :value=>"on", :checked => (@account.roles.include?(role)), :class=>role.name.match(/^locale-/) ? "locale" : role.name.slug}= "&nbsp; #{role.name.unslug(:up)}".html_safe
+      -unless @account.new_record?
+        .group
+          -Role.all.to_a.sort_by{|r| ["editor","translator","gis"].index(r.name)||3}.each do |role|
+            %br/
+            %input{:type=>"hidden", :name=>"account[roles][#{role.name}]", :value=>"off"}
+            %input.role{:type=>"checkbox", :name=>"account[roles][#{role.name}]", :value=>"on", :checked => (@account.roles.include?(role)), :class=>role.name.match(/^locale-/) ? "locale" : role.name.slug}= "&nbsp; #{role.name.unslug(:up)}".html_safe
     -elsif current_account and current_account.roles.any?
       .group
         -current_account.roles.each do |role|

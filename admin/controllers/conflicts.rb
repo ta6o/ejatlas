@@ -879,9 +879,9 @@ Admin.controllers :conflicts do
       return {:status=>:error,:message=>"Found another tag with similar name"}.to_json
     else
       tag = Tag.create(params)
-      au = JSON.parse(File.read("#{Dir.pwd}/public/data/autocomplete.json"))
+      au = JSON.parse(File.read("#{Dir.pwd}/public/data/autocomplete_#{I18n.locale}.json"))
       ac = [au[0], Tag.order('slug').select('name,id').to_a.map(&:attributes).map{|c|{"value":c["name"],"id":c["id"]}}, au[2]]
-      File.open("#{Dir.pwd}/public/data/autocomplete.json","w") {|f| f << ac.to_json}
+      File.open("#{Dir.pwd}/public/data/autocomplete_#{I18n.locale}.json","w") {|f| f << ac.to_json}
     end
 
     if conflict and not tag.conflicts.include? conflict
