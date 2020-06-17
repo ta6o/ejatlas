@@ -1650,7 +1650,7 @@
                   });
 
 
-          -if current_account.editor? or @conflict.account == current_account
+          -if current_account.editor?
             .group
               %label{:for=>"conflict_notes"}= t("f.conflict.internal_notes")
               .required=f.error_message_on :notes
