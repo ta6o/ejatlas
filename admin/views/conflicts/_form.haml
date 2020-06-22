@@ -340,13 +340,19 @@
               $.each(pids, function(i,pid){
                 $('#product_'+pid).attr('checked','checked');
               })
+            -if ["admin","editor"].include?(current_account.role)
+              :javascript
+                var blist = ['bold','italic',"","xhtml"];
+            -else
+              :javascript
+                var blist = ['bold','italic'];
             -if I18n.locale.to_sym != :ar
               :javascript
                 bkLib.onDomLoaded(function() {
                   nicEditors.editors.push(
-                    new nicEditor({buttonList:['bold','italic','','link','unlink','','xhtml']}).panelInstance("conflict_description")
+                    new nicEditor({buttonList:blist}).panelInstance("conflict_description")
                   );
-                  window.setTimeout(niceWidth,1000);
+                  window.setTimeout(niceWidth,100);
                 });
                 function niceWidth(){
                   ta_width = $(".tab-pane.active .row").width() / 3 - 15;
