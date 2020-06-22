@@ -137,10 +137,20 @@ Admin.controller do
   get :datapolicy do
     @static = true
     @name = t("v.menu.data_use_policy")   
-    if File.exists? "#{Dir.pwd}/admin/views/base/credits_#{I18n.locale}.haml"
+    if File.exists? "#{Dir.pwd}/admin/views/base/datapolicy_#{I18n.locale}.haml"
       render "base/datapolicy_#{I18n.locale}", :layout => :application
     else
       render "base/datapolicy_en", :layout => :application
+    end
+  end
+
+  get :resources do
+    @static = true
+    @name = t("v.menu.resources")   
+    if File.exists? "#{Dir.pwd}/admin/views/base/resources_#{I18n.locale}.haml"
+      render "base/resources_#{I18n.locale}", :layout => :application
+    else
+      render "base/resources_en", :layout => :application
     end
   end
 
