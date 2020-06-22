@@ -16,7 +16,7 @@ Admin.controller do
     return 'ok'
   end
 
-  get /^\/(legal|privacy_policy|about|faq|disclaimer|contact|credits|welcome|datapolicy)\/?/ do
+  get /^\/(legal|privacy_policy|about|faq|disclaimer|contact|credits|welcome|datapolicy|resources)\/?/ do
     @slug = params[:captures].first
     if sp = StaticPage.where(:slug=>@slug, :locale=>I18n.locale).first
       @static = true
