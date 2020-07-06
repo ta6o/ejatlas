@@ -28,6 +28,7 @@ Admin.controllers :featureds do
   get :new do
     @featured = Featured.new
     @features = []
+    @followed = []
     @page_type = "feat"
     ca = Cached.loc(I18n.locale)
     @filterform = JSON.parse(ca.filterdata)

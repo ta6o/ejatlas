@@ -440,12 +440,15 @@ Admin.controllers :conflicts do
   end
 
   post :create do
+    Admin.color_pp params, "params", "yellow", true
+    puts "#{I18n.default_locale.to_s.red} #{I18n.locale.to_s.magenta}"
     updated = Admin.correctForm(params)
     @conflict = Conflict.create
     @conflict.update_attributes(updated[:conflict])
     @conflict.local_data.update_attribute(:slug, Admin.slugify(@conflict.local_data.name))
-    #puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}"
+    puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".green
     if @conflict.save :validate => false
+      puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".yellow
       File.open("#{Dir.pwd}/misc/saves.csv","a") do |file|
         file << "NEW,#{Time.now.to_i},#{@conflict.id},#{current_account.id},#{Time.now.strftime("%Y-%m-%d %H:%M:%S")},#{@conflict.slug},#{Admin.slugify(current_account.name)},new\n"
       end
@@ -454,9 +457,10 @@ Admin.controllers :conflicts do
       @conflict.ping
       @conflict.modified_at = Time.now
       if @conflict.save :validate=>false
+        puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".red
         flash[:notice] = 'Conflict was successfully created.'
         $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
-        redirect url(:conflicts, :edit, :id => @conflict.id)
+        return {:status=>:success,:id=>@conflict.id}.to_json
       end
     else
       render 'conflicts/new'
@@ -465,6 +469,7 @@ Admin.controllers :conflicts do
 
   put :update, :with => :id do
     #Admin.color_pp params, "params", "yellow", true
+    #puts "#{I18n.default_locale.to_s.red} #{I18n.locale.to_s.magenta}"
     #pp params["id"]
     #pp params["conflict"]["slug"]
     hash = params.delete 'activetab'

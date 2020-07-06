@@ -2017,6 +2017,31 @@
 -if @conflict.new_record? and not @example
   :javascript
     $('#conflict-tabs > li').not('.active').addClass('closed');
+    $(document).ready(function(){
+      $(document).on("submit","form#conflict_form",function(e){
+        e.preventDefault();
+        $.ajax({
+          url : $("form#conflict_form").attr("action"),
+          type : "POST", //$("form#contact_form").attr("method"),
+          dataType: "json",
+          data : to_json(),
+          success: function(data){
+            console.log(data)
+            if (data.status == "success") {
+              atab = $("#conflict-tabs > li.active > a").attr("href").replace(/#/,"#_");
+              window.location.hash = atab+'&success';
+              window.location.reload();
+            } else if (data.status == "error") {
+              $("#fixed").css("opacity",0);
+              $("#fixed").html(alerror);
+              $("#fixed #alert-error b").html(data.errors.join("<br/><br/>"));
+              $("#fixed").css("opacity",1);
+            }
+          }
+        })
+      })
+    })
+        
 -else
   :javascript
     $(document).ready(function(){

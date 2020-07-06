@@ -4,5 +4,5 @@
     .hero-unit
       %h1.title= @title
     .inner
-      =form_for :conflict, url(:conflicts, :create), :class => :form, :style => "margin:0 -15px" do |f|
+      =form_for :conflict, url(:conflicts, :create), :method => :post, :class => :form, :id=>:conflict_form, :style => "margin:0 -15px" do |f|
         =partial "conflicts/form", :locals => { :f => f }
