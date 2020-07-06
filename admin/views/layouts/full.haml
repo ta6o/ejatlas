@@ -89,6 +89,8 @@
                     %a{:href=>'/contact'}= t "v.menu.contact"
                   %li
                     %a{:href=>'/datapolicy'}= t "v.menu.data_use_policy"
+                  %li
+                    %a{:href=>'/resources'}= t "v.menu.resources"
                   -if current_account and $moderated_locales.any?
                     %li.divider
                     -$moderated_locales.each do |loc|
@@ -293,6 +295,8 @@
                     %a{:href=>'/contact'}= t "v.menu.contact"
                   %li
                     %a{:href=>'/datapolicy'}= t "v.menu.data_use_policy"
+                  %li
+                    %a{:href=>'/resources'}= t "v.menu.resources"
                   %li.divider
                   %li
                     %a{:href => "http://envjustice.org/",:target=>"_blank"}= t "v.menu.envjustice"
