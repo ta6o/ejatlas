@@ -40,7 +40,7 @@ Admin.controllers :accounts do
   end
 
   get :approve, :with => :id do
-    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    redirect to "/accounts/edit/#{current_account.id}" unless current_account.editor?
     @method = "post"
     @action = "approve"
     @account = Account.find(params[:id])
@@ -48,7 +48,7 @@ Admin.controllers :accounts do
   end
 
   get :disapprove, :with => :id do
-    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    redirect to "/accounts/edit/#{current_account.id}" unless current_account.editor?
     @method = "post"
     @action = "disapprove"
     @account = Account.find(params[:id])
@@ -56,7 +56,7 @@ Admin.controllers :accounts do
   end
 
   post :approve, :with => :id do
-    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    redirect to "/accounts/edit/#{current_account.id}" unless current_account.editor?
     account = Account.find(params[:id])
     account.update_attribute(:approved, true)
     Admin.new_account account unless account.confirmed
@@ -64,7 +64,7 @@ Admin.controllers :accounts do
   end
 
   post :disapprove, :with => :id do
-    redirect to "/accounts/edit/#{current_account.id}" unless ["admin","editor"].include? current_account.role
+    redirect to "/accounts/edit/#{current_account.id}" unless current_account.editor?
     account = Account.find(params[:id])
     account.update_attribute(:approved, nil)
     redirect to '/accounts/'
@@ -123,7 +123,7 @@ Admin.controllers :accounts do
     redirect to "/sessions/login" unless current_account
     @account = Account.find(params[:id])
     redirect_to "/accounts/my-profile" if @account == current_account
-    if ["admin","editor"].include? current_account.role or @account == current_account
+    if current_account.editor? or @account == current_account
       #redirect to '/accounts/edit/'+current_account.id.to_s if @account.role == "admin"
       @pass = true
       render 'accounts/edit'
@@ -141,7 +141,7 @@ Admin.controllers :accounts do
     #puts params[:account]
     #params[:account].delete 'role' unless ["admin"].include?(current_account.role)
     params[:account][:public] = (params['account']['public'] == 'true' ? true : false ) if params['account'].has_key?('public')
-    if ["admin",'editor'].include? current_account.role or @account == current_account
+    if current_account.editor? or @account == current_account
       roles = params["account"].delete("roles")
       roles ||= []
       if @account.update_attributes(params[:account])
@@ -193,7 +193,7 @@ Admin.controllers :accounts do
     @account.surname = '%12x' % (rand((8 ** 16)*15)+(8**16))
     @account.confirmed = true
     @account.role = "user"
-    if ["admin",'editor'].include? current_account.role or @account == current_account
+    if current_account.editor? or @account == current_account
       if @account.update_attributes(params[:account])
         flash[:notice] = 'Account was successfully updated.'
         redirect to 'welcome'

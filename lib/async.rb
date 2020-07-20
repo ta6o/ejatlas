@@ -711,7 +711,7 @@ class AsyncTask
           row = [c.name, c.acronym, (c.country ? c.country.name : ""), cc.name,"https://ejatlas.org/conflict/#{cc.slug}"]
           if cc.headline and cc.headline.length > 12
             row << cc.headline
-          else
+          elsif cc.description and cc.description.length > 12
             row << cc.description.split("</p>")[0].gsub(/<[^>]>/,"")
           end
           row << [cc.env_impacts.map(&:name),cc.other_env_impacts].flatten.join("\n").strip
