@@ -4,6 +4,8 @@ for (var i = 0; i <= 8; ++i) {
   resolutions.push(156543.03392804097 / Math.pow(2, i * 2));
 }
 
+var urire = new RegExp(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi)
+
 var $msize = "mic";
 var $leg = "category_id";
 var jsons = {};
@@ -144,8 +146,6 @@ function geoLayers() {
 
     } else if (f.type == "vector") {
 
-
-
       name = f["name"];
       slug = f["slug"];
       styl = f["style"]
@@ -189,12 +189,15 @@ function geoLayers() {
       if ($('#legendpane .vectorlegend').length == 0) {
         $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
       }
+      
       if (f.legend) {
         html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
         //html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
         html += "<td class='icon'><img style='width: 20px; height: 20px;' alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=geonode:"+f["slug"]+"&legend_options=bgColor:0xFFFFEE;dpi:96;forceLabels:off;columnheight:20;'></td>"
         html += "<td"+bold+">"+name+"</td></tr>";
-        html += "<tr class='leg'><td colspan='3' style='padding-left:18px;'><img alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=24&HEIGHT=16&LAYER=geonode:"+f["slug"]+"&legend_options=fontName:Ubuntu;fontAntiAliasing:true;fontColor:0x000033;fontSize:10;bgColor:0xFFFFEE;dpi:96;labelMargin:6'></td></tr>";
+        if (f.style.match(/if\(/g).length > 1) {
+          html += "<tr class='leg'><td colspan='3' style='padding-left:18px;'><img alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=24&HEIGHT=16&LAYER=geonode:"+f["slug"]+"&legend_options=fontName:Ubuntu;fontAntiAliasing:true;fontColor:0x000033;fontSize:10;bgColor:0xFFFFEE;dpi:96;labelMargin:6'></td></tr>";
+        }
       } else {
         html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
         html += "<td class='icon'><img style='width: 20px; height: 20px;' alt='' src='https://geo.ejatlas.org/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=geonode:"+f["slug"]+"&legend_options=bgColor:0xFFFFEE;dpi:96;forceLabels:off;columnheight:20;'></td>"
@@ -271,15 +274,15 @@ function initMap() {
   $topflo = ($dir == "ltr") ? "topright" : "topleft";
   $botflo = ($dir == "ltr") ? "bottomright" : "bottomleft";
 
-	map = new ol.Map({
-		layers: [baseLayer,featureLayer,geoLayer,markerLayer],
-		target: 'map',
-		view: new ol.View({
+  map = new ol.Map({
+    layers: [baseLayer,featureLayer,geoLayer,markerLayer],
+    target: 'map',
+    view: new ol.View({
       center: [16,26],
       zoom: 1.667
-		}),
+    }),
     controls: ol.control.defaults({attribution: false}).extend([new ol.control.Attribution({ collapsible: false })]),
-	});
+  });
 
   popup = new ol.Overlay({
     element: $("#popup")[0],
@@ -733,7 +736,9 @@ function initMap() {
                 ia.push("<h3>"+v+"</h3>");
                 titled = true;
               } else {
-                ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)})+":</strong> "+String(v).replace(/\n+/g,'<br /><br />')+"<br />");
+                ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){
+                    return txt.charAt(0).toUpperCase() + txt.substr(1);
+                })+":</strong> "+String(v).replace(/\n+/g,'<br /><br />')+"<br />");
               }
             } 
           });
@@ -741,7 +746,7 @@ function initMap() {
         inf += ia.join("<br />");
         if (fl[1].get("desc").length > 0 && fl[1].get("desc") != "No abstract provided"){  
           inf += "<br/><p style='background:#e0d5d5;padding: 8px;margin: 0px'><b>"+fl[1].get("name")+"</b><br/><br/>"; 
-          inf += fl[1].get("desc")+"</p>"; 
+          inf += fl[1].get("desc").replace(urire,'<a href="$&" target="_blank">$&</a>')+"</p>"; 
         }
         /*if (jsons[pn].source){ 
           inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
