@@ -696,11 +696,12 @@ function initMap() {
     }
   });
   map.on('click', function(evt) {
-    $("#popup").popover('destroy');
+    //$("#popup").popover('destroy');
     var fl = map.forEachFeatureAtPixel(evt.pixel, function(feature,layer) {
       return [feature,layer];
     });
     console.log(fl)
+    console.log(evt.pointerEvent.target)
     if (fl && fl[1] == markerLayer) {
       $.ajax({
         type: "get",
@@ -765,7 +766,7 @@ function initMap() {
         $("#popup").popover('show');
         checkPopPadding();
       }
-    } else {
+    } else if (evt.pointerEvent.target == $(".ol-layer > canvas")[0]) {
       $("#popup").popover('destroy');
     }
   });
