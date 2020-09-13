@@ -15,6 +15,7 @@
     var maptitle = "#{@maptitle}";
     var layers = "#{@baselayers}";
     var fid = #{@fid || 0};
+    var images, counter, crswidth;
     featureMap = true;
   -if @vectors
     :javascript
@@ -245,7 +246,11 @@
           }
           initMap();
           showMarkers(markerinfo);
-          map.getView().animate(center:[#{@view[0]},#{@view[1]}],zoom:#{@view[2]});
+          if (olayers) {
+            map.getView().animate({center:[#{@view[0]},#{@view[1]}],zoom:#{@view[2]}});
+          } else {
+            map.setView([#{@view[0]},#{@view[1]}],#{@view[2]});
+          }
         }
       }
   -if ENV["RACK_ENV"] == "production"
@@ -272,7 +277,6 @@
   -if @images.any?
     :javascript
       $(document).ready(function(){
-        var images, counter, crswidth;
         images = $('#rightpane img');
         counter = images.length;  // initialize the counter
         $.each(images,function() {

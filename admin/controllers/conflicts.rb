@@ -444,8 +444,11 @@ Admin.controllers :conflicts do
     puts "#{I18n.default_locale.to_s.red} #{I18n.locale.to_s.magenta}"
     updated = Admin.correctForm(params)
     @conflict = Conflict.create
-    @conflict.update_attributes(updated[:conflict])
-    @conflict.local_data.update_attribute(:slug, Admin.slugify(@conflict.local_data.name))
+    updated["conflict"]["approval_status"] = "draft"
+    if updated["conflict"]["slug"] == ""
+      updated["conflict"]["slug"] = Admin.slugify(updated["conflict"]["name"])
+    end
+    @conflict.update_attributes(updated["conflict"])
     puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".green
     if @conflict.save :validate => false
       puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".yellow

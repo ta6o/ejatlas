@@ -288,6 +288,7 @@ function initMap() {
     element: $("#popup")[0],
     positioning: 'bottom-center',
     stopEvent: false,
+    autoPan: true,
     offset: [0, -5]
   });
   map.addOverlay(popup);
@@ -700,8 +701,8 @@ function initMap() {
     var fl = map.forEachFeatureAtPixel(evt.pixel, function(feature,layer) {
       return [feature,layer];
     });
-    console.log(fl)
-    console.log(evt.pointerEvent.target)
+    //console.log(fl)
+    //console.log(evt.pointerEvent.target)
     if (fl && fl[1] == markerLayer) {
       $.ajax({
         type: "get",

@@ -2029,8 +2029,7 @@
             console.log(data)
             if (data.status == "success") {
               atab = $("#conflict-tabs > li.active > a").attr("href").replace(/#/,"#_");
-              window.location.hash = atab+'&success';
-              window.location.reload();
+              window.location = "/conflicts/edit/"+data.id+""+atab+"&success"
             } else if (data.status == "error") {
               $("#fixed").css("opacity",0);
               $("#fixed").html(alerror);
