@@ -701,20 +701,20 @@ function initMap() {
     var fl = map.forEachFeatureAtPixel(evt.pixel, function(feature,layer) {
       return [feature,layer];
     });
-    //console.log(fl)
     //console.log(evt.pointerEvent.target)
     if (fl && fl[1] == markerLayer) {
+      $("#popup").popover('destroy');
       $.ajax({
         type: "get",
         url: "/info/"+fl[0].values_.id,
-        success: function(data){
+        success: function(dat){
           var coordinates = fl[0].getGeometry().getCoordinates();
           popup.setPosition(coordinates);
           $("#popup").popover({
             placement: 'top',
             html: true,
             //viewport: "#popup",
-            content: data + fl[0].values_.properties.content
+            content: dat + fl[0].values_.properties.content
           });
           $("#popup").popover('show');
           checkPopPadding();
