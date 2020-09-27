@@ -224,6 +224,40 @@ Admin.controller do
     man
   end
 
+  get :ol do
+    @ol = true
+    @ranks = []
+    ca = Cached.loc(I18n.locale)
+    pass unless ca
+    #last_modified ca.updated_at
+    @filterform = {}
+    @filterform = JSON.parse(ca.filterdata) if ca
+    @filterhtml = render "base/filter", :layout => false
+    puts @global
+    @markercount = ConflictText.where(:approval_status=> ['approved','modified'],:locale=>@global ? "en" : I18n.locale).count
+    if @global
+      cg = Cached.loc(:en)
+      companies = cg.companies ? JSON.parse(cg.companies) : []
+      commodities = cg.commodities ? JSON.parse(cg.commodities) : []
+      types = cg.types ? JSON.parse(cg.types) : []
+      countries = cg.countries ? JSON.parse(cg.countries) : []
+      @browseinfo = {"country"=>countries,"company"=>companies,"commodity"=>commodities,"type"=>types}
+    else
+      companies = ca.companies ? JSON.parse(ca.companies) : []
+      commodities = ca.commodities ? JSON.parse(ca.commodities) : []
+      types = ca.types ? JSON.parse(ca.types) : []
+      provinces = []
+      @browseinfo = {"province"=>provinces,"company"=>companies,"commodity"=>commodities,"type"=>types}
+    end
+    @maptitle = @global ? "World Map" : "Local Map"
+    #@vectors = VectorDatum.where(name:'Borders').select('name,url,style,description').to_json
+    @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
+    @baselayers = $baselayers.split(",").reverse.join(",")
+    @recent = Admin.filter_recent(0,{},"modified_at",6,@global)
+    @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("created_at desc").limit(2)
+    render "base/map", :layout => @layout
+  end
+
   get :index do
     ca = Cached.loc(I18n.locale)
     pass unless ca

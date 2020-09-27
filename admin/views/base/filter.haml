@@ -186,7 +186,6 @@
 
 
 -content_for :body_end do
-  %script{:src=>"/javascripts/filter.js",:type=>"text/javascript"}
   :javascript
     $(document).ready(function(){
       onFilterLoad();
@@ -347,17 +346,6 @@
           return $(that).clone()
         }
       }
-    };
-
-    function clearFilter(){
-      $query = "{}";
-      $('.root.dropbox *').not('icon').detach();
-      if (typeof map != 'undefined') {
-        $('.map_icon').show();
-        map.fitBounds(markerLayer.getBounds());
-        sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');
-      }
-      //$('#head p strong').text("#{t 'v.index.var_cases_reported',num_cases:'data_length'}".replace("data_length",$('.map_icon').length))
     };
 
 
@@ -544,4 +532,31 @@
         }
       })
     }
+
+  -if @ol
+    :javascript
+      function clearFilter(){
+        $query = "{}";
+        $('.root.dropbox *').not('icon').detach();
+        if (typeof map != 'undefined') {
+          markerLayer.getSource().clear();
+          markerLayer.getSource().addFeatures(Object.values(markerc));
+        }
+        //$('#head p strong').text("#{t 'v.index.var_cases_reported',num_cases:'data_length'}".replace("data_length",$('.map_icon').length))
+      };
+
+
+  -else
+    :javascript
+      function clearFilter(){
+        $query = "{}";
+        $('.root.dropbox *').not('icon').detach();
+        if (typeof map != 'undefined') {
+          $('.map_icon').show();
+          map.fitBounds(markerLayer.getBounds());
+          sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');
+        }
+        //$('#head p strong').text("#{t 'v.index.var_cases_reported',num_cases:'data_length'}".replace("data_length",$('.map_icon').length))
+      };
+
 

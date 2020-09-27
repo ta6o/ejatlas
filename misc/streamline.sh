@@ -3,27 +3,27 @@
 cd ../public/javascripts
 
 cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
-  tooltip.js popover.js \
+  tooltip.js popover.js filter.js \
   leaflet.js leaflet-providers.js leaflet-loading.js leaflet.markercluster.js\
   oms.js noui.js ascii.js jquery-ui-1.12.1.js map.js ga.js xml2json.js > all.js
 
 cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
-  tooltip.js popover.js leaflet.js leaflet-providers.js leaflet-loading.js leaflet.markercluster.js\
+  tooltip.js popover.js filter.js leaflet.js leaflet-providers.js leaflet-loading.js leaflet.markercluster.js\
   oms.js noui.js ascii.js jquery-ui-1.12.1.js devhelper.js xml2json.js VectorTileLayer.min.js > all-dev.js
 
 cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
-  tooltip.js popover.js \
+  tooltip.js popover.js filter.js \
   alert.js leaflet.js leaflet-providers.js noui.js ascii.js jquery.validate.js \
   jquery-ui-1.12.1.js jquery.maskedinput.min.js Google.js raphael.js colorwheel.js \
   xml2json.js nicedit.js modal.js > backall.js
 
 
 cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
-  tooltip.js popover.js \
+  tooltip.js popover.js filter.js \
   oms.js noui.js ascii.js jquery-ui-1.12.1.js providers.js xml2json.js > ol-dev.js
 
 cat jquery-3.5.0.min.js transition.js collapse.js affix.js dropdown.js tab.js modal.js \
-  tooltip.js popover.js oms.js noui.js ascii.js \
+  tooltip.js popover.js filter.js oms.js noui.js ascii.js \
   jquery-ui-1.12.1.js providers.js xml2json.js ol.js > all-ol.js
 
 

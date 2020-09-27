@@ -1,6 +1,5 @@
 
 function filterMarkers(filter) {
-  console.log(filter);
   if (filter.length == 0 || (filter.length == 1 && filter[0] == "")) {
     markers = [];
     $.each(filterinfo,function(i,v){

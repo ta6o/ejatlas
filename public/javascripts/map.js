@@ -206,7 +206,7 @@ function geoLayers() {
 }
 
 function initMap() {
-  //console.log("map init")
+  console.log(layers)
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');

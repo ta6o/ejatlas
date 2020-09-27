@@ -17,6 +17,7 @@
     var layers = "#{@baselayers}";
     var layerinfo = [];
     var fid = 0;
+    var layerranks = #{@ranks||[]};
   -if @vectors
     :javascript
       vectorinfo = #{@vectors};
@@ -368,9 +369,7 @@
     }
     function ask() {
       if(!scrolling) return
-      console.log($query)
       $.getJSON("/more_recent","offset="+$('.recent tr').length+"&filter="+$query,function(data){
-        console.log(data)
         if (data.length < 6) {
           scrolling = false;
         }

@@ -1399,6 +1399,54 @@
   }
 
 }(window.jQuery);
+
+function filterMarkers(filter) {
+  console.log(filter);
+  if (filter.length == 0 || (filter.length == 1 && filter[0] == "")) {
+    markers = [];
+    $.each(filterinfo,function(i,v){
+      markers.push(v["id"]);
+    });
+    showMarkers(markers);
+  } else {
+    query = [];
+    ops = {"=":"==","-g=":">","-l=":"<"};
+    $.each(filter,function(i,v){
+      r = v.split(/(=|-g=|-l=)/)
+      query.push('n["'+r[0]+'"]'+ops[r[1]]+'["'+r[2]+'"]');
+    });
+    command = "("+query.join(" && ")+")";
+    result = grepFields(command);
+    markers = [];
+    $.each(result,function(i,v){
+      markers.push(v["id"]);
+    });
+    showMarkers(markers);
+  }
+}
+
+function grepFields (command) {
+  result = $.grep(filterinfo,function(n,i){
+    return eval(command);
+  });
+  return result
+}
+function noshowMarkers (ids) {
+  console.log(ids)
+  updateInfo(1, ids.length+" cases filtered." )
+  classes = ".id_"+ids.join(", .id_");
+  console.log(classes)
+  $('.leaflet-marker-icon').hide();
+  $(classes).show();
+}
+
+
+$(document).ready(function(){
+  $('#filterlink button').on('click',function(){
+    //window.location = "#filter-row";
+    $('#filter-row .dnone').slideDown()
+  });
+});
 /* @preserve
  * Leaflet 1.6.0+Detached: 0c81bdf904d864fd12a286e3d1979f47aba17991.0c81bdf, a JS library for interactive maps. http://leafletjs.com
  * (c) 2010-2019 Vladimir Agafonkin, (c) 2010-2011 CloudMade
@@ -22863,7 +22911,7 @@ function geoLayers() {
 }
 
 function initMap() {
-  //console.log("map init")
+  console.log(layers)
   $.each(layers.split(','),function(i,e){
     if (e == "") return false;
     f = e.split('.');

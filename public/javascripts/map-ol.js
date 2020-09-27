@@ -336,19 +336,17 @@ function initMap() {
 
   $('#legendpane select.leg').on('change',function(e){
     $leg = $("#legendpane select.leg option:selected").val();
+    default_style = $leg.split("_")[0]
     $("#legendpane table").hide();
     $("#legendpane table."+$leg).show();
-    $(".map_icon").removeClass("cc rr ss pp");
-    $(".map_icon").addClass($leg.substr(0,1)+''+$leg.substr(0,1));
+    $.each(markerLayer.getSource().getFeatures(),function(i,e){
+        e.setStyle(markerStyle)
+    })
     if ($page_query == "{}") {
       $query = '{}';
     } else {
       $query = '{"should":{"term":'+$page_query+'}}';
     }
-    ours = $('.legend .map-icon');
-    mics = $('.leaflet-marker-icon');
-    ours.removeClass('hid').addClass('vis');
-    mics.show();
     $('.recent tr').remove();
     scrolling = true;
     ask();
@@ -639,20 +637,12 @@ function initMap() {
   });
   
   $('.horipane').on('mouseenter','.conflict-button',function(e){
-    id = $(this).data('id');
-    selector = '#map .map_icon.id_'+id;
-    $(selector).addClass('selected')
-    transformItem(selector, 'scale', 1.25);
-    $(selector).removeClass('mic').removeClass('min').addClass('hovered');
-    if(Object.keys(markerc).indexOf(String(id))>=0) {
-      markerc[String(id)].setZIndexOffset(markerCount+1)
-      //updateInfo(1,markerc[String(id)].content)
-    }
+    id = parseInt($(this).data('id'));
+    grow(markerc[id])
   })
   $('.horipane').on('mouseleave','.conflict-button',function(e){
-    selector = '#map .map_icon.id_'+$(this).attr('data-id');
-    transformItem(selector, 'scale', 0.8);
-    $(selector).removeClass('hovered');
+    id = parseInt($(this).attr('data-id'));
+    shrink(markerc[id])
   })
   
   /*$('.leaflet-control-attribution').on('mouseenter',function(e){
@@ -871,7 +861,7 @@ function grow(feature) {
 }
 
 function shrink(feature) {
-  console.log(feature)
+  //console.log(feature)
   feature.setStyle(undefined);
   selected = null;
 }
@@ -889,6 +879,31 @@ var icon_colors = {
     "#c685d0",
     "#00c621",
     "#ed1c24"],
+  reaction: [
+    "#ffffff", 
+    "#999999", 
+    "#ffc40d", 
+    "#46a546", 
+    "#ee2c2c", 
+    "#7a43b6", 
+  ],
+  status: [
+    "#ffffff", 
+    "#999999", 
+    "#049CDB", 
+    "#ffc40d", 
+    "#ff7f50", 
+    "#EE2C2C", 
+  ],
+  project: [
+    "#ffffff", 
+    "#999999", 
+    "#049CDB", 
+    "#ffc40d", 
+    "#ff7f50", 
+    "#EE2C2C", 
+    "#46A546", 
+  ],
 
 }
 
@@ -896,17 +911,21 @@ var style_cache = {}
 var default_style = "category"
 var selected = null;
 var duration = 400;
+var iconmap = [null,8,7,2,9,5,6,1,10,3,4]
 
-function highlightStyle (feature) {
+function highlightStyle(feature) {
   value = feature.values_.properties[default_style]
   scode = default_style+"_"+String(value)
+  console.log(feature.values_.properties)
+  console.log(feature.values_.properties.category)
+  console.log(iconmap[feature.values_.properties.category])
   if (Object.keys(style_cache).indexOf(scode) >= 0 && false) {
     return style_cache[scode]
   }
   zoom = map.getView().getZoom();
-  style = new ol.style.Style({
+  style = [new ol.style.Style({
       image: new ol.style.Circle({
-        radius: 12,//2*(1 + zoom),
+        radius: 15,//2*(1 + zoom),
         fill: new ol.style.Fill({
           color: icon_colors[default_style][value]
         }),
@@ -916,7 +935,14 @@ function highlightStyle (feature) {
         })
       }),
       zIndex: 9999
+    }),
+    new ol.style.Style({
+      image: new ol.style.Icon({
+          src: "/img/i_"+(iconmap[feature.values_.properties.category])+".png"
+      }),
+      zIndex: 10000
     })
+  ]
   style_cache[scode] = style
   return style
 }
@@ -928,9 +954,10 @@ function markerStyle(feature) {
     return style_cache[scode]
   }
   zoom = map.getView().getZoom();
-  style = new ol.style.Style({
+  rad = Math.min(zoom ** 1.15,10)
+  style = [new ol.style.Style({
       image: new ol.style.Circle({
-        radius: 1 + zoom,
+        radius: rad,
         fill: new ol.style.Fill({
           color: icon_colors[default_style][value]
         }),
@@ -939,7 +966,16 @@ function markerStyle(feature) {
           width: zoom / 8
         })
       })
-    })
+    })]
+  if (rad == 10) {
+    style.push(new ol.style.Style({
+      image: new ol.style.Icon({
+          src: "/img/i_"+(iconmap[feature.values_.properties.category])+".png",
+          scale: 0.67
+      }),
+      zIndex: 10000
+    }))
+  }
   style_cache[scode] = style
   return style
 }
@@ -972,6 +1008,7 @@ function showMarkers(markers) {
     //console.log(popcontent)
     opts = {id:e.i,geometry:new ol.geom.Point(ol.proj.fromLonLat([e.o,e.a])),properties:{category:e.c,reaction:e.r,status:e.s,project:e.p,content:popcontent}}
     ma = new ol.Feature(opts)
+    markerc[e.i] = ma;
     return ma
   })
   markerLayer.getSource().addFeatures(features);
@@ -1191,16 +1228,7 @@ function dragEnd() {
 }
 
 function markerFit(ids){
-  arr = []
-  $.each(markerc,function(k,v){
-    if(ids.indexOf(parseInt(k)) >= 0){
-      arr.push(v.getLatLng());
-    }
-  })
-  //console.log(arr)
-  if (arr.length > 0) {
-    map.fitBounds(arr,{maxZoom:16});
-  }
+  mapFit(1000)
 }
 
 function mapFit(duration){
@@ -1210,7 +1238,6 @@ function mapFit(duration){
     map.getView().setCenter([16,26]);
     map.getView().setZoom(1.667);
   } else {
-    //console.log(markerBounds)
     map.getView().fit(markerBounds,{padding:[80,8,80,8],duration:duration});
   }
 }
@@ -1755,15 +1782,10 @@ function toSlug(url) {
 }
 
 function filterMarkers(m) {
-  $.each($('.map .map_icon'),function(i,e){
-    index = m.indexOf(parseInt($(e).attr('data-id')));
-    if (index < 0 ) { 
-      $(e).fadeOut('slow');
-    } else {
-      $(e).fadeIn('slow');
-    }
-  });
-  markerFit(m);
+  markerLayer.getSource().clear();
+  $.each(m,function(i,e){
+    markerLayer.getSource().addFeature(markerc[e]);
+  })
 }
 
 

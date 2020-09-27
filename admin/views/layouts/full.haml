@@ -183,7 +183,7 @@
             .ejatlas-logo#eja-logo{:style=>"z-index:11;"}
 
             -if @global
-              -if request.path.match(/^\/$/) or request.path.match(/^\/(country|company|commodity|type)/)
+              -if request.path.match(/^\/(ol)?$/) or request.path.match(/^\/(country|company|commodity|type)/)
                 -locs = $available_locales
               -elsif request.path.match(/^\/conflict\//) and @conflict
                 -locs = @conflict.conflict_texts.where(:approval_status=>"approved").map(&:locale)
