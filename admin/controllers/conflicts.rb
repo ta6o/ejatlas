@@ -475,6 +475,7 @@ Admin.controllers :conflicts do
     #puts "#{I18n.default_locale.to_s.red} #{I18n.locale.to_s.magenta}"
     #pp params["id"]
     #pp params["conflict"]["slug"]
+    pp params
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     @conflict = Conflict.find(params[:id])
@@ -486,8 +487,10 @@ Admin.controllers :conflicts do
 
     if params["conflict"]["slug"].nil? or params["conflict"]["slug"] == ""
       #return {:status=>"error",:errors=>["Name on address bar can not be blank"]}.to_json 
-      if @conflict.local_data("en").slug and @conflict.local_data("en").slug.length > 0
+      if @conflict.local_data("en") and @conflict.local_data("en").slug and @conflict.local_data("en").slug.length > 0
         params["conflict"]["slug"] = @conflict.local_data("en").slug
+      elsif @conflict.original_data and @conflict.original_data.slug and @conflict.original_data.slug.length > 0
+        params["conflict"]["slug"] = @conflict.original_data.slug
       else
         params["conflict"]["slug"] = Admin.slugify(params["conflict"]["name"])
       end
