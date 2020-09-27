@@ -1103,6 +1103,11 @@ class ConflictText < ActiveRecord::Base
 
   belongs_to :conflict
   has_many :conflict_locale_suggestions
+  has_many :timeline_entries
+
+  def timeline
+    self.timeline_entries.order("entry_datestamp")
+  end
 
   def inspect
     "##{self.conflict_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.name} (#{(self.approval_status||"").magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"

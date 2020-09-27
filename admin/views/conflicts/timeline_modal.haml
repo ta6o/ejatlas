@@ -1,0 +1,75 @@
+.modal-dialog
+  .modal-content
+    %form#timeline_entryform{:method=>'post',:action=>'/conflicts/timeline_entry'}
+      .modal-header
+        %button.close{:type=>'button','data-dismiss'=>'modal','aria-hidden'=>true} &times;
+        %input{:type=>'hidden',:name=>'conflict_text_id',:value=>@ct.id.to_s}
+        %input{:type=>'hidden',:name=>'account_id',:value=>current_account.id.to_s}
+        -if @te.new_record?
+          %h3= "New Timeline Entry"
+        -else
+          %input{:type=>'hidden',:name=>'id',:value=>(@te.id)}
+          %h3
+            = "Editing Timeline Entry: <b>#{@te.title}</b>".html_safe
+            %small= "(##{@te.id})"
+      .modal-body
+        .row
+          .col-md-6
+            %label Title
+            %input.i_timeline_entry#timeline_entry_title{:type=>'text',:name=>'title',:value=>(@te.title||""), :maxlength=>255, :validate=>true}
+          .col-md-6
+            %label Date
+            %input.text_field.datemask#timeline_entry_date{:type=>"text",:name=>"entry_date",:value=>@te.get_entry_date||"",:placeholder=>"__/__/____"}
+        .row
+          .col-md-12
+            %label Description
+            %textarea.i_timeline_entry#timeline_entry_description{:type=>'text',:name=>'description',:rows=>6}
+              = @te.description||""
+      .modal-footer
+        -if @te.new_record?
+          %button.btn#b_timeline_entry Create
+        -else
+          %button.btn#b_timeline_entry Update
+
+        :javascript
+          var $id, $name;
+          $(".datemask").mask("99/99/9999");
+          $('.datemask').attr('placeholder','__/__/____');
+          $('#timeline_entryform').on('submit',function(e){
+            e.preventDefault();
+            $.ajax({
+              type: 'POST',
+              url: '/conflicts/timeline_entry', 
+              data: $(e.target).serialize(), 
+              success: function(data,ts){
+                data = JSON.parse(data)
+                if (data.status == "success") {
+                  te = data.timeline_entry;
+                  if (te.new_record) {
+                    $(".timeline_list").append("<div class='timeline_entry' data-id='"+te.id+"'> <hr class='notr' style='margin:2px 0 6px;border-bottom: 2px solid #ccc;'> <div class='row' style='margin-top:8px;'> <div class='col-md-8'> <b>"+te.title+"</b> <span>"+te.entry_date+"</span> <p>"+te.description+"</p> </div> <div class='col-md-2'> <a class='pull-right btn notr' data-target='#timeline_entry' data-toggle='modal' href='/conflicts/modal/2953/timeline_entry/7'>Edit</a> </div> <div class='col-md-2'> <a class='d_timeline_entry pull-right btn notr' data-id='"+te.id+"'>Remove</a> </div> </div> </div>")
+                  } else {
+                    tentry = $(".timeline_entry[data-id="+te.id+"]");
+                    tentry.find("b").text(te.title);
+                    tentry.find("p").text(te.description);
+                    tentry.find("span").text(te.entry_date);
+                  }
+                  $("#timeline_entry").modal("toggle")
+                } else {
+                  $('#timeline_entryform .modal-footer').prepend("<b class='error' style='color:#c00'>"+data.message+"</b>")
+                }
+              },
+              error: function(data,ts,error){
+                alert(ts+' '+error)
+              }
+            });
+          });
+
+          $('body').on('hidden.bs.modal', '#timeline_entry', function () {
+            $(this).removeData('bs.modal');
+            $('#timeline_entry').html('');
+            $('b.error').remove();
+            if ($id != undefined && $id > 0 && $name != "") {
+              $('#timeline_entry').modal({remote:"/conflicts/modal/timeline_entry/"+$id})
+            }
+            $id = undefined;
+          });

@@ -309,6 +309,45 @@
             .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.new_record? ? "" : @conflict.original_data.description.strip_html.html_safe
             %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
 
+            -if I18n.locale.to_s == "tr"
+              -content_for :outer do
+                #timeline_entry.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
+              .group
+                %label{:for=>"conflict_timeline"}= "Conflict timeline" #= t("f.conflict.timeline")
+                .row
+                  .col-md-10
+                    %p.description= t("f.conflict.please_describe_project_point_conflict")
+                  .col-md-2
+                    %button#n_timeline_entry.btn.btn-inverse.notr{'data-toggle'=>'modal','data-target'=>'#timeline_entry',:href=>"/conflicts/modal/#{@conflict.local_data.id}/timeline_entry"}=t("f.conflict.add")
+                %br/
+                .timeline_list
+                  -@conflict.local_data.timeline.each do |l|
+                    .timeline_entry{"data-id"=>l.id}
+                      %hr.notr{:style=>'margin:2px 0 6px;border-bottom: 2px solid #ccc;'}/
+                      .row{:style=>'margin-top:8px;'}
+                        .col-md-8
+                          %b="#{l.title}"
+                          %span="#{l.get_entry_date}"
+                          %p="#{l.description}"
+                        .col-md-2
+                          %a.pull-right.btn.notr{'data-toggle'=>'modal','data-target'=>'#timeline_entry',:href=>"/conflicts/modal/#{@conflict.id}/timeline_entry/#{l.id}"}=t("f.conflict.edit")
+                        .col-md-2
+                          %input{:type=>'hidden',:value=>l.id}
+                          %a.d_timeline_entry.pull-right.btn.notr{"data-id"=>l.id}=t("f.conflict.remove")
+                %hr/
+                :javascript
+                  $(".timeline_list").on("click","a.d_timeline_entry",function(e){
+                    that = $(this)
+                    $.post("/conflicts/remove_timeline_entry",{id:that.data("id")},function(data){
+                      data=JSON.parse(data);
+                      if (data.status=="success"){
+                        that.closest(".timeline_entry").remove();
+                      } else {
+                        alert(data.message)
+                      }
+                    })
+                  })
+
         .col-md-8
           .group
             %label{:for=>"conflict_product_id"}= t("f.conflict.specific_commodities")

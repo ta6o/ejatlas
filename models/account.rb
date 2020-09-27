@@ -6,6 +6,7 @@ class Account < ActiveRecord::Base
   has_many :conflicts
   has_many :conflict_accounts
   has_many :conflict_messages
+  has_many :timeline_entries
   has_many :filters
   has_many :featureds
   has_many :vector_data

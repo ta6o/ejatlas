@@ -902,6 +902,57 @@ Admin.controllers :conflicts do
     end
   end
 
+  get "/modal/:cid/timeline_entry/?" do
+    @ct = ConflictText.find(params[:cid])
+    @te = TimelineEntry.new
+    render 'conflicts/timeline_modal', :layout => false
+  end
+
+  get "/modal/:cid/timeline_entry/:tid/?" do
+    @ct = ConflictText.find(params[:cid])
+    @te = TimelineEntry.find(params[:tid])
+    render 'conflicts/timeline_modal', :layout => false
+  end
+
+  post "/remove_timeline_entry" do
+    if params.has_key?("id")
+      te = TimelineEntry.find(params.delete("id"))
+    end
+    if te
+      te.destroy
+      {:status=>:success}.to_json
+    else
+      {:status=>:error,:message=>"Entry could not be found"}.to_json
+    end
+  end
+
+  post "/timeline_entry" do
+    new = false
+    if params.has_key?("id")
+      te = TimelineEntry.find(params.delete("id"))
+    else
+      new = true
+      te = TimelineEntry.new
+    end
+    begin
+      Date.strptime(params["entry_date"].sub(/^00\//,"01/").sub(/\/00\//,"/01/"),"%d/%m/%Y")
+    rescue
+      return {:status=>:error,:message=>"Invalid date"}.to_json
+    end
+    if te.update params
+      te.set_entry_datestamp
+      attrs = te.attributes
+      attrs[:entry_date] = te.get_entry_date
+      attrs[:new_record] = new
+      {:status=>:success,:timeline_entry=>attrs}.to_json
+    else
+      {:status=>:error,:message=>"Entry could not be saved"}.to_json
+    end
+  end
+
+
+
+
   get "/modal/:cid/:model" do
     @actor = eval("#{params[:model].gsub('_',' ').titlecase.gsub(' ','')}.new")
     @cid = params[:cid]

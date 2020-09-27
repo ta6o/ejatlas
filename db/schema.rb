@@ -562,6 +562,17 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "domain", limit: 255
   end
 
+  create_table "timeline_entries", id: :serial, force: :cascade do |t|
+    t.string    "title"
+    t.text      "description"
+    t.integer   "conflict_text_id"
+    t.date      "entry_datestamp"
+    t.string    "entry_date", limit: 255
+    t.integer   "account_id"
+    t.datetime  "created_at", null: false
+    t.datetime  "updated_at", null: false
+  end
+
   create_table "types", id: :serial, force: :cascade do |t|
     t.string "name", limit: 255
     t.string "slug", limit: 255
