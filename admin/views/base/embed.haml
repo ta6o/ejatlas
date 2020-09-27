@@ -91,6 +91,7 @@
       var maptitle = "#{@maptitle}";
       var layers = "#{@baselayers}";
       var fid = 0;
+      var layerranks = #{@ranks||[]};
     -if @vectors
       :javascript
         vectorinfo = #{@vectors};

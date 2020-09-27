@@ -792,11 +792,9 @@ function checkPopPadding() {
   }
   if (pop.top < pad.top ) {
     difpos[1] -= pad.top - pop.top 
-    console.log("top "+String(pad.top - pop.top ))
     moved = true;
   } else if (pop.bottom > pad.bottom && pop.top >= pad.top - (pad.bottom - pop.bottom)  ) {
     difpos[1] -= pad.bottom - pop.bottom 
-    console.log("bottom "+String(pad.bottom - pop.bottom ))
     moved = true;
   }
   if ( moved ) {
@@ -916,16 +914,13 @@ var iconmap = [null,8,7,2,9,5,6,1,10,3,4]
 function highlightStyle(feature) {
   value = feature.values_.properties[default_style]
   scode = default_style+"_"+String(value)
-  console.log(feature.values_.properties)
-  console.log(feature.values_.properties.category)
-  console.log(iconmap[feature.values_.properties.category])
   if (Object.keys(style_cache).indexOf(scode) >= 0 && false) {
     return style_cache[scode]
   }
   zoom = map.getView().getZoom();
   style = [new ol.style.Style({
       image: new ol.style.Circle({
-        radius: 15,//2*(1 + zoom),
+        radius: 15,
         fill: new ol.style.Fill({
           color: icon_colors[default_style][value]
         }),
@@ -953,8 +948,8 @@ function markerStyle(feature) {
   if (Object.keys(style_cache).indexOf(scode) >= 0 && false) {
     return style_cache[scode]
   }
-  zoom = map.getView().getZoom();
-  rad = Math.min(zoom ** 1.15,10)
+  rad = Math.min(map.getView().getZoom() ** 1.15,9)
+  if (conflict) { rad = 15 };
   style = [new ol.style.Style({
       image: new ol.style.Circle({
         radius: rad,
@@ -963,11 +958,18 @@ function markerStyle(feature) {
         }),
         stroke: new ol.style.Stroke({
           color: "#000000",
-          width: zoom / 8
+          width: map.getView().getZoom() / 8
         })
       })
     })]
-  if (rad == 10) {
+  if (conflict) {
+    style.push(new ol.style.Style({
+      image: new ol.style.Icon({
+          src: "/img/i_"+(iconmap[feature.values_.properties.category])+".png",
+      }),
+      zIndex: 10000
+    }))
+  } else if (rad == 9) {
     style.push(new ol.style.Style({
       image: new ol.style.Icon({
           src: "/img/i_"+(iconmap[feature.values_.properties.category])+".png",
@@ -1281,6 +1283,7 @@ function borderStyle(feature) {
 }
 
 function updateInfo (type, content) {
+  console.log(type,content)
   if (disclaimer == undefined) disclaimer = content;
   info.show();
   if (type == 0 || type == undefined) {
@@ -1295,9 +1298,11 @@ function getInfo(id,name,p,z,upd) {
   conflict = true;
   zoom = z;
   marker = markerc[id]
-  pan = marker.getLatLng();
+  pan = marker.getGeometry().flatCoordinates;
   updateInfo(1,marker.content);
-  map.setView(pan,zoom);
+  console.log(pan,zoom);
+  map.getView().setCenter(pan);
+  map.getView().setZoom(zoom);
   if (upd && false) {
     $.getJSON('/table/'+id, function(dat){
       //console.log(dat)

@@ -17,6 +17,7 @@
     var fid = #{@fid || 0};
     var images, counter, crswidth;
     featureMap = true;
+    var layerranks = #{@ranks||[]};
   -if @vectors
     :javascript
       vectorinfo = #{@vectors};
