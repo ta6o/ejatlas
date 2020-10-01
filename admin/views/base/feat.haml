@@ -188,8 +188,8 @@
       #infopane
 
   .horipane.legend
-    .title{:class=> (@feature and @id != 75) ? "" : "active"} Legend
-    .content{:style=> (@feature and not [69,75].include?(@id)) ? "overflow: hidden; display: none;" : ""}
+    .title{:class=> (@feature and not [69,75,81].include?(@id)) ? "" : "active"} Legend
+    .content{:style=> (@feature and not [69,75,81].include?(@id)) ? "overflow: hidden; display: none;" : ""}
       #legendpane{"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>"Select the layers here"}
         -unless @id == 69
           .legend.noselect.block{'data-width'=>220}
