@@ -252,7 +252,7 @@ Admin.controller do
     @desc = "One of the primary objectives of EJOLT is to compile and make available a ‘Map of Environmental Injustice’. This map will consist on an online unique database of resource extraction and disposal conflicts hosted on the project website, geographically referenced (mapped with GIS), and linked with social metabolism and socio- environmental indicators."
     @baselayers = $baselayers
     @recent = Admin.filter_recent(0,{},"modified_at",6,@global)
-    @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("created_at desc").limit(2)
+    @feats = Featured.select('id, description, name, slug, image, headline, published').where(:published=>true).order("updated_at desc").limit(2)
     render "base/map", :layout => @layout
   end
 
