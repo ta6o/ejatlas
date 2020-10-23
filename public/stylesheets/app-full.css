@@ -5165,10 +5165,16 @@ small {
   margin: -18px -20px 0px;
   background: #024357;
   color: white !important;
+  position: relative;
 }
 .maplink a {
   color: white !important;
   cursor: pointer;
+}
+.maplink a.ol-popup-closer {
+  position: absolute;
+  top: 6px;
+  right: 6px;
 }
 .maplink.darkred {
   background: #6d1a18;

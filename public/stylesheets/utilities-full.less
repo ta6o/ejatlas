@@ -138,9 +138,15 @@ small {
   background: @brand-dark;
   //text-align: center;
   color: white !important;
+  position: relative;
   a {
     color: white !important;
     cursor: pointer;
+    &.ol-popup-closer {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+    }
   }
   &.darkred {
     background: @brand-darkred;

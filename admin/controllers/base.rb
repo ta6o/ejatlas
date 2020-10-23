@@ -876,7 +876,7 @@ Admin.controller do
     end
     target = ""
     target = " target='_blank'" if request.referer and (request.referer.match(/\/embed/) or request.referer.match(/\/761317/))
-    popcontent = "<h4 class='maplink'><a href='/conflict/#{c.slug(loc)}'#{target}>#{c.name}</a></h4><p>#{c.title} <a href='/conflict/#{c.slug}'#{target}><em>#{I18n.t('v.info.see_more')}</em></a></p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon c_#{c.category_id}' style='margin:0 !important;cursor:default'></div><td>"
+    popcontent = "<h4 class='maplink'><a href='/conflict/#{c.slug(loc)}'#{target}>#{c.name}</a><a id='popup-closer' class='ol-popup-closer'><icon class='glyphicon glyphicon-remove'></icon></a></h4><p>#{c.title} <a href='/conflict/#{c.slug}'#{target}><em>#{I18n.t('v.info.see_more')}</em></a></p><table style='padding:24px 16px;'><tr><td style='width:42px'><div class='map-icon c_#{c.category_id}' style='margin:0 !important;cursor:default'></div><td>"
     popcontent += "<strong>"+t($cathash[c.category_id])+"</strong>" if c.category 
     popcontent += '</td></tr></table>'
     #puts popcontent

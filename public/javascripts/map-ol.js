@@ -299,35 +299,6 @@ function initMap() {
   mousePositionControl = new ol.control.MousePosition();
   map.addControl(mousePositionControl);
 
-  /*maxBounds = new L.LatLngBounds(new L.LatLng(90,240), new L.LatLng(-90,-240))
-  bounds = maxBounds;
-
-  map = L.map('map',{
-    scrollWheelZoom: $('#map').css('position') == "fixed",
-    worldCopyJump: true,
-    //maxBounds: maxBounds,
-    //maxBounds: [[-90,-270],[90,270]],
-    bounceAtZoomLimits: false,
-    center: new L.latLng([16,26]),
-    zoom: 1.667,
-    minZoom: 1,
-    zoomSnap: 0,
-    layers: initLayers,
-    zoomControl: false,
-    //renderer: L.canvas()
-  });
-
-
-  if (Object.keys(layerinfo).length > 0 ) {
-    //loadJS('https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js')
-    loadJS(window.location.protocol+'//'+window.location.host+'/javascripts/Leaflet.VectorGrid.js')
-    window.setTimeout(waitForVectorGrid,10)
-  }
-  if (Object.keys(baselayers).length > 1){ 
-    //lControl = L.control.layers(baselayers, overlayMaps).addTo(map); 
-    lControl = L.control.layers(baselayers, overlayMaps, {position: $topflo}).addTo(map); 
-  } */
-
   $.each(vectorinfo,function(i,v){
     loadJS(v["vector_datum"]["url"],true)
   });
@@ -352,12 +323,19 @@ function initMap() {
     ask();
   })
 
+  $('body').on('click','a.ol-popup-closer',function(e){
+    popup.setPosition(undefined);
+    $(this).blur();
+    return false;
+  })
+
   $(document).on('click','.legend .map-icon, .legend .desc',function(e){
-    //console.log(e)
     l = $leg.substr(0,1);
     regexp = new RegExp(l+"_\\d+");
     id = $(e.target).attr('class').match(regexp)[0].replace(l+'_','');
+    console.log(id)
     vis = $(this).closest('tr').find('.map-icon').hasClass('vis');
+    console.log(vis)
     part = $('.legend .map-icon.vis').length < $('.legend .map-icon').length
     if (e.shiftKey) {
       e.preventDefault();
@@ -441,57 +419,6 @@ function initMap() {
     $('body').css('cursor','auto !important');
   });
 
-  /*var zoomControl = L.control.zoom({position:'topright'});
-  map.removeControl(map.attributionControl)
-  L.control.attribution({position: $botflo}).addTo(map);
-  var zoomControl = L.control.zoom({position:$topflo});
-  map.addControl(zoomControl);
-  $(".leaflet-control.leaflet-control-zoom").addClass("leaflet-control-layers");
-  var loadingControl = L.Control.loading({
-    //position: 'topright',
-    position: $topflo,
-    zoomControl: zoomControl
-  });
-  map.addControl(loadingControl);
-  var HomeButton = L.Control.extend({
-    //options: { position: 'topright' }, 
-    options: { position: $topflo }, 
-    onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'home-button leaflet-control-layers');
-      L.DomEvent.addListener(container, 'click', getBack);
-      return container;
-    }
-  });
-
-  homeControl = new HomeButton();
-  map.addControl(homeControl);
-  if (L.Browser.touch) { $('home-button').addClass('leaflet-touch'); }
-
-  $('.home-button').html('<span class="glyphicon glyphicon-home"></span>')
-
-  //oms = new OverlappingMarkerSpiderfier(map,{keepSpiderfied:true,nearbyDistance:4});
-  //oms.legColors.usual = "black";
-  //oms.legColors.highlighted = "white";
-
-  map.on('zoomend', function(e) { 
-    markerSize();
-  });
-
-  $("#map").on("change","input.leaflet-control-layers-selector[type='checkbox']", function (e) {
-    if ($(this).prop('checked')) {
-      name = $(this).next('span').text().replace(/^\s+/,'')
-      if (choropleths[name] != undefined) {
-        $.each(Object.keys(choropleths),function(i,n){
-          if (name != n && map.hasLayer(overlayMaps[n])) {
-            map.removeLayer(overlayMaps[n]);
-          }
-          if (name == n && !map.hasLayer(overlayMaps[n])) {
-            map.addLayer(overlayMaps[n]);
-          }
-        });
-      }
-    }
-  });*/
 
   $('.resize').on('mousedown',function(e){
     e.preventDefault();
@@ -1342,6 +1269,7 @@ function toggleLegend(id,vis) {
   } else {
     $query = '{"must":[{"term":'+$page_query+'},{"term":{"'+$leg+'":"'+id+'"}}]}';
   }
+  console.log($page_query)
   ours = $('.legend .map-icon.i_'+id);
   mics = $('.leaflet-marker-icon.i_'+id);
   if (vis) {
