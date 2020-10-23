@@ -719,12 +719,23 @@ Admin.controller do
 
   get :filters do
     pass unless current_account
-    if ["admin","editor"].include?(current_account.role)
+    if current_account.editor?
       @filters = Filter.all
     else
       @filters = Filter.where(:account_id => current_account.id)
     end
     render "base/filters", :layout => "application"
+  end
+
+  post :delete_filter do
+    return "nack" unless current_account
+    filter = Filter.find(params[:id])
+    return "nack" unless filter
+    if current_account.editor? or current_account.filters.include? filter
+      filter.destroy
+      return "ack"
+    end
+    return "nack"
   end
 
   get :editfilter, :with => :uid do

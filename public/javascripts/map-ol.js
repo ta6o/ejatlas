@@ -1082,7 +1082,6 @@ function transformItem(selector, property, value) {
 
 function onResize() {
   if ($('#map').css('position')=='fixed'){
-    //map.scrollWheelZoom.enable();
     $('#map').css('height','100%');
     px = Math.max(Math.min(Math.max(parseInt($('#resize').css($flo)),500),window.innerWidth - 480),500);
     //console.log(px)

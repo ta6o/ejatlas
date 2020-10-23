@@ -27,7 +27,18 @@
                 =link_to pat('Edit'), url(:editfilter, :uid => filter.uid), :method => :get
                 |
                 =link_to pat('View'), url(:embed_filter, :uid => filter.uid), :method => :get
+                |
+                %a.delete{:style=>"cursor:pointer","data-id"=>filter.id,"data-name"=>filter.name ? filter.name : filter.uid,"data-aname"=>filter.account.name} Delete
 
+      :javascript
+        $("a.delete").on("click",function(){
+          if (confirm("Do you really want to delete filter "+$(this).data("name")+" by "+$(this).data("aname")+"?")) {
+            todelete = $(this);
+            $.post("/delete_filter",{id:$(this).data("id")},function(resp){
+              todelete.closest("tr").remove();
+            })
+          }
+        })
       -unless current_account.nil?
         -if ["admin","editor"].include? current_account.role
           :javascript
