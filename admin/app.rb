@@ -148,6 +148,7 @@ class Admin < Padrino::Application
 
   before do
     if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0].downcase)
+      $dlocale = :en
       I18n.default_locale = :en
       I18n.locale = :en
       $dir = "ltr"
@@ -171,8 +172,10 @@ class Admin < Padrino::Application
     else
       I18n.default_locale = :en
       begin
+        $dlocale = locale
         I18n.locale = locale
       rescue
+        $dlocale = :en
         I18n.locale = :en
       end
       $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
@@ -605,9 +608,9 @@ class Admin < Padrino::Application
       end
       #puts filter.to_s.yellow
       if count_only
-        result = $client.count(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"query"=>filter})["count"]
+        result = $client.count(index:"#{$esindex}_#{$dlocale}",type: type, body: {"query"=>filter})["count"]
       else
-        result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+        result = $client.search(index:"#{$esindex}_#{$dlocale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
       end
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: filter }}} )
@@ -622,50 +625,6 @@ class Admin < Padrino::Application
     #result
   end
 
-
-=begin
-  def self.filter options={}
-    options = options.symbolize_keys
-    unless options.has_key(:filter)
-      puts "Admin.filter { #{':filter'.cyan} => Hash, #{':all_if_empty'.cyan} => Bool(true), #{':stored_fields'.cyan} => Array([]), #{':approved'} => Bool(true), #{':type'.cyan} => String('conflict'), #{':sort'.cyan} => String('id'), #{':order'.cyan} => String('asc'), #{':count_only'.cyan} => Bool(false) }"
-      return
-    end
-    options = {:all_if_empty=>true, :stored_fields=>[], :approved=>true, :type=>"conflict", :sort=>"id", :order=>"asc", :count_only=>false}.merge(options)
-    return [] if !options[:all_if_empty] and ["{}","",nil].include?(filter)
-    if options[:stored_fields] == []
-      source = false
-    else
-      source = {"includes"=>options[:stored_fields]}
-    end
-    if filter.is_a? String
-      filter = JSON.parse(filter,:symbolize_keys => true)
-    end
-    #puts JSON.pretty_generate(filter).green
-    if options[:type] == "conflict"
-      if options[:approved]
-        filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: filter }}} )
-      else
-        filter = Admin.elasticify( { bool: { filter: { bool: filter }}} )
-      end
-      #puts filter.to_s.yellow
-      if options[:count_only]
-        result = $client.count(index:"#{$esindex}_#{I18n.locale}",type: options[:type], body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{options[:sort]=>{"order"=>options[:order]}}})["hits"]["hits"]
-      else
-        result = $client.search(index:"#{$esindex}_#{I18n.locale}",type: options[:type], body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{options[:sort]=>{"order"=>options[:order]}}})["hits"]["hits"]
-      end
-    elsif "account,company,country,financial_institution,tag".split(",").include?(type)
-      filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: filter }}} )
-      filter = Admin.cleanup(filter)
-      if options[:count_only]
-        result = $client.count(index: $esindex, type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{options[:sort]=>{"order"=>options[:order]}}})["hits"]["hits"]
-      else
-        result = $client.search(index: $esindex, type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{options[:sort]=>{"order"=>options[:order]}}})["hits"]["hits"]
-      end
-    end
-    #puts result.length.to_s.green
-    #result
-  end
-=end
 
 
   def self.get_elastic id
