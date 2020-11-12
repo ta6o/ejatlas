@@ -166,7 +166,7 @@
               %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= t("v.index.sort_by_frequency").downcase #"9 > 1"
               -if @global and I18n.locale != :en
                 -v.each_with_index do |vv,ii|
-                  -pp ii
+                  -#pp ii
                   -next if ii < 2 and ["country","commodity","type"].include?(k)
                   %ul.columns{:class=>ii%2==0 ? "count" : "alpha", :style=>ii%2==0 ? "" : "display:none;"}
                     -vv.each do |c|

@@ -475,7 +475,6 @@ Admin.controllers :conflicts do
     #puts "#{I18n.default_locale.to_s.red} #{I18n.locale.to_s.magenta}"
     #pp params["id"]
     #pp params["conflict"]["slug"]
-    pp params
     hash = params.delete 'activetab'
     params['conflict'].reject! {|a| a.match /company_country.*$/}
     @conflict = Conflict.find(params[:id])

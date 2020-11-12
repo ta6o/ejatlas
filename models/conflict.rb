@@ -828,7 +828,7 @@ class Conflict < ActiveRecord::Base
 
       [I18n.t('f.conflict.meta_information',:locale=>loc), '8', [
         [:flat, 'c', 'contributor', I18n.t('f.conflict.contributor',:locale=>loc)],
-        [:date, 'c', 'modified_at', I18n.t('f.conflict.last_update',:locale=>loc)]
+        [:date, 'ct', 'modified', I18n.t('f.conflict.last_update',:locale=>loc)]
       ]]]
   end
 
@@ -1107,6 +1107,14 @@ class ConflictText < ActiveRecord::Base
 
   def timeline
     self.timeline_entries.order("entry_datestamp")
+  end
+
+  def modified
+    if self.modified_at
+      self.modified_at
+    else
+      self.conflict.modified_at
+    end
   end
 
   def inspect

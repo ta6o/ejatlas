@@ -895,7 +895,7 @@ Admin.controller do
   end
 
   get :more_recent do
-    puts params[:filter]
+    #puts params[:filter]
     result = []
     Admin.filter_recent(params[:offset],JSON.parse(params[:filter], :symbolize_names => true),"modified_at",6,@global).each do |c|
       j = {"conflict"=>c}
