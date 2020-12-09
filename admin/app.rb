@@ -159,7 +159,7 @@ class Admin < Padrino::Application
         I18n.locale = q["translate"]
         unless request.xhr?
           if q["translate"] != I18n.default_locale.to_s
-            unless request.query_string.match(/^translate=/)
+            if request.get? and not request.query_string.match(/^translate=/)
               redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}"
             end
           end

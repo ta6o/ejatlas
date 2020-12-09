@@ -11,7 +11,6 @@ Admin.controllers :sessions do
   post :create do
     return_to = "/"
     return_to = "/#{params['return_to']}" if params.has_key? 'return_to'
-    #puts params !!!!!
     if account = Account.authenticate(params[:email], params[:password])
       set_current_account(account)
       redirect url(return_to)
