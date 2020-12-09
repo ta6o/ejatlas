@@ -157,17 +157,17 @@ class Admin < Padrino::Application
       if request.referrer and request.referrer.match(/translate=/) 
         q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
         I18n.locale = q["translate"]
-        unless request.xhr?
-          if q["translate"] != I18n.default_locale.to_s
-            if request.get? and not request.query_string.match(/^translate=/)
-              redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}"
-            end
-          end
+        if I18n.locale != I18n.default_locale.to_s and request.get? and not request.query_string.match(/^translate=/)
+          redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}"
         end
       end
       if request.query_string.match(/^translate=/) and not request.xhr?
         I18n.locale = request.query_string.match(/^translate=(\w+)/)[1]
         $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
+      end
+      if $moderated_locales.include? I18n.locale.to_s and I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new$/) or request.path.match(/\/edit\/\d+$/))
+        query = request.query_string.match(/^translate=\w+$/) ? "" : "?#{request.query_string.sub(/translate=\w{2}/,"")}"
+        return redirect to "#{Admin.local_url}#{request.path}#{query}"
       end
     elsif $moderated_locales.include? locale
       I18n.default_locale = :en

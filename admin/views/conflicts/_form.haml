@@ -309,7 +309,7 @@
             .textarea.local_only{:type=>:text,:disabled=>true}= @conflict.new_record? ? "" : (@conflict.original_data.description || "").strip_html.html_safe
             %textarea#conflict_description.text_area.basic_input{:name=>"conflict[description]",:rows=>17}= "<p>#{(@conflict.description || "").gsub(/(\s\s+|\n+)+/,"</p><p>")}</p>"
 
-            -if I18n.locale.to_s == "tr"
+            -if I18n.locale.to_s == "tr" and @conflict.local_data
               -content_for :outer do
                 #timeline_entry.modal.fade{:tabindex=>-1,:role=>'dialog','aria-hidden'=>true}
               .group
