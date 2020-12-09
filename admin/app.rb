@@ -973,7 +973,6 @@ class Admin < Padrino::Application
     fields.each_with_index do |x,i| 
       val = ws[i+1,3]
       if val != "#VALUE!" and (all or cn.attributes[x].nil? or cn.attributes[x] === "")
-        puts "#{x.green} #{val}"
         if x == "description"
           attrs[x] = val.gsub("$%&","<br/>")
         else
