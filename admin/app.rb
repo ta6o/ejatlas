@@ -169,7 +169,7 @@ class Admin < Padrino::Application
         I18n.locale = request.query_string.match(/^translate=(\w+)/)[1]
         $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
       end
-    else
+    elsif $moderated_locales.include? locale
       I18n.default_locale = :en
       begin
         $dlocale = locale
@@ -179,9 +179,8 @@ class Admin < Padrino::Application
         I18n.locale = :en
       end
       $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
-    end
-    if CGI::parse(request.query_string).has_key?("openlayers")
-      @ol = true
+    else
+      return redirect to "#{$siteurl}#{request.path}?translate=#{locale}"
     end
   end
 
