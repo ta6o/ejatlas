@@ -158,7 +158,10 @@ class Admin < Padrino::Application
         q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
         I18n.locale = q["translate"]
         if I18n.locale != I18n.default_locale.to_s and request.get? and not request.query_string.match(/^translate=/)
-          redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}"
+          if (request.path.match(/\/new$/) or request.path.match(/\/edit\/\d+$/))
+          else
+            return redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}"
+          end
         end
       end
       if request.query_string.match(/^translate=/) and not request.xhr?
