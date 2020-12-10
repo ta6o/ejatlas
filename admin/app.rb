@@ -166,13 +166,13 @@ class Admin < Padrino::Application
         $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
       end
       if I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new$/) or request.path.match(/\/edit\/\d+$/))
+        query = request.query_string.match(/^translate=\w+$/) ? "" : "?#{request.query_string.sub(/translate=\w{2}/,"")}"
         if $moderated_locales.include? I18n.locale.to_s 
-          query = request.query_string.match(/^translate=\w+$/) ? "" : "?#{request.query_string.sub(/translate=\w{2}/,"")}"
           return redirect to "#{Admin.local_url}#{request.path}#{query}"
         else
-          query = request.query_string.match(/^translate=\w+$/) ? "" : "?#{request.query_string.sub(/translate=\w{2}/,"")}"
           return redirect to "#{$siteurl}#{request.path}#{query}"
         end
+      end
     elsif $moderated_locales.include? locale
       I18n.default_locale = :en
       begin
