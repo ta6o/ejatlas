@@ -288,9 +288,69 @@ Admin.controllers :conflicts do
       @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
       @lon = @conflict.lon.match(/^-?\d+\.?\d*$/) ? @conflict.lon : nil
       @saves = []
+      @apstat = @conflict.approval_status
       CSV.read("#{Dir.pwd}/misc/saves.csv").each do |row|
         @saves << row if row[2] == @conflict.id.to_s
       end
+
+      oloc = @conflict.original_locale.to_s
+      loc = I18n.locale.to_s
+      if loc != oloc and @conflict.conflict_texts.where(:locale=>loc).empty?
+        @apstat = "draft"
+        multies = {
+          'reference'=>{:attr=>@conflict.references,:class=>Reference},
+          'legislation'=>{:attr=>@conflict.legislations,:class=>Legislation},
+          'weblink'=>{:attr=>@conflict.weblinks,:class=>Weblink},
+          'medialink'=>{:attr=>@conflict.medialinks,:class=>Medialink}
+        }
+        multies.each do |k,v|
+          puts k.yellow
+          v[:attr].where(:locale=>oloc).order(:pid).each do |ref|
+            unless v[:class].where(:locale=>loc, :conflict_id=>ref.conflict_id, :url=>ref.url).first
+              p ref
+              v[:class].create(
+                :url => ref.url,
+                :description => ref.description,
+                :conflict_id => ref.conflict_id,
+                :locale => loc,
+                :pid => ref.pid
+              )
+            end
+          end
+        end
+        puts "document".yellow
+        @conflict.documents.where(:locale=>oloc).order(:pid).each do |ref|
+          unless Document.where(:locale=>loc, :conflict_id=>ref.conflict_id, :pid=>ref.pid).first
+            Document.create(
+              :title => ref.title,
+              :description => ref.description,
+              :conflict_id => ref.conflict_id,
+              :locale => loc,
+              :pid => ref.pid
+            )
+          end
+        end
+        puts "image".yellow
+        @conflict.images.where(:locale=>oloc).order(:pid).each do |ref|
+          unless Image.where(:locale=>loc, :attachable_id => ref.attachable_id, :attachable_type => "Conflict", :pid=>ref.pid).first
+            begin
+              img = Image.new(
+                :title => ref.title,
+                :description => ref.description,
+                :attachable_id => ref.attachable_id,
+                :attachable_type => "Conflict",
+                :locale => loc,
+                :pid => ref.pid
+              )
+              img.file.store!(File.open(ref.file_path))
+              img.save!
+            rescue
+              ref.update_attribute(:lost, true) unless ref.lost
+            end
+          end
+        end
+      end
+
       render 'conflicts/edit'
     else
       pass
@@ -1104,7 +1164,6 @@ Admin.controllers :conflicts do
   end
 
   post :suggest_language do
-    pp params
     if params["locale"] == ""
       return {:status=>"error","message"=>"Please select a language!"}.to_json
     end

@@ -1043,11 +1043,6 @@
                           %a.d_legislation.pull-right.btn.notr=t("f.conflict.remove")
                     -else
                       .row{:style=>'margin-top:8px;'}
-                        .col-md-12
-                          %p
-                            %b="#{$iso639[@conflict.original_locale]}:"
-                            = l.description
-                      .row
                         .col-md-10
                           %textarea.yestr{:name=>'legislation_description_'+l.pid.to_s}= @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.legislations.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
                         .col-md-2
@@ -1095,11 +1090,6 @@
                           %a.d_weblink.pull-right.btn.notr=t("f.conflict.remove")
                     -else
                       .row{:style=>'margin-top:8px;'}
-                        .col-md-12
-                          %p
-                            %b="#{$iso639[@conflict.original_locale]}:"
-                            = l.description
-                      .row
                         .col-md-10
                           %textarea.yestr{:name=>'weblink_description_'+l.pid.to_s}= @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid).any? ? @conflict.weblinks.where(:locale=>I18n.locale,:pid=>l.pid)[0].description : ""
                         .col-md-2
@@ -1274,7 +1264,9 @@
                         -if @conflict.native_locale?
                           .row{:style=>'margin-top:8px;'}
                             .col-md-3
-                              %img{:src=>d.file.to_s,:style=>'width:100%;height:auto'}
+                              -puts $siteurl.blue
+                              -puts d.file.to_s
+                              %img{:src=>"#{$siteurl}/img/#{d.file.to_s.split(/\/img\//)[1]}",:style=>'width:100%;height:auto'}
                               .center-text
                                 [[IMAGE]]
                             .col-md-9
@@ -1474,7 +1466,7 @@
                 -rescue
                   -approvable = false
                 %input.local_disable.mustcheck.apstat{:type=>'radio',:value=>'approved',:name=>'conflict[approval_status]',:disabled=> !approvable }=" &nbsp;#{t("f.conflict.approved")}".html_safe
-            -if apstat = @conflict.approval_status and current_account
+            -if apstat = @apstat and current_account
               -apstat = 'modified' if apstat == 'approved' and not current_account.editor?
             -else
               -apstat = 'draft'

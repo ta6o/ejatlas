@@ -80,7 +80,7 @@ class Account < ActiveRecord::Base
   end
 
   def inspect
-    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.email.magenta}), #{self.role.titlecase.green} #{self.roles.map(&:name).join(', ').green})"
+    "Account: ##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.email.magenta}), #{self.role.titlecase.green} #{self.roles.map(&:name).join(', ').green})"
   end
 
   def self.editors loc=I18n.locale

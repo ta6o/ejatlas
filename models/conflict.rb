@@ -1074,7 +1074,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def inspect
-    "##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.approval_status.to_s.magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
+    "Conflict: ##{self.id.to_s.rjust(5,"0").cyan}: #{self.name} (#{self.approval_status.to_s.magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
   end
 
   private
@@ -1118,7 +1118,7 @@ class ConflictText < ActiveRecord::Base
   end
 
   def inspect
-    "##{self.conflict_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.name} (#{(self.approval_status||"").magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
+    "ConflictText: ##{self.conflict_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.name} (#{(self.approval_status||"").magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
   end
 end
 
@@ -1131,7 +1131,7 @@ class ConflictLocaleSuggestion < ActiveRecord::Base
   end
 
   def inspect
-    "##{self.conflict_text_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.conflict_text.name}"
+    "ConflictLocaleSuggestion: ##{self.conflict_text_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.conflict_text.name}"
   end
 end
 

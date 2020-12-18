@@ -21,6 +21,7 @@ db/*.db
 .rvmrc*
 Gemfile.lock
 public/data/*
+public/img/Conflict
 lib/sheets/*
 lib/locales/*
 stored_token.json

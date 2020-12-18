@@ -14,8 +14,12 @@ class Image < ActiveRecord::Base
     puts "\r#{total.yellow} images processed, #{lost.to_s.red} images found to be lost."
   end
 
+  def file_path
+    "#{self.file.store_path}#{self.file.file.filename}"
+  end
+
   def check_lost
-    if File.exists?("#{self.file.store_path}#{self.file.file.filename}")
+    if File.exists?(self.file_path)
       self.update_attribute(:lost, false) if self.lost
     else
       self.update_attribute(:lost, true) unless self.lost
@@ -67,7 +71,7 @@ class Image < ActiveRecord::Base
   end
 
   def inspect
-    self.file_url
+    "Image: #{self.attachable_type.cyan}##{self.attachable_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.file.file.filename}"
   end
 
   def set_defaults
