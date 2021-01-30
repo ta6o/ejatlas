@@ -4,6 +4,10 @@ class Document < ActiveRecord::Base
   mount_uploader :file, DocumentUploader
   belongs_to :conflict
 
+  def file_path
+    "#{self.file.store_path}#{self.file.file.filename}"
+  end
+
   def file_url
     return "#{$fileurl}/docs/#{self.conflict.id}/#{self.file.file.filename}"
   end

@@ -152,8 +152,10 @@ Admin.controllers :conflicts do
             end
           else
             rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
+            puts "#{"aha:".red}: #{kk}"
             p rr
             if rr.empty?
+              puts "empty!".cyan
               rr = [eval(kk[0].classify).create!(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)]
             end
             id = rr.first.id
@@ -321,13 +323,18 @@ Admin.controllers :conflicts do
         puts "document".yellow
         @conflict.documents.where(:locale=>oloc).order(:pid).each do |ref|
           unless Document.where(:locale=>loc, :conflict_id=>ref.conflict_id, :pid=>ref.pid).first
-            Document.create(
-              :title => ref.title,
-              :description => ref.description,
-              :conflict_id => ref.conflict_id,
-              :locale => loc,
-              :pid => ref.pid
-            )
+            begin
+              doc = Document.create(
+                :title => ref.title,
+                :description => ref.description,
+                :conflict_id => ref.conflict_id,
+                :locale => loc,
+                :pid => ref.pid
+              )
+              doc.file.store!(File.open(ref.file_path))
+              doc.save!
+            rescue
+            end
           end
         end
         puts "image".yellow
@@ -703,6 +710,7 @@ Admin.controllers :conflicts do
             v.each do |l,w|
               rel = ConflictRelation.both(@conflict.id,l.to_i)
               if w['remove'] and rel
+                puts "destroy!".red
                 rel.destroy
                 next 
               elsif w['add'] and !rel
@@ -714,6 +722,7 @@ Admin.controllers :conflicts do
             v.each do |l,w|
               rel = CTag.where(conflict_id: @conflict.id, tag_id: l.to_i).first
               if w['remove'] and rel
+                puts "destroy!".red
                 rel.destroy
                 next 
               elsif w['add'] and !rel
@@ -1187,7 +1196,6 @@ Admin.controllers :conflicts do
   end
 
   post :remove_suggested_language do
-    pp params
     cls = ConflictLocaleSuggestion.find(params["id"])
     begin
       cls.destroy!

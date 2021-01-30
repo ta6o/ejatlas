@@ -71,7 +71,7 @@ class Image < ActiveRecord::Base
   end
 
   def inspect
-    "Image: #{self.attachable_type.cyan}##{self.attachable_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.file.file.filename}"
+    "Image: #{self.attachable_type.cyan}##{self.attachable_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.file.file.filename.yellow} #{self.title}"
   end
 
   def set_defaults

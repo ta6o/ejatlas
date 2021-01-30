@@ -1104,6 +1104,7 @@ class ConflictText < ActiveRecord::Base
   belongs_to :conflict
   has_many :conflict_locale_suggestions
   has_many :timeline_entries
+  after_destroy :delete_refs
 
   def timeline
     self.timeline_entries.order("entry_datestamp")
@@ -1119,6 +1120,23 @@ class ConflictText < ActiveRecord::Base
 
   def inspect
     "ConflictText: ##{self.conflict_id.to_s.rjust(5,"0").cyan}-#{self.locale.to_s.green}-#{self.id.to_s.rjust(5,"0").green}: #{self.name} (#{(self.approval_status||"").magenta}, #{(self.attributes.values-[nil]).length.to_s.blue}/#{self.attributes.length.to_s.blue})"
+  end
+
+  private
+  def delete_refs
+    multies = {
+      'reference'=>{:attr=>self.conflict.references,:class=>Reference},
+      'legislation'=>{:attr=>self.conflict.legislations,:class=>Legislation},
+      'weblink'=>{:attr=>self.conflict.weblinks,:class=>Weblink},
+      'medialink'=>{:attr=>self.conflict.medialinks,:class=>Medialink},
+      'document'=>{:attr=>self.conflict.documents,:class=>Document},
+      'image'=>{:attr=>self.conflict.images,:class=>Image}
+    }
+    multies.each do |k,v|
+      v[:attr].where(:locale=>self.locale).each do |ref|
+        ref.destroy
+      end
+    end
   end
 end
 

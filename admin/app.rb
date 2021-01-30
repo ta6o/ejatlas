@@ -363,8 +363,11 @@ class Admin < Padrino::Application
     @cls = cls
     @conflict = cls.conflict_text.conflict
     @language = $iso639[cls.locale]
+    cloc = I18n.locale
+    I18n.locale = cls.locale
     html = Tilt.new("#{Dir.getwd}/admin/views/mailers/language_suggested.haml").render(self)
     Admin.send_mail(@account, I18n.t("emails.conflict_locale_suggestion.moderation_request_for_var_on", conflict_name: @conflict.name, language:@language), html)
+    I18n.locale = cloc
   end
 
   def self.collaborator_invite(ct,account,suggesting)
