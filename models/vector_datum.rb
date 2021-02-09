@@ -75,7 +75,14 @@ class GeoLayer < ActiveRecord::Base
         end
         hex
       end
-      sld = JSON.parse(sld)
+      begin
+        sld = JSON.parse(sld)
+      rescue => e
+        puts "#{self.name.green} #{self.url.yellow}"
+        puts sld
+        puts e.to_s.red
+        return false
+      end
       first = []
       last = []
       olfirst = []
