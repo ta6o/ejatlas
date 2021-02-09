@@ -53,12 +53,17 @@
       $.each($(".geolayers input[type=checkbox]:checked"),function(i,e){
         slugs.push($(e).closest("td").next("td").data("slug"))
       })
-      $.post("/featureds/update_geoserver",{slugs:slugs},function(data){
-        if (data == "ack") {
-          window.location.reload();
-        } else {
-          $("#loading").remove();
-          alert("Error occured while updating layers, please try again.")
-        }
-      })
+      console.log("slugs:",slugs)
+      if(slugs.length > 0) {
+        $.post("/featureds/update_geoserver",{slugs:slugs},function(data){
+          if (data == "ack") {
+            window.location.reload();
+          } else {
+            $("#loading").remove();
+            alert("Error occured while updating layers, please try again.")
+          }
+        })
+      } else {
+        alert("Please tick the layers you want to update.")
+      }
     }
