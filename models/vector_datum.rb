@@ -3,8 +3,9 @@ class GeoLayer < ActiveRecord::Base
   has_many :featureds, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Featured"
   has_many :conflicts, :through => :geo_layer_attachables, :source=>:attachable, :source_type=>"Conflict"
 
-  def self.check_layers slugs=[]
+  def self.check_layers slugs
     require "rest_client"
+    slugs = [] unless slugs
     puts slugs.join(", ").magenta
     local = GeoLayer.all.map(&:slug)
     layers = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"]
