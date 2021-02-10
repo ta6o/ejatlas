@@ -573,7 +573,7 @@ Admin.controller do
     end
     @fid = con.id
     @color = "##{con.color}"
-    @ol = false unless [81,86].include(@fid) # HACK
+    @ol = false unless [81,86].include?(@fid) # HACK
     headers({ 'X-Frame-Options' => 'ALLOWALL' })
     render "base/feat", :layout => @layout
   end
