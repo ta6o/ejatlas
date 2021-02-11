@@ -643,7 +643,7 @@ function initMap() {
         $("#popup").popover('destroy');
         pn = fl[0].properties_[fl[1].get("title_col")]
         if (typeof pn == "undefined") { pn = fl[1].get("name") }
-        inf = "<div class='maplink darkred'><h4>"+pn+"</h4></div><div class='scrollme'>";
+        inf = "<div class='maplink darkred'><h4>"+pn+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'>";
         ia = []
         if (fl[0].properties_ != {}) {
           titled = false;
