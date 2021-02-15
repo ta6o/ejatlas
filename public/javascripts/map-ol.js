@@ -76,7 +76,7 @@ function identify(e) {
       if(data.features.length !== 0) {
         console.log(data)
         var returnedFeature = data.features[0];
-        inf = "<div class='maplink darkred'><h4>"+n+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'><p>";
+        inf = "<div class='maplink darkblue'><h4>"+n+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'><p>";
         $.each(returnedFeature.properties,function(k,v){
           if(l["omit"].indexOf(k) == -1 ) {
             inf += "<strong>"+k+":</strong> "+v+"<br/>"
@@ -643,7 +643,7 @@ function initMap() {
         $("#popup").popover('destroy');
         pn = fl[0].properties_[fl[1].get("title_col")]
         if (typeof pn == "undefined") { pn = fl[1].get("name") }
-        inf = "<div class='maplink darkred'><h4>"+pn+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'>";
+        inf = "<div class='maplink darkblue'><h4>"+pn+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'>";
         ia = []
         if (fl[0].properties_ != {}) {
           titled = false;
@@ -1379,7 +1379,7 @@ function onEachFeature(feature, layer) {
   } else {
     pn = feature.properties.pn
   }
-  inf = "<div class='maplink darkred'><h4>"+pn+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'>";
+  inf = "<div class='maplink darkblue'><h4>"+pn+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'>";
   ia = []
   if (Object.keys(choropleths).indexOf(layer.feature.category) >= 0) {
     layer.setStyle(style(layer.feature));

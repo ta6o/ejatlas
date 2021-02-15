@@ -22773,7 +22773,7 @@ function identify(e) {
       if(data.features.length !== 0) {
         console.log(data)
         var returnedFeature = data.features[0];
-        inf = "<div class='maplink darkred'><h4>"+n+"</h4></div><div class='scrollme'><p>";
+        inf = "<div class='maplink darkblue'><h4>"+n+"</h4></div><div class='scrollme'><p>";
         $.each(returnedFeature.properties,function(k,v){
           if(l["omit"].indexOf(k) == -1 ) {
             inf += "<strong>"+k+":</strong> "+v+"<br/>"
@@ -23823,7 +23823,7 @@ function onEachFeature(feature, layer) {
   } else {
     pn = feature.properties.pn
   }
-  inf = "<div class='maplink darkred'><h4>"+pn+"</h4></div><div class='scrollme'>";
+  inf = "<div class='maplink darkblue'><h4>"+pn+"</h4></div><div class='scrollme'>";
   ia = []
   if (Object.keys(choropleths).indexOf(layer.feature.category) >= 0) {
     layer.setStyle(style(layer.feature));

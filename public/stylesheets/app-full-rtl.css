@@ -2,13 +2,13 @@
   font-family: 'Ubuntu';
   font-style: normal;
   font-weight: 400;
-  src: local('Ubuntu Regular'), local('Ubuntu-Regular'), url(https://fonts.gstatic.com/s/ubuntu/v15/4iCs6KVjbNBYlgoKfw7z.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/ubuntu/v15/4iCs6KVjbNBYlgoKfw7z.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Ubuntu';
   font-style: normal;
   font-weight: 700;
-  src: local('Ubuntu Bold'), local('Ubuntu-Bold'), url(https://fonts.gstatic.com/s/ubuntu/v15/4iCv6KVjbNBYlgoCxCvjsGyI.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/ubuntu/v15/4iCv6KVjbNBYlgoCxCvjsGyI.ttf) format('truetype');
 }
 /*! normalize.css v2.1.3 | MIT License | git.io/normalize */
 article,
@@ -5120,13 +5120,13 @@ button.close {
   font-family: 'Mada';
   font-style: normal;
   font-weight: 400;
-  src: local('Mada Regular'), local('Mada-Regular'), url(https://fonts.gstatic.com/s/mada/v9/7Auwp_0qnzeSfTLGKA.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/mada/v10/7Auwp_0qnzeSfTLGKA.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Mada';
   font-style: normal;
   font-weight: 900;
-  src: local('Mada Black'), local('Mada-Black'), url(https://fonts.gstatic.com/s/mada/v9/7Au_p_0qnzeSdbHhOCX2yg.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/mada/v10/7Au_p_0qnzeSdbHhOCX2yg.ttf) format('truetype');
 }
 html {
   direction: rtl;
@@ -6889,11 +6889,11 @@ small {
   color: white !important;
   cursor: pointer;
 }
-.maplink.darkred {
-  background: #6d1a18;
+.maplink.darkblue {
+  background: #0380A5;
   text-align: left;
 }
-.maplink.darkred p {
+.maplink.darkblue p {
   padding-bottom: 6px;
 }
 .leaflet-container a.leaflet-popup-close-button {
