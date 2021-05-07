@@ -59,7 +59,7 @@ Admin.controllers :ifis do
   end
 
   before do
-    if current_account.editor?
+    if current_account.editor? or current_account.roles.include?(Role.find_by_name("gis"))
       @name = "IFI's"
     else
       redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"

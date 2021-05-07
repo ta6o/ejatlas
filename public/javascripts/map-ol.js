@@ -160,13 +160,13 @@ function geoLayers() {
           source: new ol.source.VectorTile({
             url: 'https://geo.ejatlas.org/geoserver/gwc/service/tms/1.0.0/geonode:'+slug+'@EPSG%3A900913@pbf/{z}/{x}/{-y}.pbf',
             format: new ol.format.MVT({
-            idProperty: idcol,
-            tileGrid: new ol.tilegrid.TileGrid({
-              extent: ol.proj.get('EPSG:3857').getExtent(),
-              resolutions: resolutions,
-              tileSize: 512
+              idProperty: idcol,
+              tileGrid: new ol.tilegrid.TileGrid({
+                extent: ol.proj.get('EPSG:3857').getExtent(),
+                resolutions: resolutions,
+                tileSize: 512
+              }),
             }),
-          }),
           }),
         })
 
