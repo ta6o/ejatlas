@@ -119,11 +119,9 @@
                     transform: rotate(360deg);
                   }
                 }
-      %h4{:style=>'padding:12px 0;font-weight:bold;font-size:14px;'}
-        =t("v.index.you_can").gsub(/\s+/,"&nbsp;").html_safe
-        %a{:href=>'/accounts/new'}= t("v.index.contribute_to_ej_atlas").gsub(/\s+/,"&nbsp;").html_safe
-        =t("v.index.and_or").gsub(/\s+/,"&nbsp;").html_safe
-        %a{:href=>'https://docs.google.com/forms/d/1jGi8V-8-0YVRjqZXV1NN2SkSMj9TT7H4JIH44HDq6IA/viewform'}=t("v.index.fill_out_our_survey").gsub(/\s+/,"&nbsp;").html_safe
+      %p{:style=>'padding:0 0 12px 0;font-weight:normal;font-size:14px;'}
+        =t("v.index.work_in_progress").html_safe
+        %a{:href=>'/accounts/new'}= t("v.index.register_here").gsub(/\s+/,"&nbsp;").html_safe
 
   .horipane{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>t("v.help.drop_down_each_pane")}
     .title= t "v.index.legend"

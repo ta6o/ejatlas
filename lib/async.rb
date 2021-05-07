@@ -797,8 +797,9 @@ class AsyncTask
       else
         #puts 'nein!'
       end
-    rescue
-      #puts "AWS error".red
+    rescue => e
+      puts "Error on backup #{now.white}".yellow
+      puts e.to_s.red
     end
     GC.start
   end

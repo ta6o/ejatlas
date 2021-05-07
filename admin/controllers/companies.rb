@@ -62,6 +62,7 @@ Admin.controllers :companies do
   before do
     if current_account.editor? or current_account.roles.include?(Role.find_by_name("gis"))
       @name = "Companies"
+      @iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).reject {|x,y| ! $tkeys.include?(x)}
     else
       redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
     end
