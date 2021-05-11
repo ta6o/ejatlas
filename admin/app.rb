@@ -162,15 +162,18 @@ class Admin < Padrino::Application
         end
       end
       if request.query_string.match(/^translate=/) and not request.xhr?
-        I18n.locale = request.query_string.match(/^translate=(\w+)/)[1]
-        $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
+        loc = request.query_string.match(/&?translate=(\w+)/)[1]
+        if $available_locales.include? loc
+          I18n.locale = loc.to_sym
+          $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
+        end
       end
-      if I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new$/) or request.path.match(/\/edit\/\d+$/))
+      if I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new\/?$/) or request.path.match(/\/edit\/\d+\/?$/))
         query = request.query_string.match(/^translate=\w+$/) ? "" : "?#{request.query_string.sub(/translate=\w{2}/,"")}"
         if $moderated_locales.include? I18n.locale.to_s 
           return redirect to "#{Admin.local_url}#{request.path}#{query}"
         else
-          #return redirect to "#{$siteurl}#{request.path}#{query}"
+          return redirect to "#{$siteurl}#{request.path}#{query}"
         end
       end
     elsif $moderated_locales.include? locale
