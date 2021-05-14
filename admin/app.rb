@@ -157,7 +157,7 @@ class Admin < Padrino::Application
       if request.referrer and request.referrer.match(/translate=/) 
         q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
         I18n.locale = q["translate"]
-        if I18n.locale != I18n.default_locale.to_s and request.get? and not request.query_string.match(/^translate=/)
+        if I18n.locale != I18n.default_locale.to_s and request.get? and not request.query_string.match(/^translate=/) and not request.xhr?
           return redirect to "#{request.url.split(/\?/)[0]}?#{q.to_query}"
         end
       end
@@ -168,7 +168,7 @@ class Admin < Padrino::Application
           $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
         end
       end
-      if I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new\/?$/) or request.path.match(/\/edit\/\d+\/?$/))
+      if I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new\/?$/) or request.path.match(/\/edit\/\d+\/?$/)) and not request.xhr?
         query = request.query_string.match(/^translate=\w+$/) ? "" : "?#{request.query_string.sub(/translate=\w{2}/,"")}"
         if $moderated_locales.include? I18n.locale.to_s 
           return redirect to "#{Admin.local_url}#{request.path}#{query}"
@@ -579,7 +579,7 @@ class Admin < Padrino::Application
   end
 
   def self.filter_recent offset=0, query={}, order="modified_at", size=6, global=false
-    #puts JSON.pretty_generate(query).green
+    #puts JSON.pretty_generate(query).magenta
     if query.length > 0
       filter = Admin.elasticify( { bool: { must: { term: { approval_status: "approved" }}, filter: { bool: JSON.parse(query.to_json) }}} )
     elsif I18n.locale == :en or global
