@@ -152,7 +152,7 @@ Admin.controllers :conflicts do
             end
           else
             rr = eval(kk[0].classify).where(:conflict_id=>params["id"], :pid=>kk[-1].to_i, :locale=>I18n.locale.to_s)
-            puts "#{"aha:".red}: #{kk}"
+            #puts "#{"aha:".red}: #{kk}"
             p rr
             if rr.empty?
               puts "empty!".cyan
@@ -165,6 +165,7 @@ Admin.controllers :conflicts do
           next if id == 0
           refs[kk[0]][id] = {} unless refs[kk[0]].has_key? id
           refs[kk[0]][id][type] = v
+          #pp refs
         elsif impacts.has_key? root
           impacts[root][v].push k.split('_')[-1].to_i
           params.delete k
