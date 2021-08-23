@@ -1,0 +1,32 @@
+-content_for :include do
+  =javascript_include_tag "raphael", "colorwheel"
+.row.whitebox{:style=>'margin-bottom:0;'}
+  .col-md-4
+    .group
+      =f.label :name
+      =f.error_message_on :name
+      =f.text_field :name, :class => :text_field
+
+    .group
+      =f.label :description
+      =f.error_message_on :description
+      ~f.text_area :description, :class => :text_area, :rows=>5
+
+  .col-md-4
+    .group
+      %label Color
+      %input#fill_color{:type=>'text',:value=>"",:name=>'tag[domain]'}
+      #fill_wheel{:style=>'margin:0 auto'}
+      :javascript
+        var fcw = Raphael.colorwheel($('#fill_wheel'), 220);
+        fcw.input($("#fill_color")[0]);
+        $(document).ready(function(){
+          $("#fill_color").val("#{@tag.domain}");
+          if ("#{@tag.domain}".match(/^[a-fA-F0-9]{6}$/)){
+            fcw.color("##{@tag.domain}");
+          }
+        });
+
+  .col-md-4
+    .group.navform.wat-cf
+      =f.submit pat(:save), :class => 'btn pull-right'

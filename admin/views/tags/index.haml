@@ -1,0 +1,66 @@
+-# coding: utf-8
+-content_for :include do
+  =stylesheet_link_tag 'tablesorter/style'
+  =javascript_include_tag 'jquery.tablesorter.min', 'uitablefilter'
+.row.wide
+  .col-md-12
+    .hero-unit
+      %h1.title
+        =mt('Tags')
+        %small
+          %a{:href=>'/tags/new'} add new
+    .inner
+      %table.table.tablesorter#sortme
+        %thead
+          %tr
+            %th.first Name
+            %th #conflicts
+            %th Description
+            %th Color
+            %th Created at
+            %th.last
+              %form#filter-form
+                %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
+        %tbody
+          -@tags.each do |tag|
+            %tr
+              %td.first=tag.name
+              %td=tag.conflicts.count
+              -if tag.description
+                %td=tag.description.split(/\n/)[0]
+              -else
+                %td &nbsp;
+              %td
+                -if tag.domain and  tag.domain.match(/^[a-fA-F0-9]{6}$/)
+                  %svg{:id=>tag.name.downcase.gsub(/\s/,''),:width=>"40",:height=>"40",:viewPort=>"0 0 40 40",:version=>"1.1",:xmlns=>"http://www.w3.org/2000/svg"}
+                    %rect{:x=>4,:y=>4,:width=>32,:height=>32, :rx=>8, :ry=>8}
+                  :css
+                    svg##{tag.name.downcase.gsub(/\s/,'')} > rect 
+                    {
+                      fill: ##{tag.domain};
+                    }
+                -else
+                  = tag.domain
+              %td=tag.created_at.strftime("%Y-%m-%d")
+              %td.last
+                =link_to pat('Edit'), url(:tags, :edit, :id => tag.id), :method => :get
+                -if tag.conflicts.empty?
+                  =link_to pat('Delete'), url(:tags, :delete, :id => tag.id), :method => :get
+
+      :javascript
+        $(document).ready(function(){
+          $('#sortme').tablesorter({
+            headers: { 
+              5: { sorter: false } 
+            } 
+          });
+          var theTable = $('table#sortme')
+          $("#filter").click(function(){$('#filter').focus();});
+          $("#filter").keyup(function() {
+            $.uiTableFilter( theTable, this.value );
+          })
+          $('#filter-form').submit(function(){
+            return false;
+          }).focus(); 
+        });
+

@@ -560,6 +560,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "slug", limit: 255
     t.text "description"
     t.string "domain", limit: 255
+    t.timestamps
   end
 
   create_table "timeline_entries", id: :serial, force: :cascade do |t|

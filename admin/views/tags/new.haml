@@ -1,0 +1,9 @@
+-# coding: utf-8
+.row
+  .col-md-12
+    .hero-unit
+      %h1.title
+        Create Tag
+    .inner
+      =form_for :tag, url(:tags, :create), :class => :form do |f|
+        =partial "tags/form", :locals => { :f => f }
