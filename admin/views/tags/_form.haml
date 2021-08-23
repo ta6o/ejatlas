@@ -8,6 +8,11 @@
       =f.text_field :name, :class => :text_field
 
     .group
+      =f.label :slug
+      =f.error_message_on :slug
+      =f.text_field :slug, :class => :text_field
+
+    .group
       =f.label :description
       =f.error_message_on :description
       ~f.text_area :description, :class => :text_area, :rows=>5
