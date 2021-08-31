@@ -1,7 +1,7 @@
 Admin.controllers :tags do
 
   before do
-    if current_account.editor?
+    if current_account.gis?
       @name = "Tags"
     else
       redirect to "/sessions/login?return=#{request.path.sub(/^\//,'')}"
