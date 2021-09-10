@@ -16,9 +16,8 @@
             %th.first Name
             %th Slug
             %th #conflicts
-            %th Description
             %th Color
-            %th Created at
+            %th Updated at
             %th.last
               %form#filter-form
                 %input#filter{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'Filter'}/
@@ -28,11 +27,7 @@
               %td.first=tag.name
               %td=tag.slug
               %td=tag.conflicts.count
-              -if tag.description
-                %td=tag.description.split(/\n/)[0]
-              -else
-                %td &nbsp;
-              %td
+              %td{:title=>"##{tag.domain}"}
                 -if tag.domain and  tag.domain.match(/^[a-fA-F0-9]{6}$/)
                   %svg{:id=>tag.name.downcase.gsub(/\s/,''),:width=>"40",:height=>"40",:viewPort=>"0 0 40 40",:version=>"1.1",:xmlns=>"http://www.w3.org/2000/svg"}
                     %rect{:x=>4,:y=>4,:width=>32,:height=>32, :rx=>8, :ry=>8}
@@ -43,11 +38,13 @@
                     }
                 -else
                   = tag.domain
-              %td=tag.created_at.strftime("%Y-%m-%d")
+              %td=tag.updated_at.strftime("%Y-%m-%d")
               %td.last
                 =link_to pat('Edit'), url(:tags, :edit, :id => tag.id), :method => :get
                 -if tag.conflicts.empty?
                   =link_to pat('Delete'), url(:tags, :delete, :id => tag.id), :method => :get
+                -if tag.filter
+                  =link_to pat('Refresh'), url(:tags, :update_filter, :id => tag.id), :method => :get
 
       :javascript
         $(document).ready(function(){

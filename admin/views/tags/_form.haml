@@ -17,6 +17,13 @@
       =f.error_message_on :description
       ~f.text_area :description, :class => :text_area, :rows=>5
 
+    .group
+      =f.label :filter_id
+      =f.error_message_on :filter_id
+      =f.select :filter_id, :collection => @filters, :fields => [:name, :id], :include_blank => true, :class=>'basic_input'
+      -if @tag.filter
+        %a{:href=>"/editfilter/#{@tag.filter.uid}", :target=>"_blank"}= "Edit filter #{@tag.filter.name}"
+
   .col-md-4
     .group
       %label Color

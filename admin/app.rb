@@ -133,6 +133,7 @@ class Admin < Padrino::Application
   $ips = Socket.ip_address_list.find_all{|ai| ai.ipv4?}.map &:ip_address
 
   $client = Elasticsearch::Client.new log:false
+  $dlocale = :en
 
   Delayed::Worker.destroy_failed_jobs = false
 
@@ -148,7 +149,6 @@ class Admin < Padrino::Application
 
   before do
     if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0].downcase)
-      $dlocale = :en
       I18n.default_locale = :en
       I18n.locale = :en
       $dir = "ltr"

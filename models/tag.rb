@@ -7,8 +7,32 @@ class Tag < ActiveRecord::Base
 
   has_many :old_slugs, class_name: "OldSlug", as: :attachable, dependent: :destroy
 
+  belongs_to :filter
+
   def inspect
     "#{self.id.to_s.cyan}: #{self.name}"
+  end
+
+  def index
+    $client.index index: $esindex, type: "doc",  id: "tag_#{self.id}", body: {id:self.id,name:self.name,slug:self.slug,type:"tag"}
+  end
+
+  def update_from_filter
+    return false unless self.filter
+    fc = self.filter.conflicts
+    ctd = []
+    self.c_tags.each do |ct|
+      unless fc.include? (ct.conflict)
+        ctd << ct.id
+      end
+    end
+    ctd.each { |ct| CTag.find(ct).destroy }
+    fc.each do |c|
+      unless self.conflicts.include?(c)
+        self.conflicts << c
+      end
+    end
+    self.index
   end
 
   before_save :set_slug
@@ -37,6 +61,7 @@ class Tag < ActiveRecord::Base
   private
   def set_slug
     self.slug = Admin.slugify self.name unless self.slug
+    self.index
   end
 end
 

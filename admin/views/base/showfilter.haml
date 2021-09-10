@@ -1,0 +1,13 @@
+.row
+  .col-md-3.col-sm-4.col-xs-12
+    %br/
+    %h3 
+      Filter:
+      %b= @filter.name || @filter.uid
+
+    -@conflicts.each do |con|
+      %p
+        %b= con.id
+        &nbsp;
+        %span= con.name
+

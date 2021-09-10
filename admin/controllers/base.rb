@@ -719,10 +719,11 @@ Admin.controller do
 
   get :filters do
     pass unless current_account
+    @name = "Filters"
     if current_account.editor?
-      @filters = Filter.all
+      @filters = Filter.order("updated_at desc")
     else
-      @filters = Filter.where(:account_id => current_account.id)
+      @filters = Filter.where(:account_id => current_account.id).order("updated_at desc")
     end
     render "base/filters", :layout => "application"
   end
@@ -738,7 +739,21 @@ Admin.controller do
     return "nack"
   end
 
+  get "/filter/new/?" do
+    @name = "New filter"
+    @page_type = "feat"
+    pass unless current_account
+    @filter = Filter.new :query=>"{}"
+    @filter.unique
+    @filterform = {}
+    ca = Cached.where(:locale=>I18n.locale)
+    @filterform = JSON.parse(ca.first.filterdata) if ca.any?
+    @filterhash = {}
+    render "base/editfilter", :layout => "application"
+  end
+
   get :editfilter, :with => :uid do
+    @name = "Editing filter"
     @page_type = "feat"
     pass unless current_account
     filter = Filter.find_by_uid(params["uid"])
@@ -770,10 +785,9 @@ Admin.controller do
       if filter.any?
         filter = filter.first
       else
-        filter = Filter.new(account_id: current_account.id)
+        filter = Filter.new(account_id: current_account.id,:uid=>params["uid"])
       end
     end
-    pp params
     filter.query = params["data"]
     filter.result_length = Admin.filter(params["data"],false).length
     filter.name = params["name"] if (params.has_key?("name"))
@@ -833,6 +847,20 @@ Admin.controller do
     end
   end
 
+  get :filter, :with => :uid do
+    @page_type = "feat"
+    pass unless current_account
+    filter = Filter.find_by_uid(params["uid"])
+    if filter and (filter.account == current_account or current_account.editor? or filter.public)
+      @filter = filter
+    else
+      redirect to "/filters"
+    end
+    @conflicts = @filter.conflict_ids.map { |x| Conflict.find(x) }
+    render "base/showfilter", :layout => "application"
+  end
+
+
   post :search do
     pass unless params.has_key?("token")
     token = params.delete("token")
@@ -852,6 +880,7 @@ Admin.controller do
     token = params[:token]
     model = params[:model]
     model = "country" if model == "country_of_company"
+    model = "tag" if model == "tags"
     return "[]" if model == "account" and not current_account
     filter = {bool:{must:[{query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}},{match:{type: model}}]}}
     res = $client.search(index: $esindex, type: "doc", body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}

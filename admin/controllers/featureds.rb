@@ -33,6 +33,7 @@ Admin.controllers :featureds do
     ca = Cached.loc(I18n.locale)
     @filterform = JSON.parse(ca.filterdata)
     @filterinfo = ca.conflicts_json
+    @name = "New FM"
     render 'featureds/new'
   end
 
@@ -56,6 +57,7 @@ Admin.controllers :featureds do
     unless current_account and @featured and (@featured.account_id == current_account.id or current_account.gis?)
       redirect to "/featureds"
     end
+    @name = "Editing FM: #{@featured.name}"
     @featured.description = @featured.description.gsub("\n","<br />")
     @features = JSON.parse(@featured.features) - $attrhash.values  
     @page_type = "feat"

@@ -1,7 +1,13 @@
 .row
+  .col-xs-12
+    %h3
+      Editing filter
+      %b= @filter.name
+      %small
+        %a{:href=>'/filters'} all filters
+.row
   .col-md-3.col-sm-4.col-xs-12
     %br/
-    %h3 Edit filter
     .group
       %label{:for=>"name"} Name
       %br/
@@ -61,7 +67,7 @@
         url: "/savefilter",
         data: {uid:"#{@filter.uid}",data:serializeFilter().query,name:$("#name").val(),description:$("#description").val(),"public":$("#public").prop("checked")},
         success: function(uid){
-          window.location.reload();
+          window.location = "/editfilter/#{@filter.uid}"
         }
       })
     }

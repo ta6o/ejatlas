@@ -160,7 +160,7 @@
           %select#tag
             %option{:disabled=>true} Click to tag featured map
             -Tag.all.each do |t|
-              %option{:value=>t.id}=t.name
+              %option{:value=>t.id}=t.slug
         .col-md-3
           #addt.btn Add
       %ul#tagi{:style=>'padding:12px 0;list-style-type:none'}

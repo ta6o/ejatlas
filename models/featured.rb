@@ -183,6 +183,7 @@ class Featured < ActiveRecord::Base
       #json << JSON.parse(c.json)
       #json << {:id=>c.id, :name=>c.name}
       marker << cmarker.to_json
+
       link << c.as_button(data)
     end
     self.conflicts_json = json.to_json

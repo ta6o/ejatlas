@@ -560,6 +560,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.string "slug", limit: 255
     t.text "description"
     t.string "domain", limit: 255
+    t.integer "filter_id"
     t.timestamps
   end
 

@@ -2,8 +2,25 @@ class Filter < ActiveRecord::Base
   self.primary_key = :id
 
   belongs_to :account
+  has_many :tags
 
   validate :unique
+
+  def conflicts
+    begin
+      Admin.filter(self.query).map {|x| Conflict.find(x["_id"])}
+    rescue
+      []
+    end
+  end
+
+  def conflict_ids
+    begin
+      Admin.filter(self.query).map {|x| x["_id"]}
+    rescue
+      []
+    end
+  end
 
   def inspect
     self.uid
