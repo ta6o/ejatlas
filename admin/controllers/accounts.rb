@@ -144,7 +144,7 @@ Admin.controllers :accounts do
     if current_account.editor? or @account == current_account
       roles = params["account"].delete("roles")
       roles ||= []
-      if @account.update_attributes(params[:account])
+      if @account.update(params[:account])
         #puts @account.crypted_password
         roles.each do |name,val|
           #p [name,val]
@@ -194,7 +194,7 @@ Admin.controllers :accounts do
     @account.confirmed = true
     @account.role = "user"
     if current_account.editor? or @account == current_account
-      if @account.update_attributes(params[:account])
+      if @account.update(params[:account])
         flash[:notice] = 'Account was successfully updated.'
         redirect to 'welcome'
       else
