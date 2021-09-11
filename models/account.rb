@@ -76,7 +76,7 @@ class Account < ActiveRecord::Base
   end
 
   def index
-    $client.index index: $esindex, type: 'doc', id: "acc_#{self.id}", body:{:id=>self.id, :name=>self.name, :type=>"account"}
+    $client.index index: $esindex, id: "acc_#{self.id}", body:{:id=>self.id, :name=>self.name, :type=>"account"}
   end
 
   def inspect

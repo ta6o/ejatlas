@@ -6,7 +6,7 @@ Admin.controllers :companies do
     #puts JSON.pretty_generate(filter).green
     begin
       # TODO: fix score filter, name => slug
-      result = $client.search(index: $esindex, type: "doc", body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_source"]["id"]}
+      result = $client.search(index: $esindex, body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_source"]["id"]}
     rescue =>e
       puts e.to_s.red
     end

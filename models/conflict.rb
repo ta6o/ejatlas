@@ -404,7 +404,7 @@ class Conflict < ActiveRecord::Base
   end
 
   def index loc=I18n.locale
-    $client.update index: "#{$esindex}_#{loc}", type: "conflict", id: self.id, body: { doc: self.elastic }
+    $client.update index: "#{$esindex}_#{loc}", id: self.id, body: { doc: self.elastic }
   end
 
   def print

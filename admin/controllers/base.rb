@@ -883,7 +883,7 @@ Admin.controller do
     model = "tag" if model == "tags"
     return "[]" if model == "account" and not current_account
     filter = {bool:{must:[{query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}},{match:{type: model}}]}}
-    res = $client.search(index: $esindex, type: "doc", body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
+    res = $client.search(index: $esindex, body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
     if ["country","region"].include?(model)
       res = res.map{|c| {:value=>c[:value], :label=>I18n.t("countries.#{c[:label].shorten_en}")}}
     end
@@ -894,7 +894,7 @@ Admin.controller do
     id = params[:id]
     model = params[:model]
     filter = {bool:{must:[{query_string:{query:"#{token}*",fields:['name'],default_operator:"AND"}},{match:{type: model}}]}}
-    res = $client.search(index: $esindex, type: "doc", body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
+    res = $client.search(index: $esindex, body: {from:0,size:9999,"_source":{"includes":[:name,:id]},query:filter})['hits']['hits'].map{|i|{:value=>i['_source']['id'],:label=>i['_source']['name']}}
     if ["country","region"].include?(model)
       res = res.map{|c| {:value=>c[:value], :label=>I18n.t("countries.#{c[:label].shorten_en}")}}
     end

@@ -14,7 +14,7 @@ class Tag < ActiveRecord::Base
   end
 
   def index
-    $client.index index: $esindex, type: "doc",  id: "tag_#{self.id}", body: {id:self.id,name:self.name,slug:self.slug,type:"tag"}
+    $client.index index: $esindex, id: "tag_#{self.id}", body: {id:self.id,name:self.name,slug:self.slug,type:"tag"}
   end
 
   def update_from_filter

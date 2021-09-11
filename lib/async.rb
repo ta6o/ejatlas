@@ -860,9 +860,9 @@ class AsyncTask
             #times[:save] += Time.now - tc
             tc = Time.now
             begin
-              client.update index: "#{$esindex}_#{locale}", type: 'conflict', id: c.id, body: {doc: c.elastic(locale)}
+              client.update index: "#{$esindex}_#{locale}", id: c.id, body: {doc: c.elastic(locale)}
             rescue
-              client.index index: "#{$esindex}_#{locale}", type: 'conflict', id: c.id, body: c.elastic(locale)
+              client.index index: "#{$esindex}_#{locale}", id: c.id, body: c.elastic(locale)
             end
             #times[:index] += Time.now - tc
             markers << c.as_marker if c.approval_status == "approved" and (locale == "en" or Country.where(:default_locale=>locale).map(&:id).include?(c.country_id))
@@ -894,7 +894,7 @@ class AsyncTask
         countries << [c.jsonize(locale,false),lc] if lc >= 1
         global << [c.jsonize(locale,true),lc] if lc >= 1 and locale.to_s == "en"
         c.save
-        client.index index: $esindex, type: "doc", id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
+        client.index index: $esindex, id: "cnt_#{c.id}", body: {id:c.id,name:c.name,type:"country"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per country)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
@@ -932,7 +932,7 @@ class AsyncTask
         next if lc == 0
         companies << [c.jsonize,lc] if lc >= 1
         c.save
-        client.index index: $esindex, type: "doc",  id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
+        client.index index: $esindex, id: "com_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"company"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per company)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
@@ -960,7 +960,7 @@ class AsyncTask
         lc = c.local_conflicts_count(locale)
         supporters << [c.jsonize,lc] if lc >= 1
         c.save
-        client.index index: $esindex, type: "doc",  id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
+        client.index index: $esindex, id: "ifi_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"financial_institution"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per IFI)      "
         if job_id and Time.now - tu >= 12
           tu = Time.now
@@ -1191,8 +1191,8 @@ class AsyncTask
       puts "Updating tags...".green if total > 0
       t0 = Time.now
       Tag.all.each_with_index do |c,counter|
-        #client.index index: "#{$esindex}_#{locale}", type: 'tag', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: $esindex, type: "doc",  id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
+        #client.index index: "#{$esindex}_#{locale}", id: c.id, body: {id:c.id,name:c.name}
+        client.index index: $esindex, id: "tag_#{c.id}", body: {id:c.id,name:c.name,slug:c.slug,type:"tag"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per tag)      "
       end
       print "#{(Time.now-t0).to_i}s".yellow if total > 0
@@ -1204,8 +1204,8 @@ class AsyncTask
       total = accs.length
       t0 = Time.now
       accs.each_with_index do |c,counter|
-        #client.index index: "#{$esindex}_#{locale}", type: 'account', id: c.id, body: {id:c.id,name:c.name}
-        client.index index: $esindex, type: "doc",  id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
+        #client.index index: "#{$esindex}_#{locale}", id: c.id, body: {id:c.id,name:c.name}
+        client.index index: $esindex, id: "acc_#{c.id}", body: {id:c.id,name:c.name,slug:c.name.slug,type:"account"}
         print "\r  #{(((counter+1)/total.to_f*1000).to_i/10.0).to_s.green}% done. (#{(counter+1).to_s.cyan}/#{total.to_s.cyan}, #{((Time.now-t0)/counter).round(3)}s per account)      "
       end
 

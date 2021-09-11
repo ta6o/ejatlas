@@ -604,7 +604,7 @@ class Admin < Padrino::Application
     end
     #Admin.color_pp(filter)
     #puts JSON.pretty_generate(filter).yellow
-    result = $client.search(index: "#{$esindex}_#{global ? :en : I18n.locale}", type: "conflict", body: {sort:{order=>{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
+    result = $client.search(index: "#{$esindex}_#{global ? :en : I18n.locale}", body: {sort:{order=>{order:"desc"}},from:offset,size:size,"_source":{includes:[:id,:name,:slug,:headline,:modified_at]},query:filter})["hits"]["hits"].map{|x| x["_source"]}
     #pp result
     result
   end
@@ -640,9 +640,9 @@ class Admin < Padrino::Application
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: filter }}} )
       filter = Admin.cleanup(filter)
       if count_only
-        result = $client.count(index: $esindex, type: "doc", body: {"query"=>filter})["count"]
+        result = $client.count(index: $esindex, body: {"query"=>filter})["count"]
       else
-        result = $client.search(index: $esindex, type: "doc", body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+        result = $client.search(index: $esindex, body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
       end
     end
     #puts result.length.to_s.green
@@ -653,7 +653,7 @@ class Admin < Padrino::Application
 
   def self.get_elastic id
     begin
-      return $client.get(index:"atlas_en", type:"conflict", id:id)["found"]
+      return $client.get(index:"atlas_en", id:id)["found"]
     rescue
       return false
     end

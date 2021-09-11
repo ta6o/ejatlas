@@ -5,7 +5,7 @@ Admin.controllers :ifis do
     filter = Admin.elasticify( { bool: { must: { query_string: { query: "(*#{keywordz.join("*) OR (*")}*)", fields:["name","slug"]}}, filter: { term: { type: "financial_institution"}}}} )
     #puts JSON.pretty_generate(filter).green
     begin
-      result = $client.search(index: $esindex, type: "doc", body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_source"]["id"]}
+      result = $client.search(index: $esindex, body: {"size":10000,"_source":{includes:[:id]},query:filter})["hits"]["hits"].map{|x| x["_source"]["id"]}
     rescue =>e
       puts e.to_s.red
     end
