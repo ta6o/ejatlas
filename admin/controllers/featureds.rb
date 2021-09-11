@@ -134,7 +134,7 @@ Admin.controllers :featureds do
     end
     params[:featured][:color].gsub! /#/, ''
     @featured.published = false unless params[:featured].has_key?('published')
-    if @featured.update_attributes!(params[:featured])
+    if @featured.update(params[:featured])
       #puts "featured map saved".green
       flash[:notice] = 'Featured was successfully updated.'
       if params['conflict']
@@ -227,7 +227,7 @@ Admin.controllers :featureds do
     feat = Featured.find(params.delete(:fid))
     layer = GeoLayer.find(params.delete(:lid))
     params["attributes_omitted"] = params["attributes_omitted"].to_json
-    layer.update_attributes!(params)
+    layer.update(params)
     return redirect to "/featureds/edit/#{feat.id}"
   end
 
