@@ -33,6 +33,7 @@ class Admin < Padrino::Application
 
   require 'pp'
   require 'colorize'
+  require 'net/http/persistent'
   require "./lib/i18n-translate-override.rb"
   load "./config/vars.rb"
 

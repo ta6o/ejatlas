@@ -721,7 +721,7 @@ class Conflict < ActiveRecord::Base
           cnt = '<table><tr>'
           cnt += arr.join '</tr><tr>'
           cnt += '</tr></table>'
-          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless arr.length == 0
+          ta += "<tr><td class=\"fld\">#{va[-1]}</td><td>'+cnt+'</td></tr>" unless arr.length == 0
         when :impc
           man = eval 'v.c_'+va[1]+'_impacts'
           avis = []
