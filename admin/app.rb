@@ -140,7 +140,14 @@ class Admin < Padrino::Application
 
   $ips = Socket.ip_address_list.find_all{|ai| ai.ipv4?}.map &:ip_address
 
-  $client = Elasticsearch::Client.new log:false
+  $client = Elasticsearch::Client.new({
+    :host => 'localhost',
+    :port => 9200,
+    :user => 'elastic',
+    :password => $espass,
+    :scheme => 'http',
+    :log => false,
+  })
   $dlocale = :en
 
   Delayed::Worker.destroy_failed_jobs = false
