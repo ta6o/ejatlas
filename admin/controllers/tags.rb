@@ -39,7 +39,7 @@ Admin.controllers :tags do
   put :update, :with => :id do
     @tag = Tag.find(params[:id])
     params["tag"]["domain"].sub!(/^#/,"")
-    if @tag.update_attributes(params[:tag])
+    if @tag.update(params[:tag])
       flash[:notice] = 'Tag was successfully updated.'
       #redirect url(:tags, :edit, :id => @tag.id)
       @tags = Tag.order("updated_at desc")

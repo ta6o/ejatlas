@@ -37,7 +37,7 @@ Admin.controllers :types do
 
   put :update, :with => :id do
     @type = Type.find(params[:id])
-    if @type.update_attributes(params[:type])
+    if @type.update(params[:type])
       flash[:notice] = 'Type was successfully updated.'
       redirect url(:types, :index)
     else

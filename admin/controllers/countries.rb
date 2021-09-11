@@ -38,7 +38,7 @@ Admin.controllers :countries do
 
   put :update, :with => :id do
     @country = Country.find(params[:id])
-    if @country.update_attributes(params[:country])
+    if @country.update(params[:country])
       flash[:notice] = 'Country was successfully updated.'
       redirect url(:countries, :edit, :id => @country.id)
     else

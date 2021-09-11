@@ -516,7 +516,7 @@ Admin.controllers :conflicts do
     if updated["conflict"]["slug"] == ""
       updated["conflict"]["slug"] = Admin.slugify(updated["conflict"]["name"])
     end
-    @conflict.update_attributes(updated["conflict"])
+    @conflict.update(updated["conflict"])
     puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".green
     if @conflict.save :validate => false
       puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".yellow
@@ -953,7 +953,7 @@ Admin.controllers :conflicts do
     cid = params.delete(:cid).to_i
     conflict = Conflict.find cid if cid > 0
     if params['id'] and tag = Tag.find(params['id'])
-      tag.update_attributes!(params)
+      tag.update(params)
       return {:status=>:success,:tag=>tag.attributes}.to_json
     elsif Tag.find_by_slug(Admin.slugify(params["name"]))
       return {:status=>:error,:message=>"Found another tag with similar name"}.to_json
@@ -1049,7 +1049,7 @@ Admin.controllers :conflicts do
     involvement = params.delete 'involvement'
     conflict = Conflict.find cid if cid > 0
     if params['id'] and actor = eval("#{model}.find #{params['id']}")
-      actor.update_attributes!(params)
+      actor.update(params)
     else
       actor = eval("#{model}.new(params)")
     end

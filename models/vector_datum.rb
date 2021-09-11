@@ -20,7 +20,7 @@ class GeoLayer < ActiveRecord::Base
         if slugs.empty? or slugs.include?(data["name"])
           puts "#{data["title"].cyan} (#{data["name"]})"
           gl = GeoLayer.find_by_slug(data["name"])
-          gl.update_attributes(attrs)
+          gl.update(attrs)
           gl.update_style
         else
           puts "#{data["title"].yellow} (#{data["name"]})"
@@ -53,9 +53,9 @@ class GeoLayer < ActiveRecord::Base
       end
       idcol = attributes.include?("feature_id") ? "feature_id" : omitted[0]
       if creating
-        self.update_attributes :attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:id_column => idcol
+        self.update :attributes_available=>attributes.to_json,:attributes_omitted=>omitted.to_json,:id_column => idcol
       else
-        self.update_attributes :attributes_available=>attributes.to_json
+        self.update :attributes_available=>attributes.to_json
       end
     end
   end
@@ -306,8 +306,8 @@ class GeoLayer < ActiveRecord::Base
         icon = nil
       end
     end
-    #self.update_attributes :style => style, :icon=>icon
-    self.update_attributes :style => olstyle, :icon=>icon
+    #self.update :style => style, :icon=>icon
+    self.update :style => olstyle, :icon=>icon
     return true
   end
 

@@ -176,7 +176,7 @@ Admin.controllers :vectors do
     if params['style']['name'] == 'borders' or params['style']['fill_opacity'] == "0"
       params['style']['fill_color'] = 'none'
     end
-    if @style.update_attributes(params['style'])
+    if @style.update(params['style'])
       @style.vector_data.each {|v| v.save!}
       flash[:notice] = 'vector was successfully updated.'
       redirect url(:vectors, :editstyle, :id => @style.id)
@@ -199,7 +199,7 @@ Admin.controllers :vectors do
     params['vector_datum']['name'] = UnicodeUtils.titlecase(params['vector_datum']['name'])
     @vector = VectorDatum.find(params[:id])
     pp params
-    if @vector.update_attributes(params[:vector_datum])
+    if @vector.update(params[:vector_datum])
       if params['vector'] and params['vector']['file']
         result = Admin.vectorupload params['vector'], @vector, params['precision']
         if result == "ok"

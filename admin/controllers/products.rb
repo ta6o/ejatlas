@@ -35,7 +35,7 @@ Admin.controllers :products do
 
   put :update, :with => :id do
     @product = Product.find(params[:id])
-    if @product.update_attributes(params[:product])
+    if @product.update(params[:product])
       flash[:notice] = 'Product was successfully updated.'
       redirect url(:products, :edit, :id => @product.id)
     else
