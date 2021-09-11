@@ -451,7 +451,7 @@ Admin.controllers :conflicts do
             else
               ConflictAccount.create :conflict_id => conflict.id, :account_id => acc.id
               conflict.ping(params["loc"])
-              $client.update index: "#{$esindex}_#{params["loc"]}", type: 'conflict', id: conflict.id, body: {doc: conflict.elastic(params["loc"])}
+              $client.update index: "#{$esindex}_#{params["loc"]}", id: conflict.id, body: {doc: conflict.elastic(params["loc"])}
               Admin.collaborator_invite ConflictText.where(:conflict_id=>conflict.id, :locale=>params["loc"]).first, acc, current_account
               return "ok"
             end
@@ -502,7 +502,7 @@ Admin.controllers :conflicts do
     @conflict = Conflict.find(params[:id])
     "nack"
     if @conflict and @conflict.update_attribute("modified_at",Time.now) 
-      $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: { doc: @conflict.elastic }
+      $client.update index: "#{$esindex}_#{I18n.locale}", id: @conflict.id, body: { doc: @conflict.elastic }
       return "ack" 
     end
   end
@@ -530,7 +530,7 @@ Admin.controllers :conflicts do
       if @conflict.save :validate=>false
         puts "CONFLICT CREATE '#{@conflict.name}' at #{Time.now} by #{current_account.email} from #{request.ip}".red
         flash[:notice] = 'Conflict was successfully created.'
-        $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+        $client.index index: "#{$esindex}_#{I18n.locale}", id: @conflict.id, body: @conflict.elastic
         return {:status=>:success,:id=>@conflict.id}.to_json
       end
     else
@@ -624,9 +624,9 @@ Admin.controllers :conflicts do
           end
           @conflict.ping(I18n.locale)
           if $client.exists(index: "#{$esindex}_#{I18n.locale}", id: @conflict.id)
-            $client.update index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(I18n.locale)}
+            $client.update index: "#{$esindex}_#{I18n.locale}", id: @conflict.id, body: {doc: @conflict.elastic(I18n.locale)}
           else
-            $client.index index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(I18n.locale)}
+            $client.index index: "#{$esindex}_#{I18n.locale}", id: @conflict.id, body: {doc: @conflict.elastic(I18n.locale)}
           end
           flash[:notice] = 'Translation was successfully saved.'
           return {:status=>:success}.to_json
@@ -834,13 +834,13 @@ Admin.controllers :conflicts do
             flash[:notice] = 'Conflict was successfully saved.'
             #puts current_account.role.yellow
             if current_account.editor?
-              $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
-              $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
+              $client.index index: "#{$esindex}_#{I18n.locale}", id: @conflict.id, body: @conflict.elastic
+              $client.update(index:"#{$esindex}_#{I18n.locale}", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
             else
               if Admin.get_elastic @conflict.id
-                $client.update(index:"#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
+                $client.update(index:"#{$esindex}_#{I18n.locale}", id: @conflict.id, body: {doc: {saved_at: @conflict.saved_at, approval_status: @conflict.approval_status, edited_by: current_account.id}})
               else
-                $client.index index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: @conflict.id, body: @conflict.elastic
+                $client.index index: "#{$esindex}_#{I18n.locale}", id: @conflict.id, body: @conflict.elastic
               end
             end
 
@@ -853,7 +853,7 @@ Admin.controllers :conflicts do
             end
             #redirect "/conflicts/edit/#{@conflict.id}#{hash}"
             @conflict.ping(I18n.locale)
-            $client.update index: "#{$esindex}_#{I18n.locale}", type: 'conflict', id: @conflict.id, body: {doc: @conflict.elastic(locale)}
+            $client.update index: "#{$esindex}_#{I18n.locale}", id: @conflict.id, body: {doc: @conflict.elastic(locale)}
             response = {:status=>"success"}
           end
         rescue => e
@@ -875,7 +875,7 @@ Admin.controllers :conflicts do
     conflict.approval_status = 'approved'
     ct.approval_status = 'approved'
     if conflict.save(:validate=>false) and ct.save(:validate=>false)
-      $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"approved"}}
+      $client.update index: "#{$esindex}_#{I18n.locale}", id: conflict.id, body: {doc:{approval_status:"approved"}}
       flash[:notice] = 'Conflict was approved by your consent.'
     else
       flash[:error] = 'Unable to approve Conflict!'
@@ -890,7 +890,7 @@ Admin.controllers :conflicts do
     conflict.approval_status = 'queued'
     ct.approval_status = 'queued'
     if conflict.save(:validate=>false) and ct.save(:validate=>false)
-      $client.update index: "#{$esindex}_#{I18n.locale}", type: "conflict", id: conflict.id, body: {doc:{approval_status:"queued"}}
+      $client.update index: "#{$esindex}_#{I18n.locale}", id: conflict.id, body: {doc:{approval_status:"queued"}}
       flash[:notice] = 'Conflict was disapproved by your consent.'
     else
       flash[:error] = 'Unable to disapprove Conflict!'
@@ -1210,7 +1210,7 @@ Admin.controllers :conflicts do
     c = Conflict.find(params[:id].to_i)
     if c.destroy
       #puts "DELETED: Conflict ##{c.id} (#{c.name}) is sent to the depths of history."
-      $client.delete index:"#{$esindex}_#{I18n.locale}", type:"conflict", id: params[:id].to_i
+      $client.delete index:"#{$esindex}_#{I18n.locale}", id: params[:id].to_i
       redirect to "/conflicts/deleted"
     else
       redirect to "/conflicts/edit/#{c.id}"

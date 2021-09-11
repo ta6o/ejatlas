@@ -163,7 +163,10 @@
                             -if index < conflict["collaborators"].length - 1
                               ="/"
                     -elsif conflict["account_id"] 
-                      %span= Account.find(conflict["account_id"]).name
+                      -begin
+                        %span= Account.find(conflict["account_id"]).name
+                      -rescue
+                        %span [account deleted]
                   %td{:style=>"width:92px"}
                     -if conflict["saved_at"]
                       -#%span=Time.parse(conflict["saved_at"].to_s).strftime '%Y-%m-%d'
