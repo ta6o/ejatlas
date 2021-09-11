@@ -142,6 +142,7 @@ class Admin < Padrino::Application
 
   $client = Elasticsearch::Client.new({
     :host => 'localhost',
+    :adapter => :net_http_persistent,
     :port => 9200,
     :user => 'elastic',
     :password => $espass,
