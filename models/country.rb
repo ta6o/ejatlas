@@ -62,7 +62,7 @@ class Country < ActiveRecord::Base
     return self.name unless self.capital
     city = self.capital.split('|')[0]
     puts self.capital
-    uri = URI("http://nominatim.openstreetmap.org/search?city=#{city.to_ascii.downcase.gsub(' ','+')}&format=jsonv2")
+    uri = URI("http://nominatim.openstreetmap.org/search?city=#{I18n.transliterate(city).downcase.gsub(' ','+')}&format=jsonv2")
     begin
       res = Net::HTTP.get_response(uri)
     rescue => e 

@@ -28,6 +28,9 @@ class Admin < Padrino::Application
   # layout  :my_layout             # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
   #
 
+  $tkeys = []
+  Dir.foreach("#{Dir.pwd}/lib/locales") {|x| $tkeys << x.split(".")[0] unless x.match(/^\./)}
+
   require 'pp'
   require 'colorize'
   require "./lib/i18n-translate-override.rb"
@@ -36,10 +39,14 @@ class Admin < Padrino::Application
   enable  :sessions
   enable  :store_location
 
+  I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
+  I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
+
+  Admin.fetch_translations false
+  I18n.backend.load_translations
+
 
   $title = 'EJAtlas'
-  $tkeys = []
-  Dir.foreach("#{Dir.pwd}/lib/locales") {|x| $tkeys << x.split(".")[0] unless x.match(/^\./)}
   $iso639 = JSON.parse(File.read("#{Dir.pwd}/lib/iso639.json")).select {|x| $tkeys.include?(x)}
 
   $pagedesc = 'Mapping ecological conflicts and spaces of resistance'
@@ -617,9 +624,9 @@ class Admin < Padrino::Application
       end
       #puts filter.to_s.yellow
       if count_only
-        result = $client.count(index:"#{$esindex}_#{$dlocale}",type: type, body: {"query"=>filter})["count"]
+        result = $client.count(index:"#{$esindex}_#{$dlocale}", body: {"query"=>filter})["count"]
       else
-        result = $client.search(index:"#{$esindex}_#{$dlocale}",type: type, body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+        result = $client.search(index:"#{$esindex}_#{$dlocale}", body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
       end
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: filter }}} )
@@ -810,98 +817,6 @@ class Admin < Padrino::Application
   end
 
 
-  def self.fetch_translations download=true
-    if download
-      `rm #{Dir.pwd}/lib/sheets/*`
-      print "\rFetching..."
-      require "google_drive"
-      api_id = "***REMOVED***.apps.googleusercontent.com"
-      api_key = "***REMOVED***"
-      $session = GoogleDrive.saved_session("./stored_token.json", nil, api_id, api_key)
-      file = $session.spreadsheet_by_key("***REMOVED***")
-      file.worksheets.each do |ws|
-        next if ws.title.downcase == "legend"
-        CSV.open("#{Dir.pwd}/lib/sheets/#{ws.title.downcase}.csv","w") do |csv|
-          ws.rows.each do |row|
-            csv << row
-          end
-        end
-      end
-      File.open("#{Dir.pwd}/lib/sheets/stamp","w"){|f| f << Time.now.to_i}
-    end
-
-    print "\rParsing..."
-    locales = {}
-    locs = []
-    keys = []
-    $tstatus = {}
-    `rm #{Dir.pwd}/lib/locales/* &> /dev/null` unless Dir.empty?("#{Dir.pwd}/lib/locales/")
-    Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
-      next if file.match /^\./
-      next unless file.match /\.csv$/
-      next if file.match(/^auto/)
-      file = file.strip
-      CSV.read("#{Dir.pwd}/lib/sheets/#{file}").each_with_index do |row,ind|
-        domain = "models,views,forms".split(",").include?(file.sub(/\.csv$/,"").slug) ? file[0].slug : file.sub(/\.csv$/,"").slug("_")
-        fn = file.split(".")[0].slug
-        $tstatus[fn] = {} unless $tstatus.has_key?(fn)
-        if ind == 0
-          locs = row.map{|loc| loc.slug("_")}
-          locs[1..-1].each do |loc| 
-            next if loc == ""
-            $tstatus[fn][loc] = 0
-            if locales.has_key?(loc)
-              locales[loc][domain] = {} unless locales[loc].has_key?(domain)
-            else
-              locales[loc] = {domain=>{}} 
-            end
-          end
-        else
-          scope = row[0].strip.split(/\./)
-          if ["m","c"].include? domain
-            key = row[locs.index("master")].slug("_").split("_")[0..7].join("_")
-          else
-            key = row[locs.index("master")].shorten_en
-          end
-          keys << key
-          row.each_with_index do |c,i|
-            next if i == 0
-            next if c.nil? or c.length == 0
-            loc = locs[i]
-            next if loc == ""
-            $tstatus[fn][loc] += 1
-            point = locales[loc][domain]
-            scope.length.times do |t|
-              point[scope[t]] = {} unless point.has_key? scope[t]
-              point = point[scope[t]]
-            end
-            #puts "duplicate key: #{c}" if point[key]
-            point[key] = c.strip
-          end
-        end
-      end
-    end
-    locales.each do |k,v|
-      next if v.empty?
-      #next if k == "master"
-      File.open("#{Dir.pwd}/lib/locales/#{k}.yml","w") do |file|
-        file << {k => v}.to_yaml
-      end
-    end
-    #$tstatus.delete("master")
-    $available_locales = []
-    totals = $tkeys.map{|k| [k,0]}.to_h
-    $tstatus.each {|k,v| v.each {|l,i| totals[l] += i } }
-    master = totals.delete("master").to_f
-    totals.each {|k,v| if v / master >= 0.75 then $available_locales << k end}
-    $available_locales.sort!
-    print "\rReloading"
-    I18n.backend.reload!
-    print "\r            "
-    print "\r"
-
-  end
-
   def self.log_stdout request, status, account, keys
     begin
       platform = request.user_agent.gsub(/\([^\)]+\)/,"#|#").split("#|#")[-1].split(/\s+/)[-1]
@@ -999,12 +914,6 @@ class Admin < Padrino::Application
     cn.conflict.ping
     cn
   end
-
-  I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
-  I18n.load_path << Dir[File.expand_path("./lib/locales/") + "/*.yml"]
-
-  Admin.fetch_translations false
-  I18n.backend.load_translations
 
   def self.update_all_cache
     cacheparams = {"filter"=>"on", "conflicts"=>"on", "countries"=>"on", "companies"=>"on", "ifis"=>"on", "commodities"=>"on", "categories"=>"on", "featureds"=>"on"}

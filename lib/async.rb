@@ -1287,7 +1287,7 @@ class AsyncTask
 
   def slugify str
     return str if str.nil?
-    res = str.to_ascii
+    res = I18n.transliterate(str)
       .downcase
       .strip
       .gsub(/[-_\s\/]+/, '-')
