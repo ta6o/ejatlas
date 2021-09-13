@@ -1,6 +1,6 @@
 -# coding: utf-8
 !!!
-%html{:lang => I18n.locale.to_s, :dir=>$dir}
+%html{:lang => I18n.locale.to_s, :dir=>@dir}
   %head
     %meta{:charset => "utf-8"}/
     %title= @name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"
@@ -32,7 +32,7 @@
 
     :javascript
       function resetColumns(){};
-      $dir = "#{$dir}";
+      $dir = "#{@dir}";
       $flo = $dir == "ltr" ? "left" : "right";
       var $locale = "#{I18n.locale}";
       var attributeHash = { 

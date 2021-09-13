@@ -1,6 +1,6 @@
 -# coding: utf-8
 !!!
-%html{:lang => I18n.locale.to_s, :dir=>$dir}
+%html{:lang => I18n.locale.to_s, :dir=>@dir}
   %head
     %link{:href => "https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic&subset=latin,latin-ext", :rel=>'stylesheet', :type=>'text/css'}/
     %meta{:charset => "utf-8"}/
@@ -16,7 +16,7 @@
     %meta{:content => $pagekeyws, :name => "keywords"}/
     /%link{:href => "/stylesheets/bootstrap.less", :rel => "stylesheet/less"}/
     /=javascript_include_tag 'less'
-    -if $dir == "ltr"
+    -if @dir == "ltr"
       =stylesheet_link_tag 'main'
     -else
       =stylesheet_link_tag 'main-rtl'
@@ -71,7 +71,7 @@
             form#static_form {
               position: absolute;
               top: -57px;
-              #{ $dir == "ltr" ? "right" : "left"}: 0; 
+              #{ @dir == "ltr" ? "right" : "left"}: 0; 
             }
             form#static_form input {
               background-color: rgba(255,255,255,0.66);
@@ -86,7 +86,7 @@
             #ql_toolbar
             %br/
             #ql_editor
-              -if $dir == "ltr"
+              -if @dir == "ltr"
                 .ql-direction-ltr= yield
               -else
                 .ql-direction-rtl= yield

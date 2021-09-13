@@ -34,7 +34,7 @@
             %image{"xlink:href"=>"#{$fileurl}/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
   .summary_header
     .clearfix.commands
-      #commands{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+      #commands{:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
         %ul.clearfix.list-unstyled
           %li
             %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org%2Fconflict%2F#{@conflict.slug}",:target=>"_blank",:title=>"Share on Facebook"}
@@ -51,7 +51,7 @@
             %li
               %a{:href=>"/conflicts/edit/#{@conflict.id}",:target=>"_blank",:title=>"Edit"}
                 %span.glyphicon.glyphicon-edit
-        %span#modified{:style=>"text-align:center;color:#666;margin-top:-6px;",:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+        %span#modified{:style=>"text-align:center;color:#666;margin-top:-6px;",:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
           =@modified.html_safe
 
 

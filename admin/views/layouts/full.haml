@@ -2,7 +2,7 @@
 !!!5
 -#%html{:lang => "en", :dir => "ltr", :manifest=>"#{request.path == "/" ? "" : request.path}/manifest.txt"}
 
-%html{:lang => I18n.locale.to_s, :dir=>$dir}
+%html{:lang => I18n.locale.to_s, :dir=>@dir}
   %head
     %meta{:charset => "utf-8"}/
     %title= @name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"
@@ -31,7 +31,7 @@
     %meta{:content => (@ogimage || Admin.local_url(I18n.locale) + '/images/ejatlas-fb.jpg'), :name => "twitter:image"}/
 
     -fol = @ol ? "ol" : "full"
-    -dir = $dir == "rtl" ? "-rtl" : ""
+    -dir = @dir == "rtl" ? "-rtl" : ""
     %link{:href=>"/stylesheets/main-#{fol}#{dir}.css",:rel=>"stylesheet",:type=>"text/css"}
     %script{:src=>"/javascripts/jQl.js",:type=>"text/javascript"}
     :javascript
@@ -64,7 +64,7 @@
 
 
     #top
-      -if $dir == "ltr"
+      -if @dir == "ltr"
         .navbar.navbar-fixed-top{:role=>'navigation'}
           .navbar-inner
             %ul.nav.nav-pills{"data-help"=>"popover","data-placement"=>"bottom","title"=>"","data-content"=>t("v.help.site_menu"),:style=>"z-index:10;"}
@@ -252,7 +252,7 @@
                 }
               .inner.whitebg= yield
 
-      -if $dir == "rtl"
+      -if @dir == "rtl"
         %header
           =yield_content :outer
           .container-full
@@ -446,7 +446,7 @@
         })();
 
     :javascript
-      $dir = "#{$dir}";
+      $dir = "#{@dir}";
       $flo = $dir == "ltr" ? "left" : "right";
       function resetColumns() { }
       blocks = document.getElementsByClassName('block');

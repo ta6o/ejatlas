@@ -1,6 +1,6 @@
 -# coding: utf-8
 !!!
-%html{:lang => "en"}
+%html{:lang => I18n.locale.to_s, :dir=>@dir}
   %head
     %meta{:charset => "utf-8"}/
     %title= @name ? @name + ' | ' + $title : $title + " | Mapping Environmental Justice"
@@ -78,7 +78,7 @@
             #img.pull-left
 
     :javascript
-      $dir = "#{$dir}";
+      $dir = "#{@dir}";
       $flo = $dir == "ltr" ? "left" : "right";
       function resetColumns() { }
       blocks = document.getElementsByClassName('block');

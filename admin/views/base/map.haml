@@ -50,7 +50,7 @@
           %p
             %strong= t("v.help.please_click_markers_on_map")
           .clearfix
-            %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+            %div{:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
               %input{:type=>'checkbox'}= " &nbsp; #{t("v.help.do_not_show_this_information")}".html_safe
 
 .front
@@ -62,14 +62,14 @@
             %image{"xlink:href"=>"#{$fileurl}/patterns/#{d['filename']}.png",:x=>"0",:y=>"0",:width=>"#{d['scale']}",:height=>"#{d['scale']}"}
 
   #help.clearfix
-    %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+    %div{:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
       %h4
         %strong{:style=>'left:0',"data-help"=>"popover","data-placement"=>"left","title"=>"","data-content"=>t("v.help.show_this_help")} ?
-    %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+    %div{:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
       %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out the #EJAtlas,")}&url=#{$siteurl}",:target=>"_blank",:title=>t("v.social.tweet")}
         #share_tw 
           #img &nbsp;
-    %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+    %div{:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
       -#.fb-like{"data-href"=>"https://developers.facebook.com/docs/plugins/","data-layout"=>"button","data-action"=>"like","data-show-faces"=>"true","data-share"=>"true"}
       %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fejatlas.org",:target=>"_blank",:title=>t("v.social.share_on_facebook")}
         #share_fb 

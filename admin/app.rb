@@ -203,7 +203,7 @@ class Admin < Padrino::Application
         @locale = :en
         I18n.locale = :en
       end
-      $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
+      @dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
     else
       return redirect to "#{$siteurl}#{request.path}?translate=#{locale}"
     end

@@ -48,7 +48,7 @@
                         %input.token{:id=>"#{field}-input",:type=>'text',:style=>'width:100%'}
                       .col-xs-3
                         .btn.btn-default.create{:id=>"#{field}-create",:type=>'text',:style=>'width:32px;height:26px;padding:3px;margin-left:-24px;',"data-name"=>name,"data-field"=>field,"data-field-local"=>t("v.filter.#{field.shorten_en}"),"data-section"=>"prefix"}
-                          %icon.glyphicon{:class=>"glyphicon-arrow-#{$dir == "ltr" ? "right":"left"}"}
+                          %icon.glyphicon{:class=>"glyphicon-arrow-#{@dir == "ltr" ? "right":"left"}"}
                     %ul
                 -elsif options['name'].match(/(_datestamp|_sum)$/)
                   -range = options['content'].split('-')

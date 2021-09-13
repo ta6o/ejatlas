@@ -40,7 +40,6 @@ class Featured < ActiveRecord::Base
   end
 
   def followed_count
-    puts self.conflicts_marker
     JSON.parse(self.conflicts_marker||"[]").length
   end
 

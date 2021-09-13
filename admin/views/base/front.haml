@@ -51,23 +51,23 @@
 
   .summary_header
     .clearfix#share
-      %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+      %div{:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
         %a{:href=>"https://twitter.com/intent/tweet?text=#{CGI.escape("Check out ‘#{@title}‘ on #EJAtlas: ")}&url=#{$siteurl+request.path}",:target=>"_blank",:title=>"Tweet"}
           #share_tw 
             #img &nbsp;
-      %div{:class=>$dir=="ltr" ? "pull-right" : "pull-left"}
+      %div{:class=>@dir=="ltr" ? "pull-right" : "pull-left"}
         %a{:href=>"https://www.facebook.com/sharer/sharer.php?u=#{CGI.escape($siteurl+request.path)}",:target=>"_blank",:title=>"Share on Facebook"}
           #share_fb 
             #img &nbsp;
 
     .clearfix
       -if @image and @image.length > 0
-        %img{:class=>$dir=="ltr" ? "pull-left" : "pull-right",:src=>@image ,:style=>$dir=="ltr" ? 'max-height:20px;width:auto;margin:4px 12px 20px 0px;' : 'max-height:20px;width:auto;margin:4px 0 20px 12px;'}
-        %div{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}
+        %img{:class=>@dir=="ltr" ? "pull-left" : "pull-right",:src=>@image ,:style=>@dir=="ltr" ? 'max-height:20px;width:auto;margin:4px 12px 20px 0px;' : 'max-height:20px;width:auto;margin:4px 0 20px 12px;'}
+        %div{:class=>@dir=="ltr" ? "pull-left" : "pull-right"}
           %h2= @name
           #infopane
       -else
-        %div{:class=>$dir=="ltr" ? "pull-left" : "pull-right"}
+        %div{:class=>@dir=="ltr" ? "pull-left" : "pull-right"}
           %h2= @name
           #infopane
 
