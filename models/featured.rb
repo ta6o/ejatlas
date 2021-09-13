@@ -36,18 +36,19 @@ class Featured < ActiveRecord::Base
   end
 
   def followed
-    JSON.parse(self.conflicts_marker).map{|x| Conflict.find(JSON.parse(x)["i"])}
+    JSON.parse(self.conflicts_marker||"[]").map{|x| Conflict.find(JSON.parse(x)["i"])}
   end
 
   def followed_count
-    JSON.parse(self.conflicts_marker).length
+    puts self.conflicts_marker
+    JSON.parse(self.conflicts_marker||"[]").length
   end
 
   def filterping
     filter = "{}"
     filter = self.filter if self.filter.length > 0
     begin
-      self.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
+      self.ping((Admin.filter(filter,self.locale,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
     rescue
       self.ping((Admin.old_filter(filter) || []).sort{|a,b| a.slug <=> b.slug})
     end

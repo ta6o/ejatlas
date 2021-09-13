@@ -207,58 +207,58 @@ Admin.controllers :conflicts do
 
   get :index do
     if current_account.editor?
-      @conflicts = Admin.filter({:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}]}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
-      @accounts = Admin.filter("{}", true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
+      @conflicts = Admin.filter({:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}]}, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @accounts = Admin.filter("{}", @locale, true, 'id,name'.split(","),false,'account').map{|x| [x["_source"]["id"],x["_source"]["name"]]}.to_h
       @categories = Category.all.map {|c| [c.id,c.name]}.to_h
     else
-      @conflicts = Admin.filter({:must => [ { :bool => {:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}] }}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter({:must => [ { :bool => {:must_not => [{ :term => { :approval_status=>:deleted}},{ :term => { :approval_status=>:auto_tx}}] }}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
     render 'conflicts/index'
   end
 
   get :approved do
     if current_account.editor?
-      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:approved}}}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
-      @accounts = Admin.filter("{}", true, "id,name".split(","),false,"account").map{|x| [x["_source"]["id"], x["_source"]["name"]]}.to_h
+      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:approved}}}, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @accounts = Admin.filter("{}", @locale, true, "id,name".split(","),false,"account").map{|x| [x["_source"]["id"], x["_source"]["name"]]}.to_h
       @categories = Category.all.map {|c| [c.id,c.name]}.to_h
     else
-      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:approved}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:approved}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
     render 'conflicts/index'
   end
 
   get :modified do
     if current_account.editor?
-      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:modified}}}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:modified}}}, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     else
-      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:modified}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:modified}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
     render 'conflicts/index'
   end
 
   get :queued do
     if current_account.editor?
-      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:queued}}}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:queued}}}, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     else
-      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:queued}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:queued}}, @locale, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
     render 'conflicts/index'
   end
 
   get :draft do
     if current_account.editor?
-      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:draft}}}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:draft}}}, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     else
-      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:draft}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:draft}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
     render 'conflicts/index'
   end
 
   get :deleted do
     if current_account.editor?
-      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:deleted}}}, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter({:must => { :term => { :approval_status=>:deleted}}}, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     else
-      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:deleted}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
+      @conflicts = Admin.filter( {:must => [ { :term => { :approval_status=>:deleted}}, { :bool=> {:should => [ {:term=>{:account_id=>current_account.id}}, {:term=>{:collaborators=>current_account.id}} ]}} ] }, @locale, false, "id,name,slug,account_id,edited_by,category_id,saved_at,approval_status,tags,collaborators".split(","),false,"conflict","saved_at","desc").map{|x| x["_source"]}
     end
     render 'conflicts/index'
   end

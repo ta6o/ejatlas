@@ -21,7 +21,7 @@ class Country < ActiveRecord::Base
 
   def conflicts_count
     f = {:must=>{:term=>{:country_id=>self.id}}}
-    Admin.filter(f, true, [], true, 'conflict', 'id', 'asc', true)
+    Admin.filter(f, :en, true, [], true, 'conflict', 'id', 'asc', true)
   end
 
   def jsonize locale=:en, keep_para=false
@@ -143,7 +143,7 @@ class Region < ActiveRecord::Base
 
   def conflicts_count
     f = {:must=>{:term=>{:regıon_id=>self.id}}}
-    Admin.filter(f, true, [], true, 'conflict', 'id', 'asc', true)
+    Admin.filter(f, :en, true, [], true, 'conflict', 'id', 'asc', true)
   end
 
   def jsonize locale=:en

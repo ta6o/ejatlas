@@ -45,7 +45,7 @@ Admin.controllers :featureds do
     params[:featured][:color].gsub! /#/, ''
     if @featured.save!
       flash[:notice] = 'Featured was successfully created.'
-      @featured.ping(Admin.filter(@featured.filter,false))
+      @featured.ping(Admin.filter(@featured.filter, @locale,false))
       return {:status=>"success",:id=>@featured.id}.to_json
     else
       return {:status=>"error",:message=>"featured map not saved"}.to_json
@@ -271,7 +271,7 @@ Admin.controllers :featureds do
     begin
       filter = "{}"
       filter = featured.filter if featured.filter.length > 0
-      stack = (Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end} - [nil]).sort{|a,b| a.slug <=> b.slug}
+      stack = (Admin.filter(filter, @locale,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end} - [nil]).sort{|a,b| a.slug <=> b.slug}
     rescue => e
       stack = Admin.old_filter(featured.filter).sort{|a,b| a.slug <=> b.slug}
     end

@@ -121,7 +121,7 @@ Admin.controllers :ifis do
       end
     end
     pa = {'keys'=>token}
-    @keywords = Admin.filter_merged_ifis pa
+    @keywords = Admin.filter_merged_ifis pa, @locale
     render 'supporters/merge_thin', :layout=>false
   end
 
@@ -129,7 +129,7 @@ Admin.controllers :ifis do
     if params["keys"] == ""
       @keywords = {"blank search"=>[]}
     else
-      @keywords = Admin.filter_merged_ifis params
+      @keywords = Admin.filter_merged_ifis params, @locale
     end
     render 'supporters/merge'
   end

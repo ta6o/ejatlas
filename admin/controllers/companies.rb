@@ -121,7 +121,7 @@ Admin.controllers :companies do
       end
     end
     pa = {'keys'=>token}
-    @keywords = Admin.filter_merged_comps pa
+    @keywords = Admin.filter_merged_comps pa, @locale
     render 'companies/merge_thin', :layout=>false
   end
 
@@ -129,7 +129,7 @@ Admin.controllers :companies do
     if params["keys"] == ""
       @keywords = {"blank search"=>[]}
     else
-      @keywords = Admin.filter_merged_comps params
+      @keywords = Admin.filter_merged_comps params, @locale
     end
     render 'companies/merge'
   end

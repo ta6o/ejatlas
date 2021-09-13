@@ -1095,7 +1095,7 @@ class AsyncTask
           begin
             filter = "{}"
             filter = featured.filter if featured.filter.length > 0
-            featured.ping((Admin.filter(filter,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
+            featured.ping((Admin.filter(filter,featured.locale,false).map{|i| begin Conflict.find(i['_id'].to_i) rescue nil end}-[nil]).sort{|a,b| a.slug <=> b.slug})
           rescue => e
             #puts "#{featured.name} | #{e}"
             featured.ping((Admin.old_filter(featured.filter) || []).sort{|a,b| a.slug <=> b.slug})

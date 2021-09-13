@@ -391,7 +391,7 @@ Admin.controller do
     @qt = "companies"
     @id = con.id
     cf = {:must=>{:term=>{:companies=>con.id}}}
-    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
+    @markercount = Admin.filter(cf, @locale, true, [], true, 'conflict', 'id', 'asc', true)
     @desc = "Description of #{con.name}"#con.description
     @image = nil
     @image = con.logo_images.first.file_url if con.logo_images.any?
@@ -414,7 +414,7 @@ Admin.controller do
     @qt = "supporters"
     @id = con.id
     cf = {:must=>{:term=>{:supporters=>con.id}}}
-    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
+    @markercount = Admin.filter(cf, @locale, true, [], true, 'conflict', 'id', 'asc', true)
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = I18n.t("v.index.environmental_conflicts_of_var",:company=>con.name)
@@ -431,7 +431,7 @@ Admin.controller do
     @markerinfo = con.conflicts_marker
     @filterinfo = con.conflicts_json
     cf = {:must=>{:term=>{:products=>con.id}}}
-    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
+    @markercount = Admin.filter(cf, @locale, true, [], true, 'conflict', 'id', 'asc', true)
     @name = I18n.t("m.products.#{con.name.slug("_").split("_")[0..7].join("_")}")
     @qt = "products"
     @id = con.id
@@ -457,7 +457,7 @@ Admin.controller do
     @qt = "types"
     @id = con.id
     cf = {:must=>{:term=>{:types=>con.id}}}
-    @markercount = Admin.filter(cf, true, [], true, 'conflict', 'id', 'asc', true)
+    @markercount = Admin.filter(cf, @locale, true, [], true, 'conflict', 'id', 'asc', true)
     @desc = "Description of #{con.name}"#con.description
     #@vectors = con.vector_data.select('name, url').to_json
     @maptitle = I18n.t("v.index.environmental_conflicts_about_var",:category=>I18n.t("m.types.#{con.name.slug("_").split("_")[0..7].join("_")}"))
@@ -650,7 +650,7 @@ Admin.controller do
     pass unless fil
     dmap = {"id"=>"i","category_id"=>"c","lat"=>"a","lon"=>"o"}
     data = []
-    Admin.filter(fil.query, true, ["id","lat","lon","category_id"]).map{|x| x["_source"]}.each do |h|
+    Admin.filter(fil.query, @locale, true, ["id","lat","lon","category_id"]).map{|x| x["_source"]}.each do |h|
       data << {:c=>h["category_id"],"i"=>h["id"],"a"=>h["lat"],"o"=>h["lon"]}
     end
     @markerinfo = data.to_json.html_safe
@@ -789,7 +789,7 @@ Admin.controller do
       end
     end
     filter.query = params["data"]
-    filter.result_length = Admin.filter(params["data"],false).length
+    filter.result_length = Admin.filter(params["data"], @locale,false).length
     filter.name = params["name"] if (params.has_key?("name"))
     filter.description = params["description"] if (params.has_key?("description"))
     filter.public = params["public"] if (params.has_key?("public"))
@@ -803,9 +803,9 @@ Admin.controller do
   post :filter do
     #pp params["filter"]
     if params['page_type'] == "feat"
-      Admin.filter(params["filter"],false).to_json
+      Admin.filter(params["filter"], @locale,false).to_json
     elsif params['page_type'] == "network" or params['page_type'] == "graph"
-      result = Admin.filter(params["filter"],true,params["fields"].split(","))
+      result = Admin.filter(params["filter"], @locale,true,params["fields"].split(","))
       response = {"_count"=>result.length,"_names"=>{}}
       params["fields"].split(",").each do |field|
         resp = {}
@@ -843,7 +843,7 @@ Admin.controller do
       end
       response.to_json
     else
-      Admin.filter(params["filter"]).map{|i| i['_id'].to_i }.to_json
+      Admin.filter(params["filter"], @locale).map{|i| i['_id'].to_i }.to_json
     end
   end
 
@@ -873,7 +873,7 @@ Admin.controller do
         {"match_phrase": { "suggested_alternatives":token }},
       ]
     }
-    Admin.filter(filter.to_json).map{|i| i['_id'].to_i }.to_json
+    Admin.filter(filter.to_json, @locale).map{|i| i['_id'].to_i }.to_json
   end
 
   get "/ac_json/:model" do
@@ -1016,11 +1016,11 @@ Admin.controller do
     redirect to "/sessions/login?return=export" unless current_account
     redirect back unless ["admin","editor"].include? current_account.role
     if params.has_key?("filter") and params["filter"].length == 6 and flt = Filter.find_by_uid(params["filter"])
-      params["idset"] = Admin.filter(flt.query,false).map {|x| x["_id"]}
+      params["idset"] = Admin.filter(flt.query, @locale,false).map {|x| x["_id"]}
     end
     params.delete("filter")
     if params.has_key?("feat") and feat = Featured.find(params["feat"])
-      params["idset"] = Admin.filter(feat.filter,false).map {|x| x["_id"]}
+      params["idset"] = Admin.filter(feat.filter, @locale,false).map {|x| x["_id"]}
     end
     params.delete("feat")
     params["locale"] = I18n.locale

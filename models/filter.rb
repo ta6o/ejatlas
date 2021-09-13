@@ -8,7 +8,7 @@ class Filter < ActiveRecord::Base
 
   def conflicts
     begin
-      Admin.filter(self.query).map {|x| Conflict.find(x["_id"])}
+      Admin.filter(self.query,self.locale).map {|x| Conflict.find(x["_id"])}
     rescue
       []
     end
@@ -16,7 +16,7 @@ class Filter < ActiveRecord::Base
 
   def conflict_ids
     begin
-      Admin.filter(self.query).map {|x| x["_id"]}
+      Admin.filter(self.query,self.locale).map {|x| x["_id"]}
     rescue
       []
     end

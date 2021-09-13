@@ -356,6 +356,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.boolean "published"
     t.string "headline", limit: 255
     t.integer "account_id"
+    t.string "locale", limit: 3
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "viewport", limit: 24
@@ -370,6 +371,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.boolean "public"
     t.text "description"
     t.integer "result_length"
+    t.string "locale", limit: 3
     t.datetime "created_at"
     t.datetime "updated_at"
   end

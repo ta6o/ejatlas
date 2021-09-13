@@ -164,11 +164,13 @@ class Admin < Padrino::Application
   end
 
   before do
-    if ["localhost","ejatlas","test","www"].include? (locale = request.host.split(".")[0].downcase)
+    locale = request.host.split(".")[0].downcase
+    if ["localhost","ejatlas","test","www"].include?(locale)
       I18n.default_locale = :en
       I18n.locale = :en
-      $dir = "ltr"
+      @locale = :en
       @global = true
+      @dir = "ltr"
       q = CGI::parse request.query_string
       if request.referrer and request.referrer.match(/translate=/) 
         q["translate"] = request.referrer.match(/translate=\w+/)[0].split("=")[1]
@@ -181,7 +183,7 @@ class Admin < Padrino::Application
         loc = request.query_string.match(/&?translate=(\w+)/)[1]
         if $available_locales.include? loc
           I18n.locale = loc.to_sym
-          $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
+          @dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
         end
       end
       if I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new\/?$/) or request.path.match(/\/edit\/\d+\/?$/)) and not request.xhr?
@@ -195,16 +197,17 @@ class Admin < Padrino::Application
     elsif $moderated_locales.include? locale
       I18n.default_locale = :en
       begin
-        $dlocale = locale
+        @locale = locale
         I18n.locale = locale
       rescue
-        $dlocale = :en
+        @locale = :en
         I18n.locale = :en
       end
       $dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
     else
       return redirect to "#{$siteurl}#{request.path}?translate=#{locale}"
     end
+    #puts "locale: #{@locale.to_s.yellow}"
   end
 
   after do
@@ -274,18 +277,17 @@ class Admin < Padrino::Application
       return
     end
     require 'sendgrid-ruby'
-    include SendGrid
 
     email = (user.id == 1 ? "ejoltmap@gmail.com" : user.email)
     stamp = Time.now.to_i.to_s
 
     sg = SendGrid::API.new(api_key:'***REMOVED***')
 
-    from = Email.new(email: "no-reply@ejatlas.org", name: "EJOLT Project"  )
-    to = Email.new(email: email, name: user.name)
-    content = Content.new(type: 'text/html', value: message)
+    from = SendGrid::Email.new(email: "no-reply@ejatlas.org", name: "EJOLT Project"  )
+    to = SendGrid::Email.new(email: email, name: user.name)
+    content = SendGrid::Content.new(type: 'text/html', value: message)
 
-    mail = Mail.new(from, subject, to, content)
+    mail = SendGrid::Mail.new(from, subject, to, content)
     email = {
       :to => [email],
       :toname => [user.name],
@@ -610,7 +612,7 @@ class Admin < Padrino::Application
     result
   end
 
-  def self.filter filter, all_if_empty=true, stored_fields=[], approved=true, type="conflict", sort="id", order="asc", count_only=false
+  def self.filter filter, locale=:en,  all_if_empty=true, stored_fields=[], approved=true, type="conflict", sort="id", order="asc", count_only=false
     if ["help",:help].include? filter
       puts "Admin.filter #{'filter'.magenta} => Hash, #{'all_if_empty'.cyan} => Bool(true), #{'stored_fields'.cyan} => Array([]), #{'approved'} => Bool(true), #{'type'.cyan} => String('conflict'), #{'sort'.cyan} => String('id'), #{'order'.cyan} => String('asc'), #{'count_only'.cyan} => Bool(false)"
       return
@@ -633,9 +635,9 @@ class Admin < Padrino::Application
       end
       #puts filter.to_s.yellow
       if count_only
-        result = $client.count(index:"#{$esindex}_#{$dlocale}", body: {"query"=>filter})["count"]
+        result = $client.count(index:"#{$esindex}_#{locale}", body: {"query"=>filter})["count"]
       else
-        result = $client.search(index:"#{$esindex}_#{$dlocale}", body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
+        result = $client.search(index:"#{$esindex}_#{locale}", body: {"from"=>0,"size"=>Conflict.count,"_source":source,"query"=>filter,"sort"=>{sort=>{"order"=>order}}})["hits"]["hits"]
       end
     elsif "account,company,country,financial_institution,tag".split(",").include?(type)
       filter = Admin.elasticify( { bool: { must: { match: { type: type }}, filter: { bool: filter }}} )
