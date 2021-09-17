@@ -614,7 +614,7 @@ class Conflict < ActiveRecord::Base
           else
             cn1 = "#{cna[0]}</p>"
             cn2 = "<p>#{cna[1..-1].join("</p><p>")}"
-            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">'+I18n.t("v.info.see_more",:locale=>loc)+'</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
+            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">'+(I18n.t("v.info.see_more",:locale=>loc) || "See more...")+'</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
           end
         when :name
           cnt = eval va[1]+'.'+va[2]
