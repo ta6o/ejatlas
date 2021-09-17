@@ -823,7 +823,15 @@ class AsyncTask
     puts
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
     ca = Cached.new(:locale=>locale) unless ca = Cached.loc(locale)
-    client = Elasticsearch::Client.new log: false
+    client = Elasticsearch::Client.new({
+      :host => 'localhost',
+      :adapter => :net_http_persistent,
+      :port => 9200,
+      :user => 'elastic',
+      :password => $espass,
+      :scheme => 'http',
+      :log => false,
+    })
 
     if params["reindex"] == "on"
       puts "Removing old indices...".red
