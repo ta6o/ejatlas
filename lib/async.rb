@@ -823,6 +823,8 @@ class AsyncTask
     puts
     puts "Starting cache update for #{locale.upcase.white} locale:".cyan
     ca = Cached.new(:locale=>locale) unless ca = Cached.loc(locale)
+
+    require 'net/http/persistent'
     client = Elasticsearch::Client.new({
       :host => 'localhost',
       :adapter => :net_http_persistent,

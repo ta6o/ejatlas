@@ -218,7 +218,6 @@
 -content_for :body_end do
   -if @view == [0,0,1]
     :javascript
-      $(document).ready(onLoad);
       function onLoad() {
         console.log("not ready")
         if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
@@ -237,7 +236,6 @@
       }
   -else
     :javascript
-      $(document).ready(onLoad);
       function onLoad() {
         if (typeof initMap != 'function' && typeof markerinfo != 'undefined') {
           setTimeout(onLoad,10);
@@ -265,6 +263,7 @@
 
   :javascript
     $(document).ready(function(){
+      onLoad();
       $('.horipane .ctitle').on('click',function(e){
         target = $(this).parent().find('.cdata')
         if ($(this).parent().find('.cdata:visible').length > 0) {
