@@ -3,7 +3,7 @@ Admin.helpers do
 
   def self.elasticify obj, depth=0
     #puts
-    #puts "#{depth.to_s.rjust(3).yellow}#{"  " * depth} #{obj.to_s.cyan}" if depth >= 4 and depth < 19
+    #puts "#{depth.to_s.rjust(3).yellow}#{"  " * depth} #{obj.to_s.cyan}"
     if obj.nil?
       {}
     elsif obj.is_a? String
@@ -13,26 +13,41 @@ Admin.helpers do
         obj
       end
     elsif obj.is_a? Array
-      o = obj.map{|item| Admin.elasticify item, depth+1}
-      o = o.first if o.length == 1
-      o
+      if obj.map(&:class).uniq == [Hash]
+        keys = obj.map(&:keys).flatten.uniq
+        if keys.include?("term") and keys.include?("bool")
+          b = []
+          t = []
+          obj.each do |i|
+            if i.keys.first == "term"
+              t << {"should"=>i}
+            elsif i.keys.first == "bool"
+              b << {"bool"=>[i.values.first].flatten}
+            end
+          end
+          t.each do |i|
+            b.first["bool"] << i
+          end
+          obj = b
+        end
+      end
+      obj.map!{|item| Admin.elasticify item, depth+1}
+      obj = obj.first if obj.length == 1
+      obj
     elsif obj.is_a? Hash
       terms = {}
       coc = nil
       range = nil
       obj.each do |key,val|
-        #puts "#{depth.to_s.rjust(3).yellow}#{"  " * depth} #{key.to_s.magenta}, #{val.class}" if depth >= 4 and depth < 9
         if val.is_a? String and val.length == 0 and key == "must"
           obj[key] = {}
-        end
-        if val.is_a? Array
+        elsif val.is_a? Array
           if key == 'bool'
             bool = []
             obj['bool'].each do |arr|
               arr.each do |k,v| bool << {"bool"=>{k=>v}} end
             end
             bool.delete_if {|k,v| v == []}
-            #puts "#{depth.to_s.rjust(3).yellow}#{"  " * depth} #{key.yellow} #{bool.to_s.magenta}" if depth >= 4 and depth < 9
             obj = bool
           elsif key == 'term'
             val.each do |it|
@@ -41,9 +56,9 @@ Admin.helpers do
             end
             obj.delete('term')
           end
-        end
-        if val.is_a? Hash 
-          #puts "#{depth.to_s.yellow}#{"  " * depth} #{key.yellow} #{val.to_s.green}"
+        elsif val.is_a? Hash 
+          if obj.values.map(&:class).include?(Array)
+          end
           if val.has_key?('bool') and key != 'filter'
             arr = []
             val.each do |k,v|
@@ -86,7 +101,7 @@ Admin.helpers do
           val << {k=>v}
         end
         terms.each do |k,v| 
-          #puts "#{k.magenta}, #{v}"
+          #puts "#{k.to_s.magenta}, #{v}"
           if k =='country_of_company'
             a = []
             Country.find(v).each do |c|
@@ -163,6 +178,7 @@ Admin.helpers do
         else
           filter = Admin.elasticify( { bool: { filter: { bool: filter }}} )
         end
+        #puts JSON.pretty_generate(filter).yellow
         if count_only
           result = $client.count(index:"#{$esindex}_#{locale}", body: {"query"=>filter})["count"]
         else
@@ -178,7 +194,6 @@ Admin.helpers do
         end
       end
     rescue => e
-      pp filter
       puts e.to_s.red
       []
     end
