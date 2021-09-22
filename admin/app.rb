@@ -28,6 +28,9 @@ class Admin < Padrino::Application
   # layout  :my_layout             # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
   #
 
+  $moderated_locales = []
+  $available_locales = []
+
   $tkeys = []
   Dir.foreach("#{Dir.pwd}/lib/locales") {|x| $tkeys << x.split(".")[0] unless x.match(/^\./)}
 
@@ -72,8 +75,6 @@ class Admin < Padrino::Application
 
   $relatives = {"category_id" => "Categories", "types" => "Subcategories", "population_type" => "Population Type", "country_id" => "Country", "companies"=>"Companies","supporters"=>"IFI's","products"=>"Commodities", "mobilizing_groups" => "Mobilizing Groups", "mobilizing_forms" => "Mobilizing Forms", "env_impacts"=>"Environmental Impacts", "hlt_impacts"=>"Health Impacts", "sec_impacts"=>"Socioeconomical Impacts", "conflict_events" => "Outcomes"}
 
-  $moderated_locales = []
-  $available_locales = []
 
   def self.check_locales
     $moderated_locales = ["en"]
@@ -183,7 +184,7 @@ class Admin < Padrino::Application
         loc = request.query_string.match(/&?translate=(\w+)/)[1]
         if $available_locales.include? loc
           I18n.locale = loc.to_sym
-          @dir = (I18n.locale.to_s == "ar" ? "rtl" : "ltr")
+          @dir = (["ar"].include?(I18n.locale.to_s) ? "rtl" : "ltr")
         end
       end
       if I18n.locale.to_s != I18n.default_locale.to_s and (request.path.match(/\/new\/?$/) or request.path.match(/\/edit\/\d+\/?$/)) and not request.xhr?

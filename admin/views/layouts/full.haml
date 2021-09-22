@@ -182,21 +182,24 @@
                 %p= t "v.menu.#{ @global ? "environment" : "loc" }al_justice_atlas"
             .ejatlas-logo#eja-logo{:style=>"z-index:11;"}
 
-            -if @global
-              -if request.path.match(/^\/(ol)?$/) or request.path.match(/^\/(country|company|commodity|type)/)
-                -locs = $available_locales
+            -if @global or true
+              -if request.path.match(/^\/(country|company|commodity|type)\//) or request.path == "/"
+                -locs = $available_locales.map{|x| [x,$moderated_locales.include?(x)]}
               -elsif request.path.match(/^\/conflict\//) and @conflict
-                -locs = @conflict.conflict_texts.where(:approval_status=>"approved").map(&:locale)
+                -locs = $available_locales.map{|x| [x,@conflict.conflict_texts.where(:approval_status=>"approved").map(&:locale).include?(x)]}
               -else
                 -locs = []
               %ul.languages
                 -locs.each do |locale|
-                  -if locale==I18n.locale.to_s
+                  -if locale[0]==I18n.locale.to_s
                     %li.active
-                      %a{:href=>"#"}= t("countries.language.#{locale}")
-                  -else
+                      %a{:href=>"#"}= t("countries.language.#{locale[0]}")
+                  -elsif locale[1]
                     %li
-                      %a{:href=>(locale == "en" ? "#{request.path.sub(/\/$/,"")}/?translate=en" : "#{request.path.sub(/\/$/,"")}/?translate=#{locale}")}= t("countries.language.#{locale}")
+                      %a{:href=>(locale[0] == "en" ? "#{request.path.sub(/\/$/,"")}/?translate=en" : "#{request.path.sub(/\/$/,"")}/?translate=#{locale[0]}")}= t("countries.language.#{locale[0]}")
+                  -else
+                    %li.auto
+                      %a{:href=>(locale[0] == "en" ? "#{request.path.sub(/\/$/,"")}/?translate=en" : "#{request.path.sub(/\/$/,"")}/?translate=#{locale[0]}")}= t("countries.language.#{locale[0]}")
               :css
                 ul.languages {
                   position: fixed;
@@ -211,6 +214,9 @@
                   margin-bottom: 4px;
                   cursor: pointer;
                   transition: 0.2s;
+                }
+                ul.languages li.auto {
+                  background: #666;
                 }
                 ul.languages li:hover {
                   background: #0380A5;
