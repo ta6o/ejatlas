@@ -282,7 +282,7 @@ class Admin < Padrino::Application
     email = (user.id == 1 ? "ejoltmap@gmail.com" : user.email)
     stamp = Time.now.to_i.to_s
 
-    sg = SendGrid::API.new(api_key:'***REMOVED***')
+    sg = SendGrid::API.new(api_key:$sg_api_key)
 
     from = SendGrid::Email.new(email: "no-reply@ejatlas.org", name: "EJOLT Project"  )
     to = SendGrid::Email.new(email: email, name: user.name)
@@ -672,9 +672,7 @@ class Admin < Padrino::Application
     unless $session
       puts "authenticating".red if verbose
       require "google_drive"
-      api_id = "***REMOVED***.apps.googleusercontent.com"
-      api_key = "***REMOVED***"
-      $session = GoogleDrive.saved_session("./stored_token.json", nil, api_id, api_key)
+      $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
     end
     puts "connecting".yellow if verbose
     ws = $session.spreadsheet_by_key("***REMOVED***").worksheet_by_title("auto_tx")

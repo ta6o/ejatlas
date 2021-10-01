@@ -98,9 +98,7 @@ Admin.helpers do
       `rm #{Dir.pwd}/lib/sheets/*`
       print "\rFetching..."
       require "google_drive"
-      api_id = "***REMOVED***.apps.googleusercontent.com"
-      api_key = "***REMOVED***"
-      $session = GoogleDrive.saved_session("./stored_token.json", nil, api_id, api_key)
+      $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
       file = $session.spreadsheet_by_key("***REMOVED***")
       file.worksheets.each do |ws|
         next if ws.title.downcase == "legend"
@@ -197,9 +195,7 @@ Admin.helpers do
       `rm #{Dir.pwd}/lib/sheets/*`
       print "\rFetching..."
       require "google_drive"
-      api_id = "***REMOVED***.apps.googleusercontent.com"
-      api_key = "***REMOVED***"
-      $session = GoogleDrive.saved_session("./stored_token.json", nil, api_id, api_key)
+      $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
       file = $session.spreadsheet_by_key("***REMOVED***")
       file.worksheets.each do |ws|
         next if ws.title.downcase == "legend"
@@ -296,9 +292,7 @@ Admin.helpers do
       `rm #{Dir.pwd}/lib/sheets/*`
       print "\rFetching..."
       require "google_drive"
-      api_id = "***REMOVED***.apps.googleusercontent.com"
-      api_key = "***REMOVED***"
-      $session = GoogleDrive.saved_session("./stored_token.json", nil, api_id, api_key)
+      $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
       file = $session.spreadsheet_by_key("***REMOVED***")
       file.worksheets.each do |ws|
         next if ws.title.downcase == "legend"

@@ -22,8 +22,8 @@ def create_accounts
         acc.address = p[:address]
         acc.phone = p[:phone]
         acc.role = 'user'
-        acc.password = 'direncevre'
-        acc.password_confirmation = 'direncevre'
+        acc.password = 'xxxxxxxx'
+        acc.password_confirmation = 'xxxxxxxx'
         acc.save!
         puts acc.id.to_s+ ' ' + acc.email
         acc.versions << v
