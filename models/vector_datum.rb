@@ -83,12 +83,13 @@ class GeoLayer < ActiveRecord::Base
         puts e.to_s.red
         return false
       end
+
       first = []
       last = []
       olfirst = []
       ollast = []
       imgs = []
-      
+
       sld["layers"].each do |layer|
         script = ""
         olascr = ""
@@ -170,7 +171,7 @@ class GeoLayer < ActiveRecord::Base
             else
               val = val.to_s.strip
             end
-            if    [ "fill-color", "icon-color"].include?(key)
+            if [ "fill-color", "icon-color"].include?(key)
               olascr += "\n        fill: new ol.style.Fill({"
               olascr += "\n          color: '#{val}',"
               olascr += "\n        }),"
@@ -225,6 +226,11 @@ class GeoLayer < ActiveRecord::Base
           end
           if (layer["paint"].keys & ["fill-color"]).any?
             olascr += "\n      fill: new ol.style.Fill({"
+            if layer["paint"].has_key? "fill-opacity"
+              opa = (layer["paint"]["fill-opacity"] * 255).round.to_s(16).upcase
+            else
+              opa = "FF"
+            end
             layer["paint"].each do |key,val|
               if val.is_a? Hash
                 val = val.to_json.strip
@@ -234,14 +240,12 @@ class GeoLayer < ActiveRecord::Base
               if key == "fill-color"
                 script += "\n      fill: true,"
                 script += "\n      fillColor: \"#{val}\","
-                olascr += "\n        color: \"#{val}\","
-              elsif key == "fill-opacity"
-                script += "\n      fillOpacity: #{val},"
-                # TODO
+                olascr += "\n        color: \"#{val}#{opa}\","
               elsif key == "icon-color"
                 script += "\n      fill: true,"
                 script += "\n      fillColor: \"#{val}\","
-                script += "\n      color: \"#{val}\","
+                #script += "\n      color: \"#{val}\","
+                olascr += "\n        color: \"#{val}#{opa}\","
               elsif key == "icon-size"
                 script += "\n      radius: #{val.to_json},"
               end
@@ -257,7 +261,7 @@ class GeoLayer < ActiveRecord::Base
         else
           script += "\n      stroke: false," 
         end
-        script += "\n      fill: false,"   unless layer["paint"].has_key?("fill-color") or layer["paint"].has_key?("icon-color")
+        script += "\n      fill: false,"   unless layer["paint"].has_key?("fill-color") or layer["paint"].has_key?("icon-color") or layer["paint"].has_key?("fill")
         script += "\n    })"
         script += "\n  }" if condition.any?
         if condition.any?

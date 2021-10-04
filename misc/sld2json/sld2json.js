@@ -288,7 +288,6 @@ var parseFile = function (data, file) {
           console.log(err)
         }
       }
-      console.log(filter)
       name = ""
       if (Object.keys(rule).indexOf("Name") >= 0 ){
         name = rule['Name'][0];
@@ -413,7 +412,7 @@ function getCssParameters(symbTag, validAttrTag, type, outerTag) {
     var allCssArray = symbTag[0][outerTag][0][validAttrTag][0]['SvgParameter'];
   }
 
-  console.log(allCssArray)
+  //console.log(allCssArray)
   var nrOfCssTags = Object.keys(allCssArray).length;
   var j;
   for (j = 0; j < nrOfCssTags; j++) { //for all cssParameters
@@ -432,6 +431,9 @@ function getObjFromDiffAttr(tagName, type, symbTag, file) {
     obj = getLabelObj(tagName, type, symbTag, obj);
   } else if (tagName === 'Fill') { //some fill-attributes are defined differently than the rest
     obj['fill-color'] = symbTag[0][tagName][0]["SvgParameter"][0]["_"];
+    if (symbTag[0][tagName][0]["SvgParameter"].length > 1) {
+      obj['fill-opacity'] = parseFloat(symbTag[0][tagName][0]["SvgParameter"][1]["_"]);
+    }
   } else if (tagName === 'Halo') {
     obj = getHaloObj(tagName, type, symbTag, obj);
   } else if (tagName === 'Geometry') {
@@ -488,6 +490,13 @@ function getGraphicObj(file, symbTag, type, obj) {
     obj['icon-color'] = fillColor;
   } catch (err) {
     console.log('Could not set fill color for graphic tag in file: ' + file + "\n" + err + "\n");
+  }
+  var fillOpacity;
+  try {
+    fillOpacity = symbTag[0].Graphic[0].Mark[0].FillOpacity[0]['SvgParameter'][0]['_'];
+    obj['fill-opacity'] = fillOpacity;
+  } catch (err) {
+    console.log('Could not set fill opacity for graphic tag in file: ' + file + "\n" + err + "\n");
   }
   var strokeColor;
   try {
