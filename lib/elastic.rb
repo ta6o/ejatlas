@@ -194,7 +194,7 @@ Admin.helpers do
         end
       end
     rescue => e
-      puts e.to_s.red
+      puts "Error in filter: #{e.to_s.red}"
       []
     end
     #puts result.length.to_s.green

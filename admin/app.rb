@@ -38,7 +38,6 @@ class Admin < Padrino::Application
   require 'colorize'
   require 'net/http/persistent'
   require "./lib/i18n-translate-override.rb"
-  load "./config/vars.rb"
 
   enable  :sessions
   enable  :store_location

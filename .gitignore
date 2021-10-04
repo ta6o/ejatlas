@@ -19,7 +19,7 @@ Gemfile.lock
 
 config/database.rb
 config/puma.rb
-config/vars.rb
+config/env.rb
 
 public/data/*
 public/img/Conflict

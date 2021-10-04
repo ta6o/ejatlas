@@ -811,6 +811,7 @@ class AsyncTask
 
   def setcache params
     t00 = Time.now
+    t1 = Time.now
     job_id = nil
     Delayed::Job.all.each do |job|
       if (t00.to_i - job.locked_at.to_i).abs < 3
@@ -1289,7 +1290,7 @@ class AsyncTask
     puts
     GC.start
 
-    FileUtils.rm("#{Dir.pwd}/public/data/delayed/#{job_id}.txt")
+    FileUtils.rm("#{Dir.pwd}/public/data/delayed/#{job_id}.txt") if File.exists?("#{Dir.pwd}/public/data/delayed/#{job_id}.txt")
     File.open("#{Dir.pwd}/public/data/delayed/#{job_id}.json","w") {|f| f << timings.to_json}
   end
   handle_asynchronously :setcache
