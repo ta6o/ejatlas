@@ -26,9 +26,7 @@
 # override these settings in the subapps as needed.
 #
 
-load "./config/env.rb"
 Padrino.configure_apps do
-  # enable :sessions
   set :session_secret, $session_secret
 end
 

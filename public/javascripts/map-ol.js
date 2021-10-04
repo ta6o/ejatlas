@@ -761,11 +761,17 @@ function grow(feature) {
     var radius = (ol.easing.easeOut(elapsedRatio) + 1) * (2+zoom) ;
     console.log(radius)
 
+    if (default_style=="custom") {
+      icolor = (typeof value == "undefined" ? "#000000" : "#"+value)
+    } else {
+      icolor = icon_colors[default_style][value]
+    }
+
     var style = new ol.style.Style({
       image: new ol.style.Circle({
         radius: radius,
         fill: new ol.style.Fill({
-          color: icon_colors[default_style][value]
+          color: icolor
         }),
         stroke: new ol.style.Stroke({
           color: "#000000",
@@ -829,7 +835,7 @@ var icon_colors = {
     "#EE2C2C", 
     "#46A546", 
   ],
-
+  custom: {}
 }
 
 var style_cache = {}
@@ -844,12 +850,17 @@ function highlightStyle(feature) {
   if (Object.keys(style_cache).indexOf(scode) >= 0 && false) {
     return style_cache[scode]
   }
+  if (default_style=="custom") {
+    icolor = (typeof value == "undefined" ? "#000000" : "#"+value)
+  } else {
+    icolor = icon_colors[default_style][value]
+  }
   zoom = map.getView().getZoom();
   style = [new ol.style.Style({
       image: new ol.style.Circle({
         radius: 15,
         fill: new ol.style.Fill({
-          color: icon_colors[default_style][value]
+          color: icolor
         }),
         stroke: new ol.style.Stroke({
           color: "#000000",
@@ -877,11 +888,16 @@ function markerStyle(feature) {
   }
   rad = Math.min(map.getView().getZoom() ** 1.15,9)
   if (conflict) { rad = 15 };
+  if (default_style=="custom") {
+    icolor = (typeof value == "undefined" ? "#000000" : "#"+value)
+  } else {
+    icolor = icon_colors[default_style][value]
+  }
   style = [new ol.style.Style({
       image: new ol.style.Circle({
         radius: rad,
         fill: new ol.style.Fill({
-          color: icon_colors[default_style][value]
+            color: icolor
         }),
         stroke: new ol.style.Stroke({
           color: "#000000",
@@ -918,10 +934,10 @@ function showMarkers(markers) {
   var arrr = []
 
 
-
   shownMarkers = 0
   features = $.map(markers, function(e,i){
-    popcontent = "<div class='features'>"
+    popcontent = "<div class='features'><br />"
+    console.log(e)
     $.each(e,function(k,v){
       if (["o", "a", "i", "c", "r", "s", "p", "l", "dmn", "tags"].indexOf(k) == -1 && parseInt(k.split(":")[0]) == fid) {
         if (Object.keys(attrhash).indexOf(k.split(':')[1]) >= 0){
@@ -931,11 +947,22 @@ function showMarkers(markers) {
         }
         popcontent += v;
         popcontent += "</strong>";
+      } else if (featureMap && k == "dmn"){
+        default_style = "custom"
+        icon_colors["custom"][v[0]] = v[0]
+        console.log("e",e)
+        $.each(e.tags,function(i,n){
+          popcontent += "<span class='badge' style='background-color:#"+e.dmn[i]+"'>"+n+"</span> &nbsp; "
+        })
       }
     })
     popcontent += "</div>";
     //console.log(popcontent)
-    opts = {id:e.i,geometry:new ol.geom.Point(ol.proj.fromLonLat([e.o,e.a])),properties:{category:e.c,reaction:e.r,status:e.s,project:e.p,content:popcontent}}
+    if (default_style == "custom") {
+      opts = {id:e.i,geometry:new ol.geom.Point(ol.proj.fromLonLat([e.o,e.a])),properties:{category:e.c,reaction:e.r,status:e.s,project:e.p,custom:e.dmn[0],dmn:e.dmn,content:popcontent}}
+    } else {
+      opts = {id:e.i,geometry:new ol.geom.Point(ol.proj.fromLonLat([e.o,e.a])),properties:{category:e.c,reaction:e.r,status:e.s,project:e.p,content:popcontent}}
+    }
     ma = new ol.Feature(opts)
     markerc[e.i] = ma;
     return ma
@@ -982,7 +1009,9 @@ function showMarkers(markers) {
       })
       popcontent += "<br /><br />"
 
+      console.log("yeah")
       if ('dmn' in mark && mark.dmn.length > 0) {
+        console.log(mark.dmn)
         dmns.push(mark.dmn[0])
         cclass = " c_"+mark.dmn[0];
         $.each(mark.tags,function(i,n){

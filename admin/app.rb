@@ -39,7 +39,10 @@ class Admin < Padrino::Application
   require 'net/http/persistent'
   require "./lib/i18n-translate-override.rb"
 
+  load "./config/env.rb"
+
   enable  :sessions
+  set :session_secret, $session_secret
   enable  :store_location
 
   I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
