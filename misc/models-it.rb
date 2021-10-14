@@ -3,8 +3,8 @@ $ejit = {
   :encoding => 'utf8',
   :host => '127.0.0.1',
   :port => '5432',
-  :user => "yakup",
-  :password => "***REMOVED***",
+  :user => $db_user_dev,
+  :password => $db_pass_dev,
   :database => 'ejit'
 }
 

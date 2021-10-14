@@ -4,8 +4,8 @@ if ENV['RACK_ENV'] == "development"
     :encoding => 'utf8',
     :host => '127.0.0.1',
     :port => '5432',
-    :user => "yakup",
-    :password => "***REMOVED***",
+    :user => $db_user_dev,
+    :password => $db_pass_dev,
     :database => 'ejit'
   }
 else
@@ -14,8 +14,8 @@ else
     :encoding => 'utf8',
     :host => '127.0.0.1',
     :port => '5432',
-    :user => "root",
-    :password => "***REMOVED***",
+    :username => $db_user_pro,
+    :password => $db_pass_pro,
     :database => 'ejit'
   }
 end
