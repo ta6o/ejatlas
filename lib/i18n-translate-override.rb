@@ -99,7 +99,7 @@ Admin.helpers do
       print "\rFetching..."
       require "google_drive"
       $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
-      file = $session.spreadsheet_by_key("***REMOVED***")
+      file = $session.spreadsheet_by_key($gd_sheet_id)
       file.worksheets.each do |ws|
         next if ws.title.downcase == "legend"
         CSV.open("#{Dir.pwd}/lib/sheets/#{ws.title.downcase}.csv","w") do |csv|
@@ -196,7 +196,7 @@ Admin.helpers do
       print "\rFetching..."
       require "google_drive"
       $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
-      file = $session.spreadsheet_by_key("***REMOVED***")
+      file = $session.spreadsheet_by_key($gd_sheet_id)
       file.worksheets.each do |ws|
         next if ws.title.downcase == "legend"
         CSV.open("#{Dir.pwd}/lib/sheets/#{ws.title.downcase}.csv","w") do |csv|
@@ -293,7 +293,7 @@ Admin.helpers do
       print "\rFetching..."
       require "google_drive"
       $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
-      file = $session.spreadsheet_by_key("***REMOVED***")
+      file = $session.spreadsheet_by_key($gd_sheet_id)
       file.worksheets.each do |ws|
         next if ws.title.downcase == "legend"
         CSV.open("#{Dir.pwd}/lib/sheets/#{ws.title.downcase}.csv","w") do |csv|

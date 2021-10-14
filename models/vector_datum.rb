@@ -8,7 +8,7 @@ class GeoLayer < ActiveRecord::Base
     slugs = [] unless slugs
     puts slugs.join(", ").magenta
     local = GeoLayer.all.map(&:slug)
-    layers = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/layers.json", params={}).body)["layers"]["layer"]
+    layers = JSON.parse(RestClient.get("#{$gs_url}/rest/layers.json", params={}).body)["layers"]["layer"]
     layers |= []
     layers.each do |l|
       pata = JSON.parse(RestClient.get(l["href"], params={}).body)["layer"]
@@ -41,7 +41,7 @@ class GeoLayer < ActiveRecord::Base
 
   def update_attrs creating=false
     if self.layer_type == "vector"
-      data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
+      data = JSON.parse(RestClient.get("#{$gs_url}/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
       attributes = []
       omitted = []
       idcol = nil
@@ -63,8 +63,8 @@ class GeoLayer < ActiveRecord::Base
   def update_style
     style = ""
     if self.layer_type == "vector"
-      data = JSON.parse(RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
-      sld = RestClient.get("https://geo.ejatlas.org/geoserver/rest/workspaces/geonode/styles/#{self.slug}.sld", params={}).body.gsub(/<\w+:/,"<").gsub(/<\/\w+:/,"</").gsub("<CssParameter","<SvgParameter").gsub("</CssParameter","</SvgParameter")#.gsub("<UserStyle","<StyledLayerDescriptor").gsub("</UserStyle","</StyledLayerDescriptor")
+      data = JSON.parse(RestClient.get("#{$gs_url}/rest/workspaces/geonode/datastores/geonode_data/featuretypes/#{self.slug}.json", params={}).body)["featureType"]
+      sld = RestClient.get("#{$gs_url}/rest/workspaces/geonode/styles/#{self.slug}.sld", params={}).body.gsub(/<\w+:/,"<").gsub(/<\/\w+:/,"</").gsub("<CssParameter","<SvgParameter").gsub("</CssParameter","</SvgParameter")#.gsub("<UserStyle","<StyledLayerDescriptor").gsub("</UserStyle","</StyledLayerDescriptor")
       File.open("/tmp/#{self.slug}.sld","w") {|f| f << sld}
       `/usr/bin/node #{Dir.pwd}/misc/sld2json/sld2json.js /tmp/#{self.slug}.sld`
       sld = File.read("/tmp/#{self.slug}.json")

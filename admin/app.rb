@@ -677,7 +677,7 @@ class Admin < Padrino::Application
       $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
     end
     puts "connecting".yellow if verbose
-    ws = $session.spreadsheet_by_key("***REMOVED***").worksheet_by_title("auto_tx")
+    ws = $session.spreadsheet_by_key($gd_sheet_id).worksheet_by_title("auto_tx")
     fields = ["name", "headline", "site", "province", "project_area", "project_length", "other_types", "description", "other_products", "project_details", "investment_string", "affected_people", "other_supporters", "related_conflict_string", "other_mobilizing_groups", "other_mobilizing_forms", "other_env_impacts", "other_hlt_impacts", "other_sec_impacts", "other_outcomes", "suggested_alternatives", "success_reason", "other_comments", "ejos", "govt_actors", "translator"]
     fields.each_with_index do |x,i| 
       y = ct.attributes[x]

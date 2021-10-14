@@ -33,6 +33,7 @@ stored_token.json
 misc/saves.csv
 misc/sld2json/node_modules/
 misc/sld2json/package-lock.json
+misc/passwords.txt
 
 db/*.db
 
