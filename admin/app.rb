@@ -685,7 +685,7 @@ class Admin < Padrino::Application
         if x == "description"
           ws[i+1,2] = y.gsub(/<br\/?>/,"$%&").gsub(/<\/(p|li)>/,"$%&$%&").strip_html.gsub(/&[^;]+;/,"")
         else
-          ws[i+1,2] = y.gsub(/\n/," ")
+          ws[i+1,2] = y.gsub(/\n/," ").gsub(/\e/," ")
         end
       else
         ws[i+1,2] = ""

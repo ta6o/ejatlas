@@ -36,6 +36,7 @@ class String
      .reject(&:empty?)
      .join(' ')
      .gsub(/\s,/,',')
+     .gsub(/\e/,'')
   end
   def slug fill="-", transliterate = true
     return self if self.nil?
