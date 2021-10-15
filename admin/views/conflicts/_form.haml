@@ -1262,8 +1262,8 @@
                         -if @conflict.native_locale?
                           .row{:style=>'margin-top:8px;'}
                             .col-md-3
-                              %img{:src=>"#{$siteurl}/img/#{d.file.to_s.split(/\/img\//)[1]}",:style=>'width:100%;height:auto'}
-                              .center-text
+                              %img{:src=>d.thumb_url,:style=>'width:100%;height:auto'}
+                              -#.center-text
                                 [[IMAGE]]
                             .col-md-9
                               .row
@@ -1277,8 +1277,8 @@
                         -else
                           .row{:style=>'margin-top:8px;'}
                             .col-md-3
-                              %img{:src=>"#{$siteurl}/img/#{d.file.to_s.split(/\/img\//)[1]}",:style=>'width:100%;height:auto'}
-                              .center-text
+                              %img{:src=>d.thumb_url,:style=>'width:100%;height:auto'}
+                              -#.center-text
                                 [[IMAGE]]
                             .col-md-9
                               .row

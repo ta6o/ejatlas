@@ -591,16 +591,16 @@ class Conflict < ActiveRecord::Base
       val[2].each do |va|
         case va[0]
         when :sect
-          ta += '<tr class="sect"><td><p class="lead" style="margin-bottom:0;font-size:14px;line-height:16px">'+va[-1]+'</p></td><td>'
+          ta += "<tr class=\"sect\"><td><p class=\"lead\" style=\"margin-bottom:0;font-size:14px;line-height:16px\">#{va[-1]}</p></td><td>"
         when :date
-          cnt = eval va[1]+'.'+va[2]
-          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.strftime("%d/%m/%Y")+'</td></tr>' unless cnt.nil? or cnt == ''
+          cnt = eval "#{va[1]}.#{va[2]}"
+          ta += "<tr><td class=\"fld\">#{va[-1]}</td><td>#{cnt.strftime("%d/%m/%Y")}</td></tr>" unless cnt.nil? or cnt == ""
         when :flat
-          cnt = eval va[1]+'.'+va[2]
+          cnt = eval "#{va[1]}.#{va[2]}"
           cnt = cnt.to_s
           cnt.gsub!(/\r/,"\n")
           cnt.gsub!(/\n\n/,"\n")
-          ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt.gsub(/\n/,"<br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
+          ta += "<tr><td class=\"fld\">#{va[-1]}</td><td>#{cnt.gsub(/\n/,"<br/>")}</td></tr>" unless cnt.nil? or cnt == ""
         when :mini
           cnt = eval(va[1]+'.'+va[2]).to_s
           cnt.gsub!(/\r/,"\n")
@@ -608,19 +608,19 @@ class Conflict < ActiveRecord::Base
           cnt = "<p>#{cnt.gsub(/\n/,"</p><p>")}</p>" unless cnt.match(/<p>/)
           cna = cnt.split(/<\/p>\s*<p>/)
           if cna.length == 0
-            ta += ''
+            ta += ""
           elsif cna.length == 1 or options[:print] == true
-            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns">'+cnt.gsub(/\n/,"<br/><br/>")+'</td></tr>' unless cnt.nil? or cnt == ''
+            ta += "<tr><td class=\"fld\">#{va[-1]}</td><td class=\"columns\">#{cnt.gsub(/\n/,"<br/><br/>")}</td></tr>" unless cnt.nil? or cnt == ""
           else
             cn1 = "#{cna[0]}</p>"
             cn2 = "<p>#{cna[1..-1].join("</p><p>")}"
-            ta += '<tr><td class="fld">'+va[-1]+'</td><td class="columns"><div class="less">'+cn1+'</div><a class="seemore" href="#">'+(I18n.t("v.info.see_more",:locale=>loc) || "See more...")+'</a><div class="more" style="display:none">'+cn2+'<br/><br/><a class="seeless" href="#">(See less)</a></div></td></tr>'
+            ta += "<tr><td class=\"fld\">#{va[-1]}</td><td class=\"columns\"><div class=\"less\">#{cn1}</div><a class=\"seemore\" href=\"#\">#{(I18n.t("v.info.see_more",:locale=>loc) || "See more...")}</a><div class=\"more\" style=\"display:none\">#{cn2}<br/><br/><a class=\"seeless\" href=\"#\">(See less)</a></div></td></tr>"
           end
         when :name
-          cnt = eval va[1]+'.'+va[2]
+          cnt = eval "#{va[1]}.#{va[2]}"
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+I18n.t("m.#{va[2]}_id.#{cnt.name.slug('_').split("_")[0..7].join("_")}",:locale=>loc)+'</td></tr>' unless cnt.nil? or cnt == ''
         when :link
-          cnt = eval va[1]+'.'+va[2]
+          cnt = eval "#{va[1]}.#{va[2]}"
           if va[2] == "country"
             ta += '<tr><td class="fld">'+va[-1]+'</td><td><a href="/'+va[3].to_s+'/'+cnt.slug.to_s+'">'+I18n.t("countries.#{cnt.name.shorten_en}",:locale=>loc)+'</a></td></tr>' unless cnt.nil? or cnt == ''
           else
@@ -630,7 +630,7 @@ class Conflict < ActiveRecord::Base
           cnt = va[1]
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+cnt+'</td></tr>' unless cnt.nil? or cnt == ''
         when :arra
-          cnt = eval va[1]+'.'+va[2]
+          cnt = eval "#{va[1]}.#{va[2]}"
           ta += '<tr><td class="fld">'+va[-1]+'</td><td>'+va[3][cnt]+'</td></tr>' unless cnt.nil? or cnt == ''
         when :many
           man = eval 'v.'+va[1]

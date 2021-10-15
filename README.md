@@ -1,6 +1,6 @@
 # Environmental Justice Atlas
 
-A web platform for documenting and cataloging social conflicts around environmental issues.
+EJAtlas ıs a web platform for documenting and cataloging social conflicts around environmental issues.
 
 ## Installation
 

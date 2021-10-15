@@ -34,6 +34,7 @@ misc/saves.csv
 misc/sld2json/node_modules/
 misc/sld2json/package-lock.json
 misc/passwords.txt
+misc/dbtools/tables
 
 db/*.db
 
