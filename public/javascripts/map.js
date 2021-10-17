@@ -687,7 +687,7 @@ function showMarkers(markers) {
         if (isNaN(n[0])) return 0
         if (n.match(/^\d+:id$/i)) return 0
         id = parseInt(n.split(':')[0]);
-        console.log(id, fid, mark[n])
+        //console.log(id, fid, mark[n])
         if (id == fid && mark[n]) {
           if (Object.keys(attrhash).indexOf(n.split(':')[1]) >= 0){
             popcontent += '<br />'+attrhash[n.split(':')[1]].replace(/\sId$/,'')+': <strong>';

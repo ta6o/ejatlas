@@ -5120,13 +5120,13 @@ button.close {
   font-family: 'Mada';
   font-style: normal;
   font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/mada/v10/7Auwp_0qnzeSfTLGKA.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/mada/v11/7Auwp_0qnzeSfTLGKA.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Mada';
   font-style: normal;
   font-weight: 900;
-  src: url(https://fonts.gstatic.com/s/mada/v10/7Au_p_0qnzeSdbHhOCX2yg.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/mada/v11/7Au_p_0qnzeSdbHhOCX2yg.ttf) format('truetype');
 }
 html {
   direction: rtl;
