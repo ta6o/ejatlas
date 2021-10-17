@@ -53,9 +53,8 @@ function geoEach(f,l) {
 }
 
 function identify(e) {
-  console.log("NALAN")
-  console.log(e)
-  console.log(wmsLayers)
+  //console.log(e)
+  //console.log(wmsLayers)
   if (wmsLayers.length == 0) return
   var sw = map.options.crs.project(map.getBounds().getSouthWest());
   var ne = map.options.crs.project(map.getBounds().getNorthEast());
@@ -74,7 +73,7 @@ function identify(e) {
     type: "GET",
     success: function(data) {
       if(data.features.length !== 0) {
-        console.log(data)
+        //console.log(data)
         var returnedFeature = data.features[0];
         inf = "<div class='maplink darkblue'><h4>"+n+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'><p>";
         $.each(returnedFeature.properties,function(k,v){
@@ -118,7 +117,7 @@ function geoLayers() {
       checked = "";
       bold = "";
       if (f["shown"] == 1) {
-        console.log(overlayMaps[name])
+        //console.log(overlayMaps[name])
         overlayMaps[name].addTo(geoLayer);
         wmsLayers.push(name);
         checked = " checked='checked'"
@@ -128,7 +127,7 @@ function geoLayers() {
         $('#legendpane').prepend('<div class="vectorlegend noselect block" data-width=240><table class="overlays"><tbody></tbody></table></div>');
       }
       if (Object.keys(f).indexOf("legend")>=0) {
-        console.log(f)
+        //console.log(f)
         html = "<tr data-rank='"+f["rank"]+"'><td class='input'><input type='checkbox' id='checkbox_"+s+"'"+checked+"></input></td>"
         html += "<td class='icon'><svg id='icon_"+s+"' width=20 height=20 xmlns='http://www.w3.org/2000/svg' viewport='0 0 20 20'><rect height='16' rx='4' ry='4' width='16' x='2' y='2'></rect></svg><style>svg#icon_"+s+" > rect "+f["icon"]+"</style></td>"
         html += "<td"+bold+">"+name+"</td></tr>";
@@ -139,7 +138,7 @@ function geoLayers() {
         html += "<td"+bold+">"+name+"</td></tr>";
       }
       ranks = $("table.overlays tbody tr").map(function(i,e){return $(e).data("rank")}).toArray();
-      console.log(ranks)
+      //console.log(ranks)
       $('#legendpane .vectorlegend table.overlays tbody').prepend(html);
 
 
@@ -214,7 +213,7 @@ function waitImageLoad() {
   if ($.map(geoImages,function(e,i){return e.complete}).indexOf(false)>=0) {
     window.setTimeout(waitImageLoad,10)
   } else {
-    console.log("images loaded")
+    //console.log("images loaded")
   }
 }
 
@@ -229,7 +228,7 @@ function initMap() {
       $.each(providers[f[0]].options,function(k,v){
         opts[k] = v;
       })
-      console.log(opts)
+      //console.log(opts)
       if (f.length == 2) {
         if (Object.keys(providers[f[0]].variants[f[1]]).indexOf("url")>=0) {
           opts["url"] = providers[f[0]].variants[f[1]].url;
@@ -246,7 +245,7 @@ function initMap() {
         delete opts["variant"]
       }
       opts["url"] = opts["url"].replace("{s}.","a.");
-      console.log(opts)
+      //console.log(opts)
       l = new ol.layer.Tile({title:f[1],type:"base",source:new ol.source.XYZ(opts)});
       baselayers[f[f.length-1].replace(/([A-Z]+)/g, " $1").trim()] = l;
   })
@@ -333,9 +332,9 @@ function initMap() {
     l = $leg.substr(0,1);
     regexp = new RegExp(l+"_\\d+");
     id = $(e.target).attr('class').match(regexp)[0].replace(l+'_','');
-    console.log(id)
+    //console.log(id)
     vis = $(this).closest('tr').find('.map-icon').hasClass('vis');
-    console.log(vis)
+    //console.log(vis)
     part = $('.legend .map-icon.vis').length < $('.legend .map-icon').length
     if (e.shiftKey) {
       e.preventDefault();
@@ -675,7 +674,7 @@ function initMap() {
         inf += "</div>"
         var coordinates = $(".ol-mouse-position").text().split(",");
         popup.setPosition([coordinates[0],coordinates[1]]);
-        console.log(fl[0])
+        //console.log(fl[0])
         $("#popup").popover({
           placement: 'top',
           html: true,
@@ -710,11 +709,11 @@ function checkPopPadding() {
   var moved = false;
   if (pop.left < pad.left ) { 
     difpos[0] -= pad.left - pop.left 
-    console.log("left "+String(pad.left - pop.left ))
+    //console.log("left "+String(pad.left - pop.left ))
     moved = true;
   } else if (pop.right > pad.right && pop.left >= pad.left - (pad.right - pop.right)) { 
     difpos[0] -= pad.right - pop.right 
-    console.log("right "+String(pad.right - pop.right ))
+    //console.log("right "+String(pad.right - pop.right ))
     moved = true;
   }
   if (pop.top < pad.top ) {
@@ -759,7 +758,7 @@ function grow(feature) {
     var elapsedRatio = elapsed / duration;
     // radius will be 5 at start and 30 at end.
     var radius = (ol.easing.easeOut(elapsedRatio) + 1) * (2+zoom) ;
-    console.log(radius)
+    //console.log(radius)
 
     if (default_style=="custom") {
       icolor = (typeof value == "undefined" ? "#000000" : "#"+value)
@@ -937,7 +936,7 @@ function showMarkers(markers) {
   shownMarkers = 0
   features = $.map(markers, function(e,i){
     popcontent = "<div class='features'><br />"
-    console.log(e)
+    //console.log(e)
     $.each(e,function(k,v){
       if (["o", "a", "i", "c", "r", "s", "p", "l", "dmn", "tags"].indexOf(k) == -1 && parseInt(k.split(":")[0]) == fid) {
         if (Object.keys(attrhash).indexOf(k.split(':')[1]) >= 0){
@@ -950,7 +949,7 @@ function showMarkers(markers) {
       } else if (featureMap && k == "dmn"){
         default_style = "custom"
         icon_colors["custom"][v[0]] = v[0]
-        console.log("e",e)
+        //console.log("e",e)
         $.each(e.tags,function(i,n){
           popcontent += "<span class='badge' style='background-color:#"+e.dmn[i]+"'>"+n+"</span> &nbsp; "
         })
@@ -1009,9 +1008,9 @@ function showMarkers(markers) {
       })
       popcontent += "<br /><br />"
 
-      console.log("yeah")
+      //console.log("yeah")
       if ('dmn' in mark && mark.dmn.length > 0) {
-        console.log(mark.dmn)
+        //console.log(mark.dmn)
         dmns.push(mark.dmn[0])
         cclass = " c_"+mark.dmn[0];
         $.each(mark.tags,function(i,n){
@@ -1238,7 +1237,7 @@ function borderStyle(feature) {
 }
 
 function updateInfo (type, content) {
-  console.log(type,content)
+  //console.log(type,content)
   if (disclaimer == undefined) disclaimer = content;
   info.show();
   if (type == 0 || type == undefined) {
@@ -1255,7 +1254,7 @@ function getInfo(id,name,p,z,upd) {
   marker = markerc[id]
   pan = marker.getGeometry().flatCoordinates;
   updateInfo(1,marker.content);
-  console.log(pan,zoom);
+  //console.log(pan,zoom);
   map.getView().setCenter(pan);
   map.getView().setZoom(zoom);
   if (upd && false) {
@@ -1297,7 +1296,7 @@ function toggleLegend(id,vis) {
   } else {
     $query = '{"must":[{"term":'+$page_query+'},{"term":{"'+$leg+'":"'+id+'"}}]}';
   }
-  console.log($page_query)
+  //console.log($page_query)
   ours = $('.legend .map-icon.i_'+id);
   mics = $('.leaflet-marker-icon.i_'+id);
   if (vis) {
@@ -1441,7 +1440,7 @@ function onEachFeature(feature, layer) {
       });
     }
   }
-  if (pn == "Gas Pipelines (Pci 2015)") {console.log(ia)}
+  if (pn == "Gas Pipelines (Pci 2015)") {/*console.log(ia)*/}
   inf += ia.join("<br />");
   if (jsons[pn].desc){ 
     inf += "<p><strong>"+jsons[pn]['desc']+"</strong></p>"; 
