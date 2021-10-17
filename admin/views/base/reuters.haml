@@ -41,7 +41,7 @@
         width: 72px !important;
         height: 97px !important;
       }
-    =javascript_include_tag 'jQl'
+    %script{:src=>"/javascripts/dist/jQl.js",:type=>"text/javascript"}
     :javascript
       img = new Image(330,30);
       img.src = '#{$fileurl}/static/ikon.png';

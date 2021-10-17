@@ -15,7 +15,7 @@
     %meta{:content => $pageauthor, :name => "author"}/
     %meta{:content => $pagekeyws, :name => "keywords"}/
     /%link{:href => "/stylesheets/bootstrap.less", :rel => "stylesheet/less"}/
-    /=javascript_include_tag 'less'
+    /=javascript_include_tag 'dist/less'
     -if @dir == "ltr"
       =stylesheet_link_tag 'main'
     -else

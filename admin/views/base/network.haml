@@ -108,7 +108,7 @@
       #filter= @filter
 
 -content_for :body_end do
-  =javascript_include_tag 'd3.v3'
+  =javascript_include_tag 'dist/d3.v3'
   :javascript
     $params = {x:"#{$relatives.keys.first}"}
     fill = "#0380a5"

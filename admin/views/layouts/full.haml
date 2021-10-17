@@ -33,7 +33,7 @@
     -fol = @ol ? "ol" : "full"
     -dir = @dir == "rtl" ? "-rtl" : ""
     %link{:href=>"/stylesheets/main-#{fol}#{dir}.css",:rel=>"stylesheet",:type=>"text/css"}
-    %script{:src=>"/javascripts/jQl.js",:type=>"text/javascript"}
+    %script{:src=>"/javascripts/dist/jQl.js",:type=>"text/javascript"}
     :javascript
       layerinfo = [];
     =yield_content :include
@@ -549,7 +549,7 @@
       -if @ol
         %script{:src=>"/javascripts/ol-dev.js",:type=>"text/javascript"}
         %script{:src=>"https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js",:type=>"text/javascript"}
-        %script{:src=>"/javascripts/ol-layerswitcher.js",:type=>"text/javascript"}
+        %script{:src=>"/javascripts/dist/ol-layerswitcher.js",:type=>"text/javascript"}
         %script{:src=>"/javascripts/map-ol.js",:type=>"text/javascript"}
         :javascript
           var olayers = true;
@@ -560,14 +560,14 @@
         :javascript
           var olayers = false;
 
-        //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/Leaflet.VectorGrid.bundled.js','/javascripts/leaflet-tilelayer-wms-headers.js','/javascripts/VectorTileLayer.min.js','/javascripts/map.js'); 
+        //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/dist/Leaflet.VectorGrid.bundled.js','/javascripts/dist/leaflet-tilelayer-wms-headers.js','/javascripts/dist/VectorTileLayer.min.js','/javascripts/map.js'); 
         //jQl.loadjQ('/javascripts/main-dev.js','/javascripts/map.js'); 
     -else
       -if @ol
         :javascript
           var olayers = true;
           jQl.loadjQ('/javascripts/main-ol.js');
-          jQl.loadjQdep('/javascripts/ol-layerswitcher.js');
+          jQl.loadjQdep('/javascripts/dist/ol-layerswitcher.js');
           jQl.loadjQdep('/javascripts/map-ol.js'); 
       -else
         :javascript

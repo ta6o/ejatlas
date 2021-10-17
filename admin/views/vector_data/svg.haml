@@ -91,12 +91,12 @@
 
 
 -content_for :body_end do
-  =javascript_include_tag 'materialize'
+  =javascript_include_tag 'dist/materialize'
   :javascript
      $(document).ready(function(){
        $('.collapsible').collapsible();
        $("li.file").on("click",function(){
-         filename = "https://file.ejatlas.org/svg"+$(this).data("path")+$(this).text().trim()
+         filename = "#{$fileurl}/svg"+$(this).data("path")+$(this).text().trim()
          $(".showtext").text(filename);
          $(".showcase, .showtext").css("background-image", "url('"+filename+"')")
          $(".copied").css("opacity",0)

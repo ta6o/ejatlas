@@ -14,7 +14,7 @@
     %meta{:content => $pageauthor, :name => "author"}/
     %meta{:content => $pagekeyws, :name => "keywords"}/
     =stylesheet_link_tag 'main'
-    =javascript_include_tag 'jQl'
+    %script{:src=>"/javascripts/dist/jQl.js",:type=>"text/javascript"}
     =yield_content :include
 
     /[if lt IE 9]
