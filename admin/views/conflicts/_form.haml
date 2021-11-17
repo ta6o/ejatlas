@@ -1075,7 +1075,7 @@
             .group
               .row
                 .col-md-12
-                  %label=t("f.conflict.links_to_general_newspaper_articles")
+                  %label=t("f.conflict.linksto_general_newspaper_articles_blogs")
                   %a#n_weblink.btn.pull-right.notr{'data-toggle'=>'modal','data-target'=>'#m_weblink'}=t("f.conflict.add")
               #current_weblinks
                 -@conflict.weblinks.where(:locale=>I18n.locale).order(:pid).each do |l|

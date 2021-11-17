@@ -697,6 +697,7 @@ class Conflict < ActiveRecord::Base
             man = v.documents.where("copied?"=>nil,:locale=>loc)
           else
             man = eval "v.#{va[1]}.where(:locale=>:#{loc})"
+            man = eval "v.#{va[1]}.where(:locale=>:en)" if man.empty?
           end
           arr = []
           man.each do |m|
