@@ -1561,13 +1561,19 @@
                   %tdata
                     -scols = {"NEW"=>"090","UPD"=>"333","ERR"=>"C00","TRX"=>"00F"}
                     -@saves.reverse.each do |save|
-                      -scol = scols[save[0]]
-                      -unless scol
-                        -scol = "333" 
-                      %tr{:style=>"color:##{scol};"}
-                        %td=save[4]
-                        %td
-                          %small=Account.find(save[3].to_i).name
+                      -if Account.where(:id=>save[3].to_i).any?
+                        -scol = scols[save[0]]
+                        -unless scol
+                          -scol = "333" 
+                        %tr{:style=>"color:##{scol};"}
+                          %td=save[4]
+                          %td
+                            %small=Account.find(save[3].to_i).name
+                      -else
+                        %tr{:style=>"color:#999;"}
+                          %td=save[4]
+                          %td
+                            %small= "<account deleted>"
               %br/
 
 
