@@ -160,8 +160,8 @@
             = t "v.index.by_#{k.slug}"
           .content{:style=>'display:none;'}
             %div{:id=>"browse#{k}"}
-              %a.sort.count{:onclick=>"toggle_browse('#{k}','alpha')"}= t("v.index.sort_alphabetically").downcase #"A > Z"
-              %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= t("v.index.sort_by_frequency").downcase #"9 > 1"
+              %a.sort.count{:onclick=>"toggle_browse('#{k}','alpha')"}= (t("v.index.sort_alphabetically")||"").downcase #"A > Z"
+              %a.sort.alpha{:onclick=>"toggle_browse('#{k}','count')",:style=>"display:none;"}= (t("v.index.sort_by_frequency")||"").downcase #"9 > 1"
               -if @global and I18n.locale != :en
                 -v.each_with_index do |vv,ii|
                   -#pp ii
