@@ -266,7 +266,7 @@ Admin.controller do
     @markerinfo = @conflict.accurate_marker
     @cmarker = @conflict.as_marker.to_json
     @defs = []
-    if conflict.country
+    if @conflict.country
       @conflict.country.vector_data.each do |vd|
         if vd.vector_style and vd.vector_style.defs
           @defs << JSON.parse(vd.vector_style.defs)
