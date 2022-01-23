@@ -714,7 +714,7 @@ class Admin < Padrino::Application
       val = ws[i+1,3]
       if val != "#VALUE!" and (all or cn.attributes[x].nil? or cn.attributes[x] === "")
         if x == "description"
-          attrs[x] = val.gsub("$%&","<br/>")
+          attrs[x] = val.gsub(/\$\s*%\s*&/,"<br/>")
         else
           attrs[x] = val 
         end
