@@ -259,8 +259,11 @@ Admin.controller do
   get :conflict, :with => :slug do
     @conflict = Conflict.find_slug(params[:slug].downcase)
     pass unless @conflict
-    if I18n.locale != I18n.default_locale and params.has_key?("translate") and ConflictText.where(:conflict_id=>@conflict.id, :locale=>I18n.locale).empty?
-      Admin.tx_conflict @conflict.conflict_texts.order(:created_at).first, I18n.locale, false
+    if I18n.locale != I18n.default_locale and params.has_key?("translate")
+      cta = ConflictText.where(:conflict_id=>@conflict.id, :locale=>I18n.locale)
+      if cta.empty? or cta.first.updated_at < @conflict.updated_at or cta.first.updated_at < @conflict.conflict_texts.order(:created_at).first.updated_at 
+        Admin.tx_conflict @conflict.conflict_texts.order(:created_at).first, I18n.locale, true
+      end
     end
     pass unless ["approved","modified","auto_tx"].include?(@conflict.approval_status) or (current_account and current_account.contributor?(@conflict))
     @markerinfo = @conflict.accurate_marker
