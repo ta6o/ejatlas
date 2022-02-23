@@ -1421,10 +1421,11 @@
                 -cts.each_with_index do |ct,ind|
                   %font{:style=>"font-weight:normal;#{ct.approval_status == "auto_tx" ? "color:#c00;" : ""}"} 
                     -comma = (ind == cts.length - 1) ? "" : ", "
+                    -auto = ct.approval_status == "auto_tx" ? " (auto)" : ""
                     -if current_account.contributor?(@conflict,ct.locale)
-                      %a{:title=>"#{ct.id}",:href=>"#{Admin.local_url(ct.locale)}/conflicts/edit/#{@conflict.id}"}= "#{t("countries.language.#{ct.locale}")}#{comma}"
+                      %a{:title=>"#{ct.id}",:href=>"#{Admin.local_url(ct.locale)}/conflicts/translate/#{@conflict.id}"}= "#{t("countries.language.#{ct.locale}")}#{auto}#{comma}"
                     -else
-                      %span{:title=>"#{ct.id}"}= "#{t("countries.language.#{ct.locale}")}#{comma}"
+                      %span{:title=>"#{ct.id}"}= "#{t("countries.language.#{ct.locale}")}#{auto}#{comma}"
 
           .group
             %label{:for=>"conflict_headline"}= t("f.conflict.headline_text")

@@ -12,27 +12,248 @@
           text-align: right;
         }
   %body{:style=>'background:#fff'}
-    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+    %div{:style => "width: 100%; max-width: 720px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %small{:style=>"float:right;"} [ver abajo en español]
+
       %p
-        = I18n.t("emails.general.dear_var", account_name: @account.name)
+        &nbsp;
+
+      %h3{:style=>"text-align:center;"} EJAtlas - Guidelines for entering a new case into the database
+
+      %p
+        = "Dear #{@account.name},"
+
+      %p
+        Many thanks for registering and for your interest in contributing to the building of the Global Atlas of Environmental Justice. To know more about the EJAtlas, please read here: 
+        %a{:href=>"https://ejatlas.org/about"} https://ejatlas.org/about
+      %p
+        In this email you will find some useful guidelines to fill out the EJAtlas form to include a case of conflict and resistance to environmental injustices. If you get this email, it implies that the editors have reviewed your proposal and have no further comments to discuss in advance (as would be the case, for example, with duplication of cases, or cases which go beyond the scope of the EJAtlas).
+      %p
+        %b 1. 
+        To start, please log in with your account, click on your name in the bar on the top left hand side, and then click on "New Conflict" from the drop down menu. Now you are ready to enter your case. Enter the name of the conflict and select the country from the drop down menu. Add the coordinates as per the instructions below and then SAVE the case by clicking on “Save”.
+
+      %p
+        %table
+          %tbody
+            %tr
+              %td
+                %img{:src=>"https://ejatlas.org/img/help/new_conflict.jpg",:style=>"width:100%;"}
+              %td
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+              %td
+                %small
+                  %b How to insert coordinates to locate the point
+                  %br/
+                  %br/
+                  Open Google Maps in another tab and locate the point with your cursor. When you have located it, left click and choose "what is here". You'll then get the coordinates in this format: 38.624501,-97.65625. Copy them in the corresponding fields above the map and click on Save. You can also manually move the red point on the small map in the Ejatlas platform itself and place it in the right spot.
+                  %br/
+                  %br/
+                  Please use ONLY this format for the coordinates, otherwise the system will NOT save data.
+
+
+
+      %p
+        %b 2. 
+        You can start filling in all the fields now. Move through the tabs by clicking on “Next” or clicking on the tabs titles above. Please fill in all the fields in each tab, after looking carefully at the short instructions provided in the form itself. You can save the form at any moment (and get back to it later) by clicking on Save.
+
+      %p
+        The description field should contain approximately between 500 and 1000 words, and include all basic data pertaining to the case. Please make sure that you:
+      %ul
+        %li Explain the issue and reasons of the conflict, the mobilization and the current status of the project. If you later select specific action forms, actors, outcomes, etc, such as blockades, activists being persecuted, court cases, corruption, etc. please provide an explanation in the Description text and add references where needed. 
+        %li Put direct references to sources using brackets and numbers [1][2][3], and then repeat the same number in the boxes in the ‘Sources and Materials’ tab (see examples below). We recommend directly quoting press or other sources particularly if the information is controversial (i.e. “According to The Guardian, … [1]”)
+
+      %p
+        %b 3. 
+        For the fields with checkboxes, please note that when you pick "other", a free text box will open, where you can add a free text, or add specific details related to the above check options. 
+         
+      %p
+        %b 4.
+        Please also include at least one photo, or even better, three or four, with due credits or the web link.
+           
+      %p
+        Check this case as a general example: 
+        %a{:href=>"https://ejatlas.org/conflict/james-bay-hydro-project-quebec-canada"} https://ejatlas.org/conflict/james-bay-hydro-project-quebec-canada
+
+      %p
+        Example of reference of an online report:
         %br/
         %br/
-        =I18n.t("emails.confirm.thank_you_for_your_collaboration")
-        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{I18n.locale}.")}/faq",:target=>'_blank'}= I18n.t("emails.confirm.faq")
-        = I18n.t("emails.confirm.for_further_details_data_collection")
+        %img{:src=>"https://ejatlas.org/img/help/report.jpg",:style=>"width:50%;min-width:240px"}
+
+      %p
+        Example of reference for a picture:
         %br/
         %br/
-        = I18n.t("emails.confirm.please_mark_your_form_as")
+        %img{:src=>"https://ejatlas.org/img/help/image.jpg",:style=>"width:50%;min-width:240px"}
+
+      %p
+        %b 5. 
+        Once your case is ready, please go to the last Metadata tab. Here please add the short headline text and click on 
+        %b “Submit to Moderation”,
+        if the case is ready for review. You can also save it as a draft and get back to it later.
+
+      %p
+        We will then review your entry and get back to you with questions, in case any clarification is needed.
+
+      %p
+        You can also send us notes or questions by using the box
+        %b “Send a message to the moderator”. 
+        To do so, please type the text, click on Send and then Save the case.
+
+      %p
+        Please also consider entering your name in 
+        %b Contributor's name, 
+        organization and contact email if you like, as you want it to appear to the users (this data will be public. If you don’t want any information about you to be displayed, leave it blank).
+
+      %p
+        Please also note that all the cases have a 
+        %b Comment
+        function on the bottom of the published page available for all readers. You might want to check it from time to time if you get any comments and you want to reply and/or update the case.
+
+      %p
+        Please also share the case on your webpage/blog and please invite your colleagues to “like” us on 
+        %a{:href=>"https://www.facebook.com/ejolt"} Facebook
+        or
+        %a{:href=>"https://twitter.com/EnvJustice/"} Twitter,
+        or sign up to our 
+        %a{:href=>"https://anped.us2.list-manage.com/subscribe?u=19d3da1852472c315fcece5dd&id=458e018126"} newsletter
+        to stay updated.
+
+      %p
+        Thanks again for your valuable contribution, we hope to hear back from you very soon.
+
+      %p
+        Best regards,
+        %br/
+        the EJAtlas editors
+
+
+
+
+
+
+
+
+      %br/
+      %hr/
+      %br/
+
+
+
+
+
+
+
+
+      %h3{:style=>"text-align:center;"} Líneas Guías para introducir un nuevo caso en el EJAtlas
+
+      %p
+        Estimadas y estimados,
+
+      %p
+        De antemano, muchas gracias por registrarse en esta plataforma y por su interés en contribuir en la construcción del Atlas Mundial de Justicia Ambiental. Para mayor información sobre el EJAtlas, favor ingresar al siguiente enlace:Many thanks for registering and for your interest in contributing to the building of the Global Atlas of Environmental Justice. To know more about the EJAtlas, please read here: 
+        %a{:href=>"https://ejatlas.org/about"} https://ejatlas.org/about
+
+      %p
+        En el presente correo electrónico encontrará las pautas necesarias para completar el formulario del EJAtlas correspondiente a cada conflicto ambiental y sus respectivas resistencias. Si recibió este correo electrónico es porque los editores del EJAtlas han revisado su propuesta y no existen más comentarios o puntos para discutir por adelantado, llámese por ejemplo la posible duplicación de un conflicto ambiental.
+
+      %p
+        %b Puntos para el ingreso de un conflicto ambiental en la base de datos
+
+      %p
+        %b 1. 
+        Después de crear su cuenta personal, presione “Login”, introduzca su correo electrónico y su contraseña. Una vez haya ingresado, presione su propio nombre y después, cuando aparezca el desplegable, ingrese a “New Conflict”. A partir de este momento ya puede introducir un nuevo caso.
+
+      %p
+        %table
+          %tbody
+            %tr
+              %td
+                %img{:src=>"https://ejatlas.org/img/help/new_conflict.jpg",:style=>"width:100%;"}
+              %td
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+              %td
+                %small
+                  Para introducir las coordenadas, le aconsejamos que primero localice el punto en  google maps. Una vez localizado, pulse sobre el punto y presione el botón derecho del mouse/ratón, después presione en “Qué hay aquí?”, debajo de la imagen aparecerán las coordenadas. Por favor apunte las coordenadas en el siguiente formato: 38.624501,-97.65625. También es posible manualmente mover el punto hasta encontrar la localización geográfica que se busca.
+
+
+
+      %p
+        %b 2. 
+        Para comenzar a completar todos los campos. Desplácese por las pestañas haciendo clic en "Siguiente" o haciendo clic en los títulos de las pestañas de arriba. Complete todos los campos en cada pestaña, después de mirar cuidadosamente las breves instrucciones en el formulario. Puede guardar el formulario en cualquier momento (y volver a consultarlo más tarde) haciendo clic en Guardar.
+
+      %p
+        La descripción deberá tener entre 500 y 1000 palabras aproximadamente, donde preferiblemente se incluya información básica para entender el conflicto. Es relevante ingresar información sobre las causas del conflicto y su trayectoria histórica, incluyendo datos sobre la movilización o la resistencia y cómo se encuentra el estado actual del conflicto. Especificar además si ha habido persecuciones a activistas, si se ha conseguido bloquear el proyecto o se ha presentado el caso ante la corte de justicia. También le pedimos que incluya eslóganes  que hayan sido usados en las protestas (si es posible en la lengua original y la traducción),  y  nombres específicos que se les haya podido dar a formas de resistencia (ej., zadistas) o a daños ambientales (ej; ecocidio).
+
+      %p
+        El uso de referencias a fuentes de información es imprescindible, el formato propuesto es a través del uso de corchetes y numeración  [1] e incluir las referencias en la sección “sources and materials” (“fuentes y materiales”), identificándola con la misma numeración.  También recomendamos citar textualmente aquellas citas que considere podrían someterse a algún cuestionamiento.
+
+
+      %p
+        Ejemplo de referencia a un informe en línea:
         %br/
         %br/
-        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{(I18n.locale == :en ? '' : I18n.locale.to_s+'.')}")}/accounts/confirm?id=#{@account.id}&hash=#{@account.surname}",:target=>'_blank'}
-          %span= I18n.t("emails.confirm.please_click_here_to_confirm")
+        %img{:src=>"https://ejatlas.org/img/help/report.jpg",:style=>"width:50%;min-width:240px"}
+
+      %p
+        Para ver otro ejemplo, puede ingresar al siguiente enlace:
+        %a{:href=>"https://ejatlas.org/conflict/james-bay-hydro-project-quebec-canada"} https://ejatlas.org/conflict/james-bay-hydro-project-quebec-canada
+
+      %p
+        %b 3.
+        En algunas casillas verá que puede pinchar en “other” (“otro”), si presiona ahí, se abrirá otra casilla en blanco donde puede añadir más información relevante y distinta a las variables que aparecen en el EJAtlas. Este espacio es para agregar detalles que considere pertinentes.
+
+      %p
+        %b NOTA: 
+        Vaya guardado la información que va introduciendo dándole a “save” (guardar). Para pasar de una pestaña a otra, puede presionar sobre la pestaña que desee o darle a “next” (siguiente). En cualquier momento puede ir y volver a cada una de las pestañas. No olvide darle siempre a “save” (guardar)!!! Podrá volver al caso siempre que quiera, ya que la información quedará guardada en su cuenta.
+
+      %p
+        %b 4.
+        Por favor incluya al menos una (preferiblemente más de una) fotografía que caracterice el conflicto ambiental en la pestaña de “Meta” y un pequeño titular en “headline”  así como los créditos/fuente de donde la fotografía ha sido tomada.
+
+      %p
+        Ejemplo de referencias para fotos:
         %br/
         %br/
-        = I18n.t("emails.confirm.we_very_much_appreciate_your", ejoltmap_at_gmailcom: "<a href='mailto:ejoltmap@gmail.com'>ejoltmap@gmail.com</a>").html_safe
+        %img{:src=>"https://ejatlas.org/img/help/image.jpg",:style=>"width:50%;min-width:240px"}
+
+      %p
+        %b 5. 
+        Una vez considere que el caso está listo para ser moderado, en la pestaña de “Metadata” cambie la opción de Draft (por defecto es la que está marcada) por la de “Submit for moderation”. En esta pestaña puede además comunicarse con el equipo de moderación a través del cuadro que pone “Notes to moderator”. El moderador también escribirá ahí sus comentarios. Le pedimos que por favor no borre nunca estos comentarios para facilitar la comunicación.
+        %b “Submit to Moderation”,
+        if the case is ready for review. You can also save it as a draft and get back to it later.
+
+      %p
+        Finalmente puede incluir sus datos en “Contributor”: su nombre, nombre de organización y/o correo de contacto si desea hacerlo público. Eso facilitará si algún investigador/a o activista se quiere poner en contacto con la persona que ingresó la información al EJAtlas para ampliar información. Si no quiere que aparezca ninguna información también existe la opción de dejarlo en blanco.
+
+      %p
+        Tras cambiar la opción de “Draft” a “Submit for moderation” y darle a “save”, el caso será enviado a los moderadores para ser aprobado y para que posteriormente aparezca en público en el mapa. En algunas ocasiones la aprobación no se hará directamente; sino que se le pedirá que complete o amplíe alguna información. En cualquier caso, recibirá un correo informando de la aprobación del caso o de que tiene algún comentario o pregunta por parte de los moderadores. 
+
+      %p
+        %b Una vez publicado
         %br/
-        %br/
-        = I18n.t("emails.general.best_wishes")
-        %br/
-        %br/
-        = I18n.t("emails.general.ejatlas_editors")
+        Una vez publicado, verá que al final de cada caso publicado hay una sección para que otros usuarios hagan comentarios.  Le invitamos a darle seguimiento a esta sección en cada uno de sus casos y a responder las preguntas o comentarios que pudieran surgir; así como actualizar el caso cuando lo considere.
+
+      %p
+        Puede además compartir el caso recién publicado en su blog/pagina personal o en
+        %a{:href=>"https://www.facebook.com/ejolt"} Facebook
+        o
+        %a{:href=>"https://twitter.com/EnvJustice/"} Twitter,
+        también puede inscribirse en nuestro
+        %a{:href=>"https://anped.us2.list-manage.com/subscribe?u=19d3da1852472c315fcece5dd&id=458e018126"} boletín
+        para mantenerse actualizado. Para mayor información, puede comunicarse a 
+        %a{:href=>"mailto:ejoltmap@gmail.com"} ejoltmap@gmail.com 
+        ="."
+
+      %p
+        Gracias nuevamente por su valiosa contribución, ¡seguimos en contacto!
+
+      %p
+        Un saludo del equipo moderador del EJatlas.
+

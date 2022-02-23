@@ -1,0 +1,39 @@
+-# coding: utf-8
+%html{:lang => I18n.locale.to_s, :dir=>I18n.locale.to_s == "ar" ? "rtl" : "ltr"}
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    :css
+      a { color: #049cdb; text-decoration:none; }
+      a:hover { text-decoration:underline; }
+    -if I18n.locale.to_s == "ar"
+      :css
+        p { 
+          direction: rtl; 
+          text-align: right;
+        }
+  %body{:style=>'background:#fff'}
+    %div{:style => "width: 100%; max-width: 600px; font-family: Helvetica, Arial, sans-serif; font-size: 14px; text-align:left; line-height:150%;padding: 48px;"}
+      %p
+        = I18n.t("emails.general.dear_var", account_name: @account.name)
+        %br/
+        %br/
+        =I18n.t("emails.confirm.thank_you_for_your_collaboration")
+        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{I18n.locale}.")}/faq",:target=>'_blank'}= I18n.t("emails.confirm.faq")
+        = I18n.t("emails.confirm.for_further_details_data_collection")
+        %br/
+        %br/
+        = I18n.t("emails.confirm.please_mark_your_form_as")
+        %br/
+        %br/
+        %a{:href=>"#{$siteurl.sub(/:\/\//,"://#{(I18n.locale == :en ? '' : I18n.locale.to_s+'.')}")}/accounts/confirm?id=#{@account.id}&hash=#{@account.surname}",:target=>'_blank'}
+          %span= I18n.t("emails.confirm.please_click_here_to_confirm")
+        %br/
+        %br/
+        = I18n.t("emails.confirm.we_very_much_appreciate_your", ejoltmap_at_gmailcom: "<a href='mailto:ejoltmap@gmail.com'>ejoltmap@gmail.com</a>").html_safe
+        %br/
+        %br/
+        = I18n.t("emails.general.best_wishes")
+        %br/
+        %br/
+        = I18n.t("emails.general.ejatlas_editors")
+

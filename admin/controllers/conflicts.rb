@@ -377,6 +377,8 @@ Admin.controllers :conflicts do
     unless @conflict.local_data
       ct = ConflictText.create(:conflict_id=>@conflict.id, :locale=>I18n.locale, :slug=>@conflict.slug, :approval_status=>"queued")
     end
+    puts "#{@conflict.id} #{@conflict.slug.green}"
+    puts "#{@conflict.local_data.id} #{@conflict.local_data.slug.green}"
     if current_account.contributor?(@conflict) or current_account.translator?
       @translate_only = true
       @lat = @conflict.lat.match(/^-?\d+\.?\d*$/) ? @conflict.lat : nil
