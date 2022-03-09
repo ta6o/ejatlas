@@ -1,0 +1,30 @@
+eja_id,eja_name,eja_company,gem_id,gem_name,gem_parent,distance_km
+1018,"Gerze coal-fired Thermal Power Plant, Turkey",Anadolu Group,100609,Barbaros-1 power station,Permak Group,0.51
+1018,"Gerze coal-fired Thermal Power Plant, Turkey",Anadolu Group,103008,Gerze power station,Anadolu Group,9.34
+1018,"Gerze coal-fired Thermal Power Plant, Turkey",Anadolu Group,109424,Sinop Akfen power station,Akfen Group,34.82
+1018,"Gerze coal-fired Thermal Power Plant, Turkey",Anadolu Group,109425,Sinop Akfen power station,Akfen Group,34.82
+1024,"Aliaga Thermal Power Plants, Turkey","IDC, ENKA, PETKIM",107944,Petkim power station,Socar Group,0.76
+1024,"Aliaga Thermal Power Plants, Turkey","IDC, ENKA, PETKIM",103523,Habaş power station,Habaş Group,3.28
+1024,"Aliaga Thermal Power Plants, Turkey","IDC, ENKA, PETKIM",112348,Star Refinery Socar power station,State Oil Company of Azerbaijan (SOCAR),5.0
+1024,"Aliaga Thermal Power Plants, Turkey","IDC, ENKA, PETKIM",104927,İzdemir Enerji power station,İDÇ Steel,7.02
+1024,"Aliaga Thermal Power Plants, Turkey","IDC, ENKA, PETKIM",113786,İzdemir Enerji II power station,İDÇ Steel,7.02
+1024,"Aliaga Thermal Power Plants, Turkey","IDC, ENKA, PETKIM",100125,Aliağa Enka power station,ENKA,7.38
+1024,"Aliaga Thermal Power Plants, Turkey","IDC, ENKA, PETKIM",102319,Deniz power station,Limak Holding,7.38
+1055,"Begendik Thermal Power Plant, Turkey",EMBA,110093,Trakya Emba power station,Enerjisa Enerji Üretim A.Ş.,9.33
+1055,"Begendik Thermal Power Plant, Turkey",EMBA,114259,Vize power station,TBD,36.7
+1055,"Begendik Thermal Power Plant, Turkey",EMBA,114294,Vize power station,TBD,36.7
+1055,"Begendik Thermal Power Plant, Turkey",EMBA,108829,Saray Tekirdağ power station,Taşyapı Group,48.46
+2537,"DOSAB Lignite Fired Power Plant, Turkey", Demirtaş Organized Industrial District ,102442,DOSAB cogeneration plant,DOSAB,9.08
+2537,"DOSAB Lignite Fired Power Plant, Turkey", Demirtaş Organized Industrial District ,107675,Orhaneli power station,Çelikler Holding,38.9
+2537,"DOSAB Lignite Fired Power Plant, Turkey", Demirtaş Organized Industrial District ,101120,Bursa power station,Çelikler Holding,41.4
+3289,"Tepebaşı - Alpu Coal Powered Plant and Closed Pit Coal Mine, Turkey",Elektrik Üretim Anonim Şirketi,102683,Alpu power station,"EÜAŞ, Turkish Coal Enterprise",1.44
+3289,"Tepebaşı - Alpu Coal Powered Plant and Closed Pit Coal Mine, Turkey",Elektrik Üretim Anonim Şirketi,113501,Alpu power station,"EÜAŞ, Turkish Coal Enterprise",1.44
+3289,"Tepebaşı - Alpu Coal Powered Plant and Closed Pit Coal Mine, Turkey",Elektrik Üretim Anonim Şirketi,114287,Alpu power station,"EÜAŞ, Turkish Coal Enterprise",1.44
+3289,"Tepebaşı - Alpu Coal Powered Plant and Closed Pit Coal Mine, Turkey",Elektrik Üretim Anonim Şirketi,101003,Bolu Göynük power station,Kazancı Holding,38.95
+3289,"Tepebaşı - Alpu Coal Powered Plant and Closed Pit Coal Mine, Turkey",Elektrik Üretim Anonim Şirketi,101004,Bolu Göynük power station,Kazancı Holding,38.95
+4041,"Çanakkale Çırpılar Coal Plant and Coal Mining Project, Turkey",TAŞZEMİN İNŞAAT MADENCİLİK ENERJİ ÜRETİM SANAYİ VE TİCARET ANONİÖ,101595,Çırpılar power station,Taşyapı Group,0.59
+4041,"Çanakkale Çırpılar Coal Plant and Coal Mining Project, Turkey",TAŞZEMİN İNŞAAT MADENCİLİK ENERJİ ÜRETİM SANAYİ VE TİCARET ANONİÖ,113856,Helvacı power station,İÇDAŞ ,32.77
+4041,"Çanakkale Çırpılar Coal Plant and Coal Mining Project, Turkey",TAŞZEMİN İNŞAAT MADENCİLİK ENERJİ ÜRETİM SANAYİ VE TİCARET ANONİÖ,101181,Çan-1 power station,EÜAŞ,38.31
+4041,"Çanakkale Çırpılar Coal Plant and Coal Mining Project, Turkey",TAŞZEMİN İNŞAAT MADENCİLİK ENERJİ ÜRETİM SANAYİ VE TİCARET ANONİÖ,101182,Çan-1 power station,EÜAŞ,38.31
+4041,"Çanakkale Çırpılar Coal Plant and Coal Mining Project, Turkey",TAŞZEMİN İNŞAAT MADENCİLİK ENERJİ ÜRETİM SANAYİ VE TİCARET ANONİÖ,101183,Çan-2 power station,Odaş Enerji,40.84
+4041,"Çanakkale Çırpılar Coal Plant and Coal Mining Project, Turkey",TAŞZEMİN İNŞAAT MADENCİLİK ENERJİ ÜRETİM SANAYİ VE TİCARET ANONİÖ,103087,Gönen power station,Inter RAO,41.68

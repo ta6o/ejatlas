@@ -147,8 +147,8 @@ class Admin < Padrino::Application
     :host => 'localhost',
     :adapter => :net_http_persistent,
     :port => 9200,
-    :user => 'elastic',
-    :password => $espass,
+    #:user => 'elastic',
+    #:password => $espass,
     :scheme => 'http',
     :log => false,
   })
@@ -728,6 +728,80 @@ class Admin < Padrino::Application
     puts "pinging".yellow if verbose
     cn.conflict.ping
     cn
+  end
+
+  def self.detect_language ct, verbose=false
+    return false unless ct
+    unless $session
+      puts "authenticating".red if verbose
+      require "google_drive"
+      $session = GoogleDrive.saved_session("./stored_token.json", nil, $gd_api_id, $gd_api_key)
+    end
+    puts "connecting".yellow if verbose
+    ws = $session.spreadsheet_by_key($gd_sheet_id).worksheet_by_title("detect_language")
+    fields = ["name", "headline", "description", "project_details", "suggested_alternatives", "success_reason"]
+    fields.each_with_index do |x,i| 
+      y = ct.attributes[x]
+      if y
+        if x == "description"
+          ws[i+1,2] = y.gsub(/<br\/?>/,"$%&").gsub(/<\/(p|li)>/,"$%&$%&").strip_html.gsub(/&[^;]+;/,"")
+        else
+          ws[i+1,2] = y.gsub(/\n/," ").gsub(/\e/," ")
+        end
+      else
+        ws[i+1,2] = ""
+      end
+      ws[i+1,3] = "=DETECTLANGUAGE(B#{i+1})"
+    end
+    if $tx_lock
+      puts "waiting for lock".yellow if verbose
+      while $tx_lock
+        sleep 0.1
+      end
+    end
+    puts "updating".green if verbose
+    $tx_lock = true
+    ws.save
+    puts "waiting".cyan if verbose
+    b1 = nil
+    while b1.nil?
+      ws.reload
+      b1 = ws[1,3]
+      sleep 0.1
+    end
+    puts "loading".blue if verbose
+    attrs = {}
+    fields.each_with_index do |x,i| 
+      val = ws[i+1,3]
+      if val != "#VALUE!"
+        if x == "description"
+          attrs[x] = val.gsub(/\$\s*%\s*&?/,"<br/>")
+        else
+          attrs[x] = val 
+        end
+      end
+    end
+    $tx_lock = false
+    attrs
+  end
+
+  def self.check_spanish_cases
+    CSV.open("#{Dir.pwd}/misc/spanish_detected.csv","w") {|csv| csv << "id,ct_id,title,country,name,headline,description,project_details,suggested_alternatives,success_reason".split(/\s*,\s*/)}
+    ConflictText.where(:locale=>:en).each_with_index do |ct,ix|
+      attrs = Admin.detect_language(ct)
+      if attrs.values.uniq.include?("es")
+        CSV.open("#{Dir.pwd}/misc/spanish_detected.csv","a") do |csv| 
+          vals = [ct.conflict_id, ct.id, ct.name, ct.conflict.country ? ct.conflict.country.name : "", "", "", "", "", ""]
+          "name,headline,description,project_details,suggested_alternatives,success_reason".split(/\s*,\s*/).each_with_index do |attr,ind|
+            if attrs[attr]
+              vals[ind+4] = attrs[attr]
+            end
+          end
+          csv << vals
+        end
+      end
+      #break if ix > 3
+    end
   end
 
   def self.update_all_cache

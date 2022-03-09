@@ -157,6 +157,7 @@ Admin.helpers do
   end
 
   def self.filter filter, locale=:en,  all_if_empty=true, stored_fields=[], approved=true, type="conflict", sort="id", order="asc", count_only=false
+    #puts JSON.pretty_generate(filter).green
     if ["help",:help].include? filter
       puts "Admin.filter #{'filter'.magenta} => Hash, #{'all_if_empty'.cyan} => Bool(true), #{'stored_fields'.cyan} => Array([]), #{'approved'} => Bool(true), #{'type'.cyan} => String('conflict'), #{'sort'.cyan} => String('id'), #{'order'.cyan} => String('asc'), #{'count_only'.cyan} => Bool(false)"
       return
