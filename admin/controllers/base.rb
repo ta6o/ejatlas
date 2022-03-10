@@ -825,6 +825,7 @@ Admin.controller do
           resp[y] += 1
           name[z] = y
         end
+        resp = resp.sort_by{|k,v|v}.reverse.to_h
         resp.delete_if {|k,v| v < params["limit"].to_i}
         response[field] = resp
         response["_names"][field] = name
@@ -1004,7 +1005,7 @@ Admin.controller do
 
   get :graph do
     redirect to "/sessions/login?return=export" unless current_account
-    redirect back unless ["admin","editor"].include? current_account.role
+    #redirect back unless ["admin","editor"].include? current_account.role
     @filterform = JSON.parse(Cached.loc(I18n.locale).filterdata)
     @page_type = "graph"
     @filter = render "base/filter", :layout => false
