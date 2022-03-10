@@ -752,26 +752,39 @@ class AsyncTask
       Graphcommons::Signal.node_create id, ops
     end
     params["fields"].each do |key, value|
-      eval(key).find(value).each_with_index do |act,ind|
-        print "\rProcessing #{key} #{ind+1} of #{value.length}             "
-        ops = {}
-        ops[:type] = key
-        ops[:name] = act.name.strip
-        begin
-          ops[:image] = act.images.first.file_url
-        rescue
-          ops[:image] = ""
-        end
-        Graphcommons::Signal.node_create id, ops
-        act.conflicts.where(:id=>params["cons"]).each do |con|
+      puts
+      puts key.green
+      p value
+      begin
+        eval(key).find(value).each_with_index do |act,ind|
+          print "\rProcessing #{key} #{ind+1} of #{value.length}             "
+          puts
+          puts ind.to_s.blue
+          puts act
           ops = {}
-          ops[:from_type] = key
-          ops[:to_type] = "Conflict"
-          ops[:from_name] = act.name.strip
-          ops[:to_name] = con.name.strip
-          ops[:name] = "RELATED"
-          Graphcommons::Signal.edge_create id, ops
+          ops[:type] = key
+          ops[:name] = act.name.strip
+          begin
+            ops[:image] = act.images.first.file_url
+          rescue
+            ops[:image] = ""
+          end
+          pp ops
+          Graphcommons::Signal.node_create id, ops
+          act.conflicts.where(:id=>params["cons"]).each do |con|
+            print "\rProcessing #{con}             "
+            ops = {}
+            ops[:from_type] = key
+            ops[:to_type] = "Conflict"
+            ops[:from_name] = act.name.strip
+            ops[:to_name] = con.name.strip
+            ops[:name] = "RELATED"
+            Graphcommons::Signal.edge_create id, ops
+          end
         end
+      rescue => e
+        puts e.to_s.red
+        puts e.backtrace
       end
     end
     print "\rProcess completed in #{(Time.now - start).to_i} seconds.                                              "

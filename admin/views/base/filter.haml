@@ -155,12 +155,14 @@
           -if @page_type == "graph"
             %span.count &nbsp;
           .ready
-            .btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"}= t "v.filter.apply"
-            .btn.btn-default{:onclick=>'clearFilter()'}= t "v.filter.clear"
+            %button.btn.btn-default{:onclick=>"sendFilter(serializeFilter('#{@page_type}'),'#{@page_type}');"}= t "v.filter.apply"
+            %button.btn.btn-default{:disabled=>true,:onclick=>'clearFilter()'}= t "v.filter.clear"
             -if current_account and @page_type != "feat" and not @filter
-              .btn.btn-default{:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"}= t "v.filter.save"
-            -if @page_type == "graph"
-              .btn.btn-default{'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
+              %button.btn.btn-default{:disabled=>true,:onclick=>"saveFilter(serializeFilter('#{@page_type}'))"}= t "v.filter.save"
+          -if @page_type == "graph"
+            .not_ready{:style=>"margin-top:4px;"}
+              %button.btn.btn-default{:disabled=>true,'data-toggle'=>'modal','data-target'=>'#ex'} Export Results
+              %button.btn.btn-default{:disabled=>true,'data-toggle'=>'modal','data-target'=>'#gc'} Network Graph
             -#
               .btn.btn-default{:onclick=>'saveFilter()'} Save
               -if current_account
@@ -389,6 +391,8 @@
       if (page_type == "network") {
         data += "&name="+$(".nname").val()+"&subtitle="+$(".nsubtitle").val()+"&desc="+$(".ndesc").val();
       } 
+      console.log( data )
+      console.log( query )
       return {data:data,query:query}
     }
 
@@ -406,12 +410,17 @@
     }
     function sendFilter(data,page_type) {
       $query = data.data.split("&")[0].substr(7);
+      $("#conflict_filter .head .ready .btn").prop("disabled",true);
+      $("body").css("cursor","wait")
       $.ajax({
         type: "POST",
         url: "/filter",
         data: data.data,
         success: function(data){
+          $("#conflict_filter .head .ready .btn").prop("disabled",false);
+          $("body").css("cursor","default")
           data = JSON.parse(data);
+          console.log(data)
           //$('#head p strong').text(data.length+" case"+(data.length < 2 ? "" : "s")+" filtered")
           if (data.length == 0) {
             $('#head p strong').text("#{t 'v.filter.no_cases_found'}")
@@ -435,8 +444,8 @@
             delete data._names;
 
             if (page_type=="network") {
-              $("iframe.gc").attr("src",params["url"]+"/embed?auto=true&show=Graph")
-              $("iframe.gc").slideDown();
+              $(".modal").modal("hide")
+              window.open(data["url"]+"/embed?auto=true&show=Graph","_blank")
             } else {
               $(".count").text(" "+count+" cases filtered.")
               updateGraph(data)

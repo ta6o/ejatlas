@@ -806,7 +806,7 @@ Admin.controller do
   end
 
   post :filter do
-    #pp params["filter"]
+    pp params
     if params['page_type'] == "feat"
       Admin.filter(params["filter"], @locale,false).to_json
     elsif params['page_type'] == "network" or params['page_type'] == "graph"
@@ -844,9 +844,15 @@ Admin.controller do
         response["_names"].each do |key,val|
           prms["fields"][key.sub(/_id$/,"").classify] = val.keys
         end
+        puts "GC".cyan
+        pp prms
+        puts
         AsyncTask.new.export_graphcommons prms
         response[:url] = "https://graphcommons.com/graphs/#{id}"
       end
+      puts "Response".magenta
+      pp response
+      puts
       response.to_json
     else
       Admin.filter(params["filter"], @locale).map{|i| i['_id'].to_i }.to_json
