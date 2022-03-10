@@ -317,7 +317,7 @@ Admin.helpers do
     Dir.foreach("#{Dir.pwd}/lib/sheets/") do |file|
       next if file.match /^\./
       next unless file.match /\.csv$/
-      next if file.match(/^auto/)
+      next if file.match(/^auto/) or file.match(/^detect/)
       file = file.strip
       CSV.read("#{Dir.pwd}/lib/sheets/#{file}").each_with_index do |row,ind|
         domain = "models,views,forms".split(",").include?(file.sub(/\.csv$/,"")) ? file[0] : file.sub(/\.csv$/,"")
