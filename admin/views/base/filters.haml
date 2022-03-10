@@ -42,6 +42,9 @@
                   %a.delete{:style=>"cursor:pointer","data-id"=>filter.id,"data-name"=>filter.name ? filter.name : filter.uid,"data-aname"=>filter.account.name} Delete
 
     -if @publics
+      %br/
+      %h3.title
+        =mt('Public Filters')
       .inner
         %table.table.tablesorter#sortme2
           %thead
@@ -63,7 +66,7 @@
                 %td=filter.result_length 
                 %td=filter.updated_at.strftime("%y-%m-%d")
                 %td.last
-                  =link_to pat('edit'), url(:editfilter, :uid => filter.uid), :method => :get
+                  =link_to pat('replicate'), url(:replicatefilter, :uid => filter.uid), :method => :get
                   |
                   =link_to pat('View'), url(:embed_filter, :uid => filter.uid), :method => :get
 

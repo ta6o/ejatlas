@@ -217,6 +217,7 @@ function waitImageLoad() {
   }
 }
 
+var currentZoom;
 
 function initMap() {
   //console.log("map init")
@@ -282,6 +283,7 @@ function initMap() {
     }),
     controls: ol.control.defaults({attribution: false}).extend([new ol.control.Attribution({ collapsible: false })]),
   });
+  currentZoom = map.getView().getZoom();
 
   popup = new ol.Overlay({
     element: $("#popup")[0],
@@ -582,116 +584,132 @@ function initMap() {
   window.onresize = onResize; 
 
   map.on("pointermove", function (evt) {
-    var fl = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-      if (layer == markerLayer) {
-        if (selected == feature) {
-        } else if (selected !== null) {
-          shrink(selected)
-        } else {
-          selected = feature;
-          grow(selected)
+    if (map.getView().getZoom() > 6) {
+      var fl = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+        if (layer == markerLayer) {
+          if (selected == feature) {
+          } else if (selected !== null) {
+            shrink(selected)
+          } else {
+            selected = feature;
+            grow(selected)
+          }
         }
-      }
-      return [feature,layer];
-    }); 
-    if (fl && fl[1] == markerLayer) {
-      this.getTargetElement().style.cursor = 'pointer';
-    } else if (fl && geoLayer.getLayersArray().indexOf(fl[1])>=0) {
-      if (selected !== null) {
-        shrink(selected)
-      }
-      if (fl[1].get("clickable")) {
+        return [feature,layer];
+      }); 
+      if (fl && fl[1] == markerLayer) {
         this.getTargetElement().style.cursor = 'pointer';
+      } else if (fl && geoLayer.getLayersArray().indexOf(fl[1])>=0) {
+        if (selected !== null) {
+          shrink(selected)
+        }
+        if (fl[1].get("clickable")) {
+          this.getTargetElement().style.cursor = 'pointer';
+        } else {
+          this.getTargetElement().style.cursor = '';
+        }
       } else {
+        if (selected !== null) {
+          shrink(selected)
+        }
         this.getTargetElement().style.cursor = '';
       }
-    } else {
-      if (selected !== null) {
-        shrink(selected)
-      }
-      this.getTargetElement().style.cursor = '';
     }
   });
+
   map.on('click', function(evt) {
     //$("#popup").popover('destroy');
-    var fl = map.forEachFeatureAtPixel(evt.pixel, function(feature,layer) {
-      return [feature,layer];
-    });
-    //console.log(evt.pointerEvent.target)
-    if (fl && fl[1] == markerLayer) {
-      $("#popup").popover('destroy');
-      $.ajax({
-        type: "get",
-        url: "/info/"+fl[0].values_.id,
-        success: function(dat){
-          var coordinates = fl[0].getGeometry().getCoordinates();
-          popup.setPosition(coordinates);
+    if (map.getView().getZoom() <= 6) {
+      map.getView().setCenter(map.getCoordinateFromPixel(evt.pixel))
+      map.getView().setZoom(map.getView().getZoom()+1);
+    } else {
+      var fl = map.forEachFeatureAtPixel(evt.pixel, function(feature,layer) {
+        return [feature,layer];
+      });
+      //console.log(evt.pointerEvent.target)
+      if (fl && fl[1] == markerLayer) {
+        $("#popup").popover('destroy');
+        $.ajax({
+          type: "get",
+          url: "/info/"+fl[0].values_.id,
+          success: function(dat){
+            var coordinates = fl[0].getGeometry().getCoordinates();
+            popup.setPosition(coordinates);
+            $("#popup").popover({
+              placement: 'top',
+              html: true,
+              //viewport: "#popup",
+              content: dat + fl[0].values_.properties.content
+            });
+            $("#popup").popover('show');
+            checkPopPadding();
+          }
+        })
+
+      } else if (fl && geoLayer.getLayersArray().indexOf(fl[1])>=0) {
+        if (fl[1].get("clickable")) {
+          $("#popup").popover('destroy');
+          pn = fl[0].properties_[fl[1].get("title_col")]
+          if (typeof pn == "undefined") { pn = fl[1].get("name") }
+          inf = "<div class='maplink darkblue'><h4>"+pn+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'>";
+          ia = []
+          if (fl[0].properties_ != {}) {
+            titled = false;
+            omit = JSON.parse(fl[1].get("omit"));
+            omit.push("layer")
+            $.each(fl[0].properties_,function(k,v){
+              if (omit.indexOf(k) == -1 && v) {
+                if (k.match(/country/) && !titled) {
+                  ia.push("<h3>"+v+"</h3>");
+                  titled = true;
+                } else {
+                  ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){
+                      return txt.charAt(0).toUpperCase() + txt.substr(1);
+                  })+":</strong> "+String(v).replace(/\n+/g,'<br /><br />')+"<br />");
+                }
+              } 
+            });
+          }
+          inf += ia.join("<br />");
+          if (fl[1].get("desc").length > 0 && fl[1].get("desc") != "No abstract provided"){  
+            inf += "<br/><p style='background:#e0d5d5;padding: 8px;margin: 0px'><b>"+fl[1].get("name")+"</b><br/><br/>"; 
+            inf += fl[1].get("desc").replace(urire,'<a href="$&" target="_blank">$&</a>')+"</p>"; 
+          }
+          /*if (jsons[pn].source){ 
+            inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
+            if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
+            inf += "</p>";
+          }*/
+          inf += "</div>"
+          var coordinates = $(".ol-mouse-position").text().split(",");
+          popup.setPosition([coordinates[0],coordinates[1]]);
+          //console.log(fl[0])
           $("#popup").popover({
             placement: 'top',
             html: true,
-            //viewport: "#popup",
-            content: dat + fl[0].values_.properties.content
+            content: inf
           });
           $("#popup").popover('show');
           checkPopPadding();
         }
-      })
-
-    } else if (fl && geoLayer.getLayersArray().indexOf(fl[1])>=0) {
-      if (fl[1].get("clickable")) {
+      } else if (evt.pointerEvent.target == $(".ol-layer > canvas")[0]) {
         $("#popup").popover('destroy');
-        pn = fl[0].properties_[fl[1].get("title_col")]
-        if (typeof pn == "undefined") { pn = fl[1].get("name") }
-        inf = "<div class='maplink darkblue'><h4>"+pn+"<a id=\"popup-closer\" class=\"ol-popup-closer\"><icon class=\"glyphicon glyphicon-remove\"></icon></a></h4></div><div class='scrollme'>";
-        ia = []
-        if (fl[0].properties_ != {}) {
-          titled = false;
-          omit = JSON.parse(fl[1].get("omit"));
-          omit.push("layer")
-          $.each(fl[0].properties_,function(k,v){
-            if (omit.indexOf(k) == -1 && v) {
-              if (k.match(/country/) && !titled) {
-                ia.push("<h3>"+v+"</h3>");
-                titled = true;
-              } else {
-                ia.push("<strong>"+k.replace(/^feature_/,"").replace(/_/g," ").replace(/^\w\S*/g, function(txt){
-                    return txt.charAt(0).toUpperCase() + txt.substr(1);
-                })+":</strong> "+String(v).replace(/\n+/g,'<br /><br />')+"<br />");
-              }
-            } 
-          });
-        }
-        inf += ia.join("<br />");
-        if (fl[1].get("desc").length > 0 && fl[1].get("desc") != "No abstract provided"){  
-          inf += "<br/><p style='background:#e0d5d5;padding: 8px;margin: 0px'><b>"+fl[1].get("name")+"</b><br/><br/>"; 
-          inf += fl[1].get("desc").replace(urire,'<a href="$&" target="_blank">$&</a>')+"</p>"; 
-        }
-        /*if (jsons[pn].source){ 
-          inf += "<p><strong>Source:</strong> &nbsp; "+jsons[pn]['source'];
-          if (jsons[pn]['link']){ inf += " &nbsp; <a href='"+jsons[pn]['link']+"' target='_blank'>"+jsons[pn]['link']+"</a>"; }
-          inf += "</p>";
-        }*/
-        inf += "</div>"
-        var coordinates = $(".ol-mouse-position").text().split(",");
-        popup.setPosition([coordinates[0],coordinates[1]]);
-        //console.log(fl[0])
-        $("#popup").popover({
-          placement: 'top',
-          html: true,
-          content: inf
-        });
-        $("#popup").popover('show');
-        checkPopPadding();
       }
-    } else if (evt.pointerEvent.target == $(".ol-layer > canvas")[0]) {
-      $("#popup").popover('destroy');
     }
   });
-  /*map.on('moveend', function(evt) {
-    if($(".popover:visible").length) {
-      checkPopPadding();
+  map.on('moveend', function(evt) {
+    if (map.getView().getZoom() != currentZoom) {
+      currentZoom = map.getView().getZoom();
+      if (currentZoom <= 6) {
+        $("#map").css("cursor","crosshair");
+      } else {
+        $("#map").css("cursor","default");
+      }
     }
-  });*/
+    /*if($(".popover:visible").length) {
+      checkPopPadding();
+    }*/
+  });
 
   updateInfo(1,disclaimer);
 }

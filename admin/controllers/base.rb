@@ -729,7 +729,7 @@ Admin.controller do
       @filters = Filter.order("updated_at desc")
     else
       @filters = Filter.where(:account_id => current_account.id).order("updated_at desc")
-      @publics = Filter.where(:public => true).order("updated_at desc")
+      #@publics = Filter.where(:public => true).where("account_id <> ?",current_account.id).order("updated_at desc")
     end
     render "base/filters", :layout => "application"
   end
@@ -755,6 +755,32 @@ Admin.controller do
     ca = Cached.where(:locale=>I18n.locale)
     @filterform = JSON.parse(ca.first.filterdata) if ca.any?
     @filterhash = {}
+    render "base/editfilter", :layout => "application"
+  end
+
+  get :replicatefilter, :with => :uid do
+    pass unless current_account
+    filter = Filter.find_by_uid(params["uid"])
+    if filter
+      @filter = Filter.create(filter.attributes.except("uid"))
+    else
+      redirect to "/filters"
+    end
+    @name = "Editing filter based on #{filter.name}"
+    @page_type = "feat"
+    @filterform = {}
+    ca = Cached.where(:locale=>I18n.locale)
+    @filterform = JSON.parse(ca.first.filterdata) if ca.any?
+    @filterhash = {}
+    if @filter.query.match(/"(country_id|companies|supporters|country_of_company)":"/)
+      @filter.query.scan(/("(country_id|companies|supporters|country_of_company)":"\d+")/).each do |a|
+        @filterhash[a[1]] = {} unless @filterhash.has_key?(a[1])
+        id = a[0].gsub(/"/,"").split(":")[-1].to_i
+        val = {"country_id"=>Country,"companies"=>Company,"supporters"=>Supporter,"country_of_company"=>Country}[a[1]].find(id).name.strip
+        @filterhash[a[1]][id] = val
+      end
+    end
+    pp @filterhash
     render "base/editfilter", :layout => "application"
   end
 
