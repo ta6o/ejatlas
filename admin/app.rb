@@ -147,8 +147,8 @@ class Admin < Padrino::Application
     :host => 'localhost',
     :adapter => :net_http_persistent,
     :port => 9200,
-    #:user => 'elastic',
-    #:password => $espass,
+    :user => 'elastic',
+    :password => $espass,
     :scheme => 'http',
     :log => false,
   })
@@ -744,9 +744,9 @@ class Admin < Padrino::Application
       y = ct.attributes[x]
       if y
         if x == "description"
-          ws[i+1,2] = y.gsub(/<br\/?>/,"$%&").gsub(/<\/(p|li)>/,"$%&$%&").strip_html.gsub(/&[^;]+;/,"")
+          ws[i+1,2] = y.gsub(/[\u0001-\u001A]/ , '').gsub(/<br\/?>/,"$%&").gsub(/<\/(p|li)>/,"$%&$%&").strip_html.gsub(/&[^;]+;/,"")
         else
-          ws[i+1,2] = y.gsub(/\n/," ").gsub(/\e/," ")
+          ws[i+1,2] = y.gsub(/[\u0001-\u001A]/ , '').gsub(/\n/," ").gsub(/\e/," ")
         end
       else
         ws[i+1,2] = ""
@@ -786,12 +786,22 @@ class Admin < Padrino::Application
   end
 
   def self.check_spanish_cases
-    CSV.open("#{Dir.pwd}/misc/spanish_detected.csv","w") {|csv| csv << "id,ct_id,title,country,name,headline,description,project_details,suggested_alternatives,success_reason".split(/\s*,\s*/)}
-    ConflictText.where(:locale=>:en).each_with_index do |ct,ix|
+    if File.exists?("#{Dir.pwd}/misc/spanish_detected.csv")
+      ids = CSV.read("#{Dir.pwd}/misc/spanish_detected.csv")[1..-1].map{|x|x[1].to_i}
+    else
+      ids = []
+      CSV.open("#{Dir.pwd}/misc/spanish_detected.csv","w") {|csv| csv << "id,ct_id,title,country,name,headline,description,project_details,suggested_alternatives,success_reason".split(/\s*,\s*/)}
+    end
+    ens = ConflictText.where(:locale=>:en).order(:id)
+    len = ens.length
+    fnd = ids.length
+    ens.each_with_index do |ct,ix|
+      next if ids.last and ids.last >= ct.id
       attrs = Admin.detect_language(ct)
       if attrs.values.uniq.include?("es")
+        fnd += 1
         CSV.open("#{Dir.pwd}/misc/spanish_detected.csv","a") do |csv| 
-          vals = [ct.conflict_id, ct.id, ct.name, ct.conflict.country ? ct.conflict.country.name : "", "", "", "", "", ""]
+          vals = [ct.conflict_id, ct.id, ct.name, ct.conflict ? (ct.conflict.country ? ct.conflict.country.name : "") : "", "", "", "", "", "", ""]
           "name,headline,description,project_details,suggested_alternatives,success_reason".split(/\s*,\s*/).each_with_index do |attr,ind|
             if attrs[attr]
               vals[ind+4] = attrs[attr]
@@ -800,6 +810,8 @@ class Admin < Padrino::Application
           csv << vals
         end
       end
+      print("\r#{ix+1}/#{len} (#{fnd})")
+      sleep 3.5
       #break if ix > 3
     end
   end
