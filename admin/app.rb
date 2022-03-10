@@ -143,15 +143,26 @@ class Admin < Padrino::Application
 
   $ips = Socket.ip_address_list.find_all{|ai| ai.ipv4?}.map &:ip_address
 
-  $client = Elasticsearch::Client.new({
-    :host => 'localhost',
-    :adapter => :net_http_persistent,
-    :port => 9200,
-    :user => 'elastic',
-    :password => $espass,
-    :scheme => 'http',
-    :log => false,
-  })
+  if ENV["RACK_ENV"] != "production"
+    esoptions = {
+      :host => 'localhost',
+      :adapter => :net_http_persistent,
+      :port => 9200,
+      :scheme => 'http',
+      :log => false,
+    }
+  else
+    esoptions = {
+      :host => 'localhost',
+      :adapter => :net_http_persistent,
+      :port => 9200,
+      :user => 'elastic',
+      :password => $espass,
+      :scheme => 'http',
+      :log => false,
+    }
+  end
+  $client = Elasticsearch::Client.new(esoptions)
   $dlocale = :en
 
   Delayed::Worker.destroy_failed_jobs = false

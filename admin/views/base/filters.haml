@@ -17,6 +17,8 @@
             %th=mat(:filter, :name)
             %th=mat(:filter, :created_by)
             %th=mat(:filter, :num_cases)
+            -if current_account.editor?
+              %th=mat(:filter, :public)
             %th=mat(:filter, :updated_at)
             %th.last
               %form#filter-form
@@ -28,6 +30,8 @@
               %td=filter.name
               %td=filter.account ? filter.account.name : ""
               %td=filter.result_length 
+              -if current_account.editor?
+                %td=filter.public ? "X" : ""
               %td=filter.updated_at.strftime("%y-%m-%d")
               %td.last
                 =link_to pat('edit'), url(:editfilter, :uid => filter.uid), :method => :get
@@ -36,6 +40,32 @@
                 -if filter.account
                   |
                   %a.delete{:style=>"cursor:pointer","data-id"=>filter.id,"data-name"=>filter.name ? filter.name : filter.uid,"data-aname"=>filter.account.name} Delete
+
+    -if @publics
+      .inner
+        %table.table.tablesorter#sortme2
+          %thead
+            %tr
+              %th.first=mat(:filter, :uid)
+              %th=mat(:filter, :name)
+              %th=mat(:filter, :created_by)
+              %th=mat(:filter, :num_cases)
+              %th=mat(:filter, :updated_at)
+              %th.last
+                %form#filter-form2
+                  %input#filter2{:name=>"filter",:value=>"",:maxlength=>"30",:size=>"30",:type=>"text",:placeholder=>'filter'}/
+          %tbody
+            -@publics.each do |filter|
+              %tr
+                %td.first=filter.uid
+                %td=filter.name
+                %td=filter.account ? filter.account.name : ""
+                %td=filter.result_length 
+                %td=filter.updated_at.strftime("%y-%m-%d")
+                %td.last
+                  =link_to pat('edit'), url(:editfilter, :uid => filter.uid), :method => :get
+                  |
+                  =link_to pat('View'), url(:embed_filter, :uid => filter.uid), :method => :get
 
       :javascript
         $("a.delete").on("click",function(){
@@ -78,6 +108,20 @@
                 $.uiTableFilter( theTable, this.value );
               })
               $('#filter-form').submit(function(){
+                return false;
+              }).focus(); 
+
+              $('#sortme2').tablesorter({
+                headers: { 
+                  6: { sorter: false }
+                } 
+              });
+              var theTable = $('table#sortme@')
+              $("#filter2").click(function(){$('#filter2').focus();});
+              $("#filter2").keyup(function() {
+                $.uiTableFilter( theTable, this.value );
+              })
+              $('#filter-form2').submit(function(){
                 return false;
               }).focus(); 
             });
