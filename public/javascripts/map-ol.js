@@ -218,6 +218,7 @@ function waitImageLoad() {
 }
 
 var currentZoom;
+var zoomCrossTreshold = 4;
 
 function initMap() {
   //console.log("map init")
@@ -584,7 +585,7 @@ function initMap() {
   window.onresize = onResize; 
 
   map.on("pointermove", function (evt) {
-    if (map.getView().getZoom() > 6) {
+    if (map.getView().getZoom() > zoomCrossTreshold) {
       var fl = this.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
         if (layer == markerLayer) {
           if (selected == feature) {
@@ -619,7 +620,7 @@ function initMap() {
 
   map.on('click', function(evt) {
     //$("#popup").popover('destroy');
-    if (map.getView().getZoom() <= 6) {
+    if (map.getView().getZoom() <= zoomCrossTreshold) {
       map.getView().setCenter(map.getCoordinateFromPixel(evt.pixel))
       map.getView().setZoom(map.getView().getZoom()+1);
     } else {
@@ -700,7 +701,7 @@ function initMap() {
   map.on('moveend', function(evt) {
     if (map.getView().getZoom() != currentZoom) {
       currentZoom = map.getView().getZoom();
-      if (currentZoom <= 6) {
+      if (currentZoom <= zoomCrossTreshold) {
         $("#map").css("cursor","crosshair");
       } else {
         $("#map").css("cursor","default");
