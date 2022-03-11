@@ -4,7 +4,7 @@ lib/locales
 lib/sheets
 public/data
 
-Make sure you have a proper config/env.rb
+Make sure you have a proper config/env.rb & config/database.rb
 
 run `bundle install`
 
