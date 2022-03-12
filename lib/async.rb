@@ -21,7 +21,7 @@ class AsyncTask
     else
       stack = Conflict.order("#{order} #{ascdsc}").select{|c| params.keys.include? c.approval_status}
     end
-    p stack
+    #p stack
     #stack = stack[0..(limit-1)] if limit > 0
     puts "#{stack.length} cases to be exported."
     #return stack.map(&:name).to_s
@@ -33,101 +33,141 @@ class AsyncTask
     numfields = []
     lines = []
     header = []
+    fields = CSV.read("#{Dir.pwd}/misc/fields.csv")
     stack.each_with_index do |conf,index|
       next unless conf.conflict_texts.where(:locale=>locale).any?
       limit -= 1
       break if limit < 0
       nfields = 0
       line = []
-      #puts "#{conf.id} #{conf.name}"
-      print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{job_id}"
       cont = conf.conflict_texts.where(:locale=>locale).first
-      cont.attributes.each do |k,v|
-        next if ["id","locale","table","features","approval_status","updated_at","translator"].include? k
-        header << k.to_s.gsub("_"," ").titlecase if index == 0
-        line << v.to_s
-        nfields += 1
-      end
-      conf.attributes.each do |k,v|
-        next if ["id","json","table","marker","licence","ready","affected_min","affected_max"].include? k
-        if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
-          begin
-            ass = eval "conf."+k.to_s[0...-3]
-          rescue
-            next
-          end
-          header << k.to_s[0...-3].gsub("_"," ").titlecase if index == 0
-          if ass.nil?
-            line << ""
-          elsif ass.name
-            line << ass.name
+
+      print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{job_id}"
+
+      fields.each do |field|
+
+        if field[2].nil?
+          attr = field[0].underscore.gsub(/\s+/,"_")
+          next if ["json","table","marker","licence","ready","affected_min","affected_max"].include? attr
+          header << field[1] if index == 0
+
+          val = eval("conf.#{attr}")
+
+          if val
+            if attr == "population_type"
+              line << ['Unknown','Urban','Semi-urban','Rural'][val.to_i]
+            elsif attr == "accuracy_level"
+              line << ['','LOW country/state level','MEDIUM regional level','HIGH local level'][val.to_i]
+            elsif attr == "success_level"
+              line << ['Success','Not sure','Failure'][val.to_i]
+            else
+              line << val.to_s
+            end
           else
-            line << ass.attributes
+            line << val.to_s
           end
-        elsif k == "reaction_id"
-          header << "When did the mobilization begin" if index == 0
-          if v
-            line << Reaction.find(v).name
+
+          nfields += 1
+
+        elsif field[2].to_i == 1
+          header << field[1] if index == 0
+
+          val = eval("conf.#{field[0].tableize.singularize}").name
+          
+          line << val.to_s
+
+
+          nfields += 1
+
+        elsif field[2].to_i == 2
+          model = field[0].constantize
+
+          if params.has_key?("split") and (mania.keys+imps.keys).include?(model)
+            
+            model.all.order(:id).each do |ng|
+              header << "#{field[0]}: #{ng.name}" if index == 0
+
+              if field[0].match(/Impact$/)
+                cm = eval("ng.c_#{field[0].gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+                if cm
+                  if cm.visible
+                    line << "V"
+                  else
+                    line << "P"
+                  end
+                else
+                  line << 0
+                end
+              else
+                if ng.conflicts.include? conf
+                  line << 1
+                else
+                  line << 0
+                end
+              end
+              nfields += 1
+            end
+
           else
-            line << ""
+            header << field[1] if index == 0
+
+            lin = []
+            
+            ngs = eval("conf.#{field[0].tableize}")
+            ngs.each do |ng|
+              if field[0].match(/Impact$/)
+                cm = eval("ng.c_#{field[0].gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+                if cm.visible
+                  lin << "#{ng.name} (V)"
+                else
+                  lin << "#{ng.name} (P)"
+                end
+              elsif ['references','legislations','weblinks','medialinks'].include?(field[0].downcase.pluralize)
+                dsc = ng.description ? "#{ng.description}\n" : ""
+                url = ng.url ? "#{ng.url}\n" : ""
+                lin << "#{dsc}#{url}"
+              elsif ['documents','images'].include?(field[0].downcase.pluralize)
+                ttl = ng.title ? "#{ng.title}\n" : ""
+                dsc = ng.description ? "#{ng.description}\n" : ""
+                url = ng.file_url ? "#{ng.file_url}\n" : ""
+                lin << "#{ttl}#{dsc}#{url}\n"
+              else
+                lin << ng.name
+              end
+            end
+
+            line << lin.join("\n")
+            nfields += 1
           end
-        elsif k == "status_id"
-          header << "Intensity of Conflict" if index == 0
-          if v
-            line << Status.find(v).name
-          else
-            line << ""
-          end
-        elsif k == "population_type"
-          header << "Type of Population" if index == 0
-          if v
-            line << ['Unknown','Urban','Semi-urban','Rural'][v]
-          else
-            line << ""
-          end
-        elsif k == "accuracy_level"
-          header << "Accuracy of location" if index == 0
-          if v
-            line << ['','LOW country/state level','MEDIUM regional level','HIGH local level'][v]
-          else
-            line << ""
-          end
-        else
-          header << k.to_s.gsub("_"," ").titlecase if index == 0
-          line << v.to_s
         end
-        nfields += 1
       end
+      numfields << nfields
+      lines << line
+
+
       mania.each do |many, val|
         va = [conf.id]
         if params.has_key?("split")
           many.order(:id).each do |m|
-            header << "#{many.to_s}: #{m.name}" if index == 0
             if m.conflicts.include? conf
-              line << 1
               va << "1"
             else
-              line << 0
               va << "0"
             end
-            nfields += 1
           end
         else
-          header << "#{many.to_s}" if index == 0
           at = []
           many.order(:id).each do |m|
             if m.conflicts.include? conf
-              at << m.name
               va << "1"
             else
               va << "0"
             end
           end
-          line << at.join(":::")
-          nfields += 1
         end
         val << va
       end
+
       [Company,Supporter].each do |mod|
         rel = mod.to_s.downcase
         if mod == Company
@@ -135,8 +175,6 @@ class AsyncTask
         else
           rels = conf.supporters
         end
-        header << rel.titlecase if index == 0
-        lin = ""
         rels.each do |m|
           acr = m.acronym and m.acronym.length > 0 ? " [#{m.acronym}]" : ""
           cnt = m.country ? " (#{m.country.name})" : ""
@@ -146,96 +184,51 @@ class AsyncTask
             cm = eval("m.c_supporters.find_by_conflict_id(#{conf.id})")
           end
           inv = cm.involvement and cm.involvement.length > 0 ? ":#{cm.involvement}" : ""
-          lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
           actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil]} unless actors[mod].has_key? m.id
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           conflict_actors[mod][conf.id] = [] unless conflict_actors[mod].has_key?(conf.id)
           conflict_actors[mod][conf.id] << [m.id, m.name, m.country ? m.country.name : nil, inv]
           actor_conflicts[mod][m.id] = m.conflicts.map(&:id) unless actor_conflicts[mod].has_key?(m.id)
         end
-        line << lin
-        nfields += 1
       end
+
+
+
+
       imps.each do |imp,val|
         va = [conf.id]
         if params.has_key?("split")
           imp.order(:id).each do |m|
-            header << "#{imp.to_s}: #{m.name}" if index == 0
             if m.conflicts.include? conf
               cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
               if cm.visible
-                line << "V"
                 va << "V"
               else
-                line << "P"
                 va << "P"
               end
             else
-              line << 0
               va << ""
             end
-            nfields += 1
           end
         else
-          header << imp.to_s if index == 0
-          at = []
           imp.order(:id).each do |m|
             if m.conflicts.include? conf
               cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
               if cm.visible
-                at << "#{m.name} (V)"
                 va << "V"
               else
-                at << "#{m.name} (P)"
                 va << "P"
               end
             else
               va << ""
             end
           end
-          line << at.join(":::")
-          nfields += 1
         end
         val << va
       end
-      ['references','legislations','weblinks','medialinks'].each do |rel|
-        #puts 
-        rels = eval("conf.#{rel}")
-        header << rel.titlecase if index == 0
-        at = "#{rel.titlecase} "
-        lin = ""
-        rels.each do |m|
-          dsc = m.description ? "#{m.description}\n" : ""
-          url = m.url ? "#{m.url}\n" : ""
-          at += "#{dsc}#{url}\n"
-          lin += "#{dsc}#{url}\n"
-        end
-        #puts at
-        line << lin
-        nfields += 1
-      end
-      ['documents','images'].each do |rel|
-        #puts 
-        rels = eval("conf.#{rel}")
-        header << rel.titlecase if index == 0
-        at = "#{rel.titlecase} "
-        lin = ""
-        rels.each do |m|
-          ttl = m.title ? "#{m.title}\n" : ""
-          dsc = m.description ? "#{m.description}\n" : ""
-          url = m.file_url ? "#{m.file_url}\n" : ""
-          at += "#{ttl}#{dsc}#{url}\n"
-          lin += "#{ttl}#{dsc}#{url}\n"
-        end
-        #puts at
-        line << lin
-        nfields += 1
-      end
       actors[:ids] << conf.id
-      numfields << nfields
-      lines << line
-      #puts
     end
+
     Dir.mkdir "/tmp/export" unless File.directory? "/tmp/export"
     tata = Time.now
     odsname = "#{$filedir}/../exports/ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}.ods"
@@ -250,70 +243,38 @@ class AsyncTask
           end
         end
       end
-      mania.each do |many,lines|
+      mania.each do |many,mlines|
         header = ["id"]
         many.order(:id).each {|h| header << h.name}
         sheet.table many.to_s.downcase do
           row do
             header.each {|x| cell x }
           end
-          lines.each do |line|
+          mlines.each do |line|
             row do
               line.each {|x| cell x }
             end
           end
         end
       end
-      imps.each do |many,lines|
+      imps.each do |many,mlines|
         header = ["id"]
         many.order(:id).each {|h| header << h.name}
         sheet.table many.to_s.downcase do
           row do
             header.each {|x| cell x }
           end
-          lines.each do |line|
+          mlines.each do |line|
             row do
               line.each {|x| cell x }
             end
           end
         end
       end
-=begin
-      actors.each do |actor,lines|
-        next if actor == :ids
-        header = ["id", "name", "slug", "description", "url", "acronym", "country"]
-        actors[:ids].uniq.each {|c| header << c}
-        sheet.table actor.to_s.downcase do
-          row do
-            header.each {|x| cell x }
-          end
-          lines.each do |line|
-            row do
-              line[1][:attrs].each {|x| cell x }
-            end
-          end
-        end
-      end
-        ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
-          output << header
-          lines.each do |id, comp|
-            line = comp[:attrs]
-            step = 7
-            pp comp[:invs]
-            comp[:invs].each do |conf, inv|
-              (header.index(conf)-step).times { line << nil }
-              inv ||= '-'
-              line << inv
-              step = header.index(conf)
-            end
-            output << line
-          end
-        end
-        csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
-=end
-      conflict_actors.each do |many,lines|
+
+      conflict_actors.each do |many,mlines|
         header = ["conflict_id"]
-        maxx = lines.values.map(&:length).max || 0
+        maxx = mlines.values.map(&:length).max || 0
         maxx.times do |maxi|
           header << "id_#{many.to_s.downcase}_#{maxi+1}"
           header << "name_#{many.to_s.downcase}_#{maxi+1}"
@@ -324,7 +285,7 @@ class AsyncTask
           row do
             header.each {|x| cell x }
           end
-          lines.each do |id, comp|
+          mlines.each do |id, comp|
             line = [id]
             comp.each do |da|
               line << da[0]
@@ -338,9 +299,9 @@ class AsyncTask
           end
         end
       end
-      actor_conflicts.each do |many,lines|
+      actor_conflicts.each do |many,mlines|
         header = ["#{many.to_s.downcase}_id"]
-        maxx = lines.values.map(&:length).max || 0
+        maxx = mlines.values.map(&:length).max || 0
         maxx.times do |maxi|
           header << "conflict_id_#{maxi+1}"
         end
@@ -348,7 +309,7 @@ class AsyncTask
           row do
             header.each {|x| cell x }
           end
-          lines.each do |id, comp|
+          mlines.each do |id, comp|
             line = [id]
             comp.each do |da|
               line << da
@@ -398,101 +359,141 @@ class AsyncTask
     numfields = []
     lines = []
     header = []
+    fields = CSV.read("#{Dir.pwd}/misc/fields.csv")
     stack.each_with_index do |conf,index|
       next unless conf.conflict_texts.where(:locale=>locale).any?
       limit -= 1
       break if limit < 0
       nfields = 0
       line = []
-      #puts "#{conf.id} #{conf.name}"
-      print "\r  #{(index/stack.length.to_f*100).to_i}% done."
       cont = conf.conflict_texts.where(:locale=>locale).first
-      cont.attributes.each do |k,v|
-        next if ["id","locale","table","features","approval_status","updated_at","translator"].include? k
-        header << k.to_s.gsub("_"," ").titlecase if index == 0
-        line << v.to_s
-        nfields += 1
-      end
-      conf.attributes.each do |k,v|
-        next if ["id","json","table","marker","licence","ready","affected_min","affected_max","updated_at"].include? k
-        if k.to_s[-3..-1] == "_id" and !["reaction_id","status_id","population_type","accuracy_level","other_supporters"].include? k
-          begin
-            ass = eval "conf."+k.to_s[0...-3]
-          rescue
-            next
-          end
-          header << k.to_s[0...-3].gsub("_"," ").titlecase if index == 0
-          if ass.nil?
-            line << ""
-          elsif ass.name
-            line << ass.name
+
+      print "\r  #{(index/stack.length.to_f*100).to_i}% done. ##{job_id}"
+
+      fields.each do |field|
+
+        if field[2].nil?
+          attr = field[0].underscore.gsub(/\s+/,"_")
+          next if ["json","table","marker","licence","ready","affected_min","affected_max"].include? attr
+          header << field[1] if index == 0
+
+          val = eval("conf.#{attr}")
+
+          if val
+            if attr == "population_type"
+              line << ['Unknown','Urban','Semi-urban','Rural'][val.to_i]
+            elsif attr == "accuracy_level"
+              line << ['','LOW country/state level','MEDIUM regional level','HIGH local level'][val.to_i]
+            elsif attr == "success_level"
+              line << ['Success','Not sure','Failure'][val.to_i]
+            else
+              line << val.to_s
+            end
           else
-            line << ass.attributes
+            line << val.to_s
           end
-        elsif k == "reaction_id"
-          header << "When did the mobilization begin" if index == 0
-          if v
-            line << Reaction.find(v).name
+
+          nfields += 1
+
+        elsif field[2].to_i == 1
+          header << field[1] if index == 0
+
+          val = eval("conf.#{field[0].tableize.singularize}").name
+          
+          line << val.to_s
+
+
+          nfields += 1
+
+        elsif field[2].to_i == 2
+          model = field[0].constantize
+
+          if params.has_key?("split") and (mania.keys+imps.keys).include?(model)
+            
+            model.all.order(:id).each do |ng|
+              header << "#{field[0]}: #{ng.name}" if index == 0
+
+              if field[0].match(/Impact$/)
+                cm = eval("ng.c_#{field[0].gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+                if cm
+                  if cm.visible
+                    line << "V"
+                  else
+                    line << "P"
+                  end
+                else
+                  line << 0
+                end
+              else
+                if ng.conflicts.include? conf
+                  line << 1
+                else
+                  line << 0
+                end
+              end
+              nfields += 1
+            end
+
           else
-            line << ""
+            header << field[1] if index == 0
+
+            lin = []
+            
+            ngs = eval("conf.#{field[0].tableize}")
+            ngs.each do |ng|
+              if field[0].match(/Impact$/)
+                cm = eval("ng.c_#{field[0].gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
+                if cm.visible
+                  lin << "#{ng.name} (V)"
+                else
+                  lin << "#{ng.name} (P)"
+                end
+              elsif ['references','legislations','weblinks','medialinks'].include?(field[0].downcase.pluralize)
+                dsc = ng.description ? "#{ng.description}\n" : ""
+                url = ng.url ? "#{ng.url}\n" : ""
+                lin << "#{dsc}#{url}"
+              elsif ['documents','images'].include?(field[0].downcase.pluralize)
+                ttl = ng.title ? "#{ng.title}\n" : ""
+                dsc = ng.description ? "#{ng.description}\n" : ""
+                url = ng.file_url ? "#{ng.file_url}\n" : ""
+                lin << "#{ttl}#{dsc}#{url}\n"
+              else
+                lin << ng.name
+              end
+            end
+
+            line << lin.join("\n")
+            nfields += 1
           end
-        elsif k == "status_id"
-          header << "Intensity of Conflict" if index == 0
-          if v
-            line << Status.find(v).name
-          else
-            line << ""
-          end
-        elsif k == "population_type"
-          header << "Type of Population" if index == 0
-          if v
-            line << ['Unknown','Urban','Semi-urban','Rural'][v]
-          else
-            line << ""
-          end
-        elsif k == "accuracy_level"
-          header << "Accuracy of location" if index == 0
-          if v
-            line << ['','LOW country/state level','MEDIUM regional level','HIGH local level'][v]
-          else
-            line << ""
-          end
-        else
-          header << k.to_s.gsub("_"," ").titlecase if index == 0
-          line << v.to_s
         end
-        nfields += 1
       end
+      numfields << nfields
+      lines << line
+
+
       mania.each do |many, val|
         va = [conf.id]
         if params.has_key?("split")
           many.order(:id).each do |m|
-            header << "#{many.to_s}: #{m.name}" if index == 0
             if m.conflicts.include? conf
-              line << 1
               va << "1"
             else
-              line << 0
               va << "0"
             end
-            nfields += 1
           end
         else
-          header << "#{many.to_s}" if index == 0
           at = []
           many.order(:id).each do |m|
             if m.conflicts.include? conf
-              at << m.name
               va << "1"
             else
               va << "0"
             end
           end
-          line << at.join(":::")
-          nfields += 1
         end
         val << va
       end
+
       [Company,Supporter].each do |mod|
         rel = mod.to_s.downcase
         if mod == Company
@@ -500,8 +501,6 @@ class AsyncTask
         else
           rels = conf.supporters
         end
-        header << rel.titlecase if index == 0
-        lin = ""
         rels.each do |m|
           acr = m.acronym and m.acronym.length > 0 ? " [#{m.acronym}]" : ""
           cnt = m.country ? " (#{m.country.name})" : ""
@@ -511,96 +510,52 @@ class AsyncTask
             cm = eval("m.c_supporters.find_by_conflict_id(#{conf.id})")
           end
           inv = cm.involvement and cm.involvement.length > 0 ? ":#{cm.involvement}" : ""
-          lin += "#{m.name}#{acr}#{cnt}#{inv}\n"
           actors[mod][m.id] = { :attrs => [m.id, m.name, m.slug, m.description, m.url, m.acronym, m.country ? m.country.name : nil]} unless actors[mod].has_key? m.id
           inv = cm.involvement and cm.involvement.length > 0 ? cm.involvement : "-"
           conflict_actors[mod][conf.id] = [] unless conflict_actors[mod].has_key?(conf.id)
           conflict_actors[mod][conf.id] << [m.id, m.name, m.country ? m.country.name : nil, inv]
           actor_conflicts[mod][m.id] = m.conflicts.map(&:id) unless actor_conflicts[mod].has_key?(m.id)
         end
-        line << lin
-        nfields += 1
       end
+
+
+
+
       imps.each do |imp,val|
         va = [conf.id]
         if params.has_key?("split")
           imp.order(:id).each do |m|
-            header << "#{imp.to_s}: #{m.name}" if index == 0
             if m.conflicts.include? conf
               cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
               if cm.visible
-                line << "V"
                 va << "V"
               else
-                line << "P"
                 va << "P"
               end
             else
-              line << "0"
               va << ""
             end
-            nfields += 1
           end
         else
-          header << imp.to_s if index == 0
-          at = []
           imp.order(:id).each do |m|
             if m.conflicts.include? conf
               cm = eval("m.c_#{imp.to_s.gsub('Impact','').downcase}_impacts.find_by_conflict_id(#{conf.id})")
               if cm.visible
-                at << "#{m.name} (V)"
                 va << "V"
               else
-                at << "#{m.name} (P)"
                 va << "P"
               end
             else
               va << ""
             end
           end
-          line << at.join(":::")
-          nfields += 1
         end
         val << va
       end
-      ['references','legislations','weblinks','medialinks'].each do |rel|
-        #puts 
-        rels = eval("conf.#{rel}")
-        header << rel.titlecase if index == 0
-        at = "#{rel.titlecase} "
-        lin = ""
-        rels.each do |m|
-          dsc = m.description ? "#{m.description}\n" : ""
-          url = m.url ? "#{m.url}\n" : ""
-          at += "#{dsc}#{url}\n"
-          lin += "#{dsc}#{url}\n"
-        end
-        #puts at
-        line << lin
-        nfields += 1
-      end
-      ['documents','images'].each do |rel|
-        #puts 
-        rels = eval("conf.#{rel}")
-        header << rel.titlecase if index == 0
-        at = "#{rel.titlecase} "
-        lin = ""
-        rels.each do |m|
-          ttl = m.title ? "#{m.title}\n" : ""
-          dsc = m.description ? "#{m.description}\n" : ""
-          url = m.file_url ? "#{m.file_url}\n" : ""
-          at += "#{ttl}#{dsc}#{url}\n"
-          lin += "#{ttl}#{dsc}#{url}\n"
-        end
-        #puts at
-        line << lin
-        nfields += 1
-      end
       actors[:ids] << conf.id
-      numfields << nfields
-      lines << line
-      #puts
     end
+
+
     Dir.mkdir "/tmp/export"  unless File.directory? "/tmp/export"
     ::CSV.open('/tmp/export/cases.csv',"w") do |output|
       output << header
@@ -610,42 +565,42 @@ class AsyncTask
     end
     tata = Time.now
     csvs = ["ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/cases.csv"]
-    mania.each do |many,lines|
+    mania.each do |many,mlines|
       header = ["id"]
       many.order(:id).each {|h| header << h.name}
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
-        lines.each do |line|
+        mlines.each do |line|
           output << line
         end
       end
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
-    imps.each do |many,lines|
+    imps.each do |many,mlines|
       header = ["id"]
       many.order(:id).each {|h| header << h.name}
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
-        lines.each do |line|
+        mlines.each do |line|
           output << line
         end
       end
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
-    actors.each do |many,lines|
+    actors.each do |many,mlines|
       next if many == :ids
       header = ["id", "name", "slug", "description", "url", "acronym", "country"]
       ::CSV.open("/tmp/export/#{many.to_s.downcase}s.csv","w") do |output|
         output << header
-        lines.each do |id, comp|
+        mlines.each do |id, comp|
           output << comp[:attrs]
         end
       end
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}s.csv"
     end
-    conflict_actors.each do |many,lines|
+    conflict_actors.each do |many,mlines|
       header = ["conflict_id"]
-      maxx = lines.values.map(&:length).max || 0
+      maxx = mlines.values.map(&:length).max || 0
       maxx.times do |maxi|
         header << "id_#{many.to_s.downcase}_#{maxi+1}"
         header << "name_#{many.to_s.downcase}_#{maxi+1}"
@@ -654,7 +609,7 @@ class AsyncTask
       end
       ::CSV.open("/tmp/export/#{many.to_s.downcase}_conflicts.csv","w") do |output|
         output << header
-        lines.each do |id, comp|
+        mlines.each do |id, comp|
           line = [id]
           comp.each do |da|
             line << da[0]
@@ -667,15 +622,15 @@ class AsyncTask
       end
       csvs << "ejatlas-export-#{tata.strftime('%Y-%m-%d-%H%M')}/#{many.to_s.downcase}_conflicts.csv"
     end
-    actor_conflicts.each do |many,lines|
+    actor_conflicts.each do |many,mlines|
       header = ["#{many.to_s.downcase}_id"]
-      maxx = lines.values.map(&:length).max || 0
+      maxx = mlines.values.map(&:length).max || 0
       maxx.times do |maxi|
         header << "conflict_id_#{maxi+1}"
       end
       ::CSV.open("/tmp/export/conflict_#{many.to_s.downcase}s.csv","w") do |output|
         output << header
-        lines.each do |id, comp|
+        mlines.each do |id, comp|
           line = [id]
           comp.each do |da|
             line << da

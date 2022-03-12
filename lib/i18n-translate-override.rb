@@ -324,7 +324,7 @@ Admin.helpers do
         fn = file.split(".")[0]
         $tstatus[fn] = {} unless $tstatus.has_key?(fn)
         if ind == 0
-          locs = row.map{|loc| loc.downcase}
+          locs = row.map{|loc| loc ? loc.downcase : "" }
           locs[1..-1].each do |loc| 
             next if loc == ""
             $tstatus[fn][loc] = 0
@@ -335,7 +335,7 @@ Admin.helpers do
             end
           end
         else
-          scope = row[0].strip.split(/\./)
+          scope = row[0] ? row[0].strip.split(/\./) : []
           if ["m","c"].include? domain
             key = row[locs.index("master")].slug("_",false).split("_")[0..7].join("_")
           else

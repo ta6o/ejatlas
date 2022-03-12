@@ -1,0 +1,59 @@
+id,Conflict Id,
+Country,Country,1
+name,Case,
+Category,First level category,1
+Type,Second level type,2
+other_types,Other Types,
+Product,Commodity,2
+other_products,Other Commodities,
+site,Site,
+province,Province,
+lon,Lon,
+lat,Lat,
+accuracy_level,Accuracy of location,
+project_area,Project Area,
+headline,Headline,
+description,Description,
+project_details,Project Details,
+Affected People,Affected People,
+population_type,Type of Population,
+Ejos,Ejos,
+Govt Actors,Govt Actors,
+Company,Company,2
+Supporter,Supporter,2
+investment_string,Investment Sum,
+Status,Intensity of Conflict,1
+Reaction,When did the mobilization begin,1
+Start Date,Start Date,
+End Date,End Date,
+ProjectStatus,Project Status,1
+Success Level,EJ served or not,
+Success Reason,EJ reasons,
+Suggested Alternatives,Suggested Alternatives,
+ConflictEvent,Outcomes,2
+Other Outcomes,Other Outcomes,
+MobilizingGroup,MobilizingGroup,2
+Other Mobilizing Groups,Other Mobilizing Groups,
+MobilizingForm,MobilizingForm,2
+Other Mobilizing Forms,Other Mobilizing Forms,
+Other Supporters,Other Supporters,
+EnvImpact,EnvImpact,2
+Other Env Impacts,Other Env Impacts,
+HltImpact,HltImpact,2
+Other Hlt Impacts,Other Hlt Impacts,
+SecImpact,SecImpact,2
+Other Sec Impacts,Other Sec Impacts,
+Reference,References,2
+Legislation,Legislations,2
+Weblink,Weblinks,2
+Medialink,Medialinks,2
+Document,Documents,2
+Image,Images,2
+Other Comments,Other Comments,
+Related Conflict String,Related Conflict,
+Created At,Created At,
+Modified At,Modified At,
+Notes,Notes,
+Contributor,Contributor,
+Account,Account,1
+Approval Status,Approval Status,
